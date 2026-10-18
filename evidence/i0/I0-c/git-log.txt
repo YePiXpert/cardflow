@@ -1,0 +1,47 @@
+# I-0c 本任务的提交（e48089e "文档：I-0b 验收记录、接续说明与待办更新" 之后，按时间正序）· 2026-10-18T09:11:38Z
+# 不含记录本文件的那次提交（其提交信息为"证据：I-0c 提交列表"）。作者均为 YePiXpert，无任何署名 trailer。简报存档（796a537）由主会话提交。
+$ git log --reverse --date=iso-strict --format="%h %ad %an <%ae>%n    %s" --shortstat e48089e..HEAD
+16cb2da 2026-10-18T09:40:16+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    领域层：纯 Dart 引擎移植初稿（money/time/billing/cash/verifier/search/protocol）与运行器 --dump
+
+ 30 files changed, 7495 insertions(+), 6 deletions(-)
+1448b9f 2026-10-18T09:46:06+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    领域层测试：账期、现金时间线、金额、日期、严格 JSON、规范化 JSON 与哈希向量、协议适配层拒绝用例
+
+ 9 files changed, 1979 insertions(+), 1 deletion(-)
+13873d8 2026-10-18T09:48:57+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    领域层测试：独立验证器、基线与数据检查、三层容量与排除原因
+
+ 3 files changed, 1066 insertions(+)
+8a9c402 2026-10-18T09:53:54+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    领域层：随机 PlanInput 生成器（移植 Python 差分测试的 gen_doc）与跨语言一致性 fixture 生成工具
+
+ 4 files changed, 627 insertions(+), 162 deletions(-)
+7d91448 2026-10-18T09:57:29+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    领域层：有限搜索的协议入口、JSON 形式与命令行；性质测试与有限搜索测试
+
+ 4 files changed, 819 insertions(+)
+ebb1882 2026-10-18T09:59:03+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    领域层测试：fixture 运行器（退出码、断言语义、--dump）与禁止 double 的可执行扫描
+
+ 3 files changed, 512 insertions(+)
+11c55c0 2026-10-18T10:00:59+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端：MoneyText 的最小单位位数表改为引用领域包；README 追加领域层说明
+
+ 6 files changed, 69 insertions(+), 40 deletions(-)
+3860756 2026-10-18T10:02:54+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    CI：dart job 加领域包的 format/analyze/test；新增 protocol-parity job
+
+ 1 file changed, 145 insertions(+), 4 deletions(-)
+93af6bf 2026-10-18T10:04:12+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    规则协议 README：追加"Dart 端实现与 parity"一节（模块对应、运行器与 --dump、parity job、哈希、未覆盖项）
+
+ 1 file changed, 69 insertions(+)
+fdd7433 2026-10-18T10:06:33+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端测试：App 的 minorDigits 就是领域包的表（identical），防止再出现本地副本
+
+ 1 file changed, 6 insertions(+)
+caffbd0 2026-10-18T10:11:32+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    证据：I-0c 领域包测试、禁止 double 扫描、哈希向量、双端运行器与 parity、有限搜索、App 检查、CI 运行
+
+ 9 files changed, 809 insertions(+)
