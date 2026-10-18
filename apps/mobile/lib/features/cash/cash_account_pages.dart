@@ -479,7 +479,12 @@ class _AccountDetail extends ConsumerWidget {
         if (view.events.isEmpty) formPadded(Text('最近没有收支。', style: secondary)),
         for (final e in view.events)
           ListTile(
-            onTap: e.transferGroupId == null && e.recurringItemId == null
+            onTap:
+                e.transferGroupId == null &&
+                    e.recurringItemId == null &&
+                    e.linkedRepaymentId == null &&
+                    e.linkedPlanRunId == null &&
+                    e.cls != CashEventClass.planned.code
                 ? () => context.go(AppRoutes.cashEvent(e.id))
                 : e.recurringItemId != null
                 ? () => context.go(AppRoutes.recurring(e.recurringItemId!))

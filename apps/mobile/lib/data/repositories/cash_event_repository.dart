@@ -209,6 +209,9 @@ final class CashEventRepository {
           throw const ConflictException('已发生的收支只能是确定的');
         }
         final newOn = on ?? LocalDate.parse(row.eventOn);
+        if (row.postingStatus == PostingStatus.posted.code && newOn > _today) {
+          throw const ValidationException('on', '已发生的收支，日期不能晚于今天');
+        }
         final String? newAt;
         if (clearAt) {
           newAt = null;
@@ -623,6 +626,9 @@ final class CashEventRepository {
   }
 
   void _checkEditable(CashEventRow row) {
+    if (row.linkedRepaymentId != null || row.linkedPlanRunId != null) {
+      throw const ConflictException('这笔是还款或计划生成的，请在对应的还款或计划里修改');
+    }
     if (row.transferGroupId != null) {
       throw const ConflictException('调拨的日期与金额不能改；请删除后重新登记');
     }

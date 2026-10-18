@@ -288,7 +288,13 @@ class _EventTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final editable = row.transferGroupId == null && row.recurringItemId == null;
+    // 调拨、周期事项的单期、还款或计划生成的（层级"计划"）不在这里改。
+    final editable =
+        row.transferGroupId == null &&
+        row.recurringItemId == null &&
+        row.linkedRepaymentId == null &&
+        row.linkedPlanRunId == null &&
+        row.cls != CashEventClass.planned.code;
     return ListTile(
       onTap: editable ? () => context.go(AppRoutes.cashEvent(row.id)) : null,
       title: Text(cashEventTitle(row)),

@@ -333,6 +333,13 @@ void main() {
       await expectRepositoryError<ConflictException>(
         () => events.update(past.id, cls: CashEventClass.expected),
       );
+      expect(
+        (await expectRepositoryError<ValidationException>(
+          () => events.update(past.id, on: d(2026, 10, 19)),
+        )).field,
+        'on',
+        reason: '已发生的收支，日期不能晚于今天（G3）',
+      );
       await events.update(past.id, amountMinor: 4900, label: '奖金');
       expect((await events.require(past.id)).amountMinor, 4900);
       await events.delete(past.id);
@@ -470,6 +477,9 @@ void main() {
         ('planned', 'repayment', 'planned', -500000),
       );
       expect(planned.linkedRepaymentId, repayment);
+      await expectRepositoryError<ConflictException>(
+        () => events.update(planned.id, amountMinor: 1),
+      );
       final moved = await events.planRepaymentDebit(
         repaymentId: repayment,
         cashAccountId: acc.id,
