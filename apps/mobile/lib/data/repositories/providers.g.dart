@@ -117,6 +117,52 @@ abstract class _$CurrentWorkspace extends $AsyncNotifier<Workspace?> {
   }
 }
 
+/// 演示空间的概况：是否存在，以及各表行数（P-22 的「清除演示数据」写明影响数量）。
+
+@ProviderFor(demoWorkspaceRows)
+final demoWorkspaceRowsProvider = DemoWorkspaceRowsProvider._();
+
+/// 演示空间的概况：是否存在，以及各表行数（P-22 的「清除演示数据」写明影响数量）。
+
+final class DemoWorkspaceRowsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, int>?>,
+          Map<String, int>?,
+          FutureOr<Map<String, int>?>
+        >
+    with
+        $FutureModifier<Map<String, int>?>,
+        $FutureProvider<Map<String, int>?> {
+  /// 演示空间的概况：是否存在，以及各表行数（P-22 的「清除演示数据」写明影响数量）。
+  DemoWorkspaceRowsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'demoWorkspaceRowsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$demoWorkspaceRowsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, int>?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, int>?> create(Ref ref) {
+    return demoWorkspaceRows(ref);
+  }
+}
+
+String _$demoWorkspaceRowsHash() => r'708da86f4dbc0a400f4ada27805c5391173a97da';
+
 /// "现在"：演示空间固定为 2026-10-16（陈旧判定不触发），真实空间用系统时间。测试里替换。
 
 @ProviderFor(clock)

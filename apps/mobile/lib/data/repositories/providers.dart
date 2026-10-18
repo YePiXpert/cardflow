@@ -118,6 +118,15 @@ class CurrentWorkspace extends _$CurrentWorkspace {
       ref.read(diagnosticLogProvider).info('workspace', event, detail: detail);
 }
 
+/// 演示空间的概况：是否存在，以及各表行数（P-22 的「清除演示数据」写明影响数量）。
+@Riverpod(retry: noDatabaseRetry)
+Future<Map<String, int>?> demoWorkspaceRows(Ref ref) async {
+  ref.watch(localDataRevisionProvider);
+  final repo = await ref.watch(workspaceRepositoryProvider.future);
+  final demo = await repo.live(WorkspaceKind.demo);
+  return demo == null ? null : repo.countRows(demo.id);
+}
+
 /// "现在"：演示空间固定为 2026-10-16（陈旧判定不触发），真实空间用系统时间。测试里替换。
 @Riverpod(keepAlive: true)
 AppClock clock(Ref ref) {

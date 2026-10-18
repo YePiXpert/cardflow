@@ -1,14 +1,30 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme/tokens.dart';
-import '../../app/widgets/first_run_empty_state.dart';
+import '../../app/widgets/state_views.dart';
+import '../../data/repositories/providers.dart';
+import 'workspace_actions.dart';
 
-/// P-22 首次使用/欢迎（ui-spec §6）。
+/// 一种开始方式。[stage] 非空表示本期不可用（按钮禁用，旁边注明所属阶段）。
+@immutable
+class StartOption {
+  const StartOption(this.label, {this.stage});
+
+  final String label;
+  final String? stage;
+}
+
+/// P-22 首次使用/欢迎/演示模式（ui-spec §6、UF-1 步骤 1）。
 ///
-/// 本阶段只展示使用边界与五种开始方式（均未开放）。"无工作空间时先进 P-22"
-/// 的启动分流要等本地库与工作空间就绪（I-1）后再接入。
-class WelcomePage extends StatelessWidget {
-  const WelcomePage({super.key});
+/// [firstRun] 为 true：没有工作空间时的入口（任何路由都先到这里，没有返回按钮）；false：从
+/// "我的 › 欢迎与开始方式"进入，可返回。
+class WelcomePage extends ConsumerStatefulWidget {
+  const WelcomePage({super.key, this.firstRun = false});
+
+  final bool firstRun;
 
   /// 页名。
   static const String title = '欢迎使用卡序';
@@ -21,27 +37,67 @@ class WelcomePage extends StatelessWidget {
     '不实时同步银行',
   ];
 
-  /// ui-spec P-22 的五种开始方式。
-  static const List<String> startOptions = <String>[
-    '手工建卡',
-    '从账单开始',
-    '从备份恢复',
-    '体验演示',
-    '连接服务器',
+  /// 五种开始方式；本期只开放手工建卡与体验演示。
+  static const List<StartOption> startOptions = <StartOption>[
+    StartOption('手工建卡'),
+    StartOption('从账单文件开始', stage: 'I-3 提供'),
+    StartOption('从备份恢复', stage: 'I-4 提供'),
+    StartOption('体验演示'),
+    StartOption('连接服务器', stage: '后续提供（自托管同步）'),
   ];
+
+  /// 演示数据生成中的文案（加载态）。
+  static const String demoLoading = '演示数据生成中…';
+
+  /// 演示数据生成失败的文案（错误态）。
+  static const String demoFailed = '演示数据生成失败，真实数据不受影响。';
+
+  @override
+  ConsumerState<WelcomePage> createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends ConsumerState<WelcomePage> {
+  bool _demoRunning = false;
+  Object? _demoError;
+
+  Future<void> _startDemo() async {
+    setState(() {
+      _demoRunning = true;
+      _demoError = null;
+    });
+    try {
+      await enterDemoWorkspace(context, ref);
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() => _demoError = error);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _demoRunning = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = CardFlowColors.of(context);
+    final current = ref.watch(currentWorkspaceProvider).value;
+    final demoRows = ref.watch(demoWorkspaceRowsProvider).value;
+    final secondary = theme.textTheme.bodyMedium?.copyWith(
+      color: colors.textSecondary,
+    );
     return Scaffold(
-      appBar: AppBar(title: const Text(title)),
+      appBar: AppBar(
+        title: const Text(WelcomePage.title),
+        automaticallyImplyLeading: !widget.firstRun,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(CfSpace.md),
         children: <Widget>[
           Text('使用边界', style: theme.textTheme.titleMedium),
           const SizedBox(height: CfSpace.xs),
-          for (final item in boundaries)
+          for (final item in WelcomePage.boundaries)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: CfSpace.xxs),
               child: Row(
@@ -61,20 +117,80 @@ class WelcomePage extends StatelessWidget {
           const SizedBox(height: CfSpace.lg),
           Text('开始方式', style: theme.textTheme.titleMedium),
           const SizedBox(height: CfSpace.xs),
-          for (final option in startOptions)
-            Padding(
-              padding: const EdgeInsets.only(bottom: CfTouch.minGap),
-              child: OutlinedButton(onPressed: null, child: Text(option)),
+          for (final option in WelcomePage.startOptions) ...<Widget>[
+            _optionButton(option),
+            if (option.stage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: CfSpace.xxs),
+                child: Text(
+                  '${option.label}：${option.stage}',
+                  style: secondary,
+                ),
+              ),
+            const SizedBox(height: CfTouch.minGap),
+          ],
+          if (_demoRunning)
+            const NoticeCard(
+              icon: Icons.hourglass_empty,
+              tone: NoticeTone.unknown,
+              text: WelcomePage.demoLoading,
             ),
+          if (_demoError != null)
+            NoticeCard(
+              icon: Icons.error_outline,
+              tone: NoticeTone.danger,
+              text: '${WelcomePage.demoFailed}（${_demoError.runtimeType}）',
+              action: TextButton(
+                onPressed: () => unawaited(_startDemo()),
+                child: const Text('重试生成'),
+              ),
+            ),
+          const SizedBox(height: CfSpace.lg),
+          Text('建议', style: theme.textTheme.titleMedium),
+          const SizedBox(height: CfSpace.xs),
+          Text('在 iPhone 设置里开启锁屏密码；卡序自己的应用锁在 I-4 提供。', style: secondary),
           const SizedBox(height: CfSpace.xxs),
+          Text('提醒需要通知权限，等用到提醒时再请求。', style: secondary),
+          const SizedBox(height: CfSpace.lg),
+          Text('演示模式', style: theme.textTheme.titleMedium),
+          const SizedBox(height: CfSpace.xs),
           Text(
-            notYetAvailableNote,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.textSecondary,
-            ),
+            '演示空间是合成的示例数据（规则与金额仅示例），与真实数据隔离、互不可见，'
+            '不同步、不导出、不合并到真实空间。进入后每一页顶部都有紫色横幅。',
+            style: secondary,
           ),
+          if (current != null && current.isDemo) ...<Widget>[
+            const SizedBox(height: CfSpace.sm),
+            OutlinedButton(
+              onPressed: () => unawaited(
+                ref.read(currentWorkspaceProvider.notifier).exitDemo(),
+              ),
+              child: const Text('退出演示'),
+            ),
+          ],
+          if (demoRows != null) ...<Widget>[
+            const SizedBox(height: CfSpace.sm),
+            OutlinedButton(
+              onPressed: () =>
+                  unawaited(clearDemoWorkspace(context, ref, demoRows)),
+              child: const Text('清除演示数据'),
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  Widget _optionButton(StartOption option) {
+    final VoidCallback? onPressed = switch (option.label) {
+      _ when option.stage != null => null,
+      '手工建卡' => () => unawaited(startManualCard(context, ref)),
+      '体验演示' => _demoRunning ? null : () => unawaited(_startDemo()),
+      _ => null,
+    };
+    if (option.label == '手工建卡') {
+      return FilledButton(onPressed: onPressed, child: Text(option.label));
+    }
+    return OutlinedButton(onPressed: onPressed, child: Text(option.label));
   }
 }

@@ -227,8 +227,11 @@ void main() {
     expect(containsKeyMaterial(report, testKeyHex), isFalse);
     expect(report, isNot(contains("x'")));
 
+    // 页面的工作空间数据来自内存库（pumpCardFlowApp 默认）；这里关的是诊断页打开的真实加密库。
     await tester.runAsync(
-      () async => (await container.read(databaseProvider.future)).close(),
+      () async =>
+          (await container.read(openedDatabaseProvider.future)).database
+              .close(),
     );
   });
 

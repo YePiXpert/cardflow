@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'router.dart';
 import 'theme/app_theme.dart';
+import 'widgets/demo_banner.dart';
 
 /// 界面语言。界面文案只有简体中文（ui-spec），因此固定为 zh-Hans-CN，
 /// 同时保证汉字按简体中文字形渲染。
@@ -16,7 +17,8 @@ const Locale appLocale = Locale.fromSubtags(
 /// 声明支持的语言（与 iOS Info.plist 的 CFBundleLocalizations 对应）。
 const List<Locale> supportedAppLocales = <Locale>[appLocale, Locale('en')];
 
-/// 卡序 App 根组件：浅色/深色主题跟随系统，文字大小跟随系统缩放。
+/// 卡序 App 根组件：浅色/深色主题跟随系统，文字大小跟随系统缩放；演示空间时每一页顶部
+/// 常驻演示横幅（[DemoBannerFrame]）。
 class CardFlowApp extends ConsumerWidget {
   const CardFlowApp({super.key});
 
@@ -33,6 +35,10 @@ class CardFlowApp extends ConsumerWidget {
       supportedLocales: supportedAppLocales,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       routerConfig: router,
+      builder: (context, child) => DemoBannerFrame(
+        navigatorKey: rootNavigatorKey,
+        child: child ?? const SizedBox.shrink(),
+      ),
     );
   }
 }

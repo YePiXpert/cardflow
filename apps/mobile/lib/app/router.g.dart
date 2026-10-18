@@ -8,20 +8,20 @@ part of 'router.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// 全局路由。每次位置变化记一条诊断日志（只记路由模板，如 `/settings/diagnostics`，
-/// 不记参数）。
+/// 全局路由。每次位置变化记一条诊断日志（只记路由模板，如 `/cards/accounts/:accountId`，
+/// 不记参数）。启动分流跟随 [appGateProvider]。
 
 @ProviderFor(appRouter)
 final appRouterProvider = AppRouterProvider._();
 
-/// 全局路由。每次位置变化记一条诊断日志（只记路由模板，如 `/settings/diagnostics`，
-/// 不记参数）。
+/// 全局路由。每次位置变化记一条诊断日志（只记路由模板，如 `/cards/accounts/:accountId`，
+/// 不记参数）。启动分流跟随 [appGateProvider]。
 
 final class AppRouterProvider
     extends $FunctionalProvider<GoRouter, GoRouter, GoRouter>
     with $Provider<GoRouter> {
-  /// 全局路由。每次位置变化记一条诊断日志（只记路由模板，如 `/settings/diagnostics`，
-  /// 不记参数）。
+  /// 全局路由。每次位置变化记一条诊断日志（只记路由模板，如 `/cards/accounts/:accountId`，
+  /// 不记参数）。启动分流跟随 [appGateProvider]。
   AppRouterProvider._()
     : super(
         from: null,
@@ -55,4 +55,4 @@ final class AppRouterProvider
   }
 }
 
-String _$appRouterHash() => r'b013e814ce6e17386866a5f69bf899901df6b8e9';
+String _$appRouterHash() => r'c150b2e3b8fdbaf9d0c438d7e8300e41a5211363';

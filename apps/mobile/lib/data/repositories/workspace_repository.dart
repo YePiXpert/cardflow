@@ -76,6 +76,25 @@ final class WorkspaceRepository {
         );
   }
 
+  /// 工作空间 [workspaceId] 每张业务表的行数（"清除演示数据"确认框写明影响数量，ui-spec §4.5）。
+  Future<Map<String, int>> countRows(String workspaceId) async => <String, int>{
+    for (final table in workspaceDataTables)
+      table:
+          (await _db
+                  .customSelect(
+                    'SELECT COUNT(*) AS n FROM $table WHERE workspace_id = ?',
+                    variables: <Variable<Object>>[
+                      Variable<String>(workspaceId),
+                    ],
+                    readsFrom: <TableInfo<Table, Object?>>{
+                      for (final t in _db.allTables)
+                        if (t.actualTableName == table) t,
+                    },
+                  )
+                  .getSingle())
+              .read<int>('n'),
+  };
+
   /// 删除工作空间 [workspaceId] 的全部业务行与工作空间本身（"清除演示数据"）；若它是当前工作
   /// 空间，当前指针一并清除。一个事务内完成。
   Future<void> deleteWorkspace(String workspaceId) => _db.transaction(() async {
