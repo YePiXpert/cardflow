@@ -117,6 +117,25 @@ void main() {
       expect(entry.toReportText(), isNot(contains('张三')));
     });
 
+    test('frames 只接受代码位置，其他文字被丢弃', () {
+      final log = DiagnosticLog();
+      addTearDown(log.dispose);
+      log.record(
+        LogLevel.error,
+        'test',
+        'frames',
+        frames: <String>[
+          'package:cardflow/a.dart:12:3',
+          '卡号 6222020200112233445',
+          'dart:async/zone.dart:1525',
+        ],
+      );
+      expect(log.entries.single.frames, <String>[
+        'package:cardflow/a.dart:12:3',
+        'dart:async/zone.dart:1525',
+      ]);
+    });
+
     test('codeLocations 只提取 package:/dart: 位置，最多 6 个', () {
       final stack = StackTrace.fromString(
         List<String>.generate(

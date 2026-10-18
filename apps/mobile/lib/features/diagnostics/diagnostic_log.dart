@@ -124,7 +124,7 @@ class DiagnosticLog extends ChangeNotifier {
   void error(String category, String event, {String? detail}) =>
       record(LogLevel.error, category, event, detail: detail);
 
-  /// 记录一条日志。`frames` 必须是 [codeLocations] 的结果。
+  /// 记录一条日志。`frames` 应是 [codeLocations] 的结果；不像代码位置的条目会被丢弃。
   void record(
     LogLevel level,
     String category,
@@ -143,7 +143,9 @@ class DiagnosticLog extends ChangeNotifier {
       category: sanitizeIdentifier(category),
       event: sanitizeIdentifier(event),
       detail: detail == null ? null : sanitizeDetail(detail),
-      frames: List<String>.unmodifiable(frames.take(maxFrames)),
+      frames: List<String>.unmodifiable(
+        frames.where(_codeLocation.hasMatch).take(maxFrames),
+      ),
     );
     if (_entries.length >= capacity) {
       _entries.removeFirst();
@@ -218,6 +220,9 @@ String sanitizeDetail(String raw) {
 
 final RegExp _vmFrameLocation = RegExp(
   r'\(((?:package|dart):[^\s()]+:\d+(?::\d+)?)\)',
+);
+final RegExp _codeLocation = RegExp(
+  r'^(?:package|dart):[^\s()]+:\d+(?::\d+)?$',
 );
 
 /// 从调用栈中只提取代码位置（`package:`/`dart:` URI 与行列号），丢弃其余文字。
