@@ -154,6 +154,7 @@ jobs:
           unzip -l "$name" | tail -n 1
           size="$(stat -f %z "$name")"
           sha256="$(shasum -a 256 "$name" | cut -d ' ' -f 1)"
+          echo "IPA $name size=$size sha256=$sha256"
           {
             echo "### Unsigned IPA"
             echo ""

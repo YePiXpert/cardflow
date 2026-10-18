@@ -63,7 +63,7 @@ gh run watch <run-id>
 
 ### 用自己的证书签名并安装（通用步骤）
 
-1. IPA 内部结构是 `Payload/Runner.app`。App 内嵌的 `Runner.app/Frameworks/` 里有 `Flutter.framework`、`App.framework` 等，签名时要连同这些嵌套的 framework 一起签，否则无法安装或启动。
+1. IPA 内部结构是 `Payload/Runner.app`。主程序 `Runner` 未签名；`Runner.app/Frameworks/` 里的 `Flutter.framework`、`App.framework` 等只带临时（ad-hoc）签名。签名时要连同这些嵌套的 framework 一起重签，否则无法安装或启动。
 2. Bundle ID 保持 `li.yep.cardflow`，签名身份（证书和团队）每次都用同一个。这样新版本才能覆盖安装，App 内的数据才能保留。换 Bundle ID 会装成另一个 App；换签名身份（团队）则无法覆盖安装，只能删掉旧 App 再装。两种情况下原来的数据都不会保留（ADR-015）。
 3. App 不需要任何 entitlement（没有推送、App Group、钥匙串共享），普通开发证书或个人证书就能签。
 4. 免费 Apple ID 的描述文件大约 7 天过期（ADR-015，待核验）。过期后 App 打不开，但数据还在。用同一个身份重新签名，再覆盖安装即可。
