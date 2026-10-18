@@ -14,11 +14,14 @@ import '../../data/repositories/card_wallet_reader.dart';
 import '../../data/repositories/providers.dart';
 import '../cards/card_formatting.dart';
 import '../onboarding/workspace_actions.dart';
+import 'cash_pressure_card.dart';
 
-/// P-01 总览（最小版，ui-spec P-01）：顶部空间标识（真实/演示）与"纯本地"；每个信用账户一行
-/// "预测账期（未出账）"与到期日；还没有现金账户 → "数据不全：还没有现金账户"（入口在 I-1b）。
+/// P-01 总览（最小版，ui-spec P-01）：顶部空间标识（真实/演示）与"纯本地"；"现金压力"卡（未来 30 天的
+/// 最低点、首个缺口日、口径切换；陈旧 → "假设分析"；缺快照 → "数据不全：{账户}缺快照，未计入"；
+/// 还没有现金账户 → "数据不全：还没有现金账户"「添加现金账户」）；每个信用账户一行"预测账期（未出账）"
+/// 与到期日。
 ///
-/// 四态：首次空白（还没有信用账户）、加载（骨架）、错误（「重试」）、成功。
+/// 四态：首次空白（还没有信用账户）、加载（骨架）、错误（「重试」；现金压力卡只在卡内报错）、成功。
 class OverviewPage extends ConsumerWidget {
   const OverviewPage({super.key});
 
@@ -28,8 +31,8 @@ class OverviewPage extends ConsumerWidget {
   /// ui-spec P-01 九态表"首次空白"。
   static const String firstRunMessage = '还没有信用账户';
 
-  /// 没有现金账户时的数据不全提示。
-  static const String noCashAccounts = '数据不全：还没有现金账户';
+  /// 没有现金账户时的数据不全提示（现金压力卡）。
+  static const String noCashAccounts = CashPressureCard.noCashAccounts;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -84,12 +87,7 @@ class _Overview extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: CfSpace.xl),
       children: <Widget>[
         const RootPageBadges(),
-        const NoticeCard(
-          icon: Icons.checklist,
-          text:
-              '${OverviewPage.noCashAccounts}。现金账户、余额与资金日历在 I-1b 提供，届时才能判断还款时现金够不够。',
-          action: OutlinedButton(onPressed: null, child: Text('添加现金账户')),
-        ),
+        const CashPressureCard(),
         const SectionTitle('预测账期（未出账）'),
         for (final account in accounts) _AccountCycleRow(account: account),
         if (accounts.isEmpty)

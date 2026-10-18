@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../data/repositories/cash_models.dart';
+import '../features/calendar/cash_calendar_page.dart';
 import '../features/cards/account_detail_page.dart';
 import '../features/cards/account_settings_page.dart';
 import '../features/cards/cards_page.dart';
@@ -16,6 +17,7 @@ import '../features/onboarding/welcome_page.dart';
 import '../features/overview/overview_page.dart';
 import '../features/planner/planner_page.dart';
 import '../features/promotions/promotions_page.dart';
+import '../features/scenarios/scenario_pages.dart';
 import '../features/settings/settings_page.dart';
 import 'diagnostics/diagnostic_log.dart';
 import 'routes.dart';
@@ -145,6 +147,58 @@ GoRouter createAppRouter({
                 path: AppRoutes.planner,
                 pageBuilder: (context, state) =>
                     _page(state, const PlannerPage()),
+              ),
+              GoRoute(
+                path: AppRoutes.cashCalendar,
+                pageBuilder: (context, state) => _page(
+                  state,
+                  CashCalendarPage(
+                    // 带不同的初始口径进入时重建页面状态。
+                    key: ValueKey<String>(state.uri.toString()),
+                    initialBasis: CashCalendarPage.parseBasis(
+                      state.uri.queryParameters['basis'],
+                    ),
+                    initialScenario: state.uri.queryParameters['scenario'],
+                  ),
+                ),
+              ),
+              GoRoute(
+                path: AppRoutes.scenarios,
+                pageBuilder: (context, state) =>
+                    _page(state, const ScenariosPage()),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'new',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      const ScenarioEditorPage(),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'compare',
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      ScenarioComparePage(
+                        key: ValueKey<String>(state.uri.toString()),
+                        a: state.uri.queryParameters['a'],
+                        b: state.uri.queryParameters['b'],
+                      ),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'edit/:scenarioId',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      ScenarioEditorPage(
+                        scenarioId: state.pathParameters['scenarioId'],
+                      ),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                ],
               ),
               GoRoute(
                 path: AppRoutes.cash,

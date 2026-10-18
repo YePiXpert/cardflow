@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_providers.dart';
+import 'package:cardflow/data/repositories/scenario_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -21,7 +22,20 @@ Future<List<String>> allPages(WidgetTester tester) async {
   final deposit = cash.accounts.firstWhere((x) => x.row.name == '定期存款').row.id;
   final event = cash.plan.firstWhere((e) => e.label == '工资').id;
   final rent = cash.recurring.single.row.id;
+  final stress = await withCurrentScope(
+    tester,
+    (scope) async => (await ScenarioRepository(
+      scope,
+    ).rows()).firstWhere((r) => r.kind == 'user_stress').id,
+  );
   return <String>[
+    AppRoutes.cashCalendar,
+    AppRoutes.cashCalendarWith(basis: 'confirmed'),
+    AppRoutes.cashCalendarWith(basis: 'stress', scenario: stress),
+    AppRoutes.scenarios,
+    AppRoutes.newScenario,
+    AppRoutes.editScenario(stress),
+    AppRoutes.scenarioCompare(),
     AppRoutes.cash,
     AppRoutes.cashAccount(salary),
     AppRoutes.cashAccount(deposit),
@@ -106,6 +120,8 @@ void main() {
         AppRoutes.overview,
         AppRoutes.cards,
         AppRoutes.cash,
+        AppRoutes.cashCalendar,
+        AppRoutes.scenarios,
       ]) {
         await goTo(tester, page);
         await _checkGuidelines(tester, page);
@@ -158,6 +174,8 @@ void main() {
         AppRoutes.overview,
         AppRoutes.cards,
         AppRoutes.cash,
+        AppRoutes.cashCalendar,
+        AppRoutes.scenarios,
       ]) {
         await goTo(tester, page);
         _expectUnclamped(tester, scale, page);
