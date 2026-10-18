@@ -210,3 +210,72 @@ uv run --project services/api ruff format --check packages/rules-protocol
 10. 验证前先做数据检查：缺快照、快照过期或晚于交易日、规则不可用（含需要日历）、池无条目 → 返回 `data_issues`，不验证、不抛异常。
 11. 结果文档：非可执行状态的 `allocation` 为空、`verification` 为 null，`diagnostics` 中的被拒分配不得展示或采纳；按新的 `Rejection.reason`、`SensitivityStatus`、`FirstFeasibleDateShift` 两种形态解析。
 12. 文本长度按码点（`runes.length`）；整值浮点（`1000000.0`）不是整数。
+
+## Dart 端实现与 parity（I-0c，2026-10-18）
+
+本节补充上文"Dart 端（T-022）如何复用"：Dart 端已实现，位于 `apps/mobile/packages/cardflow_domain`（纯 Dart 包，
+不依赖 Flutter、drift；App 以 path 依赖引入）。上文状态行里"Dart 运行器由 T-022 实现（待环境）"已由本节取代。
+
+**模块对应**（语义与引擎 1.1.0 一一对应，以 engine-spec §12/§12.1 为准）：
+
+| Python（`cardflow/planner/engine/`） | Dart（`lib/src/`） |
+|---|---|
+| `money.py`（`MINOR_DIGITS`、`to_minor`/`from_minor`、`apply_rate`、`decimal_text`） | `money.dart`、`rational.dart`（BigInt 分数与四种取整；`UP` 与 money.py 一样是 `ROUND_CEILING`） |
+| `billing.py` | `billing.dart`（规则错误消息与 `str(e)` 逐字相同） |
+| `cash.py` | `cash.dart`（假设说明与 cash.py 的 f-string 逐字相同，测试读取 Python 源码比对） |
+| `allocation.py` 中与验证相关的部分（`CardOption`、三层容量、`classify`、`_low_series`、目标层定义） | `allocation.dart` |
+| `verifier.py` | `verifier.dart`（加权缓冲按 `Decimal` 的写法，包括 `-0.0`） |
+| `plan.py` 的 `data_issues`、`baseline_check` | `checks.dart` |
+| `protocol.py`（严格 JSON、规范化 JSON、`protocol_input_hash`、`inputs_from_protocol`/`inputs_to_protocol`、`verify_from_protocol`、`card_cycles_to_protocol`） | `protocol/*.dart` |
+| `runner_py/run_fixtures.py` | `fixtures/*.dart`、`bin/run_fixtures.dart` |
+| —（服务端用 CP-SAT） | `search.dart`：本地有限搜索（K ≤ 3，验证器为可行性预言机，`proven: false`） |
+
+**运行器**（在 `apps/mobile/packages/cardflow_domain` 下）：
+
+```bash
+dart pub get --enforce-lockfile
+dart run cardflow_domain:run_fixtures                       # 默认：仓库 packages/rules-protocol/fixtures/*.v1.json
+dart run cardflow_domain:run_fixtures --dump DIR FIXTURE_OR_DIRECTORY ...
+```
+
+每个 fixture：严格 JSON（拒绝重复键、NaN、BOM、溢出的数字）→ 严格的 Fixture 外壳（封闭对象、必填成员、
+CaseName/JsonPointer/Where 的 pattern、equals 与 length 二选一）→ 除 `input.options.time_limit_s` 外不得有浮点数 →
+协议适配层（PlanInput 的全部规则，含"字段约定"中 JSON Schema 表达不了的交叉规则）→ cycles 与 verify case
+逐条断言（JSON Pointer、where/then、严格相等、length，与 Python 同语义）；plan case 输出
+`NOT RUN (needs CP-SAT; not counted as pass or fail)`。退出码与 Python 运行器相同：0 全部一致，1 有断言不成立，
+2 输入非法（2 优先）。Dart 端不带通用 JSON Schema 校验库（不在 architecture §11 版本表内），schema 层的校验由
+下述 parity job 用 Python 完成。
+
+**`--dump DIR`（两端相同）**：每个 cycles/verify case 的输出写成规范化 JSON 加一个换行，路径
+`DIR/<fixture 文件名去掉 .v1.json>/<两位序号>-<case 名>.<kind>.json`（序号 = case 在 `expected` 中的位置）。
+Python：`uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py --dump DIR`
+（只是加了这个选项，原有行为与测试不变）。plan case 不导出：它的输出含 run_id、created_at 与求解耗时，
+Dart 端也没有求解器。
+
+**parity job**（`.github/workflows/mobile.yml` 的 `protocol-parity`）：`uv sync --locked`（services/api）→
+Python 与 Dart 运行器分别 `--dump` 全部 golden fixture → `diff -r` 必须为空 → 用
+`tool/gen_parity_fixtures.dart` 生成 300 份带固定种子的随机 fixture（移植自 `tests/engine/diff_reference.py` 的
+`gen_doc`：共享信用账户、池内预授权与预留、快照包含关系、带偏移的时间戳与改期、晚于 horizon 的还款、
+近乎相同的卡；每份 1 个 cycles + 3 个随机分配的 verify，断言只检查输出形状）→ 两端 `--dump` → `diff -r` 必须为空
+→ Python jsonschema（运行器的 `StrictValidator` 与 `FORMAT_CHECKER`）校验每个 Dart 输出符合
+`PlanOutcome.schema.json#/$defs/CardCycles` 或 `#/$defs/VerificationResult`。任一步失败即红。
+本机另以 6 个种子 × 1000 份随机文档（24,000 个输出）核对，逐字节一致。
+
+**哈希**：Dart 端按上文规则实现规范化 JSON；整数（含超出 64 位的整数记号，读成 `BigInt`）写成精确十进制；
+非整数记号读成 binary64 的精确整数表示（就近舍入、恰在一半取偶，与 Python `float()` 相同）并按 ECMAScript
+`Number::toString` 写出（最短往返，位数最少者中取最接近、再取偶），全程不用 `double`。F-18 的
+`protocol_input_hash` 为 `ea990327…1ee8`；README 的测试向量与 Python 引擎生成的 161 个浮点向量全部一致
+（`test/canonical_json_test.dart`）。
+
+**未覆盖项**（Dart 端有意不做或留给后续任务）：
+
+- plan case 与 `plan()` 的其余部分：CP-SAT 分层求解、敏感性、`DOMINATED`/`NOT_COMPARED` 等需要求解器的拒绝原因、
+  运行记录、`outcome_to_protocol`。本地的替代是有限搜索（`boundedSearch`），它不声称最优，找不到时只说
+  "本地未找到（非证明无解）"。
+- money.py 中与本任务无关的分期与 IRR 函数（`split_installments`、`installment_cash_flows`、`irr_monthly`、
+  `annualize`）：随分期功能（I-1 起）再移植。
+- 通用 JSON Schema 校验：Dart 端只有适配层与 Fixture 外壳的严格检查，schema 层由 parity job 的 Python 完成。
+- Python 运行器用 jsonschema 的 `pattern`（`re.search`，`$` 也匹配末尾换行之前）检查 Fixture 外壳中的
+  CaseName、JsonPointer 等；Dart 的外壳读取器按整串匹配。只在名称以换行结尾这种不现实的输入上两端结论不同
+  （Dart 判非法），不影响任何引擎输出。
+
