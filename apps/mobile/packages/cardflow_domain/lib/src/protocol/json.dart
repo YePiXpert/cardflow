@@ -65,7 +65,7 @@ Object? parseJson(List<int> bytes) {
 /// 严格读取已解码的 JSON 文本（规则同 [parseJson]）。
 Object? parseJsonText(String text) {
   final parser = _Parser(text);
-  if (text.startsWith('﻿')) {
+  if (text.startsWith('\uFEFF')) {
     throw parser._error('Unexpected UTF-8 BOM (decode using utf-8-sig)', 0);
   }
   parser._skipWhitespace();
