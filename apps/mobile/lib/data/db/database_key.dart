@@ -70,6 +70,9 @@ abstract interface class DatabaseKeyStore {
 
   /// 是否已保存密钥（不读出内容）。
   Future<bool> exists();
+
+  /// 删除已保存的密钥（"重置本地数据"）；本来就没有时什么也不做。
+  Future<void> delete();
 }
 
 /// 钥匙串实现（flutter_secure_storage）。
@@ -102,11 +105,16 @@ final class SecureStorageDatabaseKeyStore implements DatabaseKeyStore {
 
   @override
   Future<bool> exists() => _storage.containsKey(key: entryName);
+
+  @override
+  Future<void> delete() => _storage.delete(key: entryName);
 }
 
 /// 取得设备数据库密钥：已有则读出；没有且数据库文件也不存在（首次启动）则生成一次并保存。
 ///
-/// 同一个实例上的并发调用共用一次读取/生成，不会生成两把密钥。
+/// 同一个实例上的并发调用共用一次读取/生成，不会生成两把密钥。取到的密钥在进程内缓存；
+/// "重置本地数据"必须用 [deleteKey]（删除钥匙串条目并忘掉缓存），否则重新建库时会沿用缓存里的
+/// 旧密钥，而钥匙串里已经没有它，下次启动就成了 `key_missing`（审查 R-15）。
 final class DatabaseKeyManager {
   DatabaseKeyManager(this._store, {this._random});
 
@@ -161,6 +169,16 @@ final class DatabaseKeyManager {
 
   /// 钥匙串是否已有密钥（诊断页只显示"已生成/未生成"）。
   Future<bool> hasKey() => _guardStore(_store.exists);
+
+  /// 忘掉已取到（或正在取）的密钥：下一次 [obtain] 重新读钥匙串，必要时重新生成。
+  void forget() => _pending = null;
+
+  /// "重置本地数据"：先忘掉缓存，再删除钥匙串里的密钥。钥匙串操作失败抛
+  /// [DatabaseErrorCode.keyStoreFailed]（缓存已忘掉，可以重试）。
+  Future<void> deleteKey() async {
+    forget();
+    await _guardStore(_store.delete);
+  }
 
   static Future<T> _guardStore<T>(Future<T> Function() action) async {
     try {

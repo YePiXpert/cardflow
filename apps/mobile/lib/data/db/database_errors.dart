@@ -32,6 +32,13 @@ enum DatabaseErrorCode {
   /// schema 迁移失败（缺少某一步，或迁移语句出错）；迁移在事务里，失败不会留下半截。
   migrationFailed('migration_failed'),
 
+  /// 打开后 `PRAGMA foreign_keys` 读回不是 1：外键检查没有生效。业务表的工作空间隔离与
+  /// 关联一致性依赖外键，因此拒绝使用（审查 §4 第 6 条）。
+  foreignKeysUnavailable('foreign_keys_unavailable'),
+
+  /// "重置本地数据"时删不掉数据库文件（钥匙串条目删不掉报 `key_store_failed`）。
+  resetFailed('reset_failed'),
+
   /// 取不到数据库目录（path_provider 失败）。
   locationUnavailable('location_unavailable'),
 

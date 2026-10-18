@@ -301,3 +301,69 @@ final class DatabaseKeyExistsProvider
 }
 
 String _$databaseKeyExistsHash() => r'a256bc8b0a6f5fdb8340d1df46d505a0d45b538d';
+
+/// 打开本机数据库失败后的恢复操作：「重试」与「重置本地数据」。
+///
+/// 诊断日志只记事件（`db/retry`、`db/reset`、`db/reset_failed` + 错误码），没有任何内容。
+
+@ProviderFor(DatabaseRecovery)
+final databaseRecoveryProvider = DatabaseRecoveryProvider._();
+
+/// 打开本机数据库失败后的恢复操作：「重试」与「重置本地数据」。
+///
+/// 诊断日志只记事件（`db/retry`、`db/reset`、`db/reset_failed` + 错误码），没有任何内容。
+final class DatabaseRecoveryProvider
+    extends $NotifierProvider<DatabaseRecovery, DatabaseRecoveryState> {
+  /// 打开本机数据库失败后的恢复操作：「重试」与「重置本地数据」。
+  ///
+  /// 诊断日志只记事件（`db/retry`、`db/reset`、`db/reset_failed` + 错误码），没有任何内容。
+  DatabaseRecoveryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'databaseRecoveryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$databaseRecoveryHash();
+
+  @$internal
+  @override
+  DatabaseRecovery create() => DatabaseRecovery();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DatabaseRecoveryState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DatabaseRecoveryState>(value),
+    );
+  }
+}
+
+String _$databaseRecoveryHash() => r'7170e3aa230b68af3a0581c2e6b5d2b4bfab5bec';
+
+/// 打开本机数据库失败后的恢复操作：「重试」与「重置本地数据」。
+///
+/// 诊断日志只记事件（`db/retry`、`db/reset`、`db/reset_failed` + 错误码），没有任何内容。
+
+abstract class _$DatabaseRecovery extends $Notifier<DatabaseRecoveryState> {
+  DatabaseRecoveryState build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<DatabaseRecoveryState, DatabaseRecoveryState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<DatabaseRecoveryState, DatabaseRecoveryState>,
+              DatabaseRecoveryState,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}

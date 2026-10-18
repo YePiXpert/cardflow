@@ -5,9 +5,9 @@ import 'package:flutter/foundation.dart';
 
 import 'app_database.dart' show readCipherInfoOf;
 import 'database_errors.dart';
+import 'database_failures.dart' show closeQuietly, databaseOpenExceptionFrom;
 import 'database_key.dart';
 import 'database_location.dart';
-import 'database_opener.dart' show closeQuietly, databaseOpenExceptionFrom;
 import 'database_platform.dart';
 import 'encryption.dart';
 

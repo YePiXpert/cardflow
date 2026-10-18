@@ -57,6 +57,15 @@ class InMemoryDatabaseKeyStore implements DatabaseKeyStore {
     return value != null;
   }
 
+  int deletes = 0;
+
+  @override
+  Future<void> delete() async {
+    deletes++;
+    _maybeFail();
+    value = null;
+  }
+
   void _maybeFail() {
     if (failAll) {
       throw StateError('keychain unavailable: secret detail');

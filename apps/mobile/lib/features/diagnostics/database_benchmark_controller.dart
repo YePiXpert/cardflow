@@ -2,7 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../app/diagnostics/diagnostic_log.dart';
 import '../../data/db/database_benchmark.dart';
-import '../../data/db/database_opener.dart' show databaseOpenExceptionFrom;
+import '../../data/db/database_failures.dart' show databaseOpenExceptionFrom;
 import '../../data/db/database_providers.dart';
 
 part 'database_benchmark_controller.g.dart';

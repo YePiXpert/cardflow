@@ -115,6 +115,56 @@ void main() {
       expect(a.value, b.value);
     });
 
+    test('缓存：取到的密钥在进程内沿用，钥匙串被清空也不变；forget 后重新读钥匙串（R-15）', () async {
+      final store = InMemoryDatabaseKeyStore(value: testKeyHex);
+      final manager = DatabaseKeyManager(store);
+      expect(
+        (await manager.obtain(databaseHasData: true)).encode(),
+        testKeyHex,
+      );
+
+      store.value = null;
+      expect(
+        (await manager.obtain(databaseHasData: false)).encode(),
+        testKeyHex,
+        reason: '这就是 R-15 的陷阱：不忘掉缓存就会用旧密钥建新库',
+      );
+
+      manager.forget();
+      final fresh = await manager.obtain(databaseHasData: false);
+      expect(fresh.encode(), isNot(testKeyHex));
+      expect(store.value, fresh.encode());
+    });
+
+    test('deleteKey：删除钥匙串条目并忘掉缓存；之后首次启动重新生成', () async {
+      final store = InMemoryDatabaseKeyStore(value: testKeyHex);
+      final manager = DatabaseKeyManager(store);
+      await manager.obtain(databaseHasData: true);
+
+      await manager.deleteKey();
+      expect(store.value, isNull);
+      expect(store.deletes, 1);
+      expect(await manager.hasKey(), isFalse);
+
+      final regenerated = await manager.obtain(databaseHasData: false);
+      expect(regenerated.encode(), isNot(testKeyHex));
+      expect(store.value, regenerated.encode());
+    });
+
+    test('deleteKey 时钥匙串不可用 → key_store_failed，缓存已忘掉，可重试', () async {
+      final store = InMemoryDatabaseKeyStore(value: testKeyHex);
+      final manager = DatabaseKeyManager(store);
+      await manager.obtain(databaseHasData: true);
+      store.failAll = true;
+      await expectOpenError(
+        manager.deleteKey,
+        DatabaseErrorCode.keyStoreFailed,
+      );
+      store.failAll = false;
+      await manager.deleteKey();
+      expect(store.value, isNull);
+    });
+
     test('hasKey 只看是否存在', () async {
       expect(
         await DatabaseKeyManager(InMemoryDatabaseKeyStore()).hasKey(),
@@ -145,6 +195,7 @@ void main() {
               'write' => data[key!] = arguments['value']! as String,
               'read' => data[key!],
               'containsKey' => data.containsKey(key),
+              'delete' => data.remove(key),
               _ => null,
             };
           });
@@ -162,11 +213,15 @@ void main() {
       await store.write(testKeyHex);
       expect(await store.read(), testKeyHex);
       expect(await store.exists(), isTrue);
+      await store.delete();
+      expect(await store.exists(), isFalse);
 
       expect(calls.map((c) => c.method), <String>[
         'containsKey',
         'write',
         'read',
+        'containsKey',
+        'delete',
         'containsKey',
       ]);
       for (final call in calls) {

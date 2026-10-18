@@ -5,7 +5,6 @@ import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_errors.dart';
 import 'package:cardflow/data/db/database_key.dart';
 import 'package:cardflow/data/db/database_location.dart';
-import 'package:cardflow/data/db/database_opener.dart';
 import 'package:cardflow/data/db/database_platform.dart';
 import 'package:cardflow/data/db/encryption.dart';
 import 'package:cardflow/data/db/schema.dart';
@@ -30,7 +29,7 @@ Future<OpenedAppDatabase> _open(
 
 /// 以 v2 schema 打开（多一张表）的数据库，用来走一遍 drift 的升级路径。
 class _AppDatabaseV2 extends AppDatabase {
-  _AppDatabaseV2(super.executor);
+  _AppDatabaseV2(super.executor) : super.forTesting();
 
   static final Map<int, SchemaMigrationStep> steps = <int, SchemaMigrationStep>{
     1: (db) => db.customStatement('CREATE TABLE extra (x INTEGER) STRICT'),
@@ -64,6 +63,11 @@ Future<bool> _tableExists(GeneratedDatabase db, String name) async {
       .get();
   return rows.isNotEmpty;
 }
+
+Future<int> _userVersion(GeneratedDatabase db) async =>
+    (await db.customSelect('PRAGMA user_version').getSingle()).read<int>(
+      'user_version',
+    );
 
 void main() {
   late DatabaseLocation location;
@@ -177,6 +181,32 @@ void main() {
     expect(File(path).existsSync(), isFalse);
   });
 
+  group('外键检查（审查 §4 第 6 条）', () {
+    test('打开后 PRAGMA foreign_keys 为 1', () async {
+      final opened = await _open(location, InMemoryDatabaseKeyStore());
+      addTearDown(opened.database.close);
+      final row = await opened.database
+          .customSelect('PRAGMA foreign_keys')
+          .getSingle();
+      expect(row.data.values.single, 1);
+    });
+
+    test(
+      '读回不是 1 → foreign_keys_unavailable（事务里设置 foreign_keys 不生效，正好用来制造）',
+      () async {
+        final opened = await _open(location, InMemoryDatabaseKeyStore());
+        addTearDown(opened.database.close);
+        final db = opened.database;
+        await db.customStatement('PRAGMA foreign_keys = OFF');
+        await expectOpenError(
+          () => db.transaction(() => ensureForeignKeys(db)),
+          DatabaseErrorCode.foreignKeysUnavailable,
+        );
+        await ensureForeignKeys(db);
+      },
+    );
+  });
+
   group('迁移骨架', () {
     test('drift 升级路径：v1 库用 v2 打开时按步骤升级，meta 记录新版本', () async {
       final store = InMemoryDatabaseKeyStore();
@@ -236,6 +266,32 @@ void main() {
         () => migrateSchema(opened.database, from: 2, to: 1),
         DatabaseErrorCode.schemaTooNew,
       );
+    });
+
+    test('迁移与 user_version 在同一事务提交；某一步失败时 user_version 不变', () async {
+      final opened = await _open(location, InMemoryDatabaseKeyStore());
+      addTearDown(opened.database.close);
+      final db = opened.database;
+      expect(await _userVersion(db), 1, reason: '新建库时 createSchema 已在事务里写入');
+
+      await expectOpenError(
+        () => migrateSchema(
+          db,
+          from: 1,
+          to: 2,
+          steps: <int, SchemaMigrationStep>{
+            1: (db) => db.customStatement('THIS IS NOT SQL'),
+          },
+        ),
+        DatabaseErrorCode.migrationFailed,
+      );
+      expect(await _userVersion(db), 1);
+
+      // 直接调用迁移（绕过 drift 自己写 user_version 的那一步）：提交后 user_version 已是新版本，
+      // 即使 App 在 drift 写 user_version 之前退出，下次也不会重跑这一步。
+      await migrateSchema(db, from: 1, to: 2, steps: _AppDatabaseV2.steps);
+      expect(await _userVersion(db), 2);
+      expect((await db.readMeta()).schemaVersion, 2);
     });
 
     test('v1 没有登记任何迁移步骤；当前版本为 1', () {

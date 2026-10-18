@@ -177,6 +177,109 @@ void main() {
     expect(emptyStore.writes, 0);
   });
 
+  group('恢复：重置本地数据与重试', () {
+    test(
+      'R-15：wrong_key → 重置 → 写入 → 模拟重启（新容器、同一钥匙串与目录）→ 能读回，钥匙串里是新密钥',
+      () async {
+        final store = InMemoryDatabaseKeyStore();
+        final first = _launch(store, location);
+        await first.read(databaseProvider.future);
+        await _quit(first);
+        final originalKey = store.value;
+
+        // 钥匙串里换成另一把密钥：密钥管理器取到并缓存了它，打开却是 wrong_key。
+        store.value = otherKeyHex;
+        final container = _launch(store, location);
+        await expectOpenError(
+          () => container.read(databaseProvider.future),
+          DatabaseErrorCode.wrongKey,
+        );
+
+        await container.read(databaseRecoveryProvider.notifier).reset();
+        expect(
+          container.read(databaseRecoveryProvider),
+          isA<DatabaseRecoveryIdle>(),
+        );
+        final db = await container.read(databaseProvider.future);
+        final newKey = store.value;
+        expect(newKey, isNotNull, reason: '重置后建库必须把新密钥写进钥匙串');
+        expect(newKey, isNot(otherKeyHex));
+        expect(newKey, isNot(originalKey));
+        await db.customStatement('CREATE TABLE probe (x TEXT NOT NULL) STRICT');
+        await db.customStatement(
+          "INSERT INTO probe (x) VALUES ('after reset')",
+        );
+        final events = container
+            .read(diagnosticLogProvider)
+            .entries
+            .where((e) => e.category == 'db')
+            .map((e) => e.toReportText().split(' ').skip(2).join(' '))
+            .toList();
+        expect(events, <String>[
+          'db/open_failed wrong_key',
+          'db/reset',
+          'db/opened created',
+        ]);
+        await _quit(container);
+
+        final restarted = _launch(store, location);
+        final again = await restarted.read(databaseProvider.future);
+        final rows = await again.customSelect('SELECT x FROM probe').get();
+        expect(rows.map((r) => r.read<String>('x')), <String>['after reset']);
+        expect(store.value, newKey);
+        await _quit(restarted);
+      },
+    );
+
+    test('key_store_failed：原页面「重试」即可打开，不需要重启（审查 §4 第 7 条）', () async {
+      final store = InMemoryDatabaseKeyStore()..failAll = true;
+      final container = _launch(store, location);
+      await expectOpenError(
+        () => container.read(databaseProvider.future),
+        DatabaseErrorCode.keyStoreFailed,
+      );
+
+      store.failAll = false;
+      container.read(databaseRecoveryProvider.notifier).retry();
+      final db = await container.read(databaseProvider.future);
+      expect((await db.readMeta()).schemaVersion, isPositive);
+      expect(
+        container
+            .read(diagnosticLogProvider)
+            .entries
+            .where((e) => e.category == 'db')
+            .map((e) => e.event),
+        <String>['open_failed', 'retry', 'opened'],
+      );
+      await _quit(container);
+    });
+
+    test('重置时钥匙串不可用 → 状态 reset 失败（key_store_failed），日志只有错误码', () async {
+      final store = InMemoryDatabaseKeyStore();
+      final first = _launch(store, location);
+      await first.read(databaseProvider.future);
+      await _quit(first);
+
+      store.value = otherKeyHex;
+      final container = _launch(store, location);
+      await expectOpenError(
+        () => container.read(databaseProvider.future),
+        DatabaseErrorCode.wrongKey,
+      );
+      store.failAll = true;
+      await container.read(databaseRecoveryProvider.notifier).reset();
+      final state = container.read(databaseRecoveryProvider);
+      expect(state, isA<DatabaseRecoveryFailed>());
+      expect(
+        (state as DatabaseRecoveryFailed).code,
+        DatabaseErrorCode.keyStoreFailed,
+      );
+      final failed = container.read(diagnosticLogProvider).entries.last;
+      expect(failed.event, 'reset_failed');
+      expect(failed.detail, 'key_store_failed');
+    });
+  });
+
   test('取不到目录（path_provider 失败）→ location_unavailable', () async {
     final container = ProviderContainer.test(
       overrides: [

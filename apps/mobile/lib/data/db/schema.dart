@@ -13,6 +13,11 @@ import 'database_errors.dart';
 ///
 /// 迁移在一个事务里执行，任何一步失败都整体回滚，并以
 /// [DatabaseErrorCode.migrationFailed] 拒绝打开。
+///
+/// 幂等（审查 §4 第 5 条）：drift 在迁移回调返回**之后**才写 `PRAGMA user_version`，若 App 恰好
+/// 在两者之间退出，下次启动会重跑同一步。因此 [createSchema] 与 [migrateSchema] 在自己的事务里
+/// 同时写 `user_version`（与结构变更一起提交或一起回滚），各迁移步骤里的建表、建索引、建触发器
+/// 也一律写 `IF NOT EXISTS`，重跑不报错。
 abstract final class LocalSchema {
   /// 当前 schema 版本（drift 的 `PRAGMA user_version` 与 meta 表同时记录）。
   static const int currentSchemaVersion = 1;
@@ -33,20 +38,29 @@ typedef SchemaMigrationStep = Future<void> Function(GeneratedDatabase db);
 const Map<int, SchemaMigrationStep> schemaMigrations =
     <int, SchemaMigrationStep>{};
 
-/// 新库：建出最新版本的完整结构并写入 meta。
+/// 新库：在一个事务里建出最新版本的完整结构、写入 meta，并写 `PRAGMA user_version`。
 Future<void> createSchema(
   GeneratedDatabase db, {
   required DateTime createdAt,
   int version = LocalSchema.currentSchemaVersion,
-}) async {
-  await db.customStatement(LocalSchema.createMetaTable);
-  await db.customStatement(
-    'INSERT INTO meta (id, schema_version, created_at) VALUES (1, ?, ?)',
-    <Object>[version, createdAt.toUtc().toIso8601String()],
-  );
+}) {
+  return db.transaction(() async {
+    await db.customStatement(LocalSchema.createMetaTable);
+    await db.customStatement(
+      'INSERT INTO meta (id, schema_version, created_at) VALUES (1, ?, ?)',
+      <Object>[version, createdAt.toUtc().toIso8601String()],
+    );
+    await writeUserVersion(db, version);
+  });
 }
 
-/// 旧库：按 [steps] 从 [from] 逐步升到 [to]，并更新 meta 中的版本。
+/// 写 `PRAGMA user_version`（drift 用它判断库的版本）。在事务里执行时随事务提交或回滚。
+Future<void> writeUserVersion(GeneratedDatabase db, int version) {
+  // PRAGMA 不能绑定参数；version 是 int，直接拼接没有注入问题。
+  return db.customStatement('PRAGMA user_version = $version');
+}
+
+/// 旧库：按 [steps] 从 [from] 逐步升到 [to]，并在同一事务里更新 meta 与 `user_version`。
 ///
 /// [from] 大于 [to]（库由更新版本的 App 创建）时抛 [DatabaseErrorCode.schemaTooNew]，
 /// 不做任何改动；缺少某一步或某一步出错时抛 [DatabaseErrorCode.migrationFailed]。
@@ -73,6 +87,7 @@ Future<void> migrateSchema(
         'UPDATE meta SET schema_version = ? WHERE id = 1',
         <Object>[to],
       );
+      await writeUserVersion(db, to);
     });
   } on DatabaseOpenException {
     rethrow;
