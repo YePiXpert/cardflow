@@ -1,0 +1,517 @@
+# schema-diff.txt：新建的 v2 与从 v1 升级上来的 v2，sqlite_master（表、列、索引、触发器）对比
+# 生成时间：2026-10-18T15:32:45Z；源码提交：4d0a89f；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
+# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 方法：test/data/db/schema_test.dart 的第一个测试在真实 sqlite3mc 上分别新建 v2 库（drift 按 tables.dart 建表）
+# 与建 v1 库再经 openAppDatabase 升级（执行冻结的 SchemaV2.migration），用 schemaDump() 导出两边的结构
+# （user_version、sqlite_master 每行的 type/name/tbl_name/sql、每张表的 table_xinfo、foreign_key_list、
+# index_list + index_xinfo），设 CARDFLOW_SCHEMA_DUMP_DIR 时写成文件；随后用 diff 比较。
+$ CARDFLOW_SCHEMA_DUMP_DIR=<临时目录> flutter test test/data/db/schema_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/db/schema_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: 新建的 v2 与 v1 升级上来的 v2：sqlite_master（表、列、索引、触发器）完全一致
+00:00 +1: 迁移（1→2）在事务中：某一步失败时整体回滚，库仍是完整的 v1
+00:00 +2: 经 openAppDatabase 的迁移失败 → migration_failed，文件仍是 v1，可再次打开重试
+00:00 +3: 重跑 1→2 不报错：迁移已提交而 drift 还没写 user_version 时退出，下次启动结构与数据都不变
+00:00 +4: 旧版 App（schema v1）打开 v2 的库 → schema_too_new，库文件不被改动
+00:00 +5: 缺少某一步 → migration_failed；from > to → schema_too_new（不做任何改动）
+00:00 +6: 登记的迁移步骤：只有 1→2；冻结的语句全部带 IF NOT EXISTS
+00:00 +7: (tearDownAll)
+00:00 +7: All tests passed!
+[exit=0]
+
+$ wc -l fresh-v2.txt upgraded-from-v1.txt
+  475 fresh-v2.txt
+  475 upgraded-from-v1.txt
+  950 total
+[exit=0]
+$ sha256sum fresh-v2.txt upgraded-from-v1.txt
+fca087186ac340d0537b76fc2738cfb4317d71955bc862eb0e2cf5c184cb45a4  fresh-v2.txt
+fca087186ac340d0537b76fc2738cfb4317d71955bc862eb0e2cf5c184cb45a4  upgraded-from-v1.txt
+[exit=0]
+$ diff -u fresh-v2.txt upgraded-from-v1.txt && echo 'IDENTICAL: 两条路径的结构完全一致'
+IDENTICAL: 两条路径的结构完全一致
+[exit=0]
+$ grep -c '^-- table ' fresh-v2.txt; grep -c '^-- index ' fresh-v2.txt; grep -c '^-- trigger ' fresh-v2.txt
+10
+31
+10
+[exit=0]
+
+# 新建库的完整结构（fresh-v2.txt 原文）：
+$ cat fresh-v2.txt
+-- user_version: 2
+-- index cards_primary_card (table cards)
+CREATE INDEX cards_primary_card ON cards (workspace_id, credit_account_id, primary_card_id)
+-- index cards_replaced_by (table cards)
+CREATE INDEX cards_replaced_by ON cards (workspace_id, credit_account_id, replaced_by_card_id)
+-- index credit_accounts_bank (table credit_accounts)
+CREATE INDEX credit_accounts_bank ON credit_accounts (workspace_id, bank_id)
+-- index credit_accounts_pool (table credit_accounts)
+CREATE INDEX credit_accounts_pool ON credit_accounts (workspace_id, pool_id)
+-- index credit_pools_bank (table credit_pools)
+CREATE INDEX credit_pools_bank ON credit_pools (workspace_id, bank_id)
+-- index credit_pools_parent (table credit_pools)
+CREATE INDEX credit_pools_parent ON credit_pools (workspace_id, parent_pool_id)
+-- index currency_accounts_account (table currency_accounts)
+CREATE INDEX currency_accounts_account ON currency_accounts (workspace_id, credit_account_id)
+-- index currency_accounts_one_primary (table currency_accounts)
+CREATE UNIQUE INDEX currency_accounts_one_primary ON currency_accounts (credit_account_id) WHERE is_primary = 1
+-- index limit_snapshots_account (table limit_snapshots)
+CREATE INDEX limit_snapshots_account ON limit_snapshots (workspace_id, currency_account_id, balance_as_of DESC)
+-- index sqlite_autoindex_app_settings_1 (table app_settings)
+(no sql: internal)
+-- index sqlite_autoindex_banks_1 (table banks)
+(no sql: internal)
+-- index sqlite_autoindex_banks_2 (table banks)
+(no sql: internal)
+-- index sqlite_autoindex_banks_3 (table banks)
+(no sql: internal)
+-- index sqlite_autoindex_billing_rule_versions_1 (table billing_rule_versions)
+(no sql: internal)
+-- index sqlite_autoindex_billing_rule_versions_2 (table billing_rule_versions)
+(no sql: internal)
+-- index sqlite_autoindex_billing_rule_versions_3 (table billing_rule_versions)
+(no sql: internal)
+-- index sqlite_autoindex_cards_1 (table cards)
+(no sql: internal)
+-- index sqlite_autoindex_cards_2 (table cards)
+(no sql: internal)
+-- index sqlite_autoindex_cards_3 (table cards)
+(no sql: internal)
+-- index sqlite_autoindex_credit_accounts_1 (table credit_accounts)
+(no sql: internal)
+-- index sqlite_autoindex_credit_accounts_2 (table credit_accounts)
+(no sql: internal)
+-- index sqlite_autoindex_credit_pools_1 (table credit_pools)
+(no sql: internal)
+-- index sqlite_autoindex_credit_pools_2 (table credit_pools)
+(no sql: internal)
+-- index sqlite_autoindex_credit_pools_3 (table credit_pools)
+(no sql: internal)
+-- index sqlite_autoindex_currency_accounts_1 (table currency_accounts)
+(no sql: internal)
+-- index sqlite_autoindex_currency_accounts_2 (table currency_accounts)
+(no sql: internal)
+-- index sqlite_autoindex_currency_accounts_3 (table currency_accounts)
+(no sql: internal)
+-- index sqlite_autoindex_limit_snapshots_1 (table limit_snapshots)
+(no sql: internal)
+-- index sqlite_autoindex_limit_snapshots_2 (table limit_snapshots)
+(no sql: internal)
+-- index sqlite_autoindex_workspaces_1 (table workspaces)
+(no sql: internal)
+-- index workspaces_one_live_per_kind (table workspaces)
+CREATE UNIQUE INDEX workspaces_one_live_per_kind ON workspaces (kind) WHERE deleted_at IS NULL
+-- table app_settings (table app_settings)
+CREATE TABLE "app_settings" ("key" TEXT NOT NULL, "value" TEXT NOT NULL, PRIMARY KEY ("key"), CHECK (length("key") BETWEEN 1 AND 64)) STRICT
+-- table banks (table banks)
+CREATE TABLE "banks" ("id" TEXT NOT NULL, "workspace_id" TEXT NOT NULL, "name" TEXT NOT NULL, "country" TEXT NOT NULL DEFAULT 'CN', "business_tz_default" TEXT NOT NULL DEFAULT 'Asia/Shanghai', "is_builtin" INTEGER NOT NULL DEFAULT 0 CHECK ("is_builtin" IN (0, 1)), "created_at" TEXT NOT NULL, PRIMARY KEY ("id"), UNIQUE ("workspace_id", "id"), UNIQUE ("workspace_id", "name"), FOREIGN KEY (workspace_id) REFERENCES workspaces (id), CHECK (length(name) BETWEEN 1 AND 20), CHECK (name NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*'), CHECK (length(country) = 2 AND country GLOB '[A-Z][A-Z]')) STRICT
+-- table billing_rule_versions (table billing_rule_versions)
+CREATE TABLE "billing_rule_versions" ("id" TEXT NOT NULL, "workspace_id" TEXT NOT NULL, "subject_kind" TEXT NOT NULL, "subject_id" TEXT NOT NULL, "statement_day" INTEGER NOT NULL, "statement_day_inclusive" INTEGER NOT NULL DEFAULT 1 CHECK ("statement_day_inclusive" IN (0, 1)), "due_kind" TEXT NOT NULL, "due_day" INTEGER NULL, "due_month_offset" INTEGER NOT NULL DEFAULT 0, "due_days" INTEGER NULL, "due_day_kind" TEXT NOT NULL DEFAULT 'calendar', "holiday_rollover" TEXT NOT NULL DEFAULT 'none', "cutoff_time" TEXT NULL, "posting_delay_min_days" INTEGER NOT NULL DEFAULT 0, "posting_delay_max_days" INTEGER NOT NULL DEFAULT 0, "source" TEXT NOT NULL, "effective_from" TEXT NULL, "effective_to" TEXT NULL, "verified_on" TEXT NULL, "version" INTEGER NOT NULL, "review_status" TEXT NOT NULL, "exceptions" TEXT NULL, "created_at" TEXT NOT NULL, PRIMARY KEY ("id"), UNIQUE ("workspace_id", "id"), UNIQUE ("workspace_id", "subject_kind", "subject_id", "version"), FOREIGN KEY (workspace_id) REFERENCES workspaces (id), CHECK (subject_kind IN ('credit_account', 'currency_account')), CHECK (statement_day BETWEEN 1 AND 31), CHECK (due_kind IN ('fixed_day', 'days_after_statement')), CHECK (due_day IS NULL OR due_day BETWEEN 1 AND 31), CHECK (due_month_offset IN (0, 1, 2)), CHECK (due_days IS NULL OR due_days BETWEEN 1 AND 60), CHECK ((due_kind = 'fixed_day' AND due_day IS NOT NULL AND due_days IS NULL) OR (due_kind = 'days_after_statement' AND due_days IS NOT NULL AND due_day IS NULL)), CHECK (due_day_kind IN ('calendar', 'business')), CHECK (holiday_rollover IN ('none', 'next_business_day')), CHECK (cutoff_time IS NULL OR (cutoff_time GLOB '[0-2][0-9]:[0-5][0-9]' AND cutoff_time <= '23:59')), CHECK (posting_delay_min_days BETWEEN 0 AND 366 AND posting_delay_max_days BETWEEN posting_delay_min_days AND 366), CHECK (source IN ('user_declared', 'official_template')), CHECK (effective_from IS NULL OR effective_from GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'), CHECK (effective_to IS NULL OR effective_to GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'), CHECK (effective_to IS NULL OR effective_from IS NULL OR effective_to >= effective_from), CHECK (verified_on IS NULL OR verified_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'), CHECK (version >= 1), CHECK (review_status IN ('draft', 'in_review', 'user_declared', 'expired')), CHECK (exceptions IS NULL OR length(exceptions) BETWEEN 1 AND 200), CHECK (exceptions NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')) STRICT
+-- table cards (table cards)
+CREATE TABLE "cards" ("id" TEXT NOT NULL, "workspace_id" TEXT NOT NULL, "credit_account_id" TEXT NOT NULL, "last4" TEXT NOT NULL, "network" TEXT NULL, "holder_kind" TEXT NOT NULL, "primary_card_id" TEXT NULL, "status" TEXT NOT NULL, "expires_ym" TEXT NULL, "replaced_by_card_id" TEXT NULL, "alias" TEXT NULL, "effective_from" TEXT NULL, "closed_on" TEXT NULL, "row_version" INTEGER NOT NULL DEFAULT 1, "created_at" TEXT NOT NULL, "updated_at" TEXT NOT NULL, PRIMARY KEY ("id"), UNIQUE ("workspace_id", "id"), UNIQUE ("workspace_id", "credit_account_id", "id"), FOREIGN KEY (workspace_id, credit_account_id) REFERENCES credit_accounts (workspace_id, id), FOREIGN KEY (workspace_id, credit_account_id, primary_card_id) REFERENCES cards (workspace_id, credit_account_id, id), FOREIGN KEY (workspace_id, credit_account_id, replaced_by_card_id) REFERENCES cards (workspace_id, credit_account_id, id), CHECK (length(last4) = 4 AND last4 NOT GLOB '*[^0-9]*'), CHECK (network IS NULL OR network IN ('unionpay', 'visa', 'mastercard', 'amex', 'jcb', 'discover', 'other')), CHECK (holder_kind IN ('primary', 'supplementary')), CHECK ((holder_kind = 'primary' AND primary_card_id IS NULL) OR (holder_kind = 'supplementary' AND primary_card_id IS NOT NULL AND primary_card_id <> id)), CHECK (status IN ('draft', 'active', 'frozen', 'replaced', 'closed')), CHECK ((status = 'replaced') = (replaced_by_card_id IS NOT NULL)), CHECK (replaced_by_card_id IS NULL OR replaced_by_card_id <> id), CHECK ((status = 'closed') = (closed_on IS NOT NULL)), CHECK (expires_ym IS NULL OR (expires_ym GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]' AND substr(expires_ym, 6, 2) BETWEEN '01' AND '12')), CHECK (alias IS NULL OR length(alias) BETWEEN 1 AND 20), CHECK (alias NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*'), CHECK (effective_from IS NULL OR effective_from GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'), CHECK (closed_on IS NULL OR closed_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'), CHECK (row_version >= 1)) STRICT
+-- table credit_accounts (table credit_accounts)
+CREATE TABLE "credit_accounts" ("id" TEXT NOT NULL, "workspace_id" TEXT NOT NULL, "bank_id" TEXT NOT NULL, "product_name" TEXT NULL, "holder_alias" TEXT NOT NULL, "business_tz" TEXT NOT NULL DEFAULT 'Asia/Shanghai', "status" TEXT NOT NULL DEFAULT 'active', "opened_on" TEXT NULL, "closed_on" TEXT NULL, "pool_id" TEXT NULL, "row_version" INTEGER NOT NULL DEFAULT 1, "created_at" TEXT NOT NULL, "updated_at" TEXT NOT NULL, "deleted_at" TEXT NULL, PRIMARY KEY ("id"), UNIQUE ("workspace_id", "id"), FOREIGN KEY (workspace_id) REFERENCES workspaces (id), FOREIGN KEY (workspace_id, bank_id) REFERENCES banks (workspace_id, id), FOREIGN KEY (workspace_id, pool_id) REFERENCES credit_pools (workspace_id, id), CHECK (product_name IS NULL OR length(product_name) BETWEEN 1 AND 20), CHECK (product_name NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*'), CHECK (length(holder_alias) BETWEEN 1 AND 20), CHECK (holder_alias NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*'), CHECK (status IN ('active', 'frozen', 'closed')), CHECK (opened_on IS NULL OR opened_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'), CHECK (closed_on IS NULL OR closed_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'), CHECK (closed_on IS NULL OR opened_on IS NULL OR closed_on >= opened_on), CHECK (row_version >= 1)) STRICT
+-- table credit_pools (table credit_pools)
+CREATE TABLE "credit_pools" ("id" TEXT NOT NULL, "workspace_id" TEXT NOT NULL, "bank_id" TEXT NOT NULL, "name" TEXT NOT NULL, "parent_pool_id" TEXT NULL, "shared_limit_minor" INTEGER NOT NULL, "currency" TEXT NOT NULL, "row_version" INTEGER NOT NULL DEFAULT 1, "created_at" TEXT NOT NULL, "updated_at" TEXT NOT NULL, PRIMARY KEY ("id"), UNIQUE ("workspace_id", "id"), UNIQUE ("workspace_id", "bank_id", "name"), FOREIGN KEY (workspace_id) REFERENCES workspaces (id), FOREIGN KEY (workspace_id, bank_id) REFERENCES banks (workspace_id, id), FOREIGN KEY (workspace_id, parent_pool_id) REFERENCES credit_pools (workspace_id, id), CHECK (parent_pool_id IS NULL OR parent_pool_id <> id), CHECK (length(name) BETWEEN 1 AND 20), CHECK (name NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*'), CHECK (shared_limit_minor BETWEEN 0 AND 10000000000000), CHECK (currency IN ('CNY', 'USD', 'EUR', 'HKD', 'GBP', 'MOP', 'TWD', 'JPY', 'KRW', 'VND', 'KWD', 'BHD', 'JOD')), CHECK (row_version >= 1)) STRICT
+-- table currency_accounts (table currency_accounts)
+CREATE TABLE "currency_accounts" ("id" TEXT NOT NULL, "workspace_id" TEXT NOT NULL, "credit_account_id" TEXT NOT NULL, "currency" TEXT NOT NULL, "is_primary" INTEGER NOT NULL DEFAULT 0 CHECK ("is_primary" IN (0, 1)), "row_version" INTEGER NOT NULL DEFAULT 1, "created_at" TEXT NOT NULL, PRIMARY KEY ("id"), UNIQUE ("workspace_id", "id"), UNIQUE ("credit_account_id", "currency"), FOREIGN KEY (workspace_id, credit_account_id) REFERENCES credit_accounts (workspace_id, id), CHECK (currency IN ('CNY', 'USD', 'EUR', 'HKD', 'GBP', 'MOP', 'TWD', 'JPY', 'KRW', 'VND', 'KWD', 'BHD', 'JOD')), CHECK (row_version >= 1)) STRICT
+-- table limit_snapshots (table limit_snapshots)
+CREATE TABLE "limit_snapshots" ("id" TEXT NOT NULL, "workspace_id" TEXT NOT NULL, "currency_account_id" TEXT NOT NULL, "fixed_minor" INTEGER NOT NULL, "temp_minor" INTEGER NOT NULL DEFAULT 0, "temp_expires_on" TEXT NULL, "special_minor" INTEGER NOT NULL DEFAULT 0, "special_purpose" TEXT NULL, "used_minor" INTEGER NOT NULL, "available_raw_minor" INTEGER NOT NULL, "holds_minor" INTEGER NOT NULL DEFAULT 0, "includes_holds" INTEGER NOT NULL CHECK ("includes_holds" IN (0, 1)), "source_kind" TEXT NOT NULL, "source_document_id" TEXT NULL, "balance_as_of" TEXT NOT NULL, "observed_at" TEXT NOT NULL, "recorded_at" TEXT NOT NULL, "confirmation_level" TEXT NOT NULL, PRIMARY KEY ("id"), UNIQUE ("workspace_id", "id"), FOREIGN KEY (workspace_id, currency_account_id) REFERENCES currency_accounts (workspace_id, id), CHECK (fixed_minor BETWEEN 0 AND 10000000000000), CHECK (temp_minor BETWEEN 0 AND 10000000000000), CHECK (temp_minor = 0 OR temp_expires_on IS NOT NULL), CHECK (temp_expires_on IS NULL OR temp_expires_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]'), CHECK (special_minor BETWEEN 0 AND 10000000000000), CHECK (special_minor = 0 OR special_purpose IS NOT NULL), CHECK (special_purpose IS NULL OR length(special_purpose) BETWEEN 1 AND 20), CHECK (special_purpose NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*'), CHECK (used_minor BETWEEN 0 AND 10000000000000), CHECK (available_raw_minor BETWEEN -10000000000000 AND 10000000000000), CHECK (holds_minor BETWEEN 0 AND 10000000000000), CHECK (source_kind IN ('bank_app', 'statement', 'user', 'import')), CHECK (balance_as_of GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*'), CHECK (observed_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*'), CHECK (recorded_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*'), CHECK (confirmation_level IN ('system_estimated', 'user_confirmed', 'bank_confirmed'))) STRICT
+-- table meta (table meta)
+CREATE TABLE meta (
+  id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+  schema_version INTEGER NOT NULL,
+  created_at TEXT NOT NULL
+) STRICT
+-- table workspaces (table workspaces)
+CREATE TABLE "workspaces" ("id" TEXT NOT NULL, "kind" TEXT NOT NULL, "name" TEXT NOT NULL, "created_at" TEXT NOT NULL, "deleted_at" TEXT NULL, PRIMARY KEY ("id"), CHECK (kind IN ('real', 'demo')), CHECK (length(name) BETWEEN 1 AND 20)) STRICT
+-- trigger banks_immutable (table banks)
+CREATE TRIGGER banks_immutable
+BEFORE UPDATE OF workspace_id ON banks
+WHEN NEW.workspace_id IS NOT OLD.workspace_id
+BEGIN SELECT RAISE(ABORT, 'banks: immutable column'); END
+-- trigger billing_rule_versions_immutable (table billing_rule_versions)
+CREATE TRIGGER billing_rule_versions_immutable
+BEFORE UPDATE ON billing_rule_versions
+WHEN NEW.id IS NOT OLD.id
+  OR NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.subject_kind IS NOT OLD.subject_kind
+  OR NEW.subject_id IS NOT OLD.subject_id
+  OR NEW.statement_day IS NOT OLD.statement_day
+  OR NEW.statement_day_inclusive IS NOT OLD.statement_day_inclusive
+  OR NEW.due_kind IS NOT OLD.due_kind
+  OR NEW.due_day IS NOT OLD.due_day
+  OR NEW.due_month_offset IS NOT OLD.due_month_offset
+  OR NEW.due_days IS NOT OLD.due_days
+  OR NEW.due_day_kind IS NOT OLD.due_day_kind
+  OR NEW.holiday_rollover IS NOT OLD.holiday_rollover
+  OR NEW.cutoff_time IS NOT OLD.cutoff_time
+  OR NEW.posting_delay_min_days IS NOT OLD.posting_delay_min_days
+  OR NEW.posting_delay_max_days IS NOT OLD.posting_delay_max_days
+  OR NEW.source IS NOT OLD.source
+  OR NEW.effective_from IS NOT OLD.effective_from
+  OR NEW.verified_on IS NOT OLD.verified_on
+  OR NEW.version IS NOT OLD.version
+  OR NEW.exceptions IS NOT OLD.exceptions
+  OR NEW.created_at IS NOT OLD.created_at
+  OR (NEW.review_status IS NOT OLD.review_status AND NEW.review_status <> 'expired')
+  OR (NEW.effective_to IS NOT OLD.effective_to AND NOT (
+    NEW.effective_to IS NOT NULL
+    AND (OLD.effective_to IS NULL OR NEW.effective_to <= OLD.effective_to)
+  ))
+BEGIN SELECT RAISE(ABORT, 'billing_rule_versions: only sealing is allowed'); END
+-- trigger billing_rule_versions_no_overlap (table billing_rule_versions)
+CREATE TRIGGER billing_rule_versions_no_overlap
+BEFORE INSERT ON billing_rule_versions
+WHEN NOT (
+  NEW.effective_to IS NOT NULL
+  AND NEW.effective_to <= COALESCE(NEW.effective_from, '0001-01-01')
+) AND EXISTS (
+  SELECT 1 FROM billing_rule_versions AS o
+  WHERE o.workspace_id = NEW.workspace_id
+    AND o.subject_kind = NEW.subject_kind
+    AND o.subject_id = NEW.subject_id
+    AND NOT (
+      o.effective_to IS NOT NULL
+      AND o.effective_to <= COALESCE(o.effective_from, '0001-01-01')
+    )
+    AND (o.effective_to IS NULL OR NEW.effective_from IS NULL OR NEW.effective_from < o.effective_to)
+    AND (NEW.effective_to IS NULL OR o.effective_from IS NULL OR o.effective_from < NEW.effective_to)
+)
+BEGIN SELECT RAISE(ABORT, 'billing_rule_versions: effective ranges overlap'); END
+-- trigger billing_rule_versions_subject (table billing_rule_versions)
+CREATE TRIGGER billing_rule_versions_subject
+BEFORE INSERT ON billing_rule_versions
+WHEN NOT EXISTS (
+  SELECT 1 FROM credit_accounts AS a
+  WHERE NEW.subject_kind = 'credit_account'
+    AND a.workspace_id = NEW.workspace_id AND a.id = NEW.subject_id
+) AND NOT EXISTS (
+  SELECT 1 FROM currency_accounts AS c
+  WHERE NEW.subject_kind = 'currency_account'
+    AND c.workspace_id = NEW.workspace_id AND c.id = NEW.subject_id
+)
+BEGIN SELECT RAISE(ABORT, 'billing_rule_versions: subject not in workspace'); END
+-- trigger cards_immutable (table cards)
+CREATE TRIGGER cards_immutable
+BEFORE UPDATE OF workspace_id, credit_account_id, last4, holder_kind, primary_card_id ON cards
+WHEN NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.credit_account_id IS NOT OLD.credit_account_id
+  OR NEW.last4 IS NOT OLD.last4
+  OR NEW.holder_kind IS NOT OLD.holder_kind
+  OR NEW.primary_card_id IS NOT OLD.primary_card_id
+BEGIN SELECT RAISE(ABORT, 'cards: immutable column'); END
+-- trigger cards_status_transition (table cards)
+CREATE TRIGGER cards_status_transition
+BEFORE UPDATE OF status ON cards
+WHEN NEW.status IS NOT OLD.status AND NOT (
+  (OLD.status = 'draft' AND NEW.status = 'active')
+  OR (OLD.status = 'active' AND NEW.status IN ('frozen', 'replaced', 'closed'))
+  OR (OLD.status = 'frozen' AND NEW.status IN ('active', 'closed'))
+)
+BEGIN SELECT RAISE(ABORT, 'cards: status transition not allowed'); END
+-- trigger credit_accounts_immutable (table credit_accounts)
+CREATE TRIGGER credit_accounts_immutable
+BEFORE UPDATE OF workspace_id, bank_id ON credit_accounts
+WHEN NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.bank_id IS NOT OLD.bank_id
+BEGIN SELECT RAISE(ABORT, 'credit_accounts: immutable column'); END
+-- trigger credit_pools_immutable (table credit_pools)
+CREATE TRIGGER credit_pools_immutable
+BEFORE UPDATE OF workspace_id, bank_id, currency ON credit_pools
+WHEN NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.bank_id IS NOT OLD.bank_id
+  OR NEW.currency IS NOT OLD.currency
+BEGIN SELECT RAISE(ABORT, 'credit_pools: immutable column'); END
+-- trigger currency_accounts_immutable (table currency_accounts)
+CREATE TRIGGER currency_accounts_immutable
+BEFORE UPDATE OF workspace_id, credit_account_id, currency ON currency_accounts
+WHEN NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.credit_account_id IS NOT OLD.credit_account_id
+  OR NEW.currency IS NOT OLD.currency
+BEGIN SELECT RAISE(ABORT, 'currency_accounts: immutable column'); END
+-- trigger limit_snapshots_immutable (table limit_snapshots)
+CREATE TRIGGER limit_snapshots_immutable
+BEFORE UPDATE ON limit_snapshots
+BEGIN SELECT RAISE(ABORT, 'limit_snapshots: append only'); END
+-- columns of app_settings
+cid=0 | name=key | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=value | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of app_settings
+-- indexes of app_settings
+seq=0 | name=sqlite_autoindex_app_settings_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=key | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+-- columns of banks
+cid=0 | name=id | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=workspace_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=name | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=3 | name=country | type=TEXT | notnull=1 | dflt_value='CN' | pk=0 | hidden=0
+cid=4 | name=business_tz_default | type=TEXT | notnull=1 | dflt_value='Asia/Shanghai' | pk=0 | hidden=0
+cid=5 | name=is_builtin | type=INTEGER | notnull=1 | dflt_value=0 | pk=0 | hidden=0
+cid=6 | name=created_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of banks
+id=0 | seq=0 | table=workspaces | from=workspace_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+-- indexes of banks
+seq=0 | name=sqlite_autoindex_banks_3 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=name | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=1 | name=sqlite_autoindex_banks_2 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=2 | name=sqlite_autoindex_banks_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+-- columns of billing_rule_versions
+cid=0 | name=id | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=workspace_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=subject_kind | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=3 | name=subject_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=4 | name=statement_day | type=INTEGER | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=5 | name=statement_day_inclusive | type=INTEGER | notnull=1 | dflt_value=1 | pk=0 | hidden=0
+cid=6 | name=due_kind | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=7 | name=due_day | type=INTEGER | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=8 | name=due_month_offset | type=INTEGER | notnull=1 | dflt_value=0 | pk=0 | hidden=0
+cid=9 | name=due_days | type=INTEGER | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=10 | name=due_day_kind | type=TEXT | notnull=1 | dflt_value='calendar' | pk=0 | hidden=0
+cid=11 | name=holiday_rollover | type=TEXT | notnull=1 | dflt_value='none' | pk=0 | hidden=0
+cid=12 | name=cutoff_time | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=13 | name=posting_delay_min_days | type=INTEGER | notnull=1 | dflt_value=0 | pk=0 | hidden=0
+cid=14 | name=posting_delay_max_days | type=INTEGER | notnull=1 | dflt_value=0 | pk=0 | hidden=0
+cid=15 | name=source | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=16 | name=effective_from | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=17 | name=effective_to | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=18 | name=verified_on | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=19 | name=version | type=INTEGER | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=20 | name=review_status | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=21 | name=exceptions | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=22 | name=created_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of billing_rule_versions
+id=0 | seq=0 | table=workspaces | from=workspace_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+-- indexes of billing_rule_versions
+seq=0 | name=sqlite_autoindex_billing_rule_versions_3 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=subject_kind | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=3 | name=subject_id | desc=0 | coll=BINARY | key=1
+    seqno=3 | cid=19 | name=version | desc=0 | coll=BINARY | key=1
+    seqno=4 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=1 | name=sqlite_autoindex_billing_rule_versions_2 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=2 | name=sqlite_autoindex_billing_rule_versions_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+-- columns of cards
+cid=0 | name=id | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=workspace_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=credit_account_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=3 | name=last4 | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=4 | name=network | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=5 | name=holder_kind | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=6 | name=primary_card_id | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=7 | name=status | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=8 | name=expires_ym | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=9 | name=replaced_by_card_id | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=10 | name=alias | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=11 | name=effective_from | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=12 | name=closed_on | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=13 | name=row_version | type=INTEGER | notnull=1 | dflt_value=1 | pk=0 | hidden=0
+cid=14 | name=created_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=15 | name=updated_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of cards
+id=0 | seq=0 | table=cards | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=0 | seq=1 | table=cards | from=credit_account_id | to=credit_account_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=0 | seq=2 | table=cards | from=replaced_by_card_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=1 | seq=0 | table=cards | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=1 | seq=1 | table=cards | from=credit_account_id | to=credit_account_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=1 | seq=2 | table=cards | from=primary_card_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=2 | seq=0 | table=credit_accounts | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=2 | seq=1 | table=credit_accounts | from=credit_account_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+-- indexes of cards
+seq=0 | name=cards_replaced_by | unique=0 | origin=c | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=credit_account_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=9 | name=replaced_by_card_id | desc=0 | coll=BINARY | key=1
+    seqno=3 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=1 | name=cards_primary_card | unique=0 | origin=c | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=credit_account_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=6 | name=primary_card_id | desc=0 | coll=BINARY | key=1
+    seqno=3 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=2 | name=sqlite_autoindex_cards_3 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=credit_account_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=3 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=3 | name=sqlite_autoindex_cards_2 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=4 | name=sqlite_autoindex_cards_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+-- columns of credit_accounts
+cid=0 | name=id | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=workspace_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=bank_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=3 | name=product_name | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=4 | name=holder_alias | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=5 | name=business_tz | type=TEXT | notnull=1 | dflt_value='Asia/Shanghai' | pk=0 | hidden=0
+cid=6 | name=status | type=TEXT | notnull=1 | dflt_value='active' | pk=0 | hidden=0
+cid=7 | name=opened_on | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=8 | name=closed_on | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=9 | name=pool_id | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=10 | name=row_version | type=INTEGER | notnull=1 | dflt_value=1 | pk=0 | hidden=0
+cid=11 | name=created_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=12 | name=updated_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=13 | name=deleted_at | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of credit_accounts
+id=0 | seq=0 | table=credit_pools | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=0 | seq=1 | table=credit_pools | from=pool_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=1 | seq=0 | table=banks | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=1 | seq=1 | table=banks | from=bank_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=2 | seq=0 | table=workspaces | from=workspace_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+-- indexes of credit_accounts
+seq=0 | name=credit_accounts_pool | unique=0 | origin=c | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=9 | name=pool_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=1 | name=credit_accounts_bank | unique=0 | origin=c | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=bank_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=2 | name=sqlite_autoindex_credit_accounts_2 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=3 | name=sqlite_autoindex_credit_accounts_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+-- columns of credit_pools
+cid=0 | name=id | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=workspace_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=bank_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=3 | name=name | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=4 | name=parent_pool_id | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=5 | name=shared_limit_minor | type=INTEGER | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=6 | name=currency | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=7 | name=row_version | type=INTEGER | notnull=1 | dflt_value=1 | pk=0 | hidden=0
+cid=8 | name=created_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=9 | name=updated_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of credit_pools
+id=0 | seq=0 | table=credit_pools | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=0 | seq=1 | table=credit_pools | from=parent_pool_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=1 | seq=0 | table=banks | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=1 | seq=1 | table=banks | from=bank_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=2 | seq=0 | table=workspaces | from=workspace_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+-- indexes of credit_pools
+seq=0 | name=credit_pools_parent | unique=0 | origin=c | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=4 | name=parent_pool_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=1 | name=credit_pools_bank | unique=0 | origin=c | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=bank_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=2 | name=sqlite_autoindex_credit_pools_3 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=bank_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=3 | name=name | desc=0 | coll=BINARY | key=1
+    seqno=3 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=3 | name=sqlite_autoindex_credit_pools_2 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=4 | name=sqlite_autoindex_credit_pools_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+-- columns of currency_accounts
+cid=0 | name=id | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=workspace_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=credit_account_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=3 | name=currency | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=4 | name=is_primary | type=INTEGER | notnull=1 | dflt_value=0 | pk=0 | hidden=0
+cid=5 | name=row_version | type=INTEGER | notnull=1 | dflt_value=1 | pk=0 | hidden=0
+cid=6 | name=created_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of currency_accounts
+id=0 | seq=0 | table=credit_accounts | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=0 | seq=1 | table=credit_accounts | from=credit_account_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+-- indexes of currency_accounts
+seq=0 | name=currency_accounts_account | unique=0 | origin=c | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=credit_account_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=1 | name=currency_accounts_one_primary | unique=1 | origin=c | partial=1
+    seqno=0 | cid=2 | name=credit_account_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=2 | name=sqlite_autoindex_currency_accounts_3 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=2 | name=credit_account_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=3 | name=currency | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=3 | name=sqlite_autoindex_currency_accounts_2 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=4 | name=sqlite_autoindex_currency_accounts_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+-- columns of limit_snapshots
+cid=0 | name=id | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=workspace_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=currency_account_id | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=3 | name=fixed_minor | type=INTEGER | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=4 | name=temp_minor | type=INTEGER | notnull=1 | dflt_value=0 | pk=0 | hidden=0
+cid=5 | name=temp_expires_on | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=6 | name=special_minor | type=INTEGER | notnull=1 | dflt_value=0 | pk=0 | hidden=0
+cid=7 | name=special_purpose | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=8 | name=used_minor | type=INTEGER | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=9 | name=available_raw_minor | type=INTEGER | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=10 | name=holds_minor | type=INTEGER | notnull=1 | dflt_value=0 | pk=0 | hidden=0
+cid=11 | name=includes_holds | type=INTEGER | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=12 | name=source_kind | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=13 | name=source_document_id | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+cid=14 | name=balance_as_of | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=15 | name=observed_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=16 | name=recorded_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=17 | name=confirmation_level | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of limit_snapshots
+id=0 | seq=0 | table=currency_accounts | from=workspace_id | to=workspace_id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+id=0 | seq=1 | table=currency_accounts | from=currency_account_id | to=id | on_update=NO ACTION | on_delete=NO ACTION | match=NONE
+-- indexes of limit_snapshots
+seq=0 | name=limit_snapshots_account | unique=0 | origin=c | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=2 | name=currency_account_id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=14 | name=balance_as_of | desc=1 | coll=BINARY | key=1
+    seqno=3 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=1 | name=sqlite_autoindex_limit_snapshots_2 | unique=1 | origin=u | partial=0
+    seqno=0 | cid=1 | name=workspace_id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=2 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=2 | name=sqlite_autoindex_limit_snapshots_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+-- columns of meta
+cid=0 | name=id | type=INTEGER | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=schema_version | type=INTEGER | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=created_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of meta
+-- indexes of meta
+-- columns of workspaces
+cid=0 | name=id | type=TEXT | notnull=1 | dflt_value=null | pk=1 | hidden=0
+cid=1 | name=kind | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=2 | name=name | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=3 | name=created_at | type=TEXT | notnull=1 | dflt_value=null | pk=0 | hidden=0
+cid=4 | name=deleted_at | type=TEXT | notnull=0 | dflt_value=null | pk=0 | hidden=0
+-- foreign keys of workspaces
+-- indexes of workspaces
+seq=0 | name=workspaces_one_live_per_kind | unique=1 | origin=c | partial=1
+    seqno=0 | cid=1 | name=kind | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+seq=1 | name=sqlite_autoindex_workspaces_1 | unique=1 | origin=pk | partial=0
+    seqno=0 | cid=0 | name=id | desc=0 | coll=BINARY | key=1
+    seqno=1 | cid=-1 | name=null | desc=0 | coll=BINARY | key=0
+[exit=0]

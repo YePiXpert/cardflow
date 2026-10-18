@@ -1,0 +1,41 @@
+# ci-dart-run.txt：CI（.github/workflows/mobile.yml）在 I-1a 期间的运行，以及最后一次代码提交的运行详情
+# 生成时间：2026-10-18T15:36:45Z；本地源码提交：4d0a89f
+# 过滤：dart job 日志只保留各步骤的结论行（grep -E），并经 grep -Ev 'Runner Image|Operating System|Image:|Version:|Included Software|Image Release|Azure Region|Ubuntu|Linux|kernel|proxy|Proxy' 去掉 runner 的发行版/镜像/内核/代理信息行；其余为 gh 原文。
+# 说明：bae6113 与 8ed5c55 两次运行红，是同一个组件测试的点击落空（诊断页按钮滚到 AppBar 底下），22241a4 修复并把点击落空改为测试直接失败，之后全部绿。
+# 说明：9097a9b、c385b88 两次运行是 cancelled：工作流设了 concurrency cancel-in-progress，被紧接着的推送取代；它们的代码都包含在 4d0a89f 的运行里（绿）。
+$ gh run list --workflow mobile.yml --limit 14
+completed	success	文档：apps/mobile README 补 I-1a（目录、drift 表 DSL 与生成、v2 表清单与加表/迁移步骤、启动页与恢复…	mobile	main	push	39140901236	4m4s	2026-10-18T15:31:54Z
+completed	cancelled	移动端测试：P-22 加载与生成失败、P-04 加载/错误/已不存在；建卡、快照、换卡、切换空间后诊断日志与报告不含金额、卡号数字与别名（…	mobile	main	push	39140697790	3m11s	2026-10-18T15:29:19Z
+completed	cancelled	移动端 P-01 总览最小版（空间标识与纯本地、每个账户一行预测账期与到期日、没有现金账户时数据不全、建卡/演示入口）；P-04 分段改用…	mobile	main	push	39140518929	2m49s	2026-10-18T15:26:53Z
+completed	success	移动端 P-03 信用账户详情（预测账期未出账/未设置/规则非法、额度区与超限、换卡补卡/冻结解冻/销卡、规则说明、I-1c/I-4 留位…	mobile	main	push	39140236695	2m48s	2026-10-18T15:23:07Z
+completed	success	移动端测试：诊断页复制按钮先滚到可视区域再点击（修 CI 偶发的点击落空）；点击落空在全部测试中改为直接失败	mobile	main	push	39139265606	3m4s	2026-10-18T15:10:17Z
+completed	failure	移动端 P-02 卡包：授信池 › 信用账户 › 子账户 › 卡片层级列表（池上限/已用/池内可用合计、超限标注、规则来源、快照时点、已停…	mobile	main	push	39139083136	1m46s	2026-10-18T15:07:55Z
+completed	failure	移动端：启动分流（打开中/打不开 → 启动页，没有工作空间 → P-22，BL-04）；启动页按错误码给出「重试」（key_store_f…	mobile	main	push	39138492170	1m49s	2026-10-18T15:00:11Z
+completed	success	移动端数据层：工作空间、银行、授信池、信用账户与币种子账户、卡片、账期规则版本、额度快照的仓库；数据层到领域对象的映射（selectRul…	mobile	main	push	39122137908	2m54s	2026-10-18T11:10:04Z
+completed	success	移动端数据层：UUID v4、固定偏移业务时区与入账日推导（F-19 截止时点、F-20 业务日期与写入偏移无关）、时钟（演示空间固定今天…	mobile	main	push	39120947113	2m52s	2026-10-18T10:52:07Z
+completed	success	本地库 v2：drift 表 DSL 定义 9 张表（工作空间、设置、银行、授信池、信用账户、币种子账户、卡片、账期规则版本、额度快照）；…	mobile	main	push	39120710188	2m50s	2026-10-18T10:48:35Z
+completed	success	移动端数据层：AppDatabase 只能经 openAppDatabase 构造；打开后读回 foreign_keys（失败即止）；迁移…	mobile	main	push	39120012323	2m32s	2026-10-18T10:37:53Z
+completed	success	移动端：引入 drift_dev 2.35.1；诊断日志挪到 lib/app/diagnostics（BL-06）；Release 下错误…	mobile	main	push	39119708700	2m45s	2026-10-18T10:33:14Z
+completed	success	文档：I-0c 验收记录与接续说明；顺延无日历按引擎报错（bank-rules §3.7 统一）；ADR-008 改为自写 Rationa…	mobile	main	push	39114777414	2m44s	2026-10-18T09:17:53Z
+completed	success	移动端测试：App 的 minorDigits 就是领域包的表（identical），防止再出现本地副本	mobile	main	push	39114057360	2m37s	2026-10-18T09:06:49Z
+[exit=0]
+
+$ gh run view 39140901236 --json headSha,status,conclusion,event,displayTitle,url --jq '.'
+{"conclusion":"success","displayTitle":"文档：apps/mobile README 补 I-1a（目录、drift 表 DSL 与生成、v2 表清单与加表/迁移步骤、启动页与恢复…","event":"push","headSha":"4d0a89f2dfa3421fed5034433b6f8be6135e84c5","status":"completed","url":"https://github.com/YePiXpert/cardflow/actions/runs/39140901236"}
+[exit=0]
+
+$ gh run view 39140901236 --json jobs --jq '.jobs[] | {name, conclusion, steps: [.steps[] | {name, conclusion}]}'
+{"conclusion":"success","name":"dart (format · analyze · test · web build)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@v7"},{"conclusion":"success","name":"Run subosito/flutter-action@v2"},{"conclusion":"success","name":"flutter --version"},{"conclusion":"success","name":"flutter pub get"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"dart format"},{"conclusion":"success","name":"dart format (cardflow_domain)"},{"conclusion":"success","name":"flutter analyze"},{"conclusion":"success","name":"dart analyze (cardflow_domain)"},{"conclusion":"success","name":"flutter test"},{"conclusion":"success","name":"dart test (cardflow_domain, incl. the no-double scan)"},{"conclusion":"success","name":"flutter build web (compile smoke test)"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2"},{"conclusion":"success","name":"Post Run actions/checkout@v7"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"success","name":"protocol-parity (Python engine vs Dart domain)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@v7"},{"conclusion":"success","name":"Run astral-sh/setup-uv@v10.3.0"},{"conclusion":"success","name":"Run subosito/flutter-action@v2"},{"conclusion":"success","name":"uv sync --locked (services/api)"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"Golden fixtures -- Python runner --dump"},{"conclusion":"success","name":"Golden fixtures -- Dart runner --dump"},{"conclusion":"success","name":"Golden fixtures -- outputs byte-identical"},{"conclusion":"success","name":"Random fixtures (300, seed 20261018) -- generate"},{"conclusion":"success","name":"Random fixtures -- both runners --dump, outputs byte-identical"},{"conclusion":"success","name":"Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)"},{"conclusion":"skipped","name":"Upload parity outputs"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2"},{"conclusion":"success","name":"Post Run astral-sh/setup-uv@v10.3.0"},{"conclusion":"success","name":"Post Run actions/checkout@v7"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"skipped","name":"ios-unsigned (IPA without codesign)","steps":[]}
+[exit=0]
+
+$ gh run view --job 117715074104 --log | grep -E 'Formatted [0-9]+ files|No issues found|tests passed|All tests passed|Built build/web|##\[error\]' | grep -Ev '<上面的过滤>'
+dart (format · analyze · test · web build)	dart format	2026-10-18T15:33:04.3315435Z Formatted 172 files (0 changed) in 0.89 seconds.
+dart (format · analyze · test · web build)	dart format (cardflow_domain)	2026-10-18T15:33:04.5856806Z Formatted 44 files (0 changed) in 0.21 seconds.
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T15:33:25.1422178Z No issues found! (ran in 19.4s)
+dart (format · analyze · test · web build)	dart analyze (cardflow_domain)	2026-10-18T15:33:26.4957540Z No issues found!
+dart (format · analyze · test · web build)	flutter test	2026-10-18T15:34:34.9258328Z 🎉 291 tests passed.
+dart (format · analyze · test · web build)	dart test (cardflow_domain, incl. the no-double scan)	2026-10-18T15:34:45.3100199Z 00:02 +265: All tests passed!
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T15:35:55.7003227Z ✓ Built build/web
+[exit=0]

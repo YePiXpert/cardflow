@@ -1,0 +1,192 @@
+# isolation.txt：工作空间隔离测试（演示空间写满全部业务表 → 以真实空间为当前空间运行每个仓库的全部查询，结果必须为空；反向亦然）
+# 生成时间：2026-10-18T15:32:48Z；源码提交：4d0a89f；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
+# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# CARDFLOW_EVIDENCE=1 时测试逐条打印查询与结果行数。
+$ CARDFLOW_EVIDENCE=1 flutter test test/data/repositories/workspace_isolation_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart
+00:00 +0: workspaceDataTables 覆盖 sqlite_master 里所有带 workspace_id 的表
+00:00 +1: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+演示空间 limit_snapshots: 5 行
+演示空间 billing_rule_versions: 5 行
+演示空间 cards: 6 行
+演示空间 currency_accounts: 5 行
+演示空间 credit_accounts: 4 行
+演示空间 credit_pools: 1 行
+演示空间 banks: 3 行
+真实空间为当前：BankRepository.listStored() → 0 行
+真实空间为当前：BankRepository.byId(他空间银行) → 0 行
+真实空间为当前：BankRepository.choices() 中已写库的 → 0 行
+真实空间为当前：CreditAccountRepository.list() → 0 行
+真实空间为当前：CreditAccountRepository.byId(617b9ad0-bd91-45c3-a5b5-843a753dfafe) → 0 行
+真实空间为当前：CreditAccountRepository.require(617b9ad0-bd91-45c3-a5b5-843a753dfafe) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccounts(617b9ad0-bd91-45c3-a5b5-843a753dfafe) → 0 行
+真实空间为当前：CreditAccountRepository.byId(74d78e8a-89bf-43fa-9c8d-96cec09ec961) → 0 行
+真实空间为当前：CreditAccountRepository.require(74d78e8a-89bf-43fa-9c8d-96cec09ec961) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccounts(74d78e8a-89bf-43fa-9c8d-96cec09ec961) → 0 行
+真实空间为当前：CreditAccountRepository.byId(767607d8-bf74-4f34-908f-262f93728107) → 0 行
+真实空间为当前：CreditAccountRepository.require(767607d8-bf74-4f34-908f-262f93728107) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccounts(767607d8-bf74-4f34-908f-262f93728107) → 0 行
+真实空间为当前：CreditAccountRepository.byId(dd7e802b-1bed-44ef-9358-58065ba79084) → 0 行
+真实空间为当前：CreditAccountRepository.require(dd7e802b-1bed-44ef-9358-58065ba79084) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccounts(dd7e802b-1bed-44ef-9358-58065ba79084) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccounts() → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccountById(5ff2ad13-b724-45f1-b590-1ab71cd7a993) → 0 行
+真实空间为当前：LimitSnapshotRepository.history(5ff2ad13-b724-45f1-b590-1ab71cd7a993) → 0 行
+真实空间为当前：BillingRuleRepository.versions(子账户 5ff2ad13-b724-45f1-b590-1ab71cd7a993) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccountById(bf4c67f9-db7e-472e-9464-99f14be1f2ba) → 0 行
+真实空间为当前：LimitSnapshotRepository.history(bf4c67f9-db7e-472e-9464-99f14be1f2ba) → 0 行
+真实空间为当前：BillingRuleRepository.versions(子账户 bf4c67f9-db7e-472e-9464-99f14be1f2ba) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccountById(c1e8a7b2-587c-4cab-a487-ab6878a1f0fb) → 0 行
+真实空间为当前：LimitSnapshotRepository.history(c1e8a7b2-587c-4cab-a487-ab6878a1f0fb) → 0 行
+真实空间为当前：BillingRuleRepository.versions(子账户 c1e8a7b2-587c-4cab-a487-ab6878a1f0fb) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccountById(d3b4d9d2-24ca-4336-aa3d-a5b6d7c13628) → 0 行
+真实空间为当前：LimitSnapshotRepository.history(d3b4d9d2-24ca-4336-aa3d-a5b6d7c13628) → 0 行
+真实空间为当前：BillingRuleRepository.versions(子账户 d3b4d9d2-24ca-4336-aa3d-a5b6d7c13628) → 0 行
+真实空间为当前：CreditAccountRepository.currencyAccountById(fbf5daf9-ebdf-454e-969d-66711a91d6ea) → 0 行
+真实空间为当前：LimitSnapshotRepository.history(fbf5daf9-ebdf-454e-969d-66711a91d6ea) → 0 行
+真实空间为当前：BillingRuleRepository.versions(子账户 fbf5daf9-ebdf-454e-969d-66711a91d6ea) → 0 行
+真实空间为当前：CreditAccountRepository.poolMembers(15ad4fb6-c2f5-4b58-b884-82a4fbb948a6) → 0 行
+真实空间为当前：CreditPoolRepository.byId(15ad4fb6-c2f5-4b58-b884-82a4fbb948a6) → 0 行
+真实空间为当前：CreditPoolRepository.list() → 0 行
+真实空间为当前：CreditPoolRepository.forBank(008bd740-e2cd-4b66-87bf-70c40e11a1a1) → 0 行
+真实空间为当前：CreditPoolRepository.forBank(1f6f7df4-d824-4a1f-9153-27d03bce8331) → 0 行
+真实空间为当前：CreditPoolRepository.forBank(f919cc61-7639-4d58-a352-7879a0f03bee) → 0 行
+真实空间为当前：CardRepository.list() → 0 行
+真实空间为当前：CardRepository.byId(09f56182-33d6-4f6f-94d5-571589b52231) → 0 行
+真实空间为当前：CardRepository.require(09f56182-33d6-4f6f-94d5-571589b52231) → 0 行
+真实空间为当前：CardRepository.byId(2913ff92-9d12-4c33-a06c-8ac55270a402) → 0 行
+真实空间为当前：CardRepository.require(2913ff92-9d12-4c33-a06c-8ac55270a402) → 0 行
+真实空间为当前：CardRepository.byId(c3a9f679-18f2-41b0-89ff-73bc4ad5ca72) → 0 行
+真实空间为当前：CardRepository.require(c3a9f679-18f2-41b0-89ff-73bc4ad5ca72) → 0 行
+真实空间为当前：CardRepository.byId(d33d9f86-e316-433a-b2ae-6153e07ecc19) → 0 行
+真实空间为当前：CardRepository.require(d33d9f86-e316-433a-b2ae-6153e07ecc19) → 0 行
+真实空间为当前：CardRepository.byId(d532b9e5-9f20-444b-a785-d7ab4d03b33d) → 0 行
+真实空间为当前：CardRepository.require(d532b9e5-9f20-444b-a785-d7ab4d03b33d) → 0 行
+真实空间为当前：CardRepository.byId(df1e8d56-f98d-41c0-b4e4-9195d79ed633) → 0 行
+真实空间为当前：CardRepository.require(df1e8d56-f98d-41c0-b4e4-9195d79ed633) → 0 行
+真实空间为当前：CardRepository.list(creditAccountId: 617b9ad0-bd91-45c3-a5b5-843a753dfafe) → 0 行
+真实空间为当前：BillingRuleRepository.versions(账户 617b9ad0-bd91-45c3-a5b5-843a753dfafe) → 0 行
+真实空间为当前：BillingRuleRepository.effectiveOn(账户 617b9ad0-bd91-45c3-a5b5-843a753dfafe) → 0 行
+真实空间为当前：CardRepository.list(creditAccountId: 74d78e8a-89bf-43fa-9c8d-96cec09ec961) → 0 行
+真实空间为当前：BillingRuleRepository.versions(账户 74d78e8a-89bf-43fa-9c8d-96cec09ec961) → 0 行
+真实空间为当前：BillingRuleRepository.effectiveOn(账户 74d78e8a-89bf-43fa-9c8d-96cec09ec961) → 0 行
+真实空间为当前：CardRepository.list(creditAccountId: 767607d8-bf74-4f34-908f-262f93728107) → 0 行
+真实空间为当前：BillingRuleRepository.versions(账户 767607d8-bf74-4f34-908f-262f93728107) → 0 行
+真实空间为当前：BillingRuleRepository.effectiveOn(账户 767607d8-bf74-4f34-908f-262f93728107) → 0 行
+真实空间为当前：CardRepository.list(creditAccountId: dd7e802b-1bed-44ef-9358-58065ba79084) → 0 行
+真实空间为当前：BillingRuleRepository.versions(账户 dd7e802b-1bed-44ef-9358-58065ba79084) → 0 行
+真实空间为当前：BillingRuleRepository.effectiveOn(账户 dd7e802b-1bed-44ef-9358-58065ba79084) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 1001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 1002) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 2001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 3001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 4001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 1001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 1002) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 2001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 3001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 4001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 1001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 1002) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 2001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 3001) → 0 行
+真实空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 4001) → 0 行
+真实空间为当前：BillingRuleRepository.all() → 0 行
+真实空间为当前：LimitSnapshotRepository.all() → 0 行
+真实空间为当前：LimitSnapshotRepository.latestByCurrencyAccount() → 0 行
+真实空间为当前：CardWalletReader.load() → 0 行
+真实空间为当前：共 82 条查询，全部为空
+00:00 +2: 反向：真实空间写满全部表 → 以演示空间为当前空间，每个仓库的全部查询都为空
+真实空间 limit_snapshots: 5 行
+真实空间 billing_rule_versions: 5 行
+真实空间 cards: 6 行
+真实空间 currency_accounts: 5 行
+真实空间 credit_accounts: 4 行
+真实空间 credit_pools: 1 行
+真实空间 banks: 3 行
+演示空间为当前：BankRepository.listStored() → 0 行
+演示空间为当前：BankRepository.byId(他空间银行) → 0 行
+演示空间为当前：BankRepository.choices() 中已写库的 → 0 行
+演示空间为当前：CreditAccountRepository.list() → 0 行
+演示空间为当前：CreditAccountRepository.byId(156acaab-14ef-47b3-81fa-3c9188ffadb7) → 0 行
+演示空间为当前：CreditAccountRepository.require(156acaab-14ef-47b3-81fa-3c9188ffadb7) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccounts(156acaab-14ef-47b3-81fa-3c9188ffadb7) → 0 行
+演示空间为当前：CreditAccountRepository.byId(21a35a92-b06d-4fdb-a502-edf91d889eaa) → 0 行
+演示空间为当前：CreditAccountRepository.require(21a35a92-b06d-4fdb-a502-edf91d889eaa) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccounts(21a35a92-b06d-4fdb-a502-edf91d889eaa) → 0 行
+演示空间为当前：CreditAccountRepository.byId(b9168898-df41-4490-a959-c4bb3bfca074) → 0 行
+演示空间为当前：CreditAccountRepository.require(b9168898-df41-4490-a959-c4bb3bfca074) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccounts(b9168898-df41-4490-a959-c4bb3bfca074) → 0 行
+演示空间为当前：CreditAccountRepository.byId(eb22bafb-6351-4d31-952b-6b78b6152954) → 0 行
+演示空间为当前：CreditAccountRepository.require(eb22bafb-6351-4d31-952b-6b78b6152954) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccounts(eb22bafb-6351-4d31-952b-6b78b6152954) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccounts() → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccountById(69d7dc15-06eb-4f93-9dec-f20729d9a5f4) → 0 行
+演示空间为当前：LimitSnapshotRepository.history(69d7dc15-06eb-4f93-9dec-f20729d9a5f4) → 0 行
+演示空间为当前：BillingRuleRepository.versions(子账户 69d7dc15-06eb-4f93-9dec-f20729d9a5f4) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccountById(8905220f-5b78-47d1-be47-9b57035030e2) → 0 行
+演示空间为当前：LimitSnapshotRepository.history(8905220f-5b78-47d1-be47-9b57035030e2) → 0 行
+演示空间为当前：BillingRuleRepository.versions(子账户 8905220f-5b78-47d1-be47-9b57035030e2) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccountById(ba032cee-5080-4448-99c4-39f324eced60) → 0 行
+演示空间为当前：LimitSnapshotRepository.history(ba032cee-5080-4448-99c4-39f324eced60) → 0 行
+演示空间为当前：BillingRuleRepository.versions(子账户 ba032cee-5080-4448-99c4-39f324eced60) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccountById(c76d3358-1d27-455a-b50b-986dd88ad0bd) → 0 行
+演示空间为当前：LimitSnapshotRepository.history(c76d3358-1d27-455a-b50b-986dd88ad0bd) → 0 行
+演示空间为当前：BillingRuleRepository.versions(子账户 c76d3358-1d27-455a-b50b-986dd88ad0bd) → 0 行
+演示空间为当前：CreditAccountRepository.currencyAccountById(dbccc267-bc7d-4cff-a024-b449cc143f05) → 0 行
+演示空间为当前：LimitSnapshotRepository.history(dbccc267-bc7d-4cff-a024-b449cc143f05) → 0 行
+演示空间为当前：BillingRuleRepository.versions(子账户 dbccc267-bc7d-4cff-a024-b449cc143f05) → 0 行
+演示空间为当前：CreditAccountRepository.poolMembers(7d1f3ce3-0077-4167-abf7-4191df389c00) → 0 行
+演示空间为当前：CreditPoolRepository.byId(7d1f3ce3-0077-4167-abf7-4191df389c00) → 0 行
+演示空间为当前：CreditPoolRepository.list() → 0 行
+演示空间为当前：CreditPoolRepository.forBank(154d0e2f-bef2-4a68-9e55-77635aa93080) → 0 行
+演示空间为当前：CreditPoolRepository.forBank(6252d60d-3e58-487a-b0aa-93a788aa3d26) → 0 行
+演示空间为当前：CreditPoolRepository.forBank(d3be43d8-1624-47bb-ad48-090ff7f0aec2) → 0 行
+演示空间为当前：CardRepository.list() → 0 行
+演示空间为当前：CardRepository.byId(218d981e-c0bd-4fae-b15a-87dfbb55299d) → 0 行
+演示空间为当前：CardRepository.require(218d981e-c0bd-4fae-b15a-87dfbb55299d) → 0 行
+演示空间为当前：CardRepository.byId(7077de20-29c9-4dc4-913f-be4370124050) → 0 行
+演示空间为当前：CardRepository.require(7077de20-29c9-4dc4-913f-be4370124050) → 0 行
+演示空间为当前：CardRepository.byId(92045bea-965e-41fc-8fcb-d92cb6116db0) → 0 行
+演示空间为当前：CardRepository.require(92045bea-965e-41fc-8fcb-d92cb6116db0) → 0 行
+演示空间为当前：CardRepository.byId(9abc1011-db6e-46a5-93f9-83ef97e4e5f0) → 0 行
+演示空间为当前：CardRepository.require(9abc1011-db6e-46a5-93f9-83ef97e4e5f0) → 0 行
+演示空间为当前：CardRepository.byId(c62fb27d-4b31-4a57-add3-e9162d00a4c3) → 0 行
+演示空间为当前：CardRepository.require(c62fb27d-4b31-4a57-add3-e9162d00a4c3) → 0 行
+演示空间为当前：CardRepository.byId(f7a7c3c9-cb3d-42cf-b820-15606ea0a0cc) → 0 行
+演示空间为当前：CardRepository.require(f7a7c3c9-cb3d-42cf-b820-15606ea0a0cc) → 0 行
+演示空间为当前：CardRepository.list(creditAccountId: 156acaab-14ef-47b3-81fa-3c9188ffadb7) → 0 行
+演示空间为当前：BillingRuleRepository.versions(账户 156acaab-14ef-47b3-81fa-3c9188ffadb7) → 0 行
+演示空间为当前：BillingRuleRepository.effectiveOn(账户 156acaab-14ef-47b3-81fa-3c9188ffadb7) → 0 行
+演示空间为当前：CardRepository.list(creditAccountId: 21a35a92-b06d-4fdb-a502-edf91d889eaa) → 0 行
+演示空间为当前：BillingRuleRepository.versions(账户 21a35a92-b06d-4fdb-a502-edf91d889eaa) → 0 行
+演示空间为当前：BillingRuleRepository.effectiveOn(账户 21a35a92-b06d-4fdb-a502-edf91d889eaa) → 0 行
+演示空间为当前：CardRepository.list(creditAccountId: b9168898-df41-4490-a959-c4bb3bfca074) → 0 行
+演示空间为当前：BillingRuleRepository.versions(账户 b9168898-df41-4490-a959-c4bb3bfca074) → 0 行
+演示空间为当前：BillingRuleRepository.effectiveOn(账户 b9168898-df41-4490-a959-c4bb3bfca074) → 0 行
+演示空间为当前：CardRepository.list(creditAccountId: eb22bafb-6351-4d31-952b-6b78b6152954) → 0 行
+演示空间为当前：BillingRuleRepository.versions(账户 eb22bafb-6351-4d31-952b-6b78b6152954) → 0 行
+演示空间为当前：BillingRuleRepository.effectiveOn(账户 eb22bafb-6351-4d31-952b-6b78b6152954) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 1001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 1002) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 2001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 3001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行甲, 4001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 1001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 1002) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 2001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 3001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行乙, 4001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 1001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 1002) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 2001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 3001) → 0 行
+演示空间为当前：CardRepository.sameBankSameLast4(演示银行丙, 4001) → 0 行
+演示空间为当前：BillingRuleRepository.all() → 0 行
+演示空间为当前：LimitSnapshotRepository.all() → 0 行
+演示空间为当前：LimitSnapshotRepository.latestByCurrencyAccount() → 0 行
+演示空间为当前：CardWalletReader.load() → 0 行
+演示空间为当前：共 82 条查询，全部为空
+00:00 +3: 两个空间都有数据：各自只看到自己的行；清除演示数据只删演示空间
+00:00 +4: All tests passed!
+[exit=0]
