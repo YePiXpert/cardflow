@@ -12,11 +12,16 @@ import 'package:cardflow/data/repositories/bank_repository.dart';
 import 'package:cardflow/data/repositories/billing_rule_repository.dart';
 import 'package:cardflow/data/repositories/card_repository.dart';
 import 'package:cardflow/data/repositories/card_wallet_reader.dart';
+import 'package:cardflow/data/repositories/cash_account_repository.dart';
+import 'package:cardflow/data/repositories/cash_event_repository.dart';
+import 'package:cardflow/data/repositories/cash_forecast_reader.dart';
 import 'package:cardflow/data/repositories/credit_account_repository.dart';
 import 'package:cardflow/data/repositories/credit_pool_repository.dart';
 import 'package:cardflow/data/repositories/limit_snapshot_repository.dart';
 import 'package:cardflow/data/repositories/models.dart';
+import 'package:cardflow/data/repositories/recurring_item_repository.dart';
 import 'package:cardflow/data/repositories/repository_errors.dart';
+import 'package:cardflow/data/repositories/scenario_repository.dart';
 import 'package:cardflow/data/repositories/workspace_repository.dart';
 import 'package:cardflow/data/repositories/workspace_scope.dart';
 import 'package:cardflow/data/time/clock.dart';
@@ -78,6 +83,10 @@ Future<Map<String, int>> runAllQueries(
       final Iterable<Object?> rows => rows.length,
       final Map<Object?, Object?> map => map.length,
       final WalletView wallet => wallet.accounts.length + wallet.pools.length,
+      final CashDomainInputs inputs =>
+        inputs.accountRows.length +
+            inputs.eventRows.length +
+            inputs.latestSnapshots.length,
       _ => 1,
     };
     results[name] = count;
@@ -175,7 +184,123 @@ Future<Map<String, int>> runAllQueries(
     snapshots.latestByCurrencyAccount,
   );
   await run('CardWalletReader.load()', CardWalletReader(scope).load);
+
+  // v3（I-1b）：现金账户、快照、事件、周期事项、情景。
+  final cashAccounts = CashAccountRepository(scope);
+  final cashSnapshots = CashSnapshotRepository(scope);
+  final cashEvents = CashEventRepository(scope);
+  final recurring = RecurringItemRepository(scope);
+  final scenarios = ScenarioRepository(scope);
+  await run('CashAccountRepository.list()', cashAccounts.list);
+  for (final id in foreign['cash_accounts']!) {
+    await run('CashAccountRepository.byId($id)', () => cashAccounts.byId(id));
+    await run(
+      'CashAccountRepository.require($id)',
+      () => cashAccounts.require(id),
+    );
+    await run(
+      'CashSnapshotRepository.history($id)',
+      () => cashSnapshots.history(id),
+    );
+    await run(
+      'CashSnapshotRepository.sameDayEvents($id)',
+      () => cashSnapshots.sameDayEvents(id, LocalDate(2026, 10, 16)),
+    );
+    await run(
+      'CashEventRepository.list(cashAccountId: $id)',
+      () => cashEvents.list(cashAccountId: id),
+    );
+  }
+  await run('CashSnapshotRepository.all()', cashSnapshots.all);
+  await run(
+    'CashSnapshotRepository.latestByAccount()',
+    cashSnapshots.latestByAccount,
+  );
+  await run(
+    'CashSnapshotRepository.includedEventIds()',
+    cashSnapshots.includedEventIds,
+  );
+  for (final id in foreign['cash_balance_snapshots']!) {
+    await run(
+      'CashSnapshotRepository.includedIn($id)',
+      () => cashSnapshots.includedIn(id),
+    );
+  }
+  await run('CashEventRepository.list()', cashEvents.list);
+  await run('CashEventRepository.transfers()', cashEvents.transfers);
+  for (final id in foreign['cash_events']!) {
+    await run('CashEventRepository.byId($id)', () => cashEvents.byId(id));
+    await run('CashEventRepository.require($id)', () => cashEvents.require(id));
+  }
+  await run('RecurringItemRepository.list()', recurring.list);
+  for (final id in foreign['recurring_items']!) {
+    await run('RecurringItemRepository.byId($id)', () => recurring.byId(id));
+    await run(
+      'RecurringItemRepository.require($id)',
+      () => recurring.require(id),
+    );
+    await run(
+      'RecurringItemRepository.overridesOf($id)',
+      () => recurring.overridesOf(id),
+    );
+    await run(
+      'RecurringItemRepository.occurrences($id)',
+      () => recurring.occurrences(id),
+    );
+  }
+  await run('ScenarioRepository.rows()', scenarios.rows);
+  await run(
+    'ScenarioRepository.list() 中已保存的',
+    () async => (await scenarios.list()).where((s) => s.row != null).toList(),
+  );
+  await run('ScenarioRepository.allRuns()', scenarios.allRuns);
+  for (final id in foreign['scenarios']!) {
+    await run('ScenarioRepository.byKey($id)', () => scenarios.byKey(id));
+    await run('ScenarioRepository.runs($id)', () => scenarios.runs(id));
+  }
+  for (final id in foreign['scenario_runs']!) {
+    await run('ScenarioRepository.runById($id)', () => scenarios.runById(id));
+  }
+  await run(
+    'CashForecastReader.loadInputs()',
+    CashForecastReader(scope).loadInputs,
+  );
   return results;
+}
+
+/// 以 [scope] 为当前工作空间、用另一个空间的 id 写入现金数据：一律"已不存在"。
+Future<void> expectForeignCashWritesRejected(
+  WorkspaceScope scope,
+  Map<String, List<String>> foreign,
+) async {
+  final account = foreign['cash_accounts']!.first;
+  final event = foreign['cash_events']!.first;
+  final item = foreign['recurring_items']!.first;
+  final scenario = foreign['scenarios']!.first;
+  await expectRepositoryError<NotFoundException>(
+    () => CashAccountRepository(scope).update(account, reserveFloorMinor: 1),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () => CashEventRepository(scope).delete(event),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () => CashEventRepository(scope).markPosted(event),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () => RecurringItemRepository(scope).skip(item, LocalDate(2026, 11, 27)),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () => ScenarioRepository(scope).delete(scenario),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () => recordTestCashSnapshot(
+      scope,
+      account,
+      LocalDate(2026, 10, 16),
+      1,
+      observedAt: '2026-10-16T09:00:00+08:00',
+    ),
+  );
 }
 
 /// v3 的现金表各写一些行（直接写库；仓库与演示数据接入后改用仓库写入）。
@@ -324,6 +449,7 @@ void main() {
           CreditAccountRepository(real)
               .leavePool(demoIds['credit_accounts']!.first),
     );
+    await expectForeignCashWritesRejected(real, demoIds);
     expect(await idsByTable(db, demo.workspaceId), demoIds);
   });
 
@@ -349,6 +475,8 @@ void main() {
       expect(entry.value, 0, reason: entry.key);
     }
     _log('演示空间为当前：共 ${results.length} 条查询，全部为空');
+    await expectForeignCashWritesRejected(demo, realIds);
+    expect(await idsByTable(db, real.workspaceId), realIds);
   });
 
   test('两个空间都有数据：各自只看到自己的行；清除演示数据只删演示空间', () async {

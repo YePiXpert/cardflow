@@ -6,6 +6,9 @@ import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/ids.dart';
 import 'package:cardflow/data/repositories/billing_rule_repository.dart';
 import 'package:cardflow/data/repositories/card_repository.dart';
+import 'package:cardflow/data/repositories/cash_account_repository.dart';
+import 'package:cardflow/data/repositories/cash_event_repository.dart';
+import 'package:cardflow/data/repositories/cash_models.dart';
 import 'package:cardflow/data/repositories/credit_account_repository.dart';
 import 'package:cardflow/data/repositories/limit_snapshot_repository.dart';
 import 'package:cardflow/data/repositories/models.dart';
@@ -20,6 +23,19 @@ import '../db/db_test_support.dart';
 
 /// 仓库测试的"现在"：北京时间 2026-10-18 12:00。
 final FixedClock testClock = FixedClock(DateTime.utc(2026, 10, 18, 4));
+
+/// 时刻固定、但像真实空间一样判断陈旧的时钟（[FixedClock] 是演示空间的时钟，不判陈旧）。
+final class StaleAwareClock implements AppClock {
+  const StaleAwareClock(this.instant);
+
+  final DateTime instant;
+
+  @override
+  DateTime now() => instant.toUtc();
+
+  @override
+  bool get isFixed => false;
+}
 
 /// 在临时目录打开真实加密库（与 App 相同的流程），测试结束时关闭。
 Future<AppDatabase> openRealTestDatabase() async {
@@ -154,4 +170,73 @@ Future<T> expectRepositoryError<T extends Object>(
     return error;
   }
   fail('expected $T');
+}
+
+/// 建一个现金账户（默认：银行账户"工资卡"、CNY、储备 0、可用于还款）。
+Future<CashAccountRow> createTestCashAccount(
+  WorkspaceScope scope, {
+  String name = '工资卡',
+  CashAccountKind kind = CashAccountKind.bank,
+  String currency = 'CNY',
+  int reserve = 0,
+  bool? usable,
+  LocalDate? availableFrom,
+}) => CashAccountRepository(scope).create(
+  NewCashAccount(
+    id: newUuidV4(),
+    name: name,
+    kind: kind,
+    currency: currency,
+    reserveFloorMinor: reserve,
+    usableForRepayment: usable,
+    availableFrom: availableFrom,
+  ),
+);
+
+/// 记一笔收支：[amount] 带符号（正 = 收入，负 = 支出）；类别按领域包测试的写法：
+/// 收入 `income`、支出 `bill`（[type] 可改）。
+Future<CashEventRow> addTestCashEvent(
+  WorkspaceScope scope,
+  String accountId,
+  LocalDate on,
+  int amount, {
+  CashEventClass cls = CashEventClass.confirmed,
+  CashPlanType? type,
+  Timestamp? at,
+  String? label,
+}) => CashEventRepository(scope).create(
+  CashEventDraft(
+    cashAccountId: accountId,
+    type: type ?? (amount > 0 ? CashPlanType.income : CashPlanType.debt),
+    cls: cls,
+    on: on,
+    amountMinor: amount.abs(),
+    at: at,
+    label: label,
+  ),
+);
+
+/// 记录一次现金余额快照（默认：实际时点为快照日北京时间 20:00；当天的事件都答"未包含"，
+/// [included] 里的答"已包含"）。
+Future<CashSnapshotRow> recordTestCashSnapshot(
+  WorkspaceScope scope,
+  String accountId,
+  LocalDate asOf,
+  int balance, {
+  Set<String> included = const <String>{},
+  String? observedAt,
+}) async {
+  final repo = CashSnapshotRepository(scope);
+  final sameDay = await repo.sameDayEvents(accountId, asOf);
+  return repo.record(
+    CashSnapshotDraft(
+      cashAccountId: accountId,
+      balanceMinor: balance,
+      balanceAsOf: asOf,
+      observedAt: Timestamp.parse(observedAt ?? '${asOf}T20:00:00+08:00'),
+      sameDayAnswers: <String, bool>{
+        for (final e in sameDay) e.id: included.contains(e.id),
+      },
+    ),
+  );
 }
