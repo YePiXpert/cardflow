@@ -1,0 +1,200 @@
+# I-0b 加密钩子写法的出处与 pubspec 片段 · 2026-10-18T05:43:18Z · 提交 d69e5a8
+
+## 1. drift 文档 Encryption 页（Setup / Using / Important notice 三节）
+$ curl -sSL https://drift.simonbinder.eu/platforms/encryption/ | <去标签取正文>
+# HTTP 200  https://drift.simonbinder.eu/platforms/encryption/  62066 bytes
+Setup#
+The sqlite3
+package uses build hooks to bundle a version of SQLite with your app.
+It can be configured to bundle SQLite3MultipleCiphers
+instead, which provides encryption support.
+To enable encryption, add this to the pubspec of your pub workspace root (or your app's pubspec if you're
+not using pub workspaces):
+hooks:
+user_defines:
+sqlite3:
+source: sqlite3mc
+For more information on configuring hooks, see the documentation.
+Previous versions of the sqlite3
+package required a dependency on sqlcipher_flutter_libs
+. That package is no longer necessary
+after upgrading to drift 2.32.0 and can be removed.
+Using#
+SQLite3MultipleCiphers implements the SQLite C API, which means that you can continue to use the sqlite3
+package
+or package:drift/native.dart
+without code changes.
+To actually encrypt a database though, you must set an encryption key before using it.
+A good place to do that in drift is the setup
+parameter of NativeDatabase
+, which runs before drift
+is using the database in any way:
+NativeDatabase.createInBackground(
+myDatabaseFile,
+setup: (rawDb) {
+rawDb.execute("PRAGMA key = 'passphrase';");
+},
+);
+Important notice#
+SQLite3MultipleCiphers is a fork of SQLite with added encryption support.
+To ensure you're using the right version in your app, it is recommended that you check for the
+cipher
+pragma at runtime (since that is not provided by upstream SQLite):
+bool _debugCheckHasCipher(Database database) {
+return database.select('PRAGMA cipher;').isNotEmpty;
+}
+Next, add an assert(_debugCheckHasCipher(database))
+before using the database. A suitable place is the
+setup
+parameter to a NativeDatabase
+:
+NativeDatabase.createInBackground(
+myDatabaseFile,
+setup: (rawDb) {
+assert(_debugCheckHasCipher(rawDb));
+rawDb.execute("PRAGMA key = 'passphrase';");
+},
+);
+If this check reveals that the encrypted variant is not available, check your hook options
+or open an issue on this repository
+for further advice.
+
+## 2. sqlite3 3.7.1 README（pub.dev 包内）
+$ curl -sSL https://pub.dev/api/archives/sqlite3-3.7.1.tar.gz | tar -xzO README.md | grep -n -A2 "SQLite3MultipleCiphers or SQLCipher"
+# archive sha256: 144132790ec1947fad9f3ddceffd0af2ab80a1f0d1e81a4d094ee6707ec3df0b（pub.dev 公布值 144132790ec1947fad9f3ddceffd0af2ab80a1f0d1e81a4d094ee6707ec3df0b）
+131:On all native platforms, you can also use SQLite3MultipleCiphers or SQLCipher instead of SQLite to encrypt
+132-databases. The [hook options page](./doc/hook.md) describe this setup.
+133-
+
+## 3. sqlite3 3.7.1 doc/hook.md（README 所说的 hook options page）
+$ sed -n "/^## Default binaries/,/^In some environments/p" doc/hook.md
+## Default binaries
+
+Each [GitHub release](https://github.com/simolus3/sqlite3.dart/releases) of the SQLite package
+contains pre-compiled SQLite versions as shared libraries for all platforms supported by Dart.
+These binaries are compiled directly from upstream sources in GitHub actions, and the version of
+`package:sqlite3` published to pub.dev contains sha256 references that are compared against
+downloaded files.
+
+These binaries use the following compile-time options:
+
+```
+SQLITE_ENABLE_DBSTAT_VTAB
+SQLITE_ENABLE_FTS5
+SQLITE_ENABLE_RTREE
+SQLITE_ENABLE_MATH_FUNCTIONS
+SQLITE_DQS=0
+SQLITE_DEFAULT_MEMSTATUS=0
+SQLITE_TEMP_STORE=2
+SQLITE_MAX_EXPR_DEPTH=0
+SQLITE_STRICT_SUBTYPE=1
+SQLITE_OMIT_AUTHORIZATION
+SQLITE_OMIT_DECLTYPE
+SQLITE_OMIT_DEPRECATED
+SQLITE_OMIT_PROGRESS_CALLBACK
+SQLITE_OMIT_SHARED_CACHE
+SQLITE_OMIT_TCL_VARIABLE
+SQLITE_OMIT_TRACE
+SQLITE_USE_ALLOCA
+SQLITE_ENABLE_SESSION
+SQLITE_ENABLE_PREUPDATE_HOOK
+SQLITE_UNTESTABLE
+SQLITE_HAVE_ISNAN
+SQLITE_HAVE_LOCALTIME_R
+SQLITE_HAVE_LOCALTIME_S
+SQLITE_HAVE_MALLOC_USABLE_SIZE
+SQLITE_HAVE_STRCHRNUL
+```
+
+For each platform, three sets of binaries are available:
+
+- [Upstream SQLite](https://sqlite.org/download.html).
+- The [SQLite3MultipleCiphers build](https://github.com/utelle/SQLite3MultipleCiphers/releases)
+  providing encryption support.
+- A [SQLCipher](https://www.zetetic.net/sqlcipher/) community edition build.
+
+SQLite is used by default, but SQLite3MultipleCiphers can be selected through user defines, e.g.
+by adding this to `pubspec.yaml`:
+
+```yaml
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc # for SQLite3MultipleCiphers, default is sqlite3. sqlcipher is also available.
+```
+
+> [!IMPORTANT]
+> While SQLite3 is released into the [public domain](https://sqlite.org/copyright.html), SQLite3 Multiple Ciphers
+> and SQLCipher have their own licenses. Additionally, the SQLCipher build links OpenSSL on Windows, Linux
+> and Android.
+> The SQLCipher build included in `package:sqlite3` releases may include an older SQLite version than
+> the default and SQLite3 Multiple Ciphers builds.
+
+In some environments, you may want to use an internal artifact repository instead of the public
+
+## 4. 钩子如何解析 source（sqlite3 3.7.1 lib/src/hook/compile/description.dart 摘录）
+62:    final source = forTargetOS('source');
+68:      case 'sqlite3mc':
+69:        return fromGitHub(LibraryType.sqlite3mc);
+343:  static const defaultUrlPattern =
+344:      r'https://github.com/simolus3/sqlite3.dart/releases/download/$RELEASE_TAG/$FILENAME';
+
+## 5. 本工程 pubspec.yaml 的写法（应用 pubspec 即 pub workspace 根，未使用 pub workspace）
+$ grep -n -B7 -A4 "^hooks:" apps/mobile/pubspec.yaml
+39-
+40-# sqlite3 包的构建钩子选项：把 SQLite3MultipleCiphers（sqlite3mc）而不是普通 SQLite 打进 App。
+41-# 写法出处：drift 文档 Encryption 页（https://drift.simonbinder.eu/platforms/encryption/）与
+42-# sqlite3 3.7.1 的 doc/hook.md（README 的 "hook options page"）；摘录见 evidence/i0/I0-b/hook-source.txt。
+43-# 钩子下载 sqlite3.dart GitHub release 中预编译的 sqlite3mc，并用包内记录的 sha256 校验。
+44-# 打开数据库前检查 PRAGMA cipher 与 sqlite3mc_version() 均非空，否则拒绝打开，不会退回明文库
+45-# （lib/data/db/encryption.dart；PRAGMA cipher_version 是 SQLCipher 的 PRAGMA，sqlite3mc 对它返回空）。
+46:hooks:
+47-  user_defines:
+48-    sqlite3:
+49-      source: sqlite3mc
+
+$ grep -n "^  drift:\|^  drift_flutter:\|^  sqlite3:\|^  flutter_secure_storage:\|^  path_provider:" apps/mobile/pubspec.yaml
+24:  drift: 2.35.2
+25:  drift_flutter: 0.3.1
+26:  sqlite3: 3.7.1
+27:  flutter_secure_storage: 11.2.0
+28:  path_provider: 2.1.6
+
+## 6. pubspec.lock 中解析到的版本（直接依赖 + 与加密/钩子相关的传递依赖）
+drift                                    2.35.2         direct main
+drift_flutter                            0.3.1          direct main
+sqlite3                                  3.7.1          direct main
+flutter_secure_storage                   11.2.0         direct main
+flutter_secure_storage_darwin            0.4.3          
+path_provider                            2.1.6          direct main
+path_provider_foundation                 2.6.0          
+objective_c                              9.6.2          
+hooks                                    2.2.0          
+code_assets                              2.1.0          
+native_toolchain_c                       0.19.5         
+sqlite3_flutter_libs                     0.6.0+eol      
+sqlcipher_flutter_libs                   0.7.0+eol      
+
+# 说明：sqlite3_flutter_libs 0.6.0+eol 与 sqlcipher_flutter_libs 0.7.0+eol 是 drift_flutter 0.3.1 的传递依赖。
+# 这两个版本是空壳（只有一个空的 lib/*.dart，没有 ios/、android/ 原生代码），作者用它们阻止旧的 0.5.x/0.6.x 原生构建
+# 脚本与钩子同时生效；本工程没有直接依赖它们（architecture §11 "不采用" 指的是旧的原生版本）。
+$ curl -sSL https://pub.dev/api/archives/sqlcipher_flutter_libs-0.7.0+eol.tar.gz | tar -tz
+pubspec.yaml
+README.md
+LICENSE
+CHANGELOG.md
+lib
+lib/sqlcipher_flutter_libs.dart
+$ curl -sSL https://pub.dev/api/archives/sqlite3_flutter_libs-0.6.0+eol.tar.gz | tar -tz
+pubspec.yaml
+README.md
+LICENSE
+CHANGELOG.md
+lib
+lib/sqlite3_flutter_libs.dart
+
+## 7. 实测：钩子提供的库与 PRAGMA 词汇（本机 flutter test；见 test.txt 中 encryption_test.dart 的两条测试）
+# - SELECT sqlite3mc_version()  -> 'SQLite3 Multiple Ciphers 2.6.1'（SQLite 3.54.0）
+# - PRAGMA cipher              -> 'chacha20'（sqlite3mc 默认算法 ChaCha20-Poly1305）
+# - PRAGMA cipher_version      -> 空（SQLCipher 的 PRAGMA，sqlite3mc 不实现；PRAGMA cipher='sqlcipher' 之后也为空）
+# 因此'失败即止'改用 PRAGMA cipher + sqlite3mc_version() 两项非空（lib/data/db/encryption.dart；见汇报的偏离项）。

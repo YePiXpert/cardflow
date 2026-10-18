@@ -1,0 +1,287 @@
+# I-0b 本机测试 · 2026-10-18T05:41:56Z · 提交 d69e5a8
+# 第 1 部分：全量测试。先删除 .dart_tool/hooks_runner，让 sqlite3 构建钩子重新运行（下载并按包内 sha256 校验 sqlite3mc），
+# 加密库测试用的就是这份真实的库（没有 mock；钩子失败时测试失败，不跳过）。
+$ rm -rf .dart_tool/hooks_runner && flutter test --reporter expanded
+   Woah! You appear to be trying to run flutter as root.
+   We strongly recommend running the flutter tool without superuser privileges.
+  /
+📎
+Resolving dependencies...
+Downloading packages...
+  build 4.0.11 (5.0.0 available)
+  build_config 1.3.3 (1.4.0 available)
+  build_runner 2.16.2 (2.17.1 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.3 available)
+Got dependencies!
+6 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart
+00:00 +0: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 框架错误：记类型与脱敏后的首行摘要，并继续交给原处理器
+00:00 +1: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 断言错误：记断言说明（脱敏）
+00:00 +2: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 其他异常只记类型；返回原处理器的结果
+00:00 +3: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 没有原处理器时返回 false，保持默认处理
+00:00 +4: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 默认最多保留 500 条，满了丢弃最早的
+00:00 +5: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 条目按时间从早到晚，时间为 UTC
+00:00 +6: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 返回的列表不可修改
+00:00 +7: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 detail 中的所有数字（含全角）替换为 #
+00:00 +8: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 detail 只保留首行，去掉控制字符并截断
+00:00 +9: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 标识符只允许小写字母、下划线与点（debug 断言，release 兜底替换）
+00:00 +10: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 错误只记异常类型与代码位置，不记异常正文
+00:00 +11: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 frames 只接受代码位置，其他文字被丢弃
+00:00 +12: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 codeLocations 只提取 package:/dart: 位置，最多 6 个
+00:00 +13: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 通知延迟到微任务里合并发出（构建期间写日志也安全）
+00:00 +14: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 释放后不再通知
+00:00 +15: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 Bundle ID 只在 Flutter/CardFlow.xcconfig 中定义
+00:00 +16: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 签名参数为空，由用户在安装前自行签名
+00:00 +17: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 Debug/Release.xcconfig 引入 CardFlow.xcconfig（在 Generated 之后）
+00:00 +18: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 每个 target 配置都以 Debug/Release.xcconfig 为基础，且不覆盖 Bundle ID 与签名
+00:00 +19: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 仓库内没有团队 ID、证书、描述文件或 entitlements
+00:00 +20: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: 最低系统版本 Xcode 工程的 IPHONEOS_DEPLOYMENT_TARGET 全部为 15.0
+00:00 +21: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: 最低系统版本 若引入 CocoaPods，Podfile 必须声明 platform :ios, 15.0
+00:00 +22: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: Info.plist 显示名为"卡序"，Bundle ID 来自构建设置
+00:00 +23: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: Info.plist 声明 zh_CN 与 en 两种语言
+00:00 +24: /projects/cardflow/apps/mobile/test/ios/ios_config_test.dart: Info.plist 没有权限用途说明、后台模式或 App Group
+00:00 +25: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +26: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +27: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +28: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +29: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +30: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +31: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +32: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +33: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +34: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +35: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +36: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +37: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +38: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +39: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +40: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +41: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +42: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +43: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +44: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +45: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +46: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +47: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +48: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +49: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +50: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +51: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +52: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +53: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +54: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +55: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +56: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +57: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +58: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +59: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +60: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +61: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +62: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +63: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +64: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +65: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +66: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +67: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +68: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +69: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +70: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +71: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +72: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +73: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:00 +74: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:01 +75: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 「复制诊断信息」把报告放进剪贴板，并给出轻提示
+00:01 +76: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +77: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +78: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +79: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +80: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +81: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +82: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +83: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +84: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +85: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +86: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:01 +87: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 底部导航是五个主 Tab，顺序为 总览/卡包/规划/发现/我的
+00:01 +88: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 底部导航是五个主 Tab，顺序为 总览/卡包/规划/发现/我的
+00:01 +89: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 底部导航是五个主 Tab，顺序为 总览/卡包/规划/发现/我的
+00:01 +90: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥
+00:02 +91: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥
+00:02 +92: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /planner（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:02 +93: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /planner（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:02 +94: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /planner（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:02 +95: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /planner（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:02 +96: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +97: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +98: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +99: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +100: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +101: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +102: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +103: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +104: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +105: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +106: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +107: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +108: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +109: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +110: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +111: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +112: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +113: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +114: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +115: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+00:02 +116: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/diagnostics（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+00:02 +117: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +118: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +119: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +120: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +121: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +122: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +123: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +124: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +125: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +126: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +127: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +128: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +129: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +130: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +131: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +132: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +133: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +134: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +135: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +136: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +137: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +138: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +139: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /cards（Brightness.light）满足触控尺寸、标签与文字对比度要求
+00:02 +140: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 切换 Tab 保留栈位置；再次点按当前 Tab 回到根页
+00:02 +141: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 切换 Tab 保留栈位置；再次点按当前 Tab 回到根页
+00:02 +142: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 切换 Tab 保留栈位置；再次点按当前 Tab 回到根页
+00:02 +143: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 切换 Tab 保留栈位置；再次点按当前 Tab 回到根页
+00:02 +144: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/diagnostics（Brightness.light）满足触控尺寸、标签与文字对比度要求
+00:02 +145: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 规划的首次空白主操作跳到卡包
+00:02 +146: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/welcome（Brightness.light）满足触控尺寸、标签与文字对比度要求
+00:03 +147: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/welcome（Brightness.light）满足触控尺寸、标签与文字对比度要求
+00:03 +148: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 欢迎页全屏覆盖底部导航，返回后回到"我的"
+00:03 +149: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局
+00:03 +150: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局
+00:03 +151: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 路由变化写入诊断日志，只记路由模板
+00:03 +152: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x 时所有页面正常布局
+00:03 +153: All tests passed!
+exit=0
+
+# 第 2 部分：钩子的输入（user_defines）与输出（实际使用的库）
+$ python3 -I - < 读取 .dart_tool/hooks_runner/sqlite3/*/{input,output}.json
+target: {"link_mode_preference": "dynamic", "target_architecture": "x64", "target_os": "linux"}
+user_defines: {"workspace_pubspec": {"base_path": "/projects/cardflow/apps/mobile/pubspec.yaml", "defines": {"source": "sqlite3mc"}}}
+asset: package:sqlite3/src/ffi/libsqlite3.g.dart -> hooks_runner/shared/sqlite3/build/download-ba0dffe9/libsqlite3mc.so {'type': 'dynamic_loading_bundle'}
+status: success
+
+$ sha256sum .dart_tool/hooks_runner/shared/sqlite3/build/download-*/libsqlite3mc.so
+ba0dffe936810d9845632e6146a64e387065aa20223cc031982dda655b84e455  .dart_tool/hooks_runner/shared/sqlite3/build/download-ba0dffe9/libsqlite3mc.so
+$ grep -n ... ~/.pub-cache/hosted/pub.dev/sqlite3-3.7.1/lib/src/hook/asset_hashes.dart   # 包内记录的期望值（Linux 测试用 / iOS 真机用）
+9:const String? releaseTag = 'sqlite3-3.7.1';
+43:  'libsqlite3mc.arm64.ios.dylib': '7c7a70b680807fcb717cc3e0ab708833958a2b978c45b651c23b2e6fd8591b61',
+51:  'libsqlite3mc.x64.linux.so': 'ba0dffe936810d9845632e6146a64e387065aa20223cc031982dda655b84e455',
+
+# 第 3 部分：加密库与诊断页相关测试逐条列出（-j 1 顺序执行，便于对照简报 §3 的测试清单）
+$ flutter test test/data/db test/features/diagnostics -j 1 --reporter expanded
+   Woah! You appear to be trying to run flutter as root.
+   We strongly recommend running the flutter tool without superuser privileges.
+  /
+📎
+Resolving dependencies...
+Downloading packages...
+  build 4.0.11 (5.0.0 available)
+  build_config 1.3.3 (1.4.0 available)
+  build_runner 2.16.2 (2.17.1 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.3 available)
+Got dependencies!
+6 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart
+00:00 +0: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 开关往返：首次新建（生成并保存密钥、建 meta 表），关闭后重开读到同样的内容
+00:00 +1: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 库文件是密文：文件头不是明文 SQLite 头，写入的文字在文件里找不到
+00:00 +2: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 密钥错误 → wrong_key（SQLite 26），文件不被改动
+00:00 +3: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 数据库已有数据而钥匙串没有密钥 → key_missing：不新建密钥，不覆盖旧库
+00:00 +4: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 已有的明文 SQLite 文件 → 拒绝打开（wrong_key），文件保持原样
+00:00 +5: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 空文件不算已有数据：照常首次新建
+00:00 +6: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 钥匙串不可用 → key_store_failed，不建库
+00:00 +7: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 迁移骨架 drift 升级路径：v1 库用 v2 打开时按步骤升级，meta 记录新版本
+00:00 +8: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 迁移骨架 缺少某一步 → migration_failed，不做任何改动
+00:00 +9: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 迁移骨架 某一步出错 → migration_failed，整个迁移回滚
+00:00 +10: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 迁移骨架 from > to（库来自更新的 App）→ schema_too_new
+00:00 +11: /projects/cardflow/apps/mobile/test/data/db/app_database_test.dart: 迁移骨架 v1 没有登记任何迁移步骤；当前版本为 1
+00:00 +12: loading /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart
+00:00 +12: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager 首次启动（无密钥、无数据库）生成一次 32 字节密钥并保存；之后只读不写
+00:00 +13: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager 并发调用只生成一把密钥
+00:00 +14: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager 钥匙串已有密钥、数据库文件不存在（例如重装后）：沿用已有密钥
+00:00 +15: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager 数据库已有数据而钥匙串没有密钥 → key_missing，不生成新密钥
+00:00 +16: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager 钥匙串里的内容格式不对 → key_invalid，不覆盖
+00:00 +17: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager 钥匙串不可用 → key_store_failed，消息里没有平台异常正文；之后可重试
+00:00 +18: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager 写入后读回不一致 → key_store_failed（此时不会建库）
+00:00 +19: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager 用注入的随机源生成（默认是 Random.secure）
+00:00 +20: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: DatabaseKeyManager hasKey 只看是否存在
+00:00 +21: /projects/cardflow/apps/mobile/test/data/db/database_key_test.dart: SecureStorageDatabaseKeyStore（iOS 钥匙串参数） WhenUnlockedThisDeviceOnly、不同步 iCloud、不设 access group
+00:00 +22: loading /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart
+00:00 +22: /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart: 首次启动：建库、生成密钥，日志 db/opened created；状态显示加密库与算法
+00:01 +23: /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart: 第二次启动：沿用密钥，日志 db/opened existing
+00:01 +24: /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart: 密钥错误：状态显示 wrong_key，日志 db/open_failed 只记错误码
+00:01 +25: /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart: 无密钥而库已存在：状态 key_missing，密钥显示"未生成"，不新建密钥
+00:01 +26: /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart: 取不到目录（path_provider 失败）→ location_unavailable
+00:01 +27: /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart: 数据库基准控制器 运行 → 成功：状态含毫秒数；日志只记事件（数字脱敏）
+00:01 +28: /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart: 数据库基准控制器 失败：状态与日志只有错误码
+00:01 +29: /projects/cardflow/apps/mobile/test/data/db/database_providers_test.dart: 日志与诊断报告里没有密钥（建库、错误密钥、基准全部走一遍）
+00:01 +30: loading /projects/cardflow/apps/mobile/test/data/db/database_benchmark_test.dart
+00:01 +30: /projects/cardflow/apps/mobile/test/data/db/database_benchmark_test.dart: 建临时加密库 → 写入 N 行 → 关闭 → 重开 COUNT：行数一致，耗时非负，跑完删除临时库
+00:01 +31: /projects/cardflow/apps/mobile/test/data/db/database_benchmark_test.dart: 报告行：毫秒数与文件大小，供用户回传
+00:01 +32: /projects/cardflow/apps/mobile/test/data/db/database_benchmark_test.dart: 上次没删掉的临时库会先被删除，不影响结果
+00:01 +33: /projects/cardflow/apps/mobile/test/data/db/database_benchmark_test.dart: 行数必须为正
+00:01 +34: loading /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart
+00:01 +34: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: 构建钩子加载的是 SQLite3MultipleCiphers sqlite3mc_version() 与 PRAGMA cipher 非空（否则说明钩子没有选中 sqlite3mc）
+00:01 +35: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: 构建钩子加载的是 SQLite3MultipleCiphers 已知差异：PRAGMA cipher_version 是 SQLCipher 的 PRAGMA，sqlite3mc 返回空
+00:01 +36: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: requireCipher：不是加密构建就拒绝（失败即止） 普通 SQLite（未知 PRAGMA 返回空、没有 sqlite3mc_version()）→ cipher_unavailable
+00:01 +37: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: requireCipher：不是加密构建就拒绝（失败即止） 只有 PRAGMA cipher 或只有版本函数都不够
+00:01 +38: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: requireCipher：不是加密构建就拒绝（失败即止） 检查失败时不会执行 PRAGMA key，也不会读写数据库
+00:01 +39: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: requireCipher：不是加密构建就拒绝（失败即止） PRAGMA cipher 非空但没有 sqlite3mc_version() → 验证密钥后仍拒绝，且没有写入
+00:01 +40: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: applyEncryption 在真实连接上 新库：设置密钥后写入的数据在文件里是密文，文件头不是明文 SQLite 头
+00:01 +41: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: applyEncryption 在真实连接上 原始密钥跳过口令派生：改了 kdf_iter 仍能打开；同一串文本当口令则打不开
+00:01 +42: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: applyEncryption 在真实连接上 密钥错误 → wrong_key（SQLITE_NOTADB）
+00:01 +43: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: applyEncryption 在真实连接上 不设密钥直接读加密库 → SQLITE_NOTADB（不会被当成明文库打开）
+00:01 +44: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: applyEncryption 在真实连接上 设置密钥的语句出错时，异常里没有密钥（底层异常带着语句全文）
+00:01 +45: /projects/cardflow/apps/mobile/test/data/db/encryption_test.dart: DatabaseKey：64 位十六进制往返；toString 不输出内容；格式不对拒绝
+00:01 +46: loading /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart
+00:02 +46: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 框架错误：记类型与脱敏后的首行摘要，并继续交给原处理器
+00:02 +47: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 断言错误：记断言说明（脱敏）
+00:02 +48: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 其他异常只记类型；返回原处理器的结果
+00:02 +49: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 没有原处理器时返回 false，保持默认处理
+00:02 +50: loading /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart
+00:02 +50: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 默认最多保留 500 条，满了丢弃最早的
+00:02 +51: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 条目按时间从早到晚，时间为 UTC
+00:02 +52: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 返回的列表不可修改
+00:02 +53: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 detail 中的所有数字（含全角）替换为 #
+00:02 +54: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 detail 只保留首行，去掉控制字符并截断
+00:02 +55: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 标识符只允许小写字母、下划线与点（debug 断言，release 兜底替换）
+00:02 +56: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 错误只记异常类型与代码位置，不记异常正文
+00:02 +57: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 frames 只接受代码位置，其他文字被丢弃
+00:02 +58: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 codeLocations 只提取 package:/dart: 位置，最多 6 个
+00:02 +59: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 通知延迟到微任务里合并发出（构建期间写日志也安全）
+00:02 +60: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 释放后不再通知
+00:02 +61: loading /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart
+00:02 +61: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:03 +62: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 「复制诊断信息」把报告放进剪贴板，并给出轻提示
+00:03 +63: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 加密库不可用时显示错误码，密钥显示"未生成"
+00:03 +64: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 「运行数据库基准」：显示各段毫秒数，并进入复制的报告
+00:04 +65: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥
+00:04 +66: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 报告只含元数据与脱敏日志
+00:04 +67: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 源码版本：CI 注入提交号时显示前 12 位，本机构建显示"本机构建"
+00:04 +68: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 基准按钮上的行数写法
+00:04 +69: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 应用信息读取失败时显示错误而不是空白
+00:04 +70: All tests passed!
+exit=0
