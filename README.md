@@ -21,6 +21,54 @@
 | `tools/` | 开发脚本：`dev-db.sh`（开发库管理）、`build-api-image.sh`（构建 `cardflow/api` 镜像）、`gen-secrets.sh`（生成部署 secret）、`pii_scan.py`（日志 PII 扫描） | |
 | `evidence/m0/<任务ID>/` | M0 验收证据：工具输出原文（用 `tee` 保存）；不得含口令、令牌或真实金融数据 | |
 
+## 移动端
+
+iOS 优先（`docs/80-delivery/ios-first-plan.md`）。工程在 `apps/mobile/`（Flutter 3.47.7，Bundle ID `li.yep.cardflow`），结构与约定见 `apps/mobile/README.md`。本机（Linux）只做静态分析、测试和 Web 编译检查；iOS 包由 GitHub Actions 的 macOS runner 构建，产出**未签名** IPA，由用户用自己的证书签名后安装。仓库和 CI 不保存任何证书、描述文件或团队 ID。
+
+### 本机命令
+
+```bash
+export PATH=/opt/flutter-sdk/bin:$PATH
+cd apps/mobile
+flutter pub get --enforce-lockfile
+dart format --output=none --set-exit-if-changed .
+flutter analyze --fatal-infos          # 要求输出 "No issues found!"
+flutter test
+flutter build web --release            # 只作编译检查，产物不发布
+```
+
+改了带 `@riverpod` 注解的文件后，先运行 `dart run build_runner build`，再运行 `dart format .`，并把生成的 `*.g.dart` 一起提交。
+
+### 触发 iOS 构建
+
+CI 定义在 `.github/workflows/mobile.yml`：
+- `dart` job：每次 push 或 PR（`apps/mobile/` 或该工作流有变动时）自动运行。
+- `ios-unsigned` job：只在手动触发或推送 `ios-v*` 标签时运行。macOS 分钟按 Linux 的 10 倍计，所以只在阶段交付或修 iOS 原生配置时触发。
+
+```bash
+gh workflow run mobile.yml --ref main      # 手动触发；也可在网页 Actions › mobile › Run workflow
+# 或者：git tag ios-v0.0.1 && git push origin ios-v0.0.1
+gh run list --workflow mobile.yml --limit 5
+gh run watch <run-id>
+```
+
+构建失败时，运行页的 Artifacts 里会有 `ios-build-logs-<run-id>-<attempt>`（Flutter 详细日志与 Xcode 日志）。
+
+### 下载 IPA
+
+- 网页：打开该次运行页面，在 Artifacts 里下载 `cardflow-unsigned-<提交前 7 位>`。下载得到的是 zip，解压后是 `cardflow-unsigned-<提交前 7 位>.ipa`。
+- 命令行：`gh run download <run-id> -n cardflow-unsigned-<提交前 7 位>`。
+- 运行页的 Summary 列出了 IPA 的大小、sha256、Bundle ID、版本号、构建号和最低系统版本。安装前可以核对 sha256。
+- artifact 保留 14 天。
+
+### 用自己的证书签名并安装（通用步骤）
+
+1. IPA 内部结构是 `Payload/Runner.app`。App 内嵌的 `Runner.app/Frameworks/` 里有 `Flutter.framework`、`App.framework` 等，签名时要连同这些嵌套的 framework 一起签，否则无法安装或启动。
+2. Bundle ID 保持 `li.yep.cardflow`，签名身份（证书和团队）每次都用同一个。这样新版本才能覆盖安装，App 内的数据才能保留。换 Bundle ID 会装成另一个 App；换签名身份（团队）则无法覆盖安装，只能删掉旧 App 再装。两种情况下原来的数据都不会保留（ADR-015）。
+3. App 不需要任何 entitlement（没有推送、App Group、钥匙串共享），普通开发证书或个人证书就能签。
+4. 免费 Apple ID 的描述文件大约 7 天过期（ADR-015，待核验）。过期后 App 打不开，但数据还在。用同一个身份重新签名，再覆盖安装即可。
+5. 装好后打开 我的 › 诊断信息，点「复制诊断信息」，把文字发回即可反馈问题。复制的内容只有版本、系统和本机日志，不含金额与正文。如果签名工具改写了 Bundle ID，这一页也能看出来。
+
 ## 本地启动（服务端，到"测试通过"为止）
 
 前置：Python 3.13、uv ≥ 0.12、Docker + Compose v2。在仓库根目录执行；只占用 127.0.0.1 端口（开发库 18432，API 示例 18081）。
