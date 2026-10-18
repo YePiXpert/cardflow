@@ -13,6 +13,7 @@
 - 已完成：**I-0b**（drift + sqlite3mc 钩子加密库、Keychain 原始密钥、失败即止、诊断页加密状态与 10 万行基准）。第二个 IPA：https://github.com/YePiXpert/cardflow/actions/runs/39101728143/artifacts/12126439551（源码 4d720c9，sha256 4119031e…，2026-11-01 过期；4 个嵌套 framework 需一并重签）。证据 `evidence/i0/I0-b/`。
 - 已完成：**I-0c**（纯 Dart 领域包 `apps/mobile/packages/cardflow_domain`：金额/日期/账期/现金时间线/验证器/有限搜索/协议 v1 适配与哈希；Dart fixture 运行器 `dart run cardflow_domain:run_fixtures [--dump DIR]`；Python 运行器 `--dump`；CI `protocol-parity` job 双端逐字节一致）。265 项领域测试、App 154 项；CI 运行 39114057360 全绿。不出 IPA。证据 `evidence/i0/I0-c/`。I-1 的领域包 API 说明见 `apps/mobile/README.md`"领域层"一节与 `packages/rules-protocol/README.md` 末节。
 - I-0 阶段末审查已完成（报告 `evidence/i0/review-i0.md`，简报 `briefs/review-i0.md`）：blocker 0、major 0、minor 15、疑问 5。处置：R-15/R-03/R-08 等 8 条写入 `briefs/I1-a.md` §6，1 条写入 `briefs/I1-b.md` §5，其余记 backlog BL-13~BL-19；疑问裁决：有限搜索漏报（R-01）作 I-2 第一个任务 I2-0（BL-15）；PrivacyInfo 保留待 I1-c 扫描二进制（BL-16）；v1 暂不混淆（BL-17，security-privacy §3 已注明）。I-0 阶段退出只差用户真机回传。
+- 已完成：**I1-a**（本地库 v2：9 张 STRICT 表、冻结迁移 SQL、11 索引 10 触发器；仓库层与领域映射；真实/演示工作空间与隔离；P-22/P-02/P-03 最小版/P-04/P-01 最小版；审查带入项 R-15/R-03/R-08 等全部落实）。291 项 App 测试；CI 运行 39140901236 绿；13 个提交（c82d9a0…012542a）。证据 `evidence/i1/I1-a/`。偏离与约定见 `apps/mobile/README.md` 的"I-1a 的偏离与约定"一节，主会话已接受并登记（data-model §10.14、BL-20/BL-21）。
 
 ## 2. 如何判断进行中任务做到哪了
 
@@ -23,7 +24,7 @@
 
 ## 3. 下一步（按顺序，一次一个代理）
 
-1. **I1-a 进行中**（2026-10-18 派发，简报 `briefs/I1-a.md`，证据 `evidence/i1/I1-a/`）：本地库 v2、真实/演示工作空间、建卡/账期/额度页面。验收后派 I1-b。
+1. **I1-b 进行中**（2026-10-18 派发，简报 `briefs/I1-b.md`，证据 `evidence/i1/I1-b/`）：本地库 v3、现金账户/快照/收支计划/情景、资金日历 P-07/P-08/P-09。验收后派 I1-c（出第三个 IPA）。
 2. 等用户对 IPA 4d720c9 回传：加密库状态应为"已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）"，密钥"已生成"，基准 `open_ms + count_ms < 1000`。若真机加密库不可用，按 ADR-001 回退 sqflite_sqlcipher（只换 drift 的执行器，领域包与数据层接口不变）。
 3. **I-1**（卡片、账期、现金流；`ios-first-plan.md` §3、§4b）已拆为三个单代理任务，简报已写好：`briefs/I1-a.md`（本地库 v2 + 工作空间 + 建卡/账期/额度）→ `briefs/I1-b.md`（现金与资金日历）→ `briefs/I1-c.md`（交易/账单/分期/还款 + 阶段交付 IPA）。按顺序逐个派发，每个验收后再派下一个。真机回传未到时也可开始，但 DB 层必须留在 `openAppDatabase` 抽象之后以便回退。只有 I1-c 触发 iOS 构建。
 

@@ -21,3 +21,5 @@
 | BL-17 | R-I0 Q-3 | security-privacy §3 CODE 要求 Release 混淆；v1 自签纯本地阶段**暂不启用** `--obfuscate`：诊断页是唯一反馈渠道，混淆后代码位置不可读且需保管符号文件 | 已在 security-privacy §3 注明；I-4（备份/应用锁）阶段评估随符号文件管理一起启用 |
 | BL-18 | R-I0 R-13 | `test/ios/ios_config_test.dart` 遍历目录，有本地签名配置（`CardFlow.local.xcconfig`）的 Mac 上会误报 | 测试排除 `*.local.xcconfig`；I1-c 顺手 |
 | BL-19 | R-I0 R-04 | 领域包 `json.dart` 注释写 Python 深度"约 1000"不准（实测约 9,998 层接受、约 995 层 canonical 抛错） | 随 BL-15 改注释 |
+| BL-20 | I1-a | "重置本地数据"只要求输入"删除"，ui-spec §4.5 要求的设备认证未做（local_auth 属 I-4） | I-4 应用锁落地时给重置加设备认证 |
+| BL-21 | I1-a | P-04 在无规则时预填"10 日 / 当月 28 日"并提示核对；预填值可能被未核对就保存，导致账期错误 | I1-c 顺手改为不预填、必须用户填写（示例文案只作 placeholder） |

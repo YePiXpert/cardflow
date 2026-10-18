@@ -5,7 +5,7 @@
 ## 环境与规则
 与 `briefs/I1-a.md` 相同（仓库、Flutter 路径、VPS 限制、依赖只来自 architecture §11、不引入 uuid/timezone/freezed、小步提交推送、CI dart job 必须绿、代码生成产物随源码提交、无 Claude/AI 署名）。范围：`apps/mobile/`、`evidence/i1/I1-b/`、根 README 一行。**不改**领域包、协议包、services/api、docs；领域包缺口先停下汇报。证据 tee 到 evidence/i1/I1-b/。
 
-必读：PRD §4.3（R-CASH-01~10）、UF-5；ui-spec P-07、P-08、P-09、P-01（现金压力卡）、UF-1 步骤 4–5、UF-5；data-model §3/§4（cash_accounts、cash_balance_snapshots、snapshot_included_events、cash_events）；engine-spec §12/§12.1 的现金与情景语义；领域包 `lib/src/cash.dart`（`CashEvent`、`Snapshot`、`CashAccount`、`Scenario`、`EventOverride`、`buildTimeline`、`evaluate`、`evaluateAccounts`）与 `checks.dart`（`dataIssues`、`baselineCheck`）；I-1a 汇报的接口说明；apps/mobile/README.md。
+必读：PRD §4.3（R-CASH-01~10）、UF-5；ui-spec P-07、P-08、P-09、P-01（现金压力卡）、UF-1 步骤 4–5、UF-5；data-model §3/§4（cash_accounts、cash_balance_snapshots、snapshot_included_events、cash_events）；engine-spec §12/§12.1 的现金与情景语义；领域包 `lib/src/cash.dart`（`CashEvent`、`Snapshot`、`CashAccount`、`Scenario`、`EventOverride`、`buildTimeline`、`evaluate`、`evaluateAccounts`）与 `checks.dart`（`dataIssues`、`baselineCheck`）；apps/mobile/README.md 的"加密本地库"（schema v2 与加表步骤）、"工作空间与演示模式"、"仓库与 provider"、"I-1a 的偏离与约定"、"数据层 → 领域对象映射"各节（即 I-1a 的接口说明）；`lib/data/repositories/`、`lib/data/mapping/domain_mapping.dart`、`test/data/repositories/repository_test_support.dart`、`test/test_helpers.dart`。
 
 ## 1. 本地库 v3
 - `LocalSchema.currentSchemaVersion` → 3；2→3 只 expand；新建 vs 升级结构一致测试照旧。
