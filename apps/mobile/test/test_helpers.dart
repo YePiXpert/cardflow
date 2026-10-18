@@ -4,6 +4,7 @@ import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_providers.dart';
 import 'package:cardflow/data/demo/demo_workspace.dart';
 import 'package:cardflow/data/repositories/card_wallet_reader.dart';
+import 'package:cardflow/data/repositories/cash_plan_reader.dart';
 import 'package:cardflow/data/repositories/models.dart';
 import 'package:cardflow/data/repositories/providers.dart';
 import 'package:cardflow/data/repositories/workspace_repository.dart';
@@ -85,21 +86,35 @@ AppDatabase? _lastTestDatabase;
 AppDatabase get testDatabase =>
     _lastTestDatabase ?? (throw StateError('pumpCardFlowApp 还没有建内存库'));
 
+/// 真实空间在组件测试里用的时钟（[pumpCardFlowApp] 的 `realClock` 可替换，例如判断陈旧的时钟）。
+AppClock _realClock = widgetTestClock;
+
 /// 直接查库得到当前工作空间的卡包读模型（不经 provider：在真实事件循环里建 provider 的订阅，
 /// 会让之后伪时钟里的查询等不到结果）。
-Future<WalletView> readWallet(WidgetTester tester) async {
-  late WalletView wallet;
+Future<WalletView> readWallet(WidgetTester tester) async =>
+    withCurrentScope(tester, (scope) => CardWalletReader(scope).load());
+
+/// 直接查库得到当前工作空间的现金与收支读模型（同 [readWallet]）。
+Future<CashPlanView> readCashPlan(WidgetTester tester) async =>
+    withCurrentScope(tester, (scope) => CashPlanReader(scope).load());
+
+/// 在真实事件循环里以当前工作空间的作用域运行 [action]（读写数据、调用仓库）。
+Future<T> withCurrentScope<T>(
+  WidgetTester tester,
+  Future<T> Function(WorkspaceScope scope) action,
+) async {
+  late T result;
   await tester.runAsync(() async {
     final db = testDatabase;
     final row = await WorkspaceRepository(db).current();
     final scope = WorkspaceScope(
       db: db,
       workspaceId: row!.id,
-      clock: row.kind == WorkspaceKind.demo.code ? demoClock : widgetTestClock,
+      clock: row.kind == WorkspaceKind.demo.code ? demoClock : _realClock,
     );
-    wallet = await CardWalletReader(scope).load();
+    result = await action(scope);
   });
-  return wallet;
+  return result;
 }
 
 /// 组件测试的本地库：内存库（不加密，`AppDatabase.forTesting`），按 [workspace] 预置数据，
@@ -108,6 +123,7 @@ Future<AppDatabase> createWidgetTestDatabase(
   WidgetTester tester, {
   TestWorkspace workspace = TestWorkspace.real,
   Future<void> Function(WorkspaceScope scope)? seed,
+  AppClock? realClock,
 }) async {
   final db = _lastTestDatabase = AppDatabase.forTesting(
     NativeDatabase.memory(),
@@ -122,7 +138,11 @@ Future<AppDatabase> createWidgetTestDatabase(
         await workspaces.setCurrent(row.id);
         if (seed != null) {
           await seed(
-            WorkspaceScope(db: db, workspaceId: row.id, clock: widgetTestClock),
+            WorkspaceScope(
+              db: db,
+              workspaceId: row.id,
+              clock: realClock ?? widgetTestClock,
+            ),
           );
         }
       case TestWorkspace.demo:
@@ -139,14 +159,18 @@ Future<AppDatabase> createWidgetTestDatabase(
   return db;
 }
 
-/// 用内存库 [db] 替换本机加密库；时钟：演示空间固定 2026-10-16，真实空间固定 [widgetTestClock]。
-List<Override> testDatabaseOverrides(AppDatabase db) => <Override>[
-  databaseProvider.overrideWith((ref) async => db),
-  clockProvider.overrideWith((ref) {
-    final workspace = ref.watch(currentWorkspaceProvider).value;
-    return workspace != null && workspace.isDemo ? demoClock : widgetTestClock;
-  }),
-];
+/// 用内存库 [db] 替换本机加密库；时钟：演示空间固定 2026-10-16，真实空间固定 [realClock]
+/// （默认 [widgetTestClock]）。
+List<Override> testDatabaseOverrides(AppDatabase db, {AppClock? realClock}) =>
+    <Override>[
+      databaseProvider.overrideWith((ref) async => db),
+      clockProvider.overrideWith((ref) {
+        final workspace = ref.watch(currentWorkspaceProvider).value;
+        return workspace != null && workspace.isDemo
+            ? demoClock
+            : realClock ?? widgetTestClock;
+      }),
+    ];
 
 /// 启动完整 App（真实路由、主题与 Provider），可选覆盖。
 ///
@@ -162,16 +186,21 @@ Future<void> pumpCardFlowApp(
   TestWorkspace workspace = TestWorkspace.real,
   Future<void> Function(WorkspaceScope scope)? seed,
   bool useMemoryDatabase = true,
+  AppClock? realClock,
 }) async {
   mockPackageInfo();
   usePhoneSurface(tester, textScale: textScale, brightness: brightness);
+  _realClock = realClock ?? widgetTestClock;
+  addTearDown(() => _realClock = widgetTestClock);
   final memory = useMemoryDatabase
       ? testDatabaseOverrides(
           await createWidgetTestDatabase(
             tester,
             workspace: workspace,
             seed: seed,
+            realClock: realClock,
           ),
+          realClock: realClock,
         )
       : const <Override>[];
   await tester.pumpWidget(

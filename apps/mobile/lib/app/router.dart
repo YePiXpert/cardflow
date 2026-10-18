@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../data/repositories/cash_models.dart';
 import '../features/cards/account_detail_page.dart';
 import '../features/cards/account_settings_page.dart';
 import '../features/cards/cards_page.dart';
 import '../features/cards/new_card_page.dart';
+import '../features/cash/cash_account_pages.dart';
+import '../features/cash/cash_entry_pages.dart';
+import '../features/cash/cash_page.dart';
 import '../features/diagnostics/diagnostics_page.dart';
 import '../features/onboarding/welcome_page.dart';
 import '../features/overview/overview_page.dart';
@@ -134,12 +138,114 @@ GoRouter createAppRouter({
               ),
             ],
           ),
+          // 规划 Tab：P-10 与同一 Tab 的分段 P-07/P-08/P-09 是并列的顶层路由（分段之间切换没有返回）。
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
                 path: AppRoutes.planner,
                 pageBuilder: (context, state) =>
                     _page(state, const PlannerPage()),
+              ),
+              GoRoute(
+                path: AppRoutes.cash,
+                pageBuilder: (context, state) => _page(state, const CashPage()),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'new-account',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      const NewCashAccountPage(),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'new-event',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      CashEventFormPage(
+                        initialType: CashPlanType.parse(
+                          state.uri.queryParameters['type'],
+                        ),
+                      ),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'new-transfer',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      const TransferFormPage(),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'new-recurring',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      const RecurringFormPage(),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'events/:eventId',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      CashEventFormPage(
+                        eventId: state.pathParameters['eventId'],
+                      ),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'accounts/:accountId',
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      CashAccountDetailPage(
+                        accountId: state.pathParameters['accountId']!,
+                      ),
+                    ),
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: 'snapshot',
+                        parentNavigatorKey: rootNavigatorKey,
+                        pageBuilder: (context, state) => _page(
+                          state,
+                          RecordCashSnapshotPage(
+                            accountId: state.pathParameters['accountId']!,
+                          ),
+                          fullscreenDialog: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'recurring/:itemId',
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      RecurringDetailPage(
+                        itemId: state.pathParameters['itemId']!,
+                      ),
+                    ),
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: 'edit',
+                        parentNavigatorKey: rootNavigatorKey,
+                        pageBuilder: (context, state) => _page(
+                          state,
+                          RecurringFormPage(
+                            itemId: state.pathParameters['itemId'],
+                          ),
+                          fullscreenDialog: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

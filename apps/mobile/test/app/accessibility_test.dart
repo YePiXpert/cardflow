@@ -10,12 +10,29 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_helpers.dart';
 
 /// 有数据（演示空间）时可到达的全部页面。P-03/P-04 用"卡 A"的账户（含两张卡、规则、快照）
-/// 与"卡 D"的账户（授信池、超限）。
+/// 与"卡 D"的账户（授信池、超限）；P-08 用"工资卡"（快照含已包含事件）、"定期存款"（受限）、
+/// 一笔收支计划与周期事项"房租"。
 Future<List<String>> allPages(WidgetTester tester) async {
   final wallet = await readWallet(tester);
   final a = wallet.accounts.firstWhere((v) => v.displayName == '卡 A').id;
   final d = wallet.accounts.firstWhere((v) => v.displayName == '卡 D').id;
+  final cash = await readCashPlan(tester);
+  final salary = cash.accounts.firstWhere((x) => x.row.name == '工资卡').row.id;
+  final deposit = cash.accounts.firstWhere((x) => x.row.name == '定期存款').row.id;
+  final event = cash.plan.firstWhere((e) => e.label == '工资').id;
+  final rent = cash.recurring.single.row.id;
   return <String>[
+    AppRoutes.cash,
+    AppRoutes.cashAccount(salary),
+    AppRoutes.cashAccount(deposit),
+    AppRoutes.recordCashSnapshot(salary),
+    AppRoutes.newCashAccount,
+    AppRoutes.newCashEvent('income'),
+    AppRoutes.cashEvent(event),
+    AppRoutes.newTransfer,
+    AppRoutes.newRecurring,
+    AppRoutes.recurring(rent),
+    AppRoutes.editRecurring(rent),
     AppRoutes.overview,
     AppRoutes.cards,
     AppRoutes.newCard,
@@ -85,7 +102,11 @@ void main() {
     testWidgets('首次空白与首次使用页（$brightness）满足同样的要求', (tester) async {
       final handle = tester.ensureSemantics();
       await pumpCardFlowApp(tester, brightness: brightness);
-      for (final page in <String>[AppRoutes.overview, AppRoutes.cards]) {
+      for (final page in <String>[
+        AppRoutes.overview,
+        AppRoutes.cards,
+        AppRoutes.cash,
+      ]) {
         await goTo(tester, page);
         await _checkGuidelines(tester, page);
       }
@@ -117,7 +138,7 @@ void main() {
 
   // ui-spec §3.3：跟随系统字体缩放，不做低于 2.0 倍的钳制；放大后换行而不截断、不溢出。
   for (final scale in <double>[2.0, 3.0]) {
-    testWidgets('文字放大到 ${scale}x 时所有页面正常布局（含 P-01~P-04、新建卡片、P-22）', (
+    testWidgets('文字放大到 ${scale}x 时所有页面正常布局（含 P-01~P-04、P-07~P-09、新建卡片、P-22）', (
       tester,
     ) async {
       await pumpCardFlowApp(
@@ -133,7 +154,11 @@ void main() {
 
     testWidgets('文字放大到 ${scale}x：首次空白、首次使用页与启动页', (tester) async {
       await pumpCardFlowApp(tester, textScale: scale);
-      for (final page in <String>[AppRoutes.overview, AppRoutes.cards]) {
+      for (final page in <String>[
+        AppRoutes.overview,
+        AppRoutes.cards,
+        AppRoutes.cash,
+      ]) {
         await goTo(tester, page);
         _expectUnclamped(tester, scale, page);
       }

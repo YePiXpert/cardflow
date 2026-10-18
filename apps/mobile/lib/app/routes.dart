@@ -12,8 +12,29 @@ abstract final class AppRoutes {
   /// 新建卡片（P-02 的新建弹层，全屏覆盖底部导航）。
   static const String newCard = '/cards/new';
 
-  /// 规划（P-10）。
+  /// 规划（P-10，规划 Tab 的根页；同一 Tab 的分段：资金日历 P-07、现金与收支 P-08、情景 P-09）。
   static const String planner = '/planner';
+
+  /// 资金日历（P-07，规划分段）。
+  static const String cashCalendar = '/planner/calendar';
+
+  /// 现金账户与收支计划（P-08，规划分段）。
+  static const String cash = '/planner/cash';
+
+  /// 情景与假设对比（P-09，规划分段）。
+  static const String scenarios = '/planner/scenarios';
+
+  /// 添加现金账户（全屏）。
+  static const String newCashAccount = '/planner/cash/new-account';
+
+  /// 新增调拨（全屏）。
+  static const String newTransfer = '/planner/cash/new-transfer';
+
+  /// 新增周期事项（全屏）。
+  static const String newRecurring = '/planner/cash/new-recurring';
+
+  /// 新建压力情景（全屏）。
+  static const String newScenario = '/planner/scenarios/new';
 
   /// 发现（P-14）。
   static const String discover = '/discover';
@@ -50,6 +71,48 @@ abstract final class AppRoutes {
 
   /// 信用账户详情（P-03）。
   static String account(String accountId) => '$cards/accounts/$accountId';
+
+  /// 资金日历，带初始口径（`confirmed`/`baseline`/`stress`）与情景。
+  static String cashCalendarWith({String? basis, String? scenario}) {
+    final query = <String, String>{'basis': ?basis, 'scenario': ?scenario};
+    return Uri(
+      path: cashCalendar,
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
+
+  /// 现金账户详情（P-08）。
+  static String cashAccount(String accountId) => '$cash/accounts/$accountId';
+
+  /// 记录新快照（全屏）。
+  static String recordCashSnapshot(String accountId) =>
+      '${cashAccount(accountId)}/snapshot';
+
+  /// 新增收支（全屏）；[type] 是 `CashPlanType.code`。
+  static String newCashEvent([String? type]) =>
+      type == null ? '$cash/new-event' : '$cash/new-event?type=$type';
+
+  /// 修改一笔收支（全屏）。
+  static String cashEvent(String eventId) => '$cash/events/$eventId';
+
+  /// 周期事项详情（各期覆盖/跳过）。
+  static String recurring(String itemId) => '$cash/recurring/$itemId';
+
+  /// 修改周期事项（全屏）。
+  static String editRecurring(String itemId) => '${recurring(itemId)}/edit';
+
+  /// 修改压力情景（全屏）。
+  static String editScenario(String scenarioId) =>
+      '$scenarios/edit/$scenarioId';
+
+  /// 情景/版本对比；[a]、[b] 是计算版本 id。
+  static String scenarioCompare({String? a, String? b}) {
+    final query = <String, String>{'a': ?a, 'b': ?b};
+    return Uri(
+      path: '$scenarios/compare',
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
 
   /// 信用账户设置（P-04）；[section] 为初始分段（见 `AccountSettingsSection`）。
   static String accountSettings(String accountId, {String? section}) {
