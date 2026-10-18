@@ -1,0 +1,38 @@
+# ci-dart-run.txt：CI（.github/workflows/mobile.yml）在 I1-b 期间的运行，以及最后一次代码提交的运行详情
+# 生成时间：2026-10-18T16:59:59Z；本地源码提交：b85957e
+# 过滤：dart job 日志只保留各步骤的结论行（grep -E），并经 grep -Ev 'Runner Image|Operating System|Image:|Version:|Included Software|Image Release|Azure Region|Ubuntu|Linux|kernel|proxy|Proxy' 去掉 runner 的发行版/镜像/内核/代理信息行；其余为 gh 原文。
+# 说明：标 cancelled 的运行是工作流的 concurrency cancel-in-progress 被紧接着的推送取代；它们的代码都包含在最后一次运行里（绿）。没有失败的运行。
+$ gh run list --workflow mobile.yml --limit 12
+completed	success	移动端 P-08：陈旧或缺快照的账户行直接给出「记录新快照」（ui-spec P-08 九态余额陈旧）	mobile	main	push	39147014570	4m36s	2026-10-18T16:52:52Z
+completed	cancelled	移动端现金事件：已发生的收支日期不能改到今天之后（G3）；还款或计划生成的事件（层级为计划）不在 P-08 修改，仓库拒绝并说明	mobile	main	push	39146907482	2m36s	2026-10-18T16:51:25Z
+completed	cancelled	文档：apps/mobile README 补 I-1b（v3 表清单与升级比较、加表步骤更新、现金与资金日历一节：现金时区、可用现金口径…	mobile	main	push	39146810465	2m18s	2026-10-18T16:50:09Z
+completed	cancelled	移动端情景编辑器与现金表单：覆盖与额度变化按对应账户的币种解析与显示；覆盖候选只列近 31 天起的收支；日期选择范围包含已有的较早日期；修…	mobile	main	push	39146596822	3m36s	2026-10-18T16:47:17Z
+completed	cancelled	移动端 P-07 资金日历、P-09 情景与假设对比、P-01 现金压力卡：控制条（7/30/90/180 天、账户、已确认/基准/压力口…	mobile	main	push	39146462804	2m39s	2026-10-18T16:45:30Z
+completed	success	移动端 P-08 现金账户与收支计划：规划 Tab 分段（消费规划/资金日历/现金与收支/情景）；账户列表（最新快照、{n} 天前、可用性…	mobile	main	push	39145618015	3m17s	2026-10-18T16:34:27Z
+completed	success	移动端现金读模型与演示数据：现金/快照/事件/周期事项/情景仓库 provider，P-08 读模型（账户概况、收支计划、周期事项、调拨、…	mobile	main	push	39144748648	3m30s	2026-10-18T16:23:04Z
+completed	success	移动端现金数据层：现金账户（可用现金口径：受限/不可还款且无可用日期不计入）、余额快照（逐条确认当天收支是否已包含，只含快照日及以前本账户…	mobile	main	push	39144433211	3m25s	2026-10-18T16:18:56Z
+completed	success	本地库 v3：drift 表 DSL 定义现金账户、余额快照与已包含事件、现金事件、周期事项与单期覆盖、情景与情景计算版本 8 张表；冻结…	mobile	main	push	39142993972	3m21s	2026-10-18T16:00:05Z
+completed	success	文档：apps/mobile README 补 I-1a（目录、drift 表 DSL 与生成、v2 表清单与加表/迁移步骤、启动页与恢复…	mobile	main	push	39140901236	4m4s	2026-10-18T15:31:54Z
+completed	cancelled	移动端测试：P-22 加载与生成失败、P-04 加载/错误/已不存在；建卡、快照、换卡、切换空间后诊断日志与报告不含金额、卡号数字与别名（…	mobile	main	push	39140697790	3m11s	2026-10-18T15:29:19Z
+completed	cancelled	移动端 P-01 总览最小版（空间标识与纯本地、每个账户一行预测账期与到期日、没有现金账户时数据不全、建卡/演示入口）；P-04 分段改用…	mobile	main	push	39140518929	2m49s	2026-10-18T15:26:53Z
+[exit=0]
+
+$ gh run view 39147014570 --json headSha,status,conclusion,event,displayTitle,url --jq '.'
+{"conclusion":"success","displayTitle":"移动端 P-08：陈旧或缺快照的账户行直接给出「记录新快照」（ui-spec P-08 九态余额陈旧）","event":"push","headSha":"b85957e9f4cf950934ddbd3471a4f800dfdecb71","status":"completed","url":"https://github.com/YePiXpert/cardflow/actions/runs/39147014570"}
+[exit=0]
+
+$ gh run view 39147014570 --json jobs --jq '.jobs[] | {name, conclusion, steps: [.steps[] | {name, conclusion}]}'
+{"conclusion":"success","name":"protocol-parity (Python engine vs Dart domain)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@v7"},{"conclusion":"success","name":"Run astral-sh/setup-uv@v10.3.0"},{"conclusion":"success","name":"Run subosito/flutter-action@v2"},{"conclusion":"success","name":"uv sync --locked (services/api)"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"Golden fixtures -- Python runner --dump"},{"conclusion":"success","name":"Golden fixtures -- Dart runner --dump"},{"conclusion":"success","name":"Golden fixtures -- outputs byte-identical"},{"conclusion":"success","name":"Random fixtures (300, seed 20261018) -- generate"},{"conclusion":"success","name":"Random fixtures -- both runners --dump, outputs byte-identical"},{"conclusion":"success","name":"Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)"},{"conclusion":"skipped","name":"Upload parity outputs"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2"},{"conclusion":"success","name":"Post Run astral-sh/setup-uv@v10.3.0"},{"conclusion":"success","name":"Post Run actions/checkout@v7"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"success","name":"dart (format · analyze · test · web build)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@v7"},{"conclusion":"success","name":"Run subosito/flutter-action@v2"},{"conclusion":"success","name":"flutter --version"},{"conclusion":"success","name":"flutter pub get"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"dart format"},{"conclusion":"success","name":"dart format (cardflow_domain)"},{"conclusion":"success","name":"flutter analyze"},{"conclusion":"success","name":"dart analyze (cardflow_domain)"},{"conclusion":"success","name":"flutter test"},{"conclusion":"success","name":"dart test (cardflow_domain, incl. the no-double scan)"},{"conclusion":"success","name":"flutter build web (compile smoke test)"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2"},{"conclusion":"success","name":"Post Run actions/checkout@v7"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"skipped","name":"ios-unsigned (IPA without codesign)","steps":[]}
+[exit=0]
+
+$ gh run view --job 117733055855 --log | grep -E 'Formatted [0-9]+ files|No issues found|tests passed|All tests passed|Built build/web|##\[error\]' | grep -Ev '<上面的过滤>'
+dart (format · analyze · test · web build)	dart format	2026-10-18T16:54:41.8477773Z Formatted 203 files (0 changed) in 1.23 seconds.
+dart (format · analyze · test · web build)	dart format (cardflow_domain)	2026-10-18T16:54:42.0465929Z Formatted 44 files (0 changed) in 0.16 seconds.
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T16:54:58.2157073Z No issues found! (ran in 15.4s)
+dart (format · analyze · test · web build)	dart analyze (cardflow_domain)	2026-10-18T16:54:59.2367449Z No issues found!
+dart (format · analyze · test · web build)	flutter test	2026-10-18T16:56:22.6707632Z 🎉 385 tests passed.
+dart (format · analyze · test · web build)	dart test (cardflow_domain, incl. the no-double scan)	2026-10-18T16:56:30.2263444Z 00:02 +265: All tests passed!
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T16:57:24.7075128Z ✓ Built build/web
+[exit=0]
