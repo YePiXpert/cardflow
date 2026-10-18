@@ -26,6 +26,9 @@ dependencies:
   sqlite3: 3.7.1
   flutter_secure_storage: 11.2.0
   path_provider: 2.1.6
+  # 纯 Dart 领域层（I-0c）：金额与最小单位表、账期、现金时间线、验证器、有限搜索、规则协议 v1。
+  cardflow_domain:
+    path: packages/cardflow_domain
 
 dev_dependencies:
   flutter_test:

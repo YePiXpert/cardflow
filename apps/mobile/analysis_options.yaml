@@ -31,13 +31,10 @@ linter:
 # ---------------------------------------------------------------------------
 # 约定：领域层禁止 double（ADR-008；architecture §3）
 #
-# lib/domain/** 是纯 Dart 领域层（无 Flutter 依赖）。其中：
-#   - 金额一律用 int 最小单位 + 币种（Money{minor, currency}），小数位来自 minorDigits 表；
-#   - 利率、汇率、比例用 decimal 包的 Decimal，取整模式显式传入；
-#   - 禁止出现 double 类型、double 字面量（如 0.1）、num 类型的金额/比率，
-#     以及 toDouble()、double.parse()、double.tryParse() 调用。
+# 纯 Dart 领域层是独立包 packages/cardflow_domain（无 Flutter、无 drift 依赖），以 path 依赖引入：
+#   - 金额一律用 int 最小单位 + 币种，小数位来自领域包的 minorDigits 表（MoneyText 也引用它）；
+#   - 利率、系数用领域包的 Rational（BigInt 分数），取整模式显式传入（RoundingMode）；
+#   - 禁止出现 double 类型、num 类型、小数/指数字面量、toDouble() 等调用与浮点除法 `/`。
+# 可执行检查：packages/cardflow_domain/test/no_double_test.dart（CI 的 dart job 运行）。
 # 展示层（lib/app、lib/features）只在布局尺寸、动画等非金额场景使用 double。
-#
-# 本阶段 lib/domain 为空，上述约定暂由代码评审保证；可执行的检查（自定义 lint 或
-# 扫描 lib/domain 的测试）由下一任务（Dart 领域层移植）随首批领域代码一起加入。
 # ---------------------------------------------------------------------------

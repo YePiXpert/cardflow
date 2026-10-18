@@ -7,29 +7,15 @@
 /// - 金额隐藏时固定显示 4 个"•"，不随位数变化，读屏读"金额已隐藏"；
 /// - 没有金额时显示"—"，不显示 0。
 ///
-/// [minorDigits] 暂放在展示层；下一任务把 Money 移植到 lib/domain 时，
-/// 这张表随之迁入领域层，本文件改为引用领域层的表（保持唯一来源）。
+/// 最小单位位数表 [minorDigits] 与 [minorDigitsOf] 的唯一来源是纯 Dart 领域包
+/// `cardflow_domain`（packages/cardflow_domain/lib/src/money.dart，与服务端 money.py 逐项一致）；
+/// 本文件只引用并转导出，不再自带一份。
 library;
 
-/// 每种币种的最小单位位数（ISO 4217）。
-///
-/// 必须与服务端引擎 `services/api/cardflow/planner/engine/money.py` 的
-/// `MINOR_DIGITS` 完全一致；test/app/money_format_test.dart 会读取该文件逐项比对。
-const Map<String, int> minorDigits = <String, int>{
-  'CNY': 2,
-  'USD': 2,
-  'EUR': 2,
-  'HKD': 2,
-  'GBP': 2,
-  'MOP': 2,
-  'TWD': 2,
-  'JPY': 0,
-  'KRW': 0,
-  'VND': 0,
-  'KWD': 3,
-  'BHD': 3,
-  'JOD': 3,
-};
+import 'package:cardflow_domain/cardflow_domain.dart' show minorDigitsOf;
+
+export 'package:cardflow_domain/cardflow_domain.dart'
+    show minorDigits, minorDigitsOf;
 
 /// 读屏用的币种名称。
 const Map<String, String> currencySpokenNames = <String, String>{
@@ -65,16 +51,6 @@ const String noAmountSpoken = '暂无金额';
 
 /// 调用方漏传语义词时的兜底词（仅 release；debug 下直接断言失败）。
 const String fallbackNegativeLabel = '负数';
-
-/// 币种的最小单位位数；未登记的币种抛出 [ArgumentError]（与 money.py 的
-/// `ValueError` 对应：宁可报错，也不猜小数位）。
-int minorDigitsOf(String currency) {
-  final digits = minorDigits[currency];
-  if (digits == null) {
-    throw ArgumentError.value(currency, 'currency', '未登记最小单位位数的币种');
-  }
-  return digits;
-}
 
 /// 把最小单位整数格式化为不带符号、不带币种的数字串，带千分位。
 ///

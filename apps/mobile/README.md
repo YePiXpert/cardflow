@@ -9,7 +9,7 @@
 | `lib/main.dart` | 入口：建立 Provider 容器、安装错误钩子、启动 App |
 | `lib/app/` | App 外壳：`app.dart`（MaterialApp、语言）、`router.dart`/`routes.dart`（go_router，五个主导航）、`shell/`（底部 Tab）、`theme/`（`tokens.dart` 设计 token 唯一来源，`app_theme.dart` 浅色/深色主题）、`money/`（金额格式与 `minorDigits` 表、全局金额隐藏开关）、`widgets/`（`MoneyText`、首次空白态等） |
 | `lib/features/<模块>/` | 功能模块：`overview` 总览、`cards` 卡包、`planner` 规划、`promotions` 发现、`settings` 我的、`onboarding` 欢迎页、`diagnostics` 诊断页与内存日志 |
-| `lib/domain/` | 纯 Dart 领域层（下一任务移植引擎；禁止 double，见 `analysis_options.yaml` 末尾的约定） |
+| `packages/cardflow_domain/` | 纯 Dart 领域包（I-0c）：金额、日期、账期、现金时间线、独立验证器、有限搜索、规则协议 v1 与 fixture 运行器；App 以 path 依赖引入，见下文"领域层" |
 | `lib/data/db/` | 加密本地库（drift + SQLite3MultipleCiphers，见下文"加密本地库"） |
 | `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置；`test/data/db/` 在真实 sqlite3mc 上测试加密本地库 |
 | `ios/` | iOS 工程：`Flutter/CardFlow.xcconfig`（Bundle ID 与签名参数的唯一来源）、`Runner/PrivacyInfo.xcprivacy`（隐私清单） |
@@ -90,3 +90,49 @@ COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 �
 需要能访问 GitHub release）；钩子没有选中 sqlite3mc 时第一条测试以明确的信息失败，不会跳过。
 组件测试默认用 `test/test_helpers.dart` 的 `fakeDatabaseOverrides()` 替换加密库状态；需要真实加密库的
 组件测试要在 `tester.runAsync` 里先把 provider 算好（例子见 `diagnostics_page_test.dart`）。
+
+## 领域层（I-0c）：`packages/cardflow_domain`
+
+**分层**：领域层是独立的纯 Dart 包（不依赖 Flutter、drift、数据库），App 在 `pubspec.yaml` 里以 path
+依赖引入。依赖只向下：页面/Provider → 用例 → 领域包；数据层（drift 加密库）负责把表行映射成领域对象
+或协议 v1 文档，领域包本身不读写数据库。语义与服务端 Python 引擎 1.1.0
+（`services/api/cardflow/planner/engine/`）一一对应，以 `docs/30-rules-engine/engine-spec.md` §12/§12.1 为准。
+金额展示组件 `MoneyText` 的最小单位位数表就是领域包的 `minorDigits`（`lib/app/money/money_format.dart`
+只转导出，不再自带一份）。
+
+| 库 | 内容 |
+|---|---|
+| `package:cardflow_domain/cardflow_domain.dart` | `Money`/`minorDigits`/`toMinor`/`fromMinor`/`applyRate`/`decimalText`/`Rational`/`RoundingMode`；`LocalDate`/`Timestamp`/`TimePrecision`；`BillingRule`/`cyclesForTransaction`/`selectRule`/`resolveCycle`；`CashEvent`/`Snapshot`/`Scenario`/`buildTimeline`/`evaluate`；`CardOption`/`PlanRequest`/`ModelInputs`/`capacityLayers`/`classify`；`verify`；`dataIssues`/`baselineCheck`；`boundedSearch`；协议 v1：`parseJson`、`canonicalJson`、`protocolInputHash`、`inputsFromProtocol`、`inputsToProtocol`、`verifyFromProtocol`、`cardCyclesToProtocol` |
+| `package:cardflow_domain/fixture_runner.dart` | golden fixture 运行器（依赖 dart:io，App 不引用） |
+| `package:cardflow_domain/testing.dart` | 测试辅助：按 Python 测试写法构造协议文档（`protocolCard`、`protocolDocument`…）、带种子的随机文档（`randomPlanInput`） |
+
+**禁止 double**：领域包的 `lib/`、`bin/`、`tool/` 里不得出现 `double`、`num`、`toDouble()` 一类调用、小数或
+指数字面量，以及浮点除法 `/`（整数除法用 `~/`）。金额是 `int` 最小单位；利率、情景系数是 `Rational`
+（BigInt 分数），取整只通过 `RoundingMode` 显式进行；JSON 里唯一的非整数（`options.time_limit_s`）用 binary64
+的精确整数表示（`JsonFloat`）。可执行检查是 `test/no_double_test.dart`：它去掉注释与字符串内容后扫描代码，
+先用正反例自检扫描器本身；注释里写这些字样是允许的。
+
+**命令**（在 `apps/mobile/packages/cardflow_domain` 下）：
+
+```bash
+dart pub get --enforce-lockfile
+dart format --output=none --set-exit-if-changed .
+dart analyze --fatal-infos
+dart test                                                     # 全部领域测试（含禁止 double 的扫描）
+dart run cardflow_domain:run_fixtures [--dump DIR] [FIXTURE ...]  # golden fixture 的 cycles/verify case
+dart run cardflow_domain:bounded_search [--max-cards K] [--budget-ms N] [--json] FILE_OR_DIR
+dart run tool/gen_parity_fixtures.dart DIR [--count N] [--seed S]  # 跨语言一致性用的随机 fixture
+```
+
+App 自己的 `flutter analyze` 排除了 `packages/**`（领域包有自己的分析配置，用上面的 `dart analyze` 检查）。
+
+**如何加测试**：
+
+- 测试放在 `packages/cardflow_domain/test/`，用 `dart test` 运行，不依赖 Flutter。期望值取自 Python 引擎的
+  测试或实际输出（测试注释写明出处）；与 Python 逐字一致的文本（违规消息、假设说明、规则错误）要逐字断言。
+- 协议文档用 `package:cardflow_domain/testing.dart` 的构造函数（与 Python 测试的 `card()`/`document()` 同一默认值），
+  F-18 与 Python 源码用 `test/support/repo.dart` 读取（从当前目录向上找仓库根）。
+- 性质测试用 `TestRandom`（固定种子）与 `randomPlanInput`，每条性质至少 100 例。
+- 新的 golden fixture 放 `packages/rules-protocol/fixtures/*.v1.json`：两端运行器都会自动运行，CI 的
+  protocol-parity job 逐字节比较两端输出（见 `packages/rules-protocol/README.md`"Dart 端实现与 parity"）。
+
