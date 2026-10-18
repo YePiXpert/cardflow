@@ -30,6 +30,10 @@ final class FixtureFormatError implements Exception {
 final class FixtureAssertion {
   FixtureAssertion._(this.raw);
 
+  /// 严格读取一条断言（Fixture.schema.json 的 Assertion）；不合格式抛 [FixtureFormatError]。
+  factory FixtureAssertion.parse(Object? value, [String path = '']) =>
+      _assertion(value, path);
+
   /// 原始断言对象。
   final Map<String, Object?> raw;
 
