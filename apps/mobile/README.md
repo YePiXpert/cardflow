@@ -1,7 +1,7 @@
 # apps/mobile — 卡序 iOS App（Flutter）
 
 本目录是卡序的 Flutter 工程（I-0a 骨架；I-0b 加密本地库；I-0c 领域包；I-1a 本地库 v2、真实/演示工作空间、
-建卡/信用账户/账期规则/额度快照）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见
+建卡/信用账户/账期规则/额度快照；I-1b 本地库 v3、现金账户与快照、收支计划与周期事项、情景、资金日历）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见
 `docs/80-delivery/ios-first-plan.md`。
 
 ## 目录
@@ -10,10 +10,10 @@
 |---|---|
 | `lib/main.dart` | 入口：建立 Provider 容器、安装错误钩子、启动 App |
 | `lib/app/` | App 外壳：`app.dart`（MaterialApp、语言、演示横幅）、`router.dart`/`routes.dart`（go_router：启动分流、五个主导航、卡包栈）、`startup/`（启动分流 `app_gate.dart`、启动页与"重置本地数据"确认页）、`diagnostics/`（内存环形诊断日志）、`shell/`（底部 Tab）、`theme/`（`tokens.dart` 设计 token 唯一来源，`app_theme.dart` 浅色/深色主题）、`money/`（金额格式与 `minorDigits` 表、全局金额隐藏开关）、`widgets/`（`MoneyText`、首次空白态、状态视图、空间标识、演示横幅、确认框、轻提示） |
-| `lib/features/<模块>/` | 功能模块：`overview` 总览（P-01）、`cards` 卡包（P-02 卡包与新建卡片、P-03 详情、P-04 设置）、`planner` 规划、`promotions` 发现、`settings` 我的、`onboarding` 欢迎页（P-22）与空间切换、`diagnostics` 诊断页 |
+| `lib/features/<模块>/` | 功能模块：`overview` 总览（P-01，含现金压力卡）、`cards` 卡包（P-02 卡包与新建卡片、P-03 详情、P-04 设置）、`planner` 规划（P-10 与规划 Tab 的分段条）、`cash` 现金与收支（P-08：账户、快照、收支计划、周期事项、调拨）、`calendar` 资金日历（P-07）、`scenarios` 情景与对比（P-09）、`promotions` 发现、`settings` 我的、`onboarding` 欢迎页（P-22）与空间切换、`diagnostics` 诊断页 |
 | `lib/data/db/` | 加密本地库（drift + SQLite3MultipleCiphers，见下文"加密本地库"）：表定义、迁移、打开、重置 |
-| `lib/data/repositories/` | 仓库（按当前工作空间过滤）、读模型 `CardWalletReader`、数据层 provider（当前工作空间、时钟、各仓库），见下文"工作空间与演示模式""仓库与 provider" |
-| `lib/data/mapping/` | 数据层 → 领域对象映射（规则版本 → `BillingRule`、预测账期与 3 期预览、快照与授信池 → `CardOption`/`ModelInputs` → `capacityLayers`） |
+| `lib/data/repositories/` | 仓库（按当前工作空间过滤）、读模型 `CardWalletReader`/`CashPlanReader`/`CashForecastReader`、数据层 provider（当前工作空间、时钟、各仓库），见下文"工作空间与演示模式""仓库与 provider""现金与资金日历" |
+| `lib/data/mapping/` | 数据层 → 领域对象映射：`domain_mapping.dart`（规则版本 → `BillingRule`、预测账期与 3 期预览、快照与授信池 → `CardOption`/`ModelInputs` → `capacityLayers`）；`cash_mapping.dart`（现金账户/快照/事件/情景 → `CashAccount`/`Snapshot`/`CashEvent`/`Scenario`，交叉校验、输入哈希、情景计算结果 JSON） |
 | `lib/data/time/` | 业务时区（只支持固定偏移时区）、入账日推导（截止时点）、时钟（演示空间固定"今天"） |
 | `lib/data/validation/` | G2/G5 与末四位校验（仓库与界面共用一套文案） |
 | `lib/data/demo/` | 演示空间的合成数据 |
@@ -39,7 +39,7 @@
 - 不提交任何签名材料（证书、描述文件、团队 ID、entitlements）。在 Mac 上自行签名时，把团队 ID 写进不入库的 `ios/Flutter/CardFlow.local.xcconfig`。
 - 重新运行 `flutter create` 时必须带 `--org li.yep`，否则会生成错误的包名。
 
-## 加密本地库（I-0b，ADR-001 PoC-1；I-1a 起 schema v2）
+## 加密本地库（I-0b，ADR-001 PoC-1；I-1a 起 schema v2，I-1b 起 v3）
 
 **方案**：drift 2.35.2 + sqlite3 3.7.1。`pubspec.yaml` 末尾的 `hooks.user_defines.sqlite3.source: sqlite3mc`
 让 sqlite3 包的构建钩子把 [SQLite3MultipleCiphers](https://github.com/utelle/SQLite3MultipleCiphers)（sqlite3mc）
@@ -95,8 +95,8 @@ SQLite 头。任一步失败都关闭连接、抛 `DatabaseOpenException`（只�
 |---|---|
 | `database_providers.dart` | `databaseProvider`（`Future<AppDatabase>`，供仓库使用）、`openedDatabaseProvider`（含加密库信息与是否新建）、钥匙串与目录 provider（测试替换点）、`databaseKeyExistsProvider`、`databaseRecoveryProvider`（重试与重置） |
 | `app_database.dart` | `AppDatabase`（drift `@DriftDatabase`，私有构造）、`openAppDatabase`（取密钥 → 加密连接 → 迁移 → 外键读回 → 文件头检查）、`ensureForeignKeys`、`readMeta()`、`readCipherInfo()`；生成文件 `app_database.g.dart` |
-| `tables.dart` | v2 业务表的 drift 表 DSL（列、主键、唯一键、CHECK、复合外键，全部 STRICT） |
-| `schema.dart` | `LocalSchema.currentSchemaVersion`、meta 表、冻结的 `SchemaV2`（建表、索引、触发器）、`schemaMigrations`、`createSchema` / `migrateSchema`（同一事务写 `user_version`） |
+| `tables.dart` | v2、v3 业务表的 drift 表 DSL（列、主键、唯一键、CHECK、复合外键，全部 STRICT） |
+| `schema.dart` | `LocalSchema.currentSchemaVersion`（3）、meta 表、冻结的 `SchemaV2`、`SchemaV3`（各自的建表、索引、触发器）、`schemaMigrations`（1→2、2→3）、`createSchema` / `migrateSchema`（同一事务写 `user_version`） |
 | `database_failures.dart` | 异常 → 错误码（`databaseOpenExceptionFrom`）、`closeQuietly` |
 | `database_reset.dart` | "重置本地数据"：删数据库文件与钥匙串密钥、忘掉缓存 |
 | `encryption.dart` | sqlite3mc 检查与设置密钥（drift 的 `setup`） |
@@ -121,17 +121,30 @@ TEXT RFC 3339 带偏移；金额 INTEGER 最小单位（|v| ≤ 10^13）；币�
 | `billing_rule_versions` | 账期规则版本：区间 `[effective_from, effective_to)` 不重叠（触发器兜底）；只能封口；主体须在同一工作空间 |
 | `limit_snapshots` | 额度快照：按 DDL，另加 `holds_minor`（见"偏离"）；只追加不修改；临额须到期日、专项须用途 |
 
-**加表与迁移**（I-1b 起照此办理；`schema.dart` 文件头有同样的步骤）：
+**v3 的表**（I-1b，`tables.dart` 与冻结的 `SchemaV3`；13 个索引、9 个触发器；2→3 只加表、索引与触发器，不动 v2 的表与数据，
+`schema_test.dart` 比较新建、从 v1 升级、从 v2 升级三条路径的结构完全一致，并核对 v2 的行原样保留）：
+
+| 表 | 要点 |
+|---|---|
+| `cash_accounts` | 现金账户：名称（G2/G5，同一空间未删除的不重名，部分唯一索引）、币种（13 种，不可改）、种类 `bank`/`wallet`/`wealth`/`restricted`（受限不能直接标可用于还款，CHECK）、`usable_for_repayment`、`available_from`、`reserve_floor_minor ≥ 0`、`status` `active`/`closed` |
+| `cash_balance_snapshots` | 余额快照：`balance_minor`（可负）、`balance_as_of`（日期）、`observed_at`（实际时点）、来源、确认层级、`recorded_at`；只追加（触发器） |
+| `snapshot_included_events` | 快照已包含的事件；另带 `workspace_id`、`cash_account_id`，用携带账户列的复合外键保证只能是本账户的事件；事件日期不晚于快照日（仓库校验，触发器兜底）；之后不改 |
+| `cash_events` | 唯一的现金事实表：`event_on`、`event_at`（按自身偏移的日期必须等于 `event_on`，CHECK）、`amount_minor`（非零、按类别定符号）、`cls`、`category`、`label`、`posting_status`（已发生的必为确定）、`recurring_item_id`+`occurrence_key`、`transfer_group_id`、`linked_repayment_id`、`linked_plan_run_id`；软删除不可撤销，已发生不能退回，调拨两端的日期金额不可改（触发器） |
+| `recurring_items` / `recurring_overrides` | 周期事项（频率、锚定日、日规则、起止日、启用）与单期例外（`skip`/`override` 的金额、日期、时刻） |
+| `scenarios` / `scenario_runs` | 情景（内置两条参数固定只读，CHECK + 触发器；每个空间每种内置至多一条）与计算版本（版本号唯一递增、只追加、`inputs_hash` 64 位小写十六进制、`result` JSON 对象） |
+
+**加表与迁移**（v3 即照此办理，I-1c 起同样；`schema.dart` 文件头有同样的步骤）：
 1. 在 `tables.dart` 加表或加列（drift 表 DSL），`app_database.dart` 的 `@DriftDatabase(tables: …)` 登记新表；
    新的业务表必须带 `workspace_id`，并加进 `workspace_repository.dart` 的 `workspaceDataTables`（删除顺序：子表在前）；
 2. 运行 `dart run build_runner build` 与 `dart format .`；
-3. `LocalSchema.currentSchemaVersion` 加 1（v3）；
-4. 在 `schema.dart` 新建 `SchemaV3`：冻结这一版**新增**的建表语句（`CREATE TABLE IF NOT EXISTS`，内容与 drift
+3. `LocalSchema.currentSchemaVersion` 加 1（I-1c 为 v4）；
+4. 在 `schema.dart` 新建 `SchemaV<n>`：冻结这一版**新增**的建表语句（`CREATE TABLE IF NOT EXISTS`，内容与 drift
    生成的一字不差——可设 `CARDFLOW_SCHEMA_DUMP_DIR` 跑 `test/data/db/schema_test.dart` 看新库结构）、索引与触发器
    （都带 `IF NOT EXISTS`）；只做 expand，不改写金额原值；
-5. `schemaMigrations` 登记 `2: _migrateV2ToV3`；`latestIndexes`/`latestTriggers` 改成包含 v3 的；
-6. `schema_test.dart` 增加"从 v2 升级"与新建的一致性比较（从 v1 升级的比较保留）；`constraints_test.dart` 加新约束；
-   `workspace_isolation_test.dart` 的 `runAllQueries` 加新仓库的全部查询。
+5. `schemaMigrations` 登记 `n-1: _migrateV<n-1>ToV<n>`；`latestIndexes`/`latestTriggers` 加上新版的；
+6. `schema_test.dart` 增加"从 v<n-1> 升级"与新建的一致性比较（已有的从 v1、v2 升级的比较保留；升级前写入旧版数据并核对原样保留）；
+   约束测试加新约束（v3 的在 `cash_constraints_test.dart`）；`workspace_isolation_test.dart` 的 `runAllQueries` 加新仓库的全部
+   查询（没有 `id` 列的表在 `_rowKeys` 里登记行键）；演示数据要写到每一张新表（隔离测试要求两个空间的每张表都有行）。
 迁移在一个事务里执行（失败整体回滚，`migration_failed`）；`user_version` 在同一事务里写入，迁移语句可重跑
 （测试"重跑 1→2 不报错"）。若 v3 要给 v2 的表**加列**，`ALTER TABLE` 后 SQLite 保存的建表文本与 drift 新建的不同，
 一致性比较需改为比较 `PRAGMA table_xinfo` 等结构信息，并在测试里注明。
@@ -163,7 +176,10 @@ COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 �
 - **演示数据**（`lib/data/demo/demo_workspace.dart`，经仓库写入、一个事务）：卡 A/B/C 的账期与可用额与回归样本一致
   （engine-spec §9），另加与 B 同行的卡 D：A 主卡 + 附属卡同一信用账户（F-21）；B 与 D 是同一银行的两个独立授信
   （F-22）且共享"乙行共享额度"池（F-23）；D 可用 −200（F-26）；B 有临时额度 5,000、2026-11-15 到期（F-27）；
-  C 的规则带截止时点 22:00。
+  C 的规则带截止时点 22:00。现金部分（I-1b，`seedDemoCash`）：工资卡（储备 2,000）与受限的定期存款（不计入可用现金）、
+  工资卡 10-16 的快照（当天早餐已包含、水电费未包含）、与回归样本同一组数值的收支、房租周期事项（每月 27 日，12-27 单期覆盖为
+  1,200）、11-01 工资卡 → 定期存款 2,500 的调拨、"收入推迟 3 天"压力情景，并计算"基准预期"与它各一个版本；固定"今天"下
+  基准口径 30 天内有一个可见缺口（11-01 定存转出后余额 300，低于储备）。
 - **时钟**：`clockProvider` —— 演示空间固定"今天" = 2026-10-16（北京时间 12:00，`demoClock`），陈旧判定不触发；真实空间
   用系统时间。页面与仓库都不直接调用 `DateTime.now()`。
 - **演示横幅**：`DemoBannerFrame`（`MaterialApp.builder`）在演示空间时每页顶部常驻紫色横幅（烧瓶 + "演示数据 ·
@@ -181,14 +197,24 @@ COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 �
 | `BillingRuleRepository` | `versions(subject)`、`all()`、`effectiveOn(subject, date)`、`saveVersion(subject, draft, effect)`；`billingRuleDraftProblem(draft)` |
 | `LimitSnapshotRepository` | `all()`、`history(currencyAccountId)`（最新在前，按绝对时刻）、`latestByCurrencyAccount()`、`record(LimitSnapshotDraft)` |
 | `CardWalletReader` | `load()` → `WalletView`（授信池 › 账户 › 币种子账户 › 卡片，含预测账期与三层容量） |
+| `CashAccountRepository`（I-1b） | `list()`、`byId`/`require`、`create(NewCashAccount)`（幂等）、`update`（名称、种类、可用于还款、可用日期、储备）、`setStatus`（停用/恢复） |
+| `CashSnapshotRepository` | `all()`、`history(accountId)`（最新在前）、`latestByAccount()`、`includedEventIds()`、`includedIn(snapshotId)`、`sameDayEvents(accountId, date)`、`record(CashSnapshotDraft)`（当天事件须逐条回答是否已包含） |
+| `CashEventRepository` | `list({cashAccountId, from, to})`、`byId`/`require`、`create(CashEventDraft)`（幂等）、`update`、`markPosted`、`delete`；调拨 `createTransfer(TransferDraft)`、`transfers()`；给 I-1c 的 `planRepaymentDebit`、`confirmRepaymentDebit`、`cancelRepaymentDebit`、`byRepayment` |
+| `RecurringItemRepository` | `list()`、`byId`/`require`、`create`/`update(RecurringItemDraft)`、`setActive`、`overridesOf`、`occurrences`、`skip`/`overrideOccurrence`/`restore`、`expandUntil(date)`；纯函数 `recurringOccurrences(schedule, from, to)` |
+| `ScenarioRepository` | `rows()`、`list()`（内置两条在前，未保存时是虚拟的）、`byKey`/`require`、`ensureBuiltin(kind)`、`create`/`update(ScenarioDraft)`、`delete`（连同版本）、`runs`/`allRuns`/`runById`、`addRun` |
+| `CashPlanReader` | `load()` → `CashPlanView`（P-08）；`loadAccount(id)` → `CashAccountDetailView`；`loadRecurring(id)` → `RecurringDetailView` |
+| `CashForecastReader` | `loadInputs()` → `CashDomainInputs`（映射、交叉校验、`dataIssues`）；`forecast(CashForecastQuery)` → `CashForecast`（P-07/P-01）；`recompute(scenarioKey)` → 新的计算版本；`isRunStale`；顶层函数 `forecastFrom`、`inputsHash`、`runResultOf`、`compareRuns`；`ScenarioBoard.load` |
 
 写方法校验失败抛 `ValidationException(field, message)`（文案可直接显示、不含用户数据）；其余为 `NotFoundException`、
 `IllegalCardTransitionException`、`ConflictException`、`StorageRejectedException`（`repository_errors.dart`）。
 
 provider（`providers.dart`，都不自动重试）：`workspaceRepositoryProvider`、`currentWorkspaceProvider`（`Workspace?`；
 `enterReal`/`enterDemo`/`exitDemo`/`clearDemo`，日志只记 `workspace/*` 事件与 real/demo）、`clockProvider`、
-`workspaceScopeProvider`、各仓库 provider、`localDataRevisionProvider`（drift 表更新计数：读 provider watch 它，写入后自动
-重算）、`walletProvider`、`demoWorkspaceRowsProvider`。功能页自己的 provider 放在 `lib/features/<模块>/`（例：
+`workspaceScopeProvider`、各仓库 provider（I-1b 加 `cashAccountRepositoryProvider`、`cashSnapshotRepositoryProvider`、
+`cashEventRepositoryProvider`、`recurringItemRepositoryProvider`、`scenarioRepositoryProvider`）、`localDataRevisionProvider`
+（drift 表更新计数：读 provider watch 它，写入后自动重算）、`walletProvider`、`demoWorkspaceRowsProvider`；I-1b 的读 provider：
+`cashPlanProvider`、`cashAccountDetailProvider(id)`、`recurringDetailProvider(id)`、`cashForecastProvider(CashForecastQuery)`、
+`scenarioBoardProvider`。功能页自己的 provider 放在 `lib/features/<模块>/`（例：
 `card_providers.dart`）。
 
 **页面骨架与路由约定**：页面是 `ConsumerWidget`，按 `switch (asyncValue)` 给出四态——首次空白（`FirstRunEmptyState`，
@@ -196,7 +222,79 @@ provider（`providers.dart`，都不自动重试）：`workspaceRepositoryProvid
 `ref.invalidate`）、成功；对象不存在显示"已不存在"。区块标题 `SectionTitle`，提示 `NoticeCard`，徽标 `StatusBadge`，
 "标签：值" `LabeledValue`（金额值用 `MoneyText`）；轻提示 `showFeedback`（替换正在显示的提示）；二次确认 `confirmAction`。
 路由常量在 `routes.dart`（卡包栈：`/cards` → `/cards/accounts/:accountId`（P-03）→ `…/settings?section=rule|limits|currencies|pool`（P-04）；
-新建卡片 `/cards/new` 全屏）；新页面必须加进 `test/app/accessibility_test.dart` 的页面清单（触控尺寸、标签、对比度、2/3 倍字号）。
+新建卡片 `/cards/new` 全屏；规划 Tab 的 P-10 `/planner` 与分段 P-07 `/planner/calendar?basis=&scenario=`、P-08 `/planner/cash`、
+P-09 `/planner/scenarios` 是并列的顶层路由（分段之间切换没有返回）；P-08 的表单（`new-account`、`new-event?type=`、`new-transfer`、
+`new-recurring`、`events/:id`、`accounts/:id/snapshot`、`recurring/:id/edit`）与 P-09 的编辑器（`new`、`edit/:id`）全屏，
+账户详情 `accounts/:id`、周期详情 `recurring/:id`、对比 `compare?a=&b=` 在 Tab 栈内）；新页面必须加进 `test/app/accessibility_test.dart` 的页面清单（触控尺寸、标签、对比度、2/3 倍字号）。
+
+## 现金与资金日历（I-1b，R-CASH-01~10、UF-1 步骤 4–5、UF-5）
+
+**现金的业务时区**：现金账户没有自己的时区列，日期与"今天"一律按默认业务时区（Asia/Shanghai，`cashTimeZone`）解释；
+时刻存成该时区偏移的 RFC 3339（按自身偏移取的日期就是业务日期），与手机时区无关。
+
+**可用现金口径**（`CashAvailability`）：受限资金，或 `usable_for_repayment = 0` 且没有 `available_from` 的账户不计入可用现金
+（资金日历、总览、情景计算都不算它，界面写明原因）；有 `available_from` 的计入，领域 `CashAccount.usableForRepayment` 按"今天
+是否已到可用日期"取值，并在假设里写明"{日期} 起才可用于还款"；已停用的账户不进入任何计算。受限资金不能直接标为可用于还款
+（只能设可用日期）；理财、受限默认不可当日还款。
+
+**余额快照**：余额 + 余额日期（不晚于今天）+ 实际时点（必填：缺实际时点不可存；不晚于现在、不早于余额日期）+ 来源 + 确认层级。
+余额日期当天已有收支时逐条询问"余额是否已包含 {事件}"，全部回答才能保存（仓库同样检查）；回答"已包含"的写进
+`snapshot_included_events`，只能是本账户、快照日当天及以前的事件。最新快照 = 余额日期最晚、再按实际时点、记录时点。
+
+**收支计划**：类型（收入、固定生活支出、其他债务、一次性支出）决定类别与正负，金额填正数；层级必选（确定/预计），没有概率字段；
+"已确认"口径只算确定的。标记已发生 = 层级变为确定、发生状态变为已发生（日期不晚于今天，时刻不晚于现在，可更正实际金额）；
+已发生的不能退回。删除是软删除（tombstone，不可撤销）。
+
+**周期事项展开规则**（`recurringOccurrences`、`RecurringItemRepository.expandUntil`）：
+- 各期 = `anchor_on + k·周期`（k ≥ 0）落在 `[start_on, end_on]` 内；每月/每年按 `anchor_day`（锚定日的日号，小月截到月末，2 月 29 日
+  在平年是 28 日）或 `month_end`（每月最后一天）；每周/每两周每 7/14 天；不支持工作日规则（没有已核验的节假日日历）；
+- 按需展开：读模型每次计算前把启用的周期事项展开到"今天 + 180 天"（`cashHorizonDays`），起点是"该账户最新快照日（没有快照时为今天）"
+  与 `start_on` 中较晚者——早于最新快照日的期已反映在余额里；每期一条事件（`occurrence_key` = 原定日期，部分唯一索引保证每期至多
+  一条未删除的）；没有要补的期时不写库（读 provider 不会因此反复重算）；
+- 单期例外（`recurring_overrides`）只影响那一期：跳过 = 记下例外并作废该期尚未发生的事件，之后不再展开；覆盖 = 改该期的金额
+  和/或日期、时刻（期键不变）；恢复 = 去掉例外、回到周期规则。已发生的期不能再跳过或覆盖；
+- 修改周期事项：只改金额/名称/层级时，今天之后尚未发生、没有覆盖金额的各期就地更新；改了周期规则（频率、第一期、日规则、
+  结束日）时，今天之后尚未发生的各期连同它们的例外作废并按新规则重新展开；停用 = 今天之后尚未发生的各期作废，启用后重新展开。
+
+**调拨**：两条事件共享 `transfer_group_id`（转出为负、到账为正，金额相反），两端账户不同、币种相同，到账日不早于转出日（同一天
+都有时刻时到账时刻不早于转出时刻）；两端的日期与金额不可改（删除后重建），确认与删除两端一起。
+
+**情景与计算版本约定**：
+- 内置"已确认"（不含任何预计收入）与"基准预期"（预计收支按期发生）只读、参数固定；第一次「重算」之前没有数据库行（列表里是
+  虚拟的，键为 `builtin:<kind>`），第一次计算时写入；用户压力情景只允许变差：收入延迟 0–180 天、收入比例 0–100%、生活支出比例
+  100%–1000%（至多 10 位小数，存规范十进制文本），同日顺序（按时刻须所有收支都有时刻），事件覆盖（指向现存事件、每事件一次、
+  与原事件同号或为 0），额度变化（信用账户 + 日期 + 非零变化额，I-2 使用，本期只保存与校验）；名称唯一且不与内置同名；
+- 「重算」= 新的计算版本：版本号 = 已有最大 + 1，旧版本保留（只追加）；区间是"今天 至 今天 + 180 天"，全部计入可用现金的账户；
+  `result` 是规范化 JSON（逐账户最低点与日期、全部缺口点、期末余额，假设，领域包的数据问题，未计入的账户，未生效的覆盖）；
+- `inputs_hash` = 领域包规范化 JSON 的 sha256，内容是该版本区间内影响结果的数据（计入的账户与储备、可用日期、最新快照与包含
+  关系、区间内的事件、情景参数）。判断"过期"时用版本自己的区间与当前数据、当前参数重算哈希，不同即过期（只过了一天不算过期）；
+- 指向已删除事件的覆盖"未生效"：不交给领域包，界面与结果里列出。
+
+**资金日历**（`CashForecastReader.forecast`、`forecastFrom`）：窗口 = 今天起 7/30/90/180 天；口径 = 已确认/基准预期/压力情景；
+逐账户调用领域包 `evaluateAccounts`（账户之间从不互抵），摘要按币种给出"最差的那个账户"的最低点、日期、缺口数与距零/距储备；
+日行来自领域时间线（当日流出、流入、当日最低，金额是情景变换后的），缺口 ▲ 与领域包的缺口点一致；尾部责任 = 窗口外、层级为
+计划（planned）的事件（分期在 I-1c 接入同一列表）；假设 = 领域包的说明（先支出后收入、快照当天未包含事件、情景改期）加数据层的
+说明（可用日期、陈旧）。快照超过 7 天（领域包 `dataIssues(staleAfterDays: 7)`，演示空间不判）→"假设分析"，照常从快照余额起算，
+不补零；计入但缺快照的账户不进入计算，显示"数据不全：{账户}缺快照，未计入"。没有缺口用中性色，不用绿色，不出现"安全/稳妥"。
+
+**审查带入项（§5）**：只用现金时间线的资金日历不经规则协议适配层，所以 `checkCashTimelineInputs` 在交给领域包之前复刻
+`inputsFromProtocol` 里与现金有关的交叉规则：ID 唯一且符合协议格式（事件 ID 不以 `plan_repay_` 开头）、金额绝对值 ≤ 10^13、
+事件与快照指向已有账户、事件 `at` 按自身偏移的日期等于 `on`、`includes` 只列快照日当天及以前的本账户事件、币种一致（账户币种
+13 种之一、调拨两端同币种且成对）、情景覆盖指向已有事件且至多一次；违反时抛 `CashInputsException(rule)`（只有规则标识，不回显
+取值）。数据库约束与触发器是第一道兜底，测试另在去掉触发器的库上确认读模型仍能拦下。I-2 交给 `verify`/`boundedSearch` 的数据
+仍须先经 `inputsToProtocol`。
+
+**给 I-1c 的接口**：
+- 还款 → 现金：`CashEventRepository.planRepaymentDebit(repaymentId, cashAccountId, on, amountMinor, at?, label?)` 生成（或改期改额）
+  一条层级 `planned`、类别 `repayment`、尚未发生、`linked_repayment_id = repaymentId` 的事件（每笔还款至多一条未删除的）；
+  `confirmRepaymentDebit(repaymentId, debitedAt, amountMinor?)` 在确认扣款时把它变为确定、已发生，日期与时刻改为实际扣款时点
+  （F-31：现金时间线按扣款日生效）；`cancelRepaymentDebit` 作废尚未发生的；`byRepayment` 查询。`linked_repayment_id` 暂无外键
+  （`repayments` 表在 I-1c 建，届时用触发器或重建表加约束）；
+- 尾部责任：`CashForecast.tail` 是 `TailObligation`（日期、金额、币种、账户名、标签、`source`、`refId`）的列表，I-1c 把分期计划的
+  未来各期（`source: 'installment'`）加进同一列表即可在 P-07 显示；
+- 测试工厂（`test/data/repositories/repository_test_support.dart`）：`createTestCashAccount`、`addTestCashEvent`、
+  `recordTestCashSnapshot`（当天事件默认答"未包含"）、`StaleAwareClock`（时刻固定、判断陈旧）；组件测试 `readCashPlan(tester)`、
+  `withCurrentScope(tester, action)`、`pumpCardFlowApp(realClock: …)`。
 
 ## I-1a 的偏离与约定（主会话裁决前的保守做法）
 
@@ -222,6 +320,26 @@ provider（`providers.dart`，都不自动重试）：`workspaceRepositoryProvid
 - 有快照或规则的币种子账户不可删除（`UNIQUE(credit_account_id, currency)` 按简报用硬删除，不丢数据）。
 - 冻结的卡不能直接换卡（PRD §6.1 只有 `active → replaced`），先解冻。
 - "重置本地数据"的确认页按 ui-spec §4.5 输入"删除"；"抹除另需设备认证"（local_auth）本期未做（应用锁在 I-4）。
+
+## I-1b 的偏离与约定（主会话裁决前的保守做法）
+
+- 简报只列了 `snapshot_included_events(snapshot_id, cash_event_id)` 与 `recurring_overrides(recurring_item_id, occurrence_key, …)`：
+  本地另加 `workspace_id`（全部业务表都带，隔离测试与清除演示数据按它删除），包含关系另加 `cash_account_id` 并用携带账户列的
+  复合外键保证"只能包含本账户的事件"（data-model §10.5）；单期例外另加 `created_at`/`updated_at`。
+- 现金账户没有业务时区列：现金的日期与"今天"按默认业务时区 Asia/Shanghai 解释（`cashTimeZone`）。
+- 现金账户名称在同一空间未删除的账户里唯一（部分唯一索引）：快照提问、调拨与选择都按名称显示。
+- 现金事件按类别约束正负（收入/调入为正，账单、生活、还款、调出、费用为负，其他不限，R2-16）；已发生的必为确定；软删除不可撤销。
+- 支出比例上限 1000%（规则协议 v1 的 ScaleFactor 上限 10），收入比例 0–100%，都至多 10 位小数；用户压力情景总是含预计收入
+  （`include_expected = 1`），只有内置"已确认"排除。
+- 内置情景在第一次「重算」前不写库（与 I-1a 内置银行"第一次被选用时才写入"同一做法），隔离测试只数已保存的行。
+- "按时刻排序须所有事件有时刻"按字面执行：保存时检查今天往前 31 天到今天 + 180 天、未停用账户的全部未删除事件都有时刻，
+  否则拒绝并写明还有几笔没有时刻。
+- 周期事项不支持工作日规则（没有已核验的日历），也不能做成调拨；单期覆盖须与周期同号（金额填正数）。
+- 尾部责任本期只接"窗口外、层级为计划的事件"；用户登记的收支只能是确定/预计，所以真实数据里这部分要等 I-1c 的还款与分期。
+- 资金日历只做表格视图（简报允许）；"储备虚线"在表格里是一段虚线图例 + 储备金额，低于储备的日行标"低于储备"，缺口点标 ▲。
+- 资金日历的"账户"筛选只是只看某一个账户；无论筛选与否都逐账户计算，摘要按币种给出最差账户的最低点，不把账户相加。
+- P-01 现金压力卡的口径默认"基准预期"（engine-spec F-18 的决策情景），可切到"已确认"；P-07 同样默认基准预期。
+- "设为决策情景"留到 I-2（按钮位置写明）。
 
 ## 领域层（I-0c）：`packages/cardflow_domain`
 
@@ -284,3 +402,20 @@ App 自己的 `flutter analyze` 排除了 `packages/**`（领域包有自己的�
 
 I-2 构造规划输入时，`CardOption` 换成真实规则（`billingRuleFromRow`）与还款现金账户，数据先经 `inputsToProtocol`
 （它会再跑一遍 `inputsFromProtocol` 的全部交叉校验）再交给 `verify`/`boundedSearch`（审查 §4 第 2 条）。
+
+
+### 数据层 → 领域对象映射：现金（I-1b，`lib/data/mapping/cash_mapping.dart`）
+
+| 本地数据 | 领域对象 / 函数 | 说明 |
+|---|---|---|
+| `cash_accounts` 行 | `cashAccountFromRow` → `CashAccount` | `reserveFloor` = 储备；`usableForRepayment` 按 `CashAvailability` 在今天的取值；只把"计入可用现金"且未停用的账户交给计算 |
+| 最新快照 + 包含关系 | `snapshotFromRow` → `Snapshot` | `asOf` = 余额日期，`observedAt` = 实际时点，`includesEventIds` = 包含的未删除事件（已删除的去掉，它本来就不影响时间线） |
+| `cash_events` 行（未删除） | `cashEventFromRow` → `CashEvent` | 按日期、再按登记顺序（同日顺序与领域包的输入顺序一致）；标签空为 `''`；`at` 原样带过去 |
+| 情景（行或内置） | `ScenarioParams` → `scenarioFromParams` → `Scenario` | 系数用 `Rational.parseDecimal`；只带指向现存事件的覆盖 |
+| 全部计入的账户、快照、事件 + 今天 | `ModelInputs`（无卡、`txnDate` = 今天）→ `dataIssues(…, 7)` | `MISSING_SNAPSHOT`、`STALE_SNAPSHOT`（演示空间去掉）、`SNAPSHOT_AFTER_TXN_DATE` |
+| 同上 + 情景 + 窗口末日 | `evaluateAccounts` → `CashReport` | 逐账户，从不互抵；`forecastFrom` 把时间线整理成日行、缺口、摘要 |
+| 账户、快照、事件、调拨组、覆盖 | `checkCashTimelineInputs` | 审查 §5 的交叉规则（见"现金与资金日历"） |
+| 计算区间的输入 | `cashInputsHash` | 领域包 `protocolInputHash`（规范化 JSON 的 sha256）；情景版本"过期"的依据 |
+
+`test/data/repositories/cash_parity_test.dart` 用与领域包测试相同的数值写入真实库，经上表映射后调用领域包，与直接构造领域对象
+调用领域包的结果逐字段比较（含时间线每个点、假设、跳过的事件、缺口的事件列表）：F-01、F-02、F-03、F-04（四种）、F-05、F-07。
