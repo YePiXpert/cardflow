@@ -67,9 +67,16 @@ List<String> _logLines(ProviderContainer container) => container
     .toList();
 
 /// 模拟退出 App：先等数据库关闭，再销毁容器（容器销毁时还会再调用一次 close，应无害）。
+///
+/// 每条打开过数据库的测试都以它结束：drift 的关闭是异步的，若只销毁容器，下一条测试
+/// 打开数据库时上一个连接可能还没关完（drift 会警告"打开了多个实例"）。
 Future<void> _quit(ProviderContainer container) async {
-  final db = await container.read(databaseProvider.future);
-  await db.close();
+  try {
+    final db = await container.read(databaseProvider.future);
+    await db.close();
+  } on DatabaseOpenException {
+    // 没打开成功，无需关闭。
+  }
   container.dispose();
 }
 
@@ -106,6 +113,7 @@ void main() {
     expect(opened.event, 'opened');
     expect(opened.detail, 'created');
     expect(store.writes, 1);
+    await _quit(container);
   });
 
   test('第二次启动：沿用密钥，日志 db/opened existing', () async {
@@ -122,6 +130,7 @@ void main() {
         .singleWhere((e) => e.category == 'db');
     expect(opened.detail, 'existing');
     expect(store.writes, 1);
+    await _quit(second);
   });
 
   test('密钥错误：状态显示 wrong_key，日志 db/open_failed 只记错误码', () async {
