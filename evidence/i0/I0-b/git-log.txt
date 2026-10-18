@@ -1,0 +1,45 @@
+# I-0b 本任务的提交（6321328 "文档：I-0b 简报存档" 之后，按时间正序）· 2026-10-18T05:53:23Z
+# 不含记录本文件的那次提交（其提交信息为"证据：I-0b 提交列表"）。作者均为 YePiXpert，无任何署名 trailer。
+$ git log --reverse --date=iso-strict --format="%h %ad %an <%ae>%n    %s" --shortstat 6321328..HEAD
+03bb5b0 2026-10-18T06:37:13+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端：加密本地库（drift + sqlite3mc 构建钩子）、设备密钥与迁移骨架（I-0b，I0-5）
+
+ 21 files changed, 2550 insertions(+), 2 deletions(-)
+526d135 2026-10-18T06:37:19+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端：诊断页登记加密库状态、密钥状态与数据库基准（I-0b）
+
+ 10 files changed, 803 insertions(+), 57 deletions(-)
+66b68e8 2026-10-18T06:37:19+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    CI：ios-unsigned 校验 IPA 内含 SQLite3MultipleCiphers framework；注明 dart job 的测试会运行 sqlite3 钩子
+
+ 1 file changed, 16 insertions(+)
+6a8dbca 2026-10-18T06:37:19+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    文档：根 README 与 apps/mobile/README 的加密本地库说明（I-0b）
+
+ 2 files changed, 77 insertions(+), 7 deletions(-)
+fd77a03 2026-10-18T06:39:03+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端测试：打开过数据库的 provider 测试先等连接关闭再销毁容器
+
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+d69e5a8 2026-10-18T06:41:21+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端：pubspec 注释改正为实际的加密库检查（PRAGMA cipher + sqlite3mc_version）
+
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+4d720c9 2026-10-18T06:43:28+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    证据：I-0b 钩子写法出处、本机 analyze / test（153 项，真实 sqlite3mc）/ build web
+
+ 4 files changed, 592 insertions(+)
+457ceab 2026-10-18T06:47:59+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    证据：I-0b CI dart job（39101538696，通过；ubuntu 上 153 项含真实 sqlite3mc）
+
+ 1 file changed, 579 insertions(+)
+3afdc0a 2026-10-18T06:53:23+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    证据：I-0b 未签名 IPA（运行 39101728143，4d720c9）的 CI 日志与 IPA 检查（含 sqlite3mc.framework）
+
+ 2 files changed, 1445 insertions(+)
+
+$ git log --format=%B 6321328..HEAD | grep -ciE "co-authored|claude|anthropic|generated with"   # 署名检查
+0
+
+$ git log --oneline -1 origin/main   # 推送前的远端
+4d720c9 证据：I-0b 钩子写法出处、本机 analyze / test（153 项，真实 sqlite3mc）/ build web
