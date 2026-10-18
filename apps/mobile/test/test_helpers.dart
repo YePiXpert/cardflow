@@ -3,6 +3,7 @@ import 'package:cardflow/app/router.dart';
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_providers.dart';
 import 'package:cardflow/data/demo/demo_workspace.dart';
+import 'package:cardflow/data/repositories/card_wallet_reader.dart';
 import 'package:cardflow/data/repositories/models.dart';
 import 'package:cardflow/data/repositories/providers.dart';
 import 'package:cardflow/data/repositories/workspace_repository.dart';
@@ -76,6 +77,30 @@ enum TestWorkspace {
 /// 组件测试里真实空间的"现在"：北京时间 2026-10-18 12:00（演示空间固定 2026-10-16）。
 final FixedClock widgetTestClock = FixedClock(DateTime.utc(2026, 10, 18, 4));
 
+/// 最近一次 [createWidgetTestDatabase] 建的内存库。
+AppDatabase? _lastTestDatabase;
+
+/// 当前组件测试的内存库（用 [readWallet] 一类辅助在 `tester.runAsync` 里直接查数据）。
+AppDatabase get testDatabase =>
+    _lastTestDatabase ?? (throw StateError('pumpCardFlowApp 还没有建内存库'));
+
+/// 直接查库得到当前工作空间的卡包读模型（不经 provider：在真实事件循环里建 provider 的订阅，
+/// 会让之后伪时钟里的查询等不到结果）。
+Future<WalletView> readWallet(WidgetTester tester) async {
+  late WalletView wallet;
+  await tester.runAsync(() async {
+    final db = testDatabase;
+    final row = await WorkspaceRepository(db).current();
+    final scope = WorkspaceScope(
+      db: db,
+      workspaceId: row!.id,
+      clock: row.kind == WorkspaceKind.demo.code ? demoClock : widgetTestClock,
+    );
+    wallet = await CardWalletReader(scope).load();
+  });
+  return wallet;
+}
+
 /// 组件测试的本地库：内存库（不加密，`AppDatabase.forTesting`），按 [workspace] 预置数据，
 /// [seed] 可在真实空间里再写入数据。写入在真实事件循环里完成（`tester.runAsync`），测试结束时关闭。
 Future<AppDatabase> createWidgetTestDatabase(
@@ -83,7 +108,9 @@ Future<AppDatabase> createWidgetTestDatabase(
   TestWorkspace workspace = TestWorkspace.real,
   Future<void> Function(WorkspaceScope scope)? seed,
 }) async {
-  final db = AppDatabase.forTesting(NativeDatabase.memory());
+  final db = _lastTestDatabase = AppDatabase.forTesting(
+    NativeDatabase.memory(),
+  );
   await tester.runAsync(() async {
     final workspaces = WorkspaceRepository(db, clock: widgetTestClock);
     switch (workspace) {

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../features/cards/account_detail_page.dart';
+import '../features/cards/account_settings_page.dart';
 import '../features/cards/cards_page.dart';
 import '../features/cards/new_card_page.dart';
 import '../features/diagnostics/diagnostics_page.dart';
@@ -104,6 +106,29 @@ GoRouter createAppRouter({
                       const NewCardPage(),
                       fullscreenDialog: true,
                     ),
+                  ),
+                  GoRoute(
+                    path: 'accounts/:accountId',
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      AccountDetailPage(
+                        accountId: state.pathParameters['accountId']!,
+                      ),
+                    ),
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: 'settings',
+                        pageBuilder: (context, state) => _page(
+                          state,
+                          AccountSettingsPage(
+                            accountId: state.pathParameters['accountId']!,
+                            initialSection: AccountSettingsSection.parse(
+                              state.uri.queryParameters['section'],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

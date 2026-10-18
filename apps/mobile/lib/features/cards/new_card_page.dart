@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
@@ -215,17 +216,13 @@ class _NewCardPageState extends ConsumerState<NewCardPage> {
         ),
       );
       router.go(AppRoutes.cards);
-      messenger.showSnackBar(
-        SnackBar(
-          content: const Text(NewCardPage.savedMessage),
-          action: SnackBarAction(
-            label: '设置账期',
-            onPressed: () => router.go(
-              AppRoutes.accountSettings(
-                result.creditAccountId,
-                section: 'rule',
-              ),
-            ),
+      showFeedback(
+        messenger,
+        NewCardPage.savedMessage,
+        action: SnackBarAction(
+          label: '设置账期',
+          onPressed: () => router.go(
+            AppRoutes.accountSettings(result.creditAccountId, section: 'rule'),
           ),
         ),
       );

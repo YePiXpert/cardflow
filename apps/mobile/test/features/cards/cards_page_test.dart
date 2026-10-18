@@ -52,15 +52,7 @@ Future<void> _save(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-Future<WalletView> _wallet(WidgetTester tester) async {
-  final container = appContainer(tester);
-  late WalletView wallet;
-  await tester.runAsync(() async {
-    container.invalidate(walletProvider);
-    wallet = await container.read(walletProvider.future);
-  });
-  return wallet;
-}
+Future<WalletView> _wallet(WidgetTester tester) => readWallet(tester);
 
 void main() {
   testWidgets('首次空白：说明、手工建卡、从账单文件开始（I-3 提供，禁用）、体验演示', (tester) async {
