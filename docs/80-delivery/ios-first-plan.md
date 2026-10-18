@@ -32,7 +32,7 @@ CI 设计：
 
 | 阶段 | 内容 | 交付的 IPA 能做什么 | 退出条件 |
 |---|---|---|---|
-| **I-0 管线、骨架与关键验证** | GitHub 仓库与 CI；Flutter 工程（Riverpod、go_router、主题、金额组件、五导航）；加密本地库（PoC-1，sqlite3mc 钩子，失败回退 sqflite_sqlcipher）；Dart 领域层移植（Money/EventTime、账期、现金时间线、验证器、有限搜索）；Dart fixture 运行器；iOS 工程配置（Bundle ID 经 xcconfig、PrivacyInfo、文档类型、Face ID 说明）；诊断页 | 空壳可导航；建库加密生效；诊断页显示 `cipher_version` | CI 出 IPA；用户安装成功并回传诊断页；F-18 在 Dart 运行器 cycles/verify 两类 case 全过 |
+| **I-0 管线、骨架与关键验证** | GitHub 仓库与 CI；Flutter 工程（Riverpod、go_router、主题、金额组件、五导航）；加密本地库（PoC-1，sqlite3mc 钩子，失败回退 sqflite_sqlcipher）；Dart 领域层移植（Money/EventTime、账期、现金时间线、验证器、有限搜索）；Dart fixture 运行器；iOS 工程配置（Bundle ID 经 xcconfig、PrivacyInfo、文档类型、Face ID 说明）；诊断页 | 空壳可导航；建库加密生效；诊断页显示加密库与算法 | CI 出 IPA；用户安装成功并回传诊断页；F-18 在 Dart 运行器 cycles/verify 两类 case 全过 |
 | **I-1 卡片、账期、现金流** | 首次使用与演示模式；建卡/信用账户/币种子账户/额度快照；手工交易、账单版本、分期；还款登记与状态；现金账户、快照、收支计划、三口径、情景；资金日历与缺口 | 开始记真实数据 | 对应 F-01~F-08、F-12~F-17、F-19~F-28 的 Dart fixture 通过；用户真机走通 UF-1/3/5 |
 | **I-2 智能用卡（本地）** | 规划输入、三类方案、解释、拒绝原因、"本地未找到（非证明）"标注；采纳→预留→关联真实交易→过期 | 规划一笔消费怎么刷 | F-09~F-11、F-67~F-69（有限搜索可达的部分）；UF-4 |
 | **I-3 导入** | file_picker 与"用其他应用打开"接 PDF/CSV/.eml；PDF 文本层（pdfrx）；截图 OCR（ML Kit 中文）；校对、去重、入账、回滚 | 导账单 | F-47~F-53 设备端版本；UF-2 |
@@ -49,7 +49,7 @@ CI 设计：
 | I0-2 | 服务器安装 Flutter SDK（版本写死，与 CI 一致）；`flutter doctor` 记录 | 证据 |
 | I0-3 | `apps/mobile` 工程骨架：Riverpod、go_router、主题 token、金额组件、五导航空页面、诊断页 | `flutter analyze` 零警告；widget 测试 |
 | I0-4 | CI：Linux job + macOS job（未签名 IPA artifact）；首个 IPA 由用户安装 | artifact 可下载；用户回传安装成功 |
-| I0-5 | 加密 drift（PoC-1）：钩子方案；运行时检查 `PRAGMA cipher_version`；密钥存 Keychain（WhenUnlockedThisDeviceOnly） | 诊断页显示非空版本；10 万行冷启动 <1 s（真机，用户回传） |
+| I0-5 | 加密 drift（PoC-1）：钩子方案；运行时加密自检（ADR-001）；密钥存 Keychain（WhenUnlockedThisDeviceOnly） | 诊断页显示非空版本；10 万行冷启动 <1 s（真机，用户回传） |
 | I0-6 | Dart 领域层移植 + Dart fixture 运行器（读 `packages/rules-protocol` 的 schema 与 v1 fixture，复现规范化哈希） | F-18 cycles/verify 全过；`protocol_input_hash` 与 Python 一致 |
 | I0-7 | 有限搜索（K≤3）与"非证明"标注 | 样本返回 A8000+C2000 可行；K=1 返回"本地未找到" |
 | I0-8 | iOS 工程配置：最低 iOS 15、Bundle ID 与团队经 xcconfig 注入、PrivacyInfo.xcprivacy、文档类型、用途说明 | CI 构建通过；仓库无团队 ID |
@@ -95,3 +95,4 @@ CI 设计：
 |---|---|
 | 2026-10-18 | 仓库 `YePiXpert/cardflow` 创建并推送首个提交（377 文件；宿主服务清单已脱敏；无 Claude 署名）；后端两个 Compose 项目停止；Flutter 3.47.7 安装；I-0a（骨架 + iOS 配置 + CI 未签名 IPA）派发 |
 | 2026-10-18 | I-0a 完成并验收：analyze 零输出、104 项测试、CI dart job 两次绿、ios-unsigned 首次即成功（Xcode 26.6，3m51s）；IPA `cardflow-unsigned-eaed4a8`（Bundle ID、MinimumOSVersion 15.0 核对无误）。I-0b 派发 |
+| 2026-10-18 | I-0b 完成并验收：sqlite3mc 钩子方案成功、未回退；153 项测试；CI dart/ios 各一次绿（iOS 2m23s）；IPA `cardflow-unsigned-4d720c9`（含 sqlite3mc.framework 2.6.1）。发现 `PRAGMA cipher_version` 为 SQLCipher 专有，文档改为"加密自检"。I-0c 派发 |
