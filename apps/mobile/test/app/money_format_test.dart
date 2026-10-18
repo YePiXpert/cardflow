@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cardflow/app/money/money_format.dart';
+import 'package:cardflow_domain/cardflow_domain.dart' as domain;
 import 'package:flutter_test/flutter_test.dart';
 
 /// 服务端引擎的金额模块（相对 apps/mobile）。
@@ -29,6 +30,11 @@ void main() {
       final server = parseServerMinorDigits(file.readAsStringSync());
       expect(server, hasLength(13));
       expect(minorDigits, equals(server));
+    });
+
+    test('就是领域包的表（唯一来源，App 不自带副本）', () {
+      expect(identical(minorDigits, domain.minorDigits), isTrue);
+      expect(minorDigitsOf('KWD'), domain.minorDigitsOf('KWD'));
     });
 
     test('覆盖 0、2、3 三种位数', () {
