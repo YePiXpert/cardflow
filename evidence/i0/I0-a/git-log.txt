@@ -1,0 +1,38 @@
+# I-0a 本任务的提交（21e0af0 之后，按时间正序）· 2026-10-18T04:57:25Z
+# 不含记录本文件的那次提交（其提交信息为"证据：I-0a 提交列表与第 2 次 dart job"）。
+$ git log --reverse --date=iso-strict --format='%h %ad %an%n    %s' --shortstat 21e0af0..HEAD
+ce5338c 2026-10-18T05:41:37+01:00 YePiXpert
+    移动端：Flutter 工程骨架与 iOS 工程配置（I-0a，I0-3/I0-8）
+
+ 100 files changed, 6265 insertions(+), 5 deletions(-)
+c92a9a0 2026-10-18T05:41:45+01:00 YePiXpert
+    CI：移动端工作流 mobile.yml（I-0a，I0-4）
+
+ 1 file changed, 201 insertions(+)
+eaed4a8 2026-10-18T05:41:45+01:00 YePiXpert
+    文档与证据：根 README"移动端"一节；I-0a 本机检查证据
+
+ 5 files changed, 281 insertions(+)
+ee4eba0 2026-10-18T05:46:35+01:00 YePiXpert
+    证据：I-0a CI dart job 首次运行（39097990634，通过）
+
+ 1 file changed, 533 insertions(+)
+b778974 2026-10-18T05:53:45+01:00 YePiXpert
+    证据：I-0a 首个未签名 IPA（运行 39098193527，eaed4a8）的 CI 日志与 IPA 检查
+
+ 2 files changed, 1335 insertions(+)
+e00824c 2026-10-18T05:53:45+01:00 YePiXpert
+    移动端：诊断日志只接受代码位置作为调用栈条目
+
+ 2 files changed, 26 insertions(+), 2 deletions(-)
+186ece7 2026-10-18T05:53:45+01:00 YePiXpert
+    CI 与 README：IPA 的 sha256 同时写入日志；注明嵌套 framework 只有临时签名
+
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+b81a016 2026-10-18T05:54:40+01:00 YePiXpert
+    证据：I-0a 本机 analyze / test（104 项）/ build web 在最终代码上重跑
+
+ 3 files changed, 52 insertions(+), 51 deletions(-)
+
+$ git log --oneline -1 origin/main
+b81a016 证据：I-0a 本机 analyze / test（104 项）/ build web 在最终代码上重跑

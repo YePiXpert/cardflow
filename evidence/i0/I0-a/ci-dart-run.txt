@@ -531,3 +531,34 @@ dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-
 dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:44:19.0096053Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
 dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:44:19.0267646Z Removing credentials config '/home/runner/work/_temp/git-credentials-e54fa3ed-ff37-45d7-9561-35364b281a1c.config'
 dart (format · analyze · test · web build)	Complete job	﻿2026-10-18T04:44:19.0386574Z Cleaning up orphan processes
+
+================================================================================
+# 第 2 次 dart job · 运行 39098726112（push，main @ b81a016）· 2026-10-18T04:57:12Z
+# URL: https://github.com/YePiXpert/cardflow/actions/runs/39098726112
+$ gh run view 39098726112
+
+✓ main mobile · 39098726112
+Triggered via push about 2 minutes ago
+
+JOBS
+✓ dart (format · analyze · test · web build) in 2m4s (ID 117590422481)
+- ios-unsigned (IPA without codesign) in 0s (ID 117590770026)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+dart (format · analyze · test · web build): .github#1
+
+
+For more information about a job, try: gh run view --job=<job-id>
+View this run on GitHub: https://github.com/YePiXpert/cardflow/actions/runs/39098726112
+
+$ gh run view 39098726112 --log | grep -E 'Flutter 3\.47\.7 •|cache-hit|Cache restored|Formatted [0-9]+ files|No issues found|tests passed|Built build/web'
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:55:08.4930920Z Cache restored successfully
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:55:08.6135510Z Cache restored from key: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:55:10.1659793Z Cache restored successfully
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:55:10.1747627Z Cache restored from key: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-242e0d860aec8827cf2d28c5dfba0d2ac8a8ffc6260e2f917f78faf9036e8d57
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:55:10.9142743Z Flutter 3.47.7 • channel stable • https://github.com/flutter/flutter.git
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:55:11.5416233Z Formatted 43 files (0 changed) in 0.09 seconds.
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:55:28.4398353Z No issues found! (ran in 16.1s)
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:55:54.4812661Z 🎉 104 tests passed.
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:56:48.7672257Z ✓ Built build/web
