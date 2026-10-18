@@ -1,10 +1,17 @@
 # 移动端 CI（apps/mobile）。
 #
-# dart（ubuntu-latest）：push / pull_request 且移动端或本文件有变动时运行；
-#   格式检查 → 静态分析 → 测试 → Web 编译（只作编译烟雾测试，不发布）。
-#   测试会运行 sqlite3 包的构建钩子（pubspec.yaml 的 hooks.user_defines 选 sqlite3mc），
+# dart（ubuntu-latest）：push / pull_request 且移动端、规则协议、Python 引擎或本文件有变动时运行；
+#   格式检查 → 静态分析 → 测试（App 与纯 Dart 领域包 packages/cardflow_domain 各自一套）
+#   → Web 编译（只作编译烟雾测试，不发布）。
+#   App 测试会运行 sqlite3 包的构建钩子（pubspec.yaml 的 hooks.user_defines 选 sqlite3mc），
 #   钩子从 sqlite3.dart 的 GitHub release 下载预编译的 SQLite3MultipleCiphers 并校验 sha256；
-#   加密库测试用的就是这份真实的库。
+#   加密库测试用的就是这份真实的库。领域包测试含禁止 double 的可执行扫描。
+#
+# protocol-parity（ubuntu-latest）：与 dart 同时触发；Python 引擎 1.1.0 与 Dart 领域层的双端一致性：
+#   golden fixture（packages/rules-protocol/fixtures/*.v1.json）与 300 份带固定种子的随机 fixture
+#   各由 Python 运行器与 Dart 运行器 --dump（cycles/verify 输出的规范化 JSON），两个目录 diff 必须为空；
+#   再用 Python jsonschema（运行器的严格整数校验器 + format 检查）校验 Dart 的每个输出符合
+#   PlanOutcome.schema.json 的 $defs/CardCycles 或 $defs/VerificationResult。任一步失败即红。
 #
 # ios-unsigned（macos-26）：只在手动触发（workflow_dispatch）或推送 ios-v* 标签时运行；
 #   flutter build ios --release --no-codesign → 把 Runner.app 打成未签名 IPA → 上传为 artifact。
@@ -22,10 +29,18 @@ on:
     tags: ['ios-v*']
     paths:
       - 'apps/mobile/**'
+      - 'packages/rules-protocol/**'
+      - 'services/api/cardflow/planner/engine/**'
+      - 'services/api/pyproject.toml'
+      - 'services/api/uv.lock'
       - '.github/workflows/mobile.yml'
   pull_request:
     paths:
       - 'apps/mobile/**'
+      - 'packages/rules-protocol/**'
+      - 'services/api/cardflow/planner/engine/**'
+      - 'services/api/pyproject.toml'
+      - 'services/api/uv.lock'
       - '.github/workflows/mobile.yml'
   workflow_dispatch:
 
@@ -39,6 +54,8 @@ concurrency:
 
 env:
   FLUTTER_VERSION: '3.47.7'
+  UV_VERSION: '0.12.23'
+  DOMAIN_DIR: apps/mobile/packages/cardflow_domain
   BUNDLE_ID: 'li.yep.cardflow'
   MIN_IOS: '15.0'
 
@@ -67,17 +84,141 @@ jobs:
       - name: flutter pub get
         run: flutter pub get --enforce-lockfile
 
+      - name: dart pub get (cardflow_domain)
+        working-directory: ${{ env.DOMAIN_DIR }}
+        run: dart pub get --enforce-lockfile
+
       - name: dart format
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: dart format (cardflow_domain)
+        working-directory: ${{ env.DOMAIN_DIR }}
         run: dart format --output=none --set-exit-if-changed .
 
       - name: flutter analyze
         run: flutter analyze --fatal-infos
 
+      - name: dart analyze (cardflow_domain)
+        working-directory: ${{ env.DOMAIN_DIR }}
+        run: dart analyze --fatal-infos
+
       - name: flutter test
         run: flutter test
 
+      - name: dart test (cardflow_domain, incl. the no-double scan)
+        working-directory: ${{ env.DOMAIN_DIR }}
+        run: dart test --reporter expanded
+
       - name: flutter build web (compile smoke test)
         run: flutter build web --release
+
+  protocol-parity:
+    name: protocol-parity (Python engine vs Dart domain)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: '3.13'
+          cache-dependency-glob: services/api/uv.lock
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: uv sync --locked (services/api)
+        run: uv sync --locked --project services/api
+
+      - name: dart pub get (cardflow_domain)
+        working-directory: ${{ env.DOMAIN_DIR }}
+        run: dart pub get --enforce-lockfile
+
+      - name: Golden fixtures -- Python runner --dump
+        run: |
+          uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py \
+            --dump build/parity/golden/python
+
+      - name: Golden fixtures -- Dart runner --dump
+        working-directory: ${{ env.DOMAIN_DIR }}
+        run: dart run cardflow_domain:run_fixtures --dump "$GITHUB_WORKSPACE/build/parity/golden/dart"
+
+      - name: Golden fixtures -- outputs byte-identical
+        run: |
+          set -euo pipefail
+          n="$(find build/parity/golden/python -name '*.json' | wc -l)"
+          test "$n" -gt 0 || { echo "::error::the Python runner dumped no outputs"; exit 1; }
+          diff -r build/parity/golden/python build/parity/golden/dart
+          echo "golden fixtures: $n cycles/verify outputs byte-identical"
+          (cd build/parity/golden/dart && find . -name '*.json' -exec sha256sum {} + | sort -k 2)
+
+      - name: Random fixtures (300, seed 20261018) -- generate
+        working-directory: ${{ env.DOMAIN_DIR }}
+        run: |
+          dart run tool/gen_parity_fixtures.dart "$GITHUB_WORKSPACE/build/parity/random/fixtures" \
+            --count 300 --seed 20261018
+
+      - name: Random fixtures -- both runners --dump, outputs byte-identical
+        run: |
+          set -euo pipefail
+          uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py \
+            --dump build/parity/random/python build/parity/random/fixtures > build/parity/random/python.log
+          tail -n 1 build/parity/random/python.log
+          (cd "$DOMAIN_DIR" && dart run cardflow_domain:run_fixtures \
+            --dump "$GITHUB_WORKSPACE/build/parity/random/dart" \
+            "$GITHUB_WORKSPACE/build/parity/random/fixtures" > "$GITHUB_WORKSPACE/build/parity/random/dart.log")
+          tail -n 1 build/parity/random/dart.log
+          n="$(find build/parity/random/python -name '*.json' | wc -l)"
+          test "$n" -eq 1200 || { echo "::error::expected 1200 dumped outputs, found $n"; exit 1; }
+          diff -r build/parity/random/python build/parity/random/dart
+          echo "random fixtures: $n cycles/verify outputs byte-identical"
+
+      - name: Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)
+        run: |
+          uv run --project services/api python - build/parity <<'EOF'
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, "packages/rules-protocol/runner_py")
+          import run_fixtures as runner  # strict integers + date-time format checker
+          from cardflow.planner.engine.protocol import parse_json
+
+          refs = {
+              "cycles": "PlanOutcome.schema.json#/$defs/CardCycles",
+              "verify": "PlanOutcome.schema.json#/$defs/VerificationResult",
+          }
+          registry = runner.load_registry()
+          files = sorted(Path(sys.argv[1]).glob("*/dart/*/*.json"))
+          checked = {kind: 0 for kind in refs}
+          failed = 0
+          for path in files:
+              kind = path.name.rsplit(".", 2)[-2]
+              output = parse_json(path.read_bytes())
+              errors = runner.schema_errors(registry, refs[kind], output)
+              errors += [f"JSON float at {p}" for p in runner.find_floats(output)]
+              checked[kind] += 1
+              if errors:
+                  failed += 1
+                  print(f"::error::{path}: " + "; ".join(errors[:5]))
+          print(f"validated {len(files)} Dart outputs: {checked}; {failed} invalid")
+          sys.exit(1 if failed or not files else 0)
+          EOF
+
+      - name: Upload parity outputs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: protocol-parity-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/parity/
+          retention-days: 14
+          if-no-files-found: warn
 
   ios-unsigned:
     name: ios-unsigned (IPA without codesign)
