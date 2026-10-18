@@ -29,7 +29,11 @@ class FirstRunEmptyState extends StatelessWidget {
     required this.message,
     required this.purpose,
     this.actions = const <EmptyStateAction>[],
+    this.scrollable = true,
   });
+
+  /// false：放在已有的滚动列表里时不再自带滚动。
+  final bool scrollable;
 
   /// 主图标（装饰性，读屏跳过；含义由文字承载）。
   final IconData icon;
@@ -50,7 +54,7 @@ class FirstRunEmptyState extends StatelessWidget {
     final hasUnavailable = actions.any(
       (a) => a.onPressed == null && a.stage == null,
     );
-    return SingleChildScrollView(
+    final content = Padding(
       padding: const EdgeInsets.all(CfSpace.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -115,5 +119,6 @@ class FirstRunEmptyState extends StatelessWidget {
         ],
       ),
     );
+    return scrollable ? SingleChildScrollView(child: content) : content;
   }
 }

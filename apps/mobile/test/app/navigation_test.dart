@@ -97,14 +97,18 @@ void main() {
     expect(find.text(CardsPage.firstRunMessage), findsOneWidget);
   });
 
-  testWidgets('未开放的操作显示为禁用并附说明', (tester) async {
+  testWidgets('未开放的操作显示为禁用并注明所属阶段', (tester) async {
     await pumpCardFlowApp(tester);
 
-    final button = tester.widget<FilledButton>(
+    final import = tester.widget<OutlinedButton>(
+      find.widgetWithText(OutlinedButton, '导入'),
+    );
+    expect(import.onPressed, isNull);
+    expect(find.text('导入：I-3 提供'), findsOneWidget);
+    final build = tester.widget<FilledButton>(
       find.widgetWithText(FilledButton, '建卡'),
     );
-    expect(button.onPressed, isNull);
-    expect(find.textContaining('尚未开放'), findsOneWidget);
+    expect(build.onPressed, isNotNull);
   });
 
   testWidgets('欢迎页全屏覆盖底部导航，返回后回到"我的"', (tester) async {

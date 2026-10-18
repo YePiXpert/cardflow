@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
+import '../../app/theme/tokens.dart';
 import '../../app/widgets/state_views.dart';
 import '../../data/repositories/providers.dart';
 import 'card_providers.dart';
@@ -31,8 +32,9 @@ enum AccountSettingsSection {
 /// P-04 信用账户设置（ui-spec P-04）：账期规则（含 3 期预览、版本历史）、额度快照（表单 + 历史）、
 /// 币种子账户（增删，主子账户不可删）、授信池（新建/加入/移出，池上限与池内合计）。
 ///
+/// 分段切换用一行可换行的选择标签（而不是固定高度的 TabBar），文字放大到 3 倍也不会溢出。
 /// 四态：加载（骨架）、错误（「重试」）、已不存在、成功；"首次空白"为"尚未设置账期规则"。
-class AccountSettingsPage extends ConsumerWidget {
+class AccountSettingsPage extends ConsumerStatefulWidget {
   const AccountSettingsPage({
     super.key,
     required this.accountId,
@@ -45,64 +47,92 @@ class AccountSettingsPage extends ConsumerWidget {
   static const String title = '信用账户设置';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AccountSettingsPage> createState() =>
+      _AccountSettingsPageState();
+}
+
+class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
+  late AccountSettingsSection _section = widget.initialSection;
+
+  @override
+  Widget build(BuildContext context) {
+    final accountId = widget.accountId;
     final wallet = ref.watch(walletProvider);
     final extra = ref.watch(accountSettingsDataProvider(accountId));
     final account = wallet.value?.account(accountId);
-    return DefaultTabController(
-      length: AccountSettingsSection.values.length,
-      initialIndex: initialSection.index,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(account == null ? title : '${account.displayName} · 设置'),
-          bottom: TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            tabs: <Widget>[
-              for (final section in AccountSettingsSection.values)
-                Tab(text: section.label),
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          account == null
+              ? AccountSettingsPage.title
+              : '${account.displayName} · 设置',
         ),
-        body: switch ((wallet, extra)) {
-          (AsyncData(), _) when account == null => ErrorBlock(
-            title: '已不存在',
-            detail: '这个信用账户不在当前空间里（可能已切换空间）。',
-            onRetry: () => context.go(AppRoutes.cards),
-            retryLabel: '回到卡包',
-          ),
-          (AsyncData(value: final w), AsyncData(value: final data)) =>
-            TabBarView(
-              children: <Widget>[
-                RuleEditorSection(
+      ),
+      body: switch ((wallet, extra)) {
+        (AsyncData(), _) when account == null => ErrorBlock(
+          title: '已不存在',
+          detail: '这个信用账户不在当前空间里（可能已切换空间）。',
+          onRetry: () => context.go(AppRoutes.cards),
+          retryLabel: '回到卡包',
+        ),
+        (AsyncData(value: final w), AsyncData(value: final data)) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                CfSpace.md,
+                CfSpace.xs,
+                CfSpace.md,
+                CfSpace.xs,
+              ),
+              child: Wrap(
+                spacing: CfSpace.xs,
+                runSpacing: CfSpace.xs,
+                children: <Widget>[
+                  for (final section in AccountSettingsSection.values)
+                    ChoiceChip(
+                      label: Text(section.label),
+                      selected: _section == section,
+                      onSelected: (_) => setState(() => _section = section),
+                    ),
+                ],
+              ),
+            ),
+            const Divider(),
+            Expanded(
+              child: switch (_section) {
+                AccountSettingsSection.rule => RuleEditorSection(
                   key: ValueKey<String>('rule-${account!.id}'),
                   account: account,
                 ),
-                LimitSnapshotSection(
-                  key: ValueKey<String>('limits-${account.id}'),
+                AccountSettingsSection.limits => LimitSnapshotSection(
+                  key: ValueKey<String>('limits-${account!.id}'),
                   account: account,
                   history: data.snapshots,
                 ),
-                CurrencyAccountsSection(account: account),
-                PoolSection(
-                  account: account,
+                AccountSettingsSection.currencies => CurrencyAccountsSection(
+                  account: account!,
+                ),
+                AccountSettingsSection.pool => PoolSection(
+                  account: account!,
                   pool: w.poolOf(account.id),
                   bankPools: data.bankPools,
                 ),
-              ],
+              },
             ),
-          (AsyncError(:final error), _) ||
-          (_, AsyncError(:final error)) => ErrorBlock(
-            title: '读取失败',
-            code: '${error.runtimeType}',
-            detail: '本机数据没有改动。',
-            onRetry: () => ref
-              ..invalidate(walletProvider)
-              ..invalidate(accountSettingsDataProvider(accountId)),
-          ),
-          _ => const LoadingSkeleton(rows: 4),
-        },
-      ),
+          ],
+        ),
+        (AsyncError(:final error), _) ||
+        (_, AsyncError(:final error)) => ErrorBlock(
+          title: '读取失败',
+          code: '${error.runtimeType}',
+          detail: '本机数据没有改动。',
+          onRetry: () => ref
+            ..invalidate(walletProvider)
+            ..invalidate(accountSettingsDataProvider(accountId)),
+        ),
+        _ => const LoadingSkeleton(rows: 4),
+      },
     );
   }
 }
