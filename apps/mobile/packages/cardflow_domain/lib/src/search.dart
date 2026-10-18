@@ -21,6 +21,8 @@ import 'allocation.dart';
 import 'cash.dart';
 import 'checks.dart';
 import 'money.dart';
+import 'protocol/adapter.dart';
+import 'protocol/outputs.dart';
 import 'rational.dart';
 import 'time.dart';
 import 'verifier.dart';
@@ -136,6 +138,43 @@ final class BoundedSearchResult {
   /// 永远为 false（非最优证明、非无解证明）。
   bool get proven => false;
 
+  /// 结果的 JSON 形式（本地运行记录与调试用；不是协议 v1 的 PlanOutcome）。分配行与验证用
+  /// 协议 v1 的 `AllocationLine` / `Verification` 写法。
+  Map<String, Object?> toJson() => <String, Object?>{
+    'outcome': outcome.name,
+    'message': message,
+    'proven': proven,
+    'decision_scenario': decisionScenario,
+    'profile': profile,
+    'max_cards': maxCards,
+    'allocation': verification == null
+        ? <Object?>[]
+        : allocationLinesToProtocol(verification!),
+    'verification': verification == null
+        ? null
+        : verificationToProtocol(verification!),
+    'failing_scenarios': <Object?>[...failingScenarios],
+    'objectives': <String, Object?>{...objectives},
+    'exclusions': <Object?>[
+      for (final MapEntry(key: cardId, value: e) in exclusions.entries)
+        <String, Object?>{
+          'card_id': cardId,
+          'reason': e.code,
+          if (e.detail != null) 'detail': e.detail,
+        },
+    ],
+    'data_issues': dataIssuesToProtocol(dataIssues),
+    'baseline': <String, Object?>{
+      for (final MapEntry(:key, :value) in baseline.entries)
+        key: baselineCheckToProtocol(value),
+    },
+    'candidates': candidates,
+    'verifier_calls': verifierCalls,
+    'exhausted': exhausted,
+    'timed_out': timedOut,
+    'elapsed_us': elapsedMicros,
+  };
+
   /// 给用户看的结论。
   String get message => switch (outcome) {
     LocalSearchOutcome.found => '本地找到可行方案，非最优证明',
@@ -143,6 +182,25 @@ final class BoundedSearchResult {
     LocalSearchOutcome.needsData => '数据不全，本地未搜索',
     LocalSearchOutcome.baselineShortfall => '新增消费前已有现金缺口，本地未搜索',
   };
+}
+
+/// 对 PlanInput 文档做有限搜索：决策情景、画像与快照过期天数默认取文档的 `options`。
+/// 文档非法时抛 [ProtocolError]。
+BoundedSearchResult boundedSearchFromProtocol(
+  Object? document, {
+  String? decisionScenario,
+  String? profile,
+  BoundedSearchOptions options = const BoundedSearchOptions(),
+}) {
+  final parsed = inputsFromProtocol(document);
+  return boundedSearch(
+    parsed.inputs,
+    parsed.scenarios,
+    decisionScenario: decisionScenario ?? parsed.options.decisionScenario,
+    profile: profile ?? parsed.options.profile,
+    staleAfterDays: parsed.options.staleAfterDays,
+    options: options,
+  );
 }
 
 int Function() _stopwatchClock() {
