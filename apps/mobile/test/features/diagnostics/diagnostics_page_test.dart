@@ -160,7 +160,11 @@ void main() {
       findsOneWidget,
     );
 
+    // 先向上滚到按钮被构建出来，再用 ensureVisible 把它放进列表的可视区域（逐段滚动可能
+    // 停在 AppBar 底下，点不中）。
     await tester.scrollUntilVisible(find.text('复制诊断信息'), -200);
+    await tester.ensureVisible(find.text('复制诊断信息'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('复制诊断信息'));
     await tester.pump();
     expect(
@@ -215,7 +219,11 @@ void main() {
     await tester.pump();
     expect(find.textContaining('300 行：写入 '), findsOneWidget);
 
+    // 先向上滚到按钮被构建出来，再用 ensureVisible 把它放进列表的可视区域（逐段滚动可能
+    // 停在 AppBar 底下，点不中）。
     await tester.scrollUntilVisible(find.text('复制诊断信息'), -200);
+    await tester.ensureVisible(find.text('复制诊断信息'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('复制诊断信息'));
     await tester.pump();
     final report = copied.single;
