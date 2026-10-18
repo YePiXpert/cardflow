@@ -47,8 +47,12 @@ Timestamp? _timestampOn(LocalDate date, (int, int)? time) => time == null
         ),
       );
 
-/// 日期选择的范围：今天往前一年到往后十年。
-LocalDate _firstDate(LocalDate today) => today.addDays(-366);
+/// 日期选择的范围：今天往前一年到往后十年（[current] 更早时从它开始，避免已有的日期落在范围外）。
+LocalDate _firstDate(LocalDate today, [LocalDate? current]) {
+  final first = today.addDays(-366);
+  return current != null && current < first ? current : first;
+}
+
 LocalDate _lastDate(LocalDate today) => today.addDays(3650);
 
 /// 账户选择（可换行的单选标签：文字放大到 3 倍也不截断）。
@@ -328,7 +332,7 @@ class _CashEventFormPageState extends ConsumerState<CashEventFormPage> {
             DateField(
               label: '日期',
               value: _date ?? today,
-              first: _firstDate(today),
+              first: _firstDate(today, _date),
               last: _lastDate(today),
               onChanged: (v) => setState(() => _date = v),
             ),
@@ -820,7 +824,7 @@ class _RecurringFormPageState extends ConsumerState<RecurringFormPage> {
             DateField(
               label: '第一期',
               value: _start ?? today,
-              first: _firstDate(today),
+              first: _firstDate(today, _start),
               last: _lastDate(today),
               onChanged: (v) => setState(() => _start = v),
             ),
@@ -842,7 +846,7 @@ class _RecurringFormPageState extends ConsumerState<RecurringFormPage> {
                   label: '结束日（可选）',
                   value: _end,
                   initial: today.addDays(365),
-                  first: _firstDate(today),
+                  first: _firstDate(today, _end),
                   last: _lastDate(today),
                   onChanged: (v) => setState(() => _end = v),
                 ),

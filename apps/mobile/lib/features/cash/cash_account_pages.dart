@@ -543,7 +543,10 @@ class _AccountDetail extends ConsumerWidget {
   ) async {
     final result = await showDialog<_AccountEdit>(
       context: context,
-      builder: (_) => _EditAccountDialog(row: row),
+      builder: (_) => _EditAccountDialog(
+        row: row,
+        today: ref.read(clockProvider).today(cashTimeZone),
+      ),
     );
     if (result == null || !context.mounted) {
       return;
@@ -574,9 +577,10 @@ typedef _AccountEdit = ({
 });
 
 class _EditAccountDialog extends StatefulWidget {
-  const _EditAccountDialog({required this.row});
+  const _EditAccountDialog({required this.row, required this.today});
 
   final CashAccountRow row;
+  final LocalDate today;
 
   @override
   State<_EditAccountDialog> createState() => _EditAccountDialogState();
@@ -641,7 +645,7 @@ class _EditAccountDialogState extends State<_EditAccountDialog> {
               value: _availableFrom,
               first: LocalDate(2000, 1, 1),
               last: LocalDate(2099, 12, 31),
-              initial: LocalDate(2026, 1, 1),
+              initial: widget.today,
               onChanged: (v) => setState(() => _availableFrom = v),
             ),
             if (_availableFrom != null)

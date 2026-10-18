@@ -573,8 +573,10 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
         body = _form(
           context,
           value,
-          wallet.value?.accounts.map((a) => (a.id, a.displayName)).toList() ??
-              const <(String, String)>[],
+          wallet.value?.accounts
+                  .map((a) => (a.id, a.displayName, a.primaryCurrency.currency))
+                  .toList() ??
+              const <(String, String, String)>[],
           today,
         );
       }
@@ -588,11 +590,18 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
   Widget _form(
     BuildContext context,
     ScenarioBoard board,
-    List<(String, String)> creditAccounts,
+    List<(String, String, String)> creditAccounts,
     LocalDate today,
   ) {
     final rows = board.inputs.eventRows;
     final accounts = {for (final a in board.inputs.accountRows) a.id: a};
+    String currencyOfEvent(String id) {
+      final row = rows[id];
+      return row == null
+          ? 'CNY'
+          : accounts[row.cashAccountId]?.currency ?? 'CNY';
+    }
+
     String eventLabel(String id) {
       final row = rows[id];
       if (row == null) {
@@ -661,7 +670,7 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
               <String>[
                 if (o.on != null) '改到 ${o.on}',
                 if (o.amountMinor != null)
-                  '金额改为 ${amountText(o.amountMinor!.abs(), 'CNY')}',
+                  '金额改为 ${amountText(o.amountMinor!.abs(), currencyOfEvent(o.eventId))}',
               ].join(' · '),
             ),
             trailing: IconButton(
@@ -695,7 +704,8 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
                   c.creditAccountId,
             ),
             subtitle: Text(
-              '${c.on} 起 · ${c.changeMinor < 0 ? '降额' : '提额'} ${amountText(c.changeMinor.abs(), 'CNY')}',
+              '${c.on} 起 · ${c.changeMinor < 0 ? '降额' : '提额'} '
+              '${amountText(c.changeMinor.abs(), creditAccounts.where((a) => a.$1 == c.creditAccountId).firstOrNull?.$3 ?? 'CNY')}',
             ),
             trailing: IconButton(
               tooltip: '移除这项额度变化',
@@ -724,9 +734,10 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
     LocalDate today,
     String Function(String id) eventLabel,
   ) async {
+    final from = today.addDays(-31);
     final candidates = <String>[
       for (final e in board.inputs.events)
-        if (!_overrides.any((o) => o.eventId == e.id)) e.id,
+        if (e.on >= from && !_overrides.any((o) => o.eventId == e.id)) e.id,
     ];
     final result = await showDialog<EventOverrideSpec>(
       context: context,
@@ -735,6 +746,12 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
         labelOf: eventLabel,
         today: today,
         rows: board.inputs.eventRows,
+        currencyOf: (id) {
+          final row = board.inputs.eventRows[id];
+          return row == null
+              ? 'CNY'
+              : board.inputs.accountRow(row.cashAccountId)?.currency ?? 'CNY';
+        },
       ),
     );
     if (result != null) {
@@ -743,7 +760,7 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
   }
 
   Future<void> _addLimit(
-    List<(String, String)> accounts,
+    List<(String, String, String)> accounts,
     LocalDate today,
   ) async {
     final result = await showDialog<LimitChangeSpec>(
@@ -762,10 +779,12 @@ class _OverrideDialog extends StatefulWidget {
     required this.labelOf,
     required this.today,
     required this.rows,
+    required this.currencyOf,
   });
 
   final List<String> candidates;
   final String Function(String id) labelOf;
+  final String Function(String id) currencyOf;
   final LocalDate today;
   final Map<String, CashEventRow> rows;
 
@@ -849,7 +868,7 @@ class _OverrideDialogState extends State<_OverrideDialog> {
             final row = widget.rows[id]!;
             final (amount, amountError) = parseAmountMinor(
               _amount.text,
-              'CNY',
+              widget.currencyOf(id),
               required: false,
             );
             if (amountError != null || (amount == null && _on == null)) {
@@ -876,7 +895,8 @@ class _OverrideDialogState extends State<_OverrideDialog> {
 class _LimitDialog extends StatefulWidget {
   const _LimitDialog({required this.accounts, required this.today});
 
-  final List<(String, String)> accounts;
+  /// （信用账户 id，名称，主子账户币种）。
+  final List<(String, String, String)> accounts;
   final LocalDate today;
 
   @override
@@ -909,7 +929,7 @@ class _LimitDialogState extends State<_LimitDialog> {
               onChanged: (v) => setState(() => _accountId = v),
               child: Column(
                 children: <Widget>[
-                  for (final (id, name) in widget.accounts)
+                  for (final (id, name, _) in widget.accounts)
                     RadioListTile<String>(value: id, title: Text(name)),
                 ],
               ),
@@ -947,9 +967,15 @@ class _LimitDialogState extends State<_LimitDialog> {
         ),
         FilledButton(
           onPressed: () {
+            final currency =
+                widget.accounts
+                    .where((a) => a.$1 == _accountId)
+                    .firstOrNull
+                    ?.$3 ??
+                'CNY';
             final (change, error) = parseAmountMinor(
               _change.text,
-              'CNY',
+              currency,
               allowNegative: true,
             );
             if (_accountId == null ||
