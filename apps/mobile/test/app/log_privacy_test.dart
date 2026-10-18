@@ -3,6 +3,7 @@
 // 报告，用掩码形态与原样形态同时检查（test/support/sensitive_text.dart）。
 import 'package:cardflow/app/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/app/routes.dart';
+import 'package:cardflow/features/cards/account_detail_page.dart';
 import 'package:cardflow/features/cards/limit_snapshot_section.dart';
 import 'package:cardflow/features/cards/new_card_page.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(LimitSnapshotSection.savedMessage), findsOneWidget);
 
-    // 3. 进出演示空间。
+    // 3. 换卡（新末四位 8765）。
+    await goTo(tester, AppRoutes.account(accountId));
+    final replace = find.text('换卡/补卡');
+    await _scrollIn(tester, AccountDetailPage, replace);
+    await tester.tap(replace);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, '新卡末四位'), '8765');
+    await tester.tap(find.text('确认换卡'));
+    await tester.pumpAndSettle();
+    expect(find.text('已换卡，历史不变'), findsOneWidget);
+
+    // 4. 进出演示空间。
     await goTo(tester, AppRoutes.welcome);
     await tester.tap(find.text('体验演示'));
     await tester.pumpAndSettle();
@@ -93,7 +105,7 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, '退出演示'));
     await tester.pumpAndSettle();
 
-    // 4. 复制诊断报告。
+    // 5. 复制诊断报告。
     await goTo(tester, AppRoutes.diagnostics);
     final copied = captureClipboard(tester);
     await tester.tap(find.text('复制诊断信息'));
