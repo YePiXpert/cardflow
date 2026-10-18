@@ -1,6 +1,10 @@
 import 'package:cardflow/app/routes.dart';
+import 'package:cardflow/data/db/database_benchmark.dart';
+import 'package:cardflow/data/db/database_providers.dart';
+import 'package:cardflow/data/db/encryption.dart';
 import 'package:cardflow/features/diagnostics/app_diagnostics.dart';
 import 'package:cardflow/features/diagnostics/crypto_status.dart';
+import 'package:cardflow/features/diagnostics/database_benchmark_controller.dart';
 import 'package:cardflow/features/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_page.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_report.dart';
@@ -10,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../data/db/db_test_support.dart';
 import '../../test_helpers.dart';
 
 /// 截获写入剪贴板的文字。
@@ -34,8 +39,35 @@ List<String> captureClipboard(WidgetTester tester) {
   return copied;
 }
 
+/// 固定结果的基准控制器：记录点击次数，不做真实 I/O。
+class _FakeBenchmark extends DatabaseBenchmark {
+  int runs = 0;
+
+  static const DatabaseBenchmarkResult result = DatabaseBenchmarkResult(
+    rows: 100000,
+    write: Duration(milliseconds: 812),
+    open: Duration(milliseconds: 41),
+    count: Duration(milliseconds: 29),
+    fileSizeBytes: 9875456,
+    cipher: CipherInfo(
+      library: 'SQLite3 Multiple Ciphers 2.6.1',
+      cipher: 'chacha20',
+      cipherVersionPragma: '',
+    ),
+  );
+
+  @override
+  DatabaseBenchmarkState build() => const DatabaseBenchmarkIdle();
+
+  @override
+  Future<void> run() async {
+    runs++;
+    state = const DatabaseBenchmarkSucceeded(result);
+  }
+}
+
 void main() {
-  testWidgets('显示版本、构建号、Bundle ID、构建类型、系统与加密库占位', (tester) async {
+  testWidgets('显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态', (tester) async {
     await pumpCardFlowApp(tester);
     await goTo(tester, AppRoutes.diagnostics);
 
@@ -46,8 +78,15 @@ void main() {
     expect(find.text('debug'), findsOneWidget);
     expect(find.text('本机构建'), findsOneWidget);
 
-    await tester.scrollUntilVisible(find.text('待下一阶段'), 200);
-    expect(find.text('待下一阶段'), findsOneWidget);
+    for (final text in <String>[
+      '已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）',
+      '已生成',
+      '未运行',
+      '运行数据库基准（10 万行）',
+    ]) {
+      await tester.scrollUntilVisible(find.text(text), 100);
+      expect(find.text(text), findsOneWidget, reason: text);
+    }
     final routeRow = find.text('route/changed /settings/diagnostics');
     await tester.scrollUntilVisible(routeRow, 200);
     expect(routeRow, findsOneWidget);
@@ -67,7 +106,16 @@ void main() {
     expect(report, contains('应用：卡序 0.0.1（构建 7）'));
     expect(report, contains('Bundle ID：li.yep.cardflow'));
     expect(report, contains('构建类型：debug'));
-    expect(report, contains('加密库状态：待下一阶段'));
+    expect(
+      report,
+      contains(
+        '加密库状态：已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）；'
+        'PRAGMA cipher=chacha20；sqlite3mc_version()=SQLite3 Multiple Ciphers 2.6.1；'
+        'PRAGMA cipher_version=（空，sqlite3mc 不提供此 PRAGMA）',
+      ),
+    );
+    expect(report, contains('数据库密钥：已生成'));
+    expect(report, contains('数据库基准：未运行'));
     expect(report, contains('route/changed /settings/diagnostics'));
     expect(find.text(DiagnosticsPage.copiedMessage), findsOneWidget);
 
@@ -76,19 +124,111 @@ void main() {
     expect(log.entries.last.event, 'copied');
   });
 
-  testWidgets('下一阶段登记加密库状态后，诊断页直接显示', (tester) async {
+  testWidgets('加密库不可用时显示错误码，密钥显示"未生成"', (tester) async {
     await pumpCardFlowApp(
       tester,
-      overrides: <Override>[
-        cryptoLibraryStatusProvider.overrideWith(
-          (ref) async => const CryptoLibraryReady(cipherVersion: '4.9.0'),
-        ),
-      ],
+      databaseOverrides: fakeDatabaseOverrides(
+        status: const CryptoLibraryUnavailable(reasonCode: 'key_missing'),
+        keyExists: false,
+      ),
     );
     await goTo(tester, AppRoutes.diagnostics);
 
-    await tester.scrollUntilVisible(find.textContaining('cipher_version'), 200);
-    expect(find.text('已启用（cipher_version 4.9.0）'), findsOneWidget);
+    for (final text in <String>['不可用（key_missing）', '未生成']) {
+      await tester.scrollUntilVisible(find.text(text), 100);
+      expect(find.text(text), findsOneWidget, reason: text);
+    }
+  });
+
+  testWidgets('「运行数据库基准」：显示各段毫秒数，并进入复制的报告', (tester) async {
+    final fake = _FakeBenchmark();
+    await pumpCardFlowApp(
+      tester,
+      overrides: <Override>[databaseBenchmarkProvider.overrideWith(() => fake)],
+    );
+    await goTo(tester, AppRoutes.diagnostics);
+    final copied = captureClipboard(tester);
+
+    final button = find.text('运行数据库基准（10 万行）');
+    await tester.scrollUntilVisible(button, 200);
+    await tester.tap(button);
+    await tester.pump();
+
+    expect(fake.runs, 1);
+    expect(
+      find.text('100000 行：写入 812 ms · 重新打开 41 ms · COUNT 29 ms'),
+      findsOneWidget,
+    );
+
+    await tester.scrollUntilVisible(find.text('复制诊断信息'), -200);
+    await tester.tap(find.text('复制诊断信息'));
+    await tester.pump();
+    expect(
+      copied.single,
+      contains(
+        '数据库基准：rows=100000 write_ms=812 open_ms=41 count_ms=29 '
+        'file_bytes=9875456 cipher=chacha20 library=SQLite3 Multiple Ciphers 2.6.1',
+      ),
+    );
+  });
+
+  testWidgets('真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥', (tester) async {
+    final location = createTempLocation();
+    final store = InMemoryDatabaseKeyStore(value: testKeyHex);
+    await pumpCardFlowApp(
+      tester,
+      databaseOverrides: <Override>[
+        databaseKeyStoreProvider.overrideWithValue(store),
+        databaseLocationProvider.overrideWith((ref) async => location),
+        databaseBenchmarkRowsProvider.overrideWithValue(300),
+      ],
+    );
+    final container = appContainer(tester);
+    // 真实 I/O（后台 isolate、文件）只能在 runAsync 的真实事件循环里完成；已在真实 zone 里
+    // 完成的 future 若在组件测试的伪异步 zone 里 await，其回调排在真实事件循环上，伪时钟
+    // pump 不会执行它。所以 provider 都在 runAsync 里先算好（自动释放的密钥状态用 listen
+    // 保活），页面随后直接读到结果。
+    await tester.runAsync(() async {
+      final keySubscription = container.listen(
+        databaseKeyExistsProvider,
+        (_, _) {},
+      );
+      addTearDown(keySubscription.close);
+      await container.read(cryptoLibraryStatusProvider.future);
+      await container.read(databaseKeyExistsProvider.future);
+    });
+    await goTo(tester, AppRoutes.diagnostics);
+    final copied = captureClipboard(tester);
+
+    for (final finder in <Finder>[
+      find.textContaining('已启用（SQLite3 Multiple Ciphers '),
+      find.text('已生成'),
+      find.text('运行数据库基准（300 行）'),
+    ]) {
+      await tester.scrollUntilVisible(finder, 100);
+      expect(finder, findsOneWidget);
+    }
+
+    await tester.runAsync(
+      () => container.read(databaseBenchmarkProvider.notifier).run(),
+    );
+    await tester.pump();
+    expect(find.textContaining('300 行：写入 '), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.text('复制诊断信息'), -200);
+    await tester.tap(find.text('复制诊断信息'));
+    await tester.pump();
+    final report = copied.single;
+    expect(report, contains('加密库状态：已启用（SQLite3 Multiple Ciphers '));
+    expect(report, contains('数据库密钥：已生成'));
+    expect(report, contains('数据库基准：rows=300 '));
+    expect(report, contains('I db/opened created'));
+    expect(report, contains('I db/benchmark_done'));
+    expect(containsKeyMaterial(report, testKeyHex), isFalse);
+
+    await tester.runAsync(
+      () async => (await container.read(databaseProvider.future)).close(),
+    );
   });
 
   test('报告只含元数据与脱敏日志', () {
@@ -113,7 +253,10 @@ void main() {
           localeName: 'zh_CN',
         ),
       ),
-      cryptoStatus: const CryptoLibraryPending().displayText,
+      cryptoStatus: const CryptoLibraryUnavailable(reasonCode: 'wrong_key')
+          .reportText,
+      databaseKeyStatus: '已生成',
+      databaseBenchmark: const DatabaseBenchmarkIdle().reportText,
       display: const DisplayEnvironment(textScalePercent: 200, darkMode: true),
       entries: log.entries,
       droppedCount: log.droppedCount,
@@ -125,6 +268,9 @@ void main() {
     expect(report, contains('系统：ios Version 18.1 (Build 22B83)'));
     expect(report, contains('文字缩放：200%'));
     expect(report, contains('外观：深色'));
+    expect(report, contains('加密库状态：不可用（wrong_key）'));
+    expect(report, contains('数据库密钥：已生成'));
+    expect(report, contains('数据库基准：未运行'));
     expect(report, contains('日志：2 条（上限 500 条，已丢弃 0 条较早记录；时间为 UTC）'));
     expect(report, contains('2026-10-18T09:00:00.000Z I app/launch release'));
     expect(report, contains('W import/parsed 应还 ####.## 卡号尾号 ####'));
@@ -138,6 +284,12 @@ void main() {
       describeSourceRevision('0123456789abcdef0123456789abcdef01234567'),
       '0123456789ab',
     );
+  });
+
+  test('基准按钮上的行数写法', () {
+    expect(DiagnosticsPage.describeRowCount(100000), '10 万行');
+    expect(DiagnosticsPage.describeRowCount(300), '300 行');
+    expect(DiagnosticsPage.describeRowCount(15000), '15000 行');
   });
 
   testWidgets('应用信息读取失败时显示错误而不是空白', (tester) async {

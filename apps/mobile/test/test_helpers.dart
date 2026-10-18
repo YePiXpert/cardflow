@@ -1,5 +1,7 @@
 import 'package:cardflow/app/app.dart';
 import 'package:cardflow/app/router.dart';
+import 'package:cardflow/data/db/database_providers.dart';
+import 'package:cardflow/features/diagnostics/crypto_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -35,17 +37,43 @@ void mockPackageInfo() {
   );
 }
 
+/// 组件测试默认使用的加密库状态。
+const CryptoLibraryStatus fakeCryptoStatus = CryptoLibraryReady(
+  library: 'SQLite3 Multiple Ciphers 2.6.1',
+  cipher: 'chacha20',
+);
+
+/// 组件测试里替换加密本地库的 provider：不碰钥匙串、文件与后台 isolate（组件测试的
+/// 伪异步时钟里跑不了真实 I/O）。真实加密库的行为见 test/data/db/；在组件测试里用真实
+/// 加密库的例子见 test/features/diagnostics/diagnostics_page_test.dart。
+List<Override> fakeDatabaseOverrides({
+  CryptoLibraryStatus status = fakeCryptoStatus,
+  bool keyExists = true,
+}) => <Override>[
+  cryptoLibraryStatusProvider.overrideWith((ref) async => status),
+  databaseKeyExistsProvider.overrideWith((ref) async => keyExists),
+];
+
 /// 启动完整 App（真实路由、主题与 Provider），可选覆盖。
+///
+/// [databaseOverrides] 默认是 [fakeDatabaseOverrides]；要换加密库状态或改用真实加密库时传入。
 Future<void> pumpCardFlowApp(
   WidgetTester tester, {
   double textScale = 1.0,
   Brightness brightness = Brightness.light,
   List<Override> overrides = const <Override>[],
+  List<Override>? databaseOverrides,
 }) async {
   mockPackageInfo();
   usePhoneSurface(tester, textScale: textScale, brightness: brightness);
   await tester.pumpWidget(
-    ProviderScope(overrides: overrides, child: const CardFlowApp()),
+    ProviderScope(
+      overrides: <Override>[
+        ...(databaseOverrides ?? fakeDatabaseOverrides()),
+        ...overrides,
+      ],
+      child: const CardFlowApp(),
+    ),
   );
   await tester.pumpAndSettle();
 }

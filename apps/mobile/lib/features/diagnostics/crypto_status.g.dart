@@ -8,20 +8,12 @@ part of 'crypto_status.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// 诊断页读取的加密库状态。
-///
-/// 下一任务（I0-5，加密 drift）把函数体换成真实检查：打开加密库 →
-/// 执行 `PRAGMA cipher_version` → 非空返回 [CryptoLibraryReady]，否则返回
-/// [CryptoLibraryUnavailable]。诊断页与报告无需改动。
+/// 诊断页读取的加密库状态：打开本机加密数据库（`openedDatabaseProvider`）的结果。
 
 @ProviderFor(cryptoLibraryStatus)
 final cryptoLibraryStatusProvider = CryptoLibraryStatusProvider._();
 
-/// 诊断页读取的加密库状态。
-///
-/// 下一任务（I0-5，加密 drift）把函数体换成真实检查：打开加密库 →
-/// 执行 `PRAGMA cipher_version` → 非空返回 [CryptoLibraryReady]，否则返回
-/// [CryptoLibraryUnavailable]。诊断页与报告无需改动。
+/// 诊断页读取的加密库状态：打开本机加密数据库（`openedDatabaseProvider`）的结果。
 
 final class CryptoLibraryStatusProvider
     extends
@@ -33,11 +25,7 @@ final class CryptoLibraryStatusProvider
     with
         $FutureModifier<CryptoLibraryStatus>,
         $FutureProvider<CryptoLibraryStatus> {
-  /// 诊断页读取的加密库状态。
-  ///
-  /// 下一任务（I0-5，加密 drift）把函数体换成真实检查：打开加密库 →
-  /// 执行 `PRAGMA cipher_version` → 非空返回 [CryptoLibraryReady]，否则返回
-  /// [CryptoLibraryUnavailable]。诊断页与报告无需改动。
+  /// 诊断页读取的加密库状态：打开本机加密数据库（`openedDatabaseProvider`）的结果。
   CryptoLibraryStatusProvider._()
     : super(
         from: null,
@@ -65,4 +53,4 @@ final class CryptoLibraryStatusProvider
 }
 
 String _$cryptoLibraryStatusHash() =>
-    r'a7be2cc82d782abbd34f7c22aa2ddfcfe35632ff';
+    r'fb0872bd552e9a1ec626b6bc88fd1793ba371d31';

@@ -6,15 +6,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../app/theme/tokens.dart';
+import '../../data/db/database_errors.dart';
+import '../../data/db/database_providers.dart';
 import 'app_diagnostics.dart';
 import 'crypto_status.dart';
+import 'database_benchmark_controller.dart';
 import 'diagnostic_log.dart';
 import 'diagnostics_report.dart';
 
 /// 诊断信息页（"我的"Tab 内）：没有 Mac 时唯一的真机反馈渠道。
 ///
-/// 显示 App 版本与构建号、Bundle ID、构建类型、源码版本、系统版本、加密库状态
-/// 与内存环形日志；「复制诊断信息」把同样的内容（不含金额与正文）放进剪贴板。
+/// 显示 App 版本与构建号、Bundle ID、构建类型、源码版本、系统版本、加密本地库状态
+/// （加密库、密钥是否已生成、数据库基准）与内存环形日志；「复制诊断信息」把同样的内容
+/// （不含金额与正文，不含任何密钥内容）放进剪贴板。
 class DiagnosticsPage extends ConsumerWidget {
   const DiagnosticsPage({super.key});
 
@@ -24,10 +28,21 @@ class DiagnosticsPage extends ConsumerWidget {
   /// 复制成功的轻提示。
   static const String copiedMessage = '已复制诊断信息';
 
+  /// 「数据库基准」按钮的文字。
+  static String benchmarkButtonLabel(int rows) =>
+      '运行数据库基准（${describeRowCount(rows)}）';
+
+  /// 行数的中文写法：100000 → "10 万行"。
+  static String describeRowCount(int rows) =>
+      rows >= 10000 && rows % 10000 == 0 ? '${rows ~/ 10000} 万行' : '$rows 行';
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final app = ref.watch(appDiagnosticsProvider);
     final crypto = ref.watch(cryptoLibraryStatusProvider);
+    final keyExists = ref.watch(databaseKeyExistsProvider);
+    final benchmark = ref.watch(databaseBenchmarkProvider);
+    final benchmarkRows = ref.watch(databaseBenchmarkRowsProvider);
     final log = ref.watch(diagnosticLogProvider);
     final theme = Theme.of(context);
     final colors = CardFlowColors.of(context);
@@ -40,6 +55,18 @@ class DiagnosticsPage extends ConsumerWidget {
       AsyncError(:final error) => '读取失败（${error.runtimeType}）',
       _ => '读取中…',
     };
+    final cryptoReportText = switch (crypto) {
+      AsyncData(:final value) => value.reportText,
+      _ => cryptoText,
+    };
+    final keyText = switch (keyExists) {
+      AsyncData(:final value) => value ? '已生成' : '未生成',
+      AsyncError(error: final DatabaseOpenException error) =>
+        '读取失败（${error.code.code}）',
+      AsyncError(:final error) => '读取失败（${error.runtimeType}）',
+      _ => '读取中…',
+    };
+    final benchmarkRunning = benchmark is DatabaseBenchmarkRunning;
 
     return Scaffold(
       appBar: AppBar(title: const Text(title)),
@@ -56,7 +83,8 @@ class DiagnosticsPage extends ConsumerWidget {
                   vertical: CfSpace.xs,
                 ),
                 child: Text(
-                  '复制的内容只有版本、系统与本机日志，不含金额与正文，可直接发给开发者。'
+                  '复制的内容只有版本、系统、加密库状态、数据库基准耗时与本机日志，'
+                  '不含金额、正文与密钥，可直接发给开发者。'
                   '日志只保存在内存中，最多 ${log.capacity} 条，重启 App 后清空。',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colors.textSecondary,
@@ -75,7 +103,9 @@ class DiagnosticsPage extends ConsumerWidget {
                             context: context,
                             log: log,
                             app: app.requireValue,
-                            cryptoText: cryptoText,
+                            cryptoText: cryptoReportText,
+                            keyText: keyText,
+                            benchmarkText: benchmark.reportText,
                             display: DisplayEnvironment(
                               textScalePercent: textScalePercent,
                               darkMode: darkMode,
@@ -95,6 +125,27 @@ class DiagnosticsPage extends ConsumerWidget {
               _InfoRow(label: '外观', value: darkMode ? '深色' : '浅色'),
               const _SectionHeader('加密本地库'),
               _InfoRow(label: '加密库状态', value: cryptoText),
+              _InfoRow(label: '数据库密钥', value: keyText),
+              _InfoRow(label: '数据库基准', value: benchmark.displayText),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CfSpace.md,
+                  vertical: CfSpace.xs,
+                ),
+                child: FilledButton.tonalIcon(
+                  onPressed: benchmarkRunning
+                      ? null
+                      : () => unawaited(
+                          ref.read(databaseBenchmarkProvider.notifier).run(),
+                        ),
+                  icon: const Icon(Icons.speed_outlined),
+                  label: Text(
+                    benchmarkRunning
+                        ? '数据库基准运行中…'
+                        : benchmarkButtonLabel(benchmarkRows),
+                  ),
+                ),
+              ),
               _SectionHeader(
                 '日志（${entries.length} 条，已丢弃 ${log.droppedCount} 条）',
               ),
@@ -145,12 +196,16 @@ class DiagnosticsPage extends ConsumerWidget {
     required DiagnosticLog log,
     required AppDiagnostics app,
     required String cryptoText,
+    required String keyText,
+    required String benchmarkText,
     required DisplayEnvironment display,
   }) async {
     final messenger = ScaffoldMessenger.of(context);
     final report = buildDiagnosticsReport(
       app: app,
       cryptoStatus: cryptoText,
+      databaseKeyStatus: keyText,
+      databaseBenchmark: benchmarkText,
       display: display,
       entries: log.entries,
       droppedCount: log.droppedCount,
