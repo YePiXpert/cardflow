@@ -1,0 +1,1081 @@
+# I-0a CI ios-unsigned · 运行 39098193527（workflow_dispatch，第 1 次 iOS 构建，成功）· 2026-10-18T04:53:20Z
+# URL: https://github.com/YePiXpert/cardflow/actions/runs/39098193527
+$ gh run view 39098193527
+
+✓ main mobile · 39098193527
+Triggered via workflow_dispatch about 7 minutes ago
+
+JOBS
+✓ dart (format · analyze · test · web build) in 2m29s (ID 117588884138)
+✓ ios-unsigned (IPA without codesign) in 3m51s (ID 117589307876)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+dart (format · analyze · test · web build): .github#1
+
+- Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.
+ios-unsigned (IPA without codesign): .github#1
+
+
+ARTIFACTS
+cardflow-unsigned-eaed4a8
+
+For more information about a job, try: gh run view --job=<job-id>
+View this run on GitHub: https://github.com/YePiXpert/cardflow/actions/runs/39098193527
+
+$ gh run view 39098193527 --json status,conclusion,event,headSha,headBranch,createdAt,updatedAt,url,jobs
+{"conclusion":"success","createdAt":"2026-10-18T04:45:24Z","event":"workflow_dispatch","headBranch":"main","headSha":"eaed4a87e3a304ef2bbe44aa7002a42997905360","jobs":[{"completedAt":"2026-10-18T04:47:57Z","conclusion":"success","databaseId":117588884138,"name":"dart (format · analyze · test · web build)","startedAt":"2026-10-18T04:45:28Z","status":"completed","steps":[{"conclusion":"success","name":"Set up job","number":1,"status":"completed"},{"conclusion":"success","name":"Run actions/checkout@v7","number":2,"status":"completed"},{"conclusion":"success","name":"Run subosito/flutter-action@v2","number":3,"status":"completed"},{"conclusion":"success","name":"flutter --version","number":4,"status":"completed"},{"conclusion":"success","name":"flutter pub get","number":5,"status":"completed"},{"conclusion":"success","name":"dart format","number":6,"status":"completed"},{"conclusion":"success","name":"flutter analyze","number":7,"status":"completed"},{"conclusion":"success","name":"flutter test","number":8,"status":"completed"},{"conclusion":"success","name":"flutter build web (compile smoke test)","number":9,"status":"completed"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2","number":17,"status":"completed"},{"conclusion":"success","name":"Post Run actions/checkout@v7","number":18,"status":"completed"},{"conclusion":"success","name":"Complete job","number":19,"status":"completed"}],"url":"https://github.com/YePiXpert/cardflow/actions/runs/39098193527/job/117588884138"},{"completedAt":"2026-10-18T04:51:56Z","conclusion":"success","databaseId":117589307876,"name":"ios-unsigned (IPA without codesign)","startedAt":"2026-10-18T04:48:05Z","status":"completed","steps":[{"conclusion":"success","name":"Set up job","number":1,"status":"completed"},{"conclusion":"success","name":"Run actions/checkout@v7","number":2,"status":"completed"},{"conclusion":"success","name":"Run subosito/flutter-action@v2","number":3,"status":"completed"},{"conclusion":"success","name":"Toolchain versions","number":4,"status":"completed"},{"conclusion":"success","name":"flutter pub get","number":5,"status":"completed"},{"conclusion":"success","name":"Lint iOS property lists","number":6,"status":"completed"},{"conclusion":"success","name":"flutter build ios --release --no-codesign","number":7,"status":"completed"},{"conclusion":"success","name":"Package unsigned IPA","number":8,"status":"completed"},{"conclusion":"success","name":"Verify IPA","number":9,"status":"completed"},{"conclusion":"success","name":"Upload unsigned IPA","number":10,"status":"completed"},{"conclusion":"skipped","name":"Collect Xcode logs","number":11,"status":"completed"},{"conclusion":"skipped","name":"Upload build logs","number":12,"status":"completed"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2","number":23,"status":"completed"},{"conclusion":"success","name":"Post Run actions/checkout@v7","number":24,"status":"completed"},{"conclusion":"success","name":"Complete job","number":25,"status":"completed"}],"url":"https://github.com/YePiXpert/cardflow/actions/runs/39098193527/job/117589307876"}],"status":"completed","updatedAt":"2026-10-18T04:51:56Z","url":"https://github.com/YePiXpert/cardflow/actions/runs/39098193527"}
+
+$ gh run view 39098193527 --log
+dart (format · analyze · test · web build)	Set up job	﻿2026-10-18T04:45:29.8090636Z Current runner version: '2.337.0'
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8116946Z ##[group]Runner Image Provisioner
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8117997Z Hosted Compute Agent
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8118610Z Version: 20261012.601
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8119365Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8120102Z Build Date: 2026-10-12T17:48:21Z
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8121064Z Worker ID: {8b0a9314-2210-43f6-8ef6-e2170d855fb2}
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8121883Z Region: westus
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8122467Z Cloud: Azure
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8123078Z ##[endgroup]
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8124703Z ##[group]Operating System
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8125356Z Ubuntu
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8125965Z 24.04.5
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8126473Z LTS
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8127038Z ##[endgroup]
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8127599Z ##[group]Runner Image
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8128185Z Image: ubuntu-24.04
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8128798Z Version: 20261012.334.1
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8129911Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8132226Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8133234Z ##[endgroup]
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8134421Z ##[group]GITHUB_TOKEN Permissions
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8136579Z Contents: read
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8137330Z Metadata: read
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8137892Z ##[endgroup]
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8140346Z Secret source: Actions
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8141559Z Cache mode: write
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8142574Z Prepare workflow directory
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8562990Z Prepare all required actions
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:29.8611559Z Getting action download info
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:30.2259764Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:30.3283112Z Download action repository 'subosito/flutter-action@v2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:30.6952820Z Getting action download info
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:30.8405134Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+dart (format · analyze · test · web build)	Set up job	2026-10-18T04:45:31.0640538Z Complete job name: dart (format · analyze · test · web build)
+dart (format · analyze · test · web build)	Run actions/checkout@v7	﻿2026-10-18T04:45:31.1578874Z ##[group]Run actions/checkout@v7
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1580350Z with:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1581517Z   repository: YePiXpert/cardflow
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1589827Z   token: ***
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1590751Z   ssh-strict: true
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1591845Z   ssh-user: git
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1592809Z   persist-credentials: true
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1593841Z   clean: true
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1594803Z   sparse-checkout-cone-mode: true
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1595962Z   fetch-depth: 1
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1596900Z   fetch-tags: false
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1597859Z   show-progress: true
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1598820Z   lfs: false
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1599723Z   submodules: false
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1600708Z   set-safe-directory: true
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1601983Z   allow-unsafe-pr-checkout: false
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1603375Z env:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1604306Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1605489Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1606704Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.1607613Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2619245Z Syncing repository: YePiXpert/cardflow
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2623246Z ##[group]Getting Git version info
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2624957Z Working directory is '/home/runner/work/cardflow/cardflow'
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2627615Z [command]/usr/bin/git version
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2672992Z git version 2.55.0
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2698021Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2707455Z Temporarily overriding HOME='/home/runner/work/_temp/3b9bb951-7985-4a46-9f7b-15ec2fc8456c' before making global git config changes
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2710488Z Adding repository directory to the temporary git global config as a safe directory
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2714107Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cardflow/cardflow
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2765020Z Deleting the contents of '/home/runner/work/cardflow/cardflow'
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2768610Z ##[group]Determining repository object format
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2771656Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2773707Z ##[group]Initializing the repository
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2776909Z [command]/usr/bin/git init /home/runner/work/cardflow/cardflow
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2900235Z hint: Using 'master' as the name for the initial branch. This default branch name
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2903771Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2906657Z hint: to use in all of your new repositories, which will suppress this warning,
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2908507Z hint: call:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2909719Z hint:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2911590Z hint: 	git config --global init.defaultBranch <name>
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2913369Z hint:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2915285Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2918231Z hint: 'development'. The just-created branch can be renamed via this command:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2919927Z hint:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2927274Z hint: 	git branch -m <name>
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2928908Z hint:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2931348Z hint: Disable this message with "git config set advice.defaultBranchName false"
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2934596Z Initialized empty Git repository in /home/runner/work/cardflow/cardflow/.git/
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2939796Z [command]/usr/bin/git remote add origin https://github.com/YePiXpert/cardflow
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2972300Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2974607Z ##[group]Disabling automatic garbage collection
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.2976445Z [command]/usr/bin/git config --local gc.auto 0
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3008664Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3011441Z ##[group]Setting up auth
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3013207Z Removing SSH command configuration
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3015613Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3057666Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3490325Z Removing HTTP extra header
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3497459Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3538930Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3757564Z Removing includeIf entries pointing to credentials config files
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3761972Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.3795866Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.4029411Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.4068707Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cardflow/cardflow/.git.path /home/runner/work/_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.4103878Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cardflow/cardflow/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.4142412Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.4178301Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.4228300Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.4230098Z ##[group]Fetching the repository
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.4233776Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +eaed4a87e3a304ef2bbe44aa7002a42997905360:refs/remotes/origin/main
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9284955Z From https://github.com/YePiXpert/cardflow
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9286334Z  * [new ref]         eaed4a87e3a304ef2bbe44aa7002a42997905360 -> origin/main
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9296826Z [command]/usr/bin/git branch --list --remote origin/main
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9326584Z   origin/main
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9335506Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9361935Z eaed4a87e3a304ef2bbe44aa7002a42997905360
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9366144Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9366747Z ##[group]Determining the checkout info
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9367586Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9371722Z [command]/usr/bin/git sparse-checkout disable
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9429919Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9464573Z ##[group]Checking out the ref
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9469379Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9895107Z Switched to a new branch 'main'
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9900906Z branch 'main' set up to track 'origin/main'.
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9991303Z ##[endgroup]
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9993943Z [command]/usr/bin/git log -1 --format=%H
+dart (format · analyze · test · web build)	Run actions/checkout@v7	2026-10-18T04:45:31.9996668Z eaed4a87e3a304ef2bbe44aa7002a42997905360
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	﻿2026-10-18T04:45:32.0345484Z ##[group]Run subosito/flutter-action@v2
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0345895Z with:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0346154Z   flutter-version: 3.47.7
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0346457Z   channel: stable
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0346720Z   cache: true
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0346978Z   architecture: X64
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0347256Z   pub-cache-path: default
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0347546Z   dry-run: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0347882Z   git-source: https://github.com/flutter/flutter.git
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0348262Z env:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0348512Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0348827Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0349119Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0349376Z ##[endgroup]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0407646Z ##[start-action display=Make yq tool available on Windows runners;id=__subosito_flutter-action.__run]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0432301Z ##[end-action id=__subosito_flutter-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0434883Z ##[start-action display=Make setup script executable;id=__subosito_flutter-action.__run_2]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0474071Z ##[group]Run chmod +x "$GITHUB_ACTION_PATH/setup.sh"
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0474578Z [36;1mchmod +x "$GITHUB_ACTION_PATH/setup.sh"[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0760021Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0760659Z env:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0761297Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0761728Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0762138Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0762489Z ##[endgroup]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0897944Z ##[end-action id=__subosito_flutter-action.__run_2;outcome=success;conclusion=success;duration_ms=46]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0900768Z ##[start-action display=Set action inputs;id=__subosito_flutter-action.flutter-action]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0942185Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh -p \
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0942656Z [36;1m$GITHUB_ACTION_PATH/setup.sh -p \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0943025Z [36;1m  -n '3.47.7' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0943312Z [36;1m  -f '' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0943599Z [36;1m  -a 'X64' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0943866Z [36;1m  -k '' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0944118Z [36;1m  -c '' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0944373Z [36;1m  -l '' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0944636Z [36;1m  -d 'default' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0945013Z [36;1m  -g 'https://github.com/flutter/flutter.git' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.0945409Z [36;1m  stable[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.1006335Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.1006760Z env:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.1007188Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.1007491Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.1007788Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.1008042Z ##[endgroup]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3211239Z ##[end-action id=__subosito_flutter-action.flutter-action;outcome=success;conclusion=success;duration_ms=230]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3216503Z ##[start-action display=Cache Flutter;id=__subosito_flutter-action.cache-flutter]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3275445Z ##[group]Run actions/cache@v5
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3275769Z with:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3276076Z   path: /opt/hostedtoolcache/flutter/stable-3.47.7-x64
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3276618Z   key: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3277111Z   enableCrossOsArchive: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3277418Z   fail-on-cache-miss: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3277706Z   lookup-only: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3277966Z   save-always: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3278211Z env:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3278444Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3278743Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3279018Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.3279257Z ##[endgroup]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:32.6999170Z Cache hit for: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:33.9842102Z Received 0 of 1722037593 (0.0%), 0.0 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:34.9807880Z Received 100663296 of 1722037593 (5.8%), 48.0 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:35.9813665Z Received 192937984 of 1722037593 (11.2%), 61.3 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:36.9852155Z Received 285212672 of 1722037593 (16.6%), 67.9 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:37.9885351Z Received 390070272 of 1722037593 (22.7%), 74.3 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:38.9839279Z Received 427819008 of 1722037593 (24.8%), 67.9 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:39.9834967Z Received 524288000 of 1722037593 (30.4%), 71.4 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:40.9861991Z Received 553648128 of 1722037593 (32.2%), 66.0 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:41.9837679Z Received 633339904 of 1722037593 (36.8%), 67.1 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:42.9838434Z Received 671088640 of 1722037593 (39.0%), 64.0 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:43.9896609Z Received 763363328 of 1722037593 (44.3%), 66.1 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:44.9847351Z Received 805306368 of 1722037593 (46.8%), 64.0 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:45.9857950Z Received 889192448 of 1722037593 (51.6%), 65.2 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:46.9862901Z Received 935329792 of 1722037593 (54.3%), 63.7 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:47.9854355Z Received 994050048 of 1722037593 (57.7%), 63.2 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:49.0071802Z Received 1073741824 of 1722037593 (62.4%), 63.9 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:50.0053501Z Received 1157627904 of 1722037593 (67.2%), 64.8 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:51.0055939Z Received 1216348160 of 1722037593 (70.6%), 64.3 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:52.0058956Z Received 1308622848 of 1722037593 (76.0%), 65.6 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:53.0056746Z Received 1367343104 of 1722037593 (79.4%), 65.1 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:54.0058876Z Received 1468006400 of 1722037593 (85.2%), 66.6 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:55.0063573Z Received 1480589312 of 1722037593 (86.0%), 64.1 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:56.0074910Z Received 1572864000 of 1722037593 (91.3%), 65.1 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:57.0069723Z Received 1610612736 of 1722037593 (93.5%), 63.9 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:58.0076553Z Received 1702887424 of 1722037593 (98.9%), 64.9 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:58.6354078Z Received 1722037593 of 1722037593 (100.0%), 64.0 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:58.6357445Z Cache Size: ~1642 MB (1722037593 B)
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:45:58.6473813Z [command]/usr/bin/tar -xf /home/runner/work/_temp/fc5611a4-f64a-4a13-924e-876242cc7cf6/cache.tzst -P -C /home/runner/work/cardflow/cardflow --use-compress-program unzstd
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:03.4801999Z Cache restored successfully
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.1245490Z Cache restored from key: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.1375862Z ##[end-action id=__subosito_flutter-action.cache-flutter;outcome=success;conclusion=success;duration_ms=31815]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.1379456Z ##[start-action display=Cache pub dependencies;id=__subosito_flutter-action.cache-pub]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2638172Z ##[group]Run actions/cache@v5
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2638460Z with:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2638687Z   path: /home/runner/.pub-cache
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2639515Z   key: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-242e0d860aec8827cf2d28c5dfba0d2ac8a8ffc6260e2f917f78faf9036e8d57
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2640373Z   enableCrossOsArchive: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2640688Z   fail-on-cache-miss: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2641543Z   lookup-only: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2641806Z   save-always: false
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2642034Z env:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2642241Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2642503Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2642770Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.2642987Z ##[endgroup]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:04.6405305Z Cache hit for: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-242e0d860aec8827cf2d28c5dfba0d2ac8a8ffc6260e2f917f78faf9036e8d57
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:05.9415332Z Received 0 of 53924266 (0.0%), 0.0 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:06.9410711Z Received 49729962 of 53924266 (92.2%), 23.7 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:07.4174828Z Received 53924266 of 53924266 (100.0%), 20.8 MBs/sec
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:07.4177611Z Cache Size: ~51 MB (53924266 B)
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:07.4222948Z [command]/usr/bin/tar -xf /home/runner/work/_temp/0d41caf2-2130-46e5-97f5-9f0a17a9b807/cache.tzst -P -C /home/runner/work/cardflow/cardflow --use-compress-program unzstd
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3376954Z Cache restored successfully
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3484601Z Cache restored from key: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-242e0d860aec8827cf2d28c5dfba0d2ac8a8ffc6260e2f917f78faf9036e8d57
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3568104Z ##[end-action id=__subosito_flutter-action.cache-pub;outcome=success;conclusion=success;duration_ms=4218]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3573348Z ##[start-action display=Run setup script;id=__subosito_flutter-action.__run_3]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3611341Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh \
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3611736Z [36;1m$GITHUB_ACTION_PATH/setup.sh \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3612031Z [36;1m  -n '3.47.7' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3612278Z [36;1m  -a 'x64' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3612602Z [36;1m  -c '/opt/hostedtoolcache/flutter/stable-3.47.7-x64' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3612987Z [36;1m  -d '/home/runner/.pub-cache' \[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3613273Z [36;1m  stable[0m
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3675778Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3676240Z env:
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3676498Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3676823Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3677144Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.3677407Z ##[endgroup]
+dart (format · analyze · test · web build)	Run subosito/flutter-action@v2	2026-10-18T04:46:08.5117801Z ##[end-action id=__subosito_flutter-action.__run_3;outcome=success;conclusion=success;duration_ms=154]
+dart (format · analyze · test · web build)	flutter --version	﻿2026-10-18T04:46:08.5170553Z ##[group]Run flutter --version
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5171166Z [36;1mflutter --version[0m
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5236363Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5236758Z env:
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5236981Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5237263Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5237531Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5237877Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.7-x64/flutter
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5238321Z   PUB_CACHE: /home/runner/.pub-cache
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.5238620Z ##[endgroup]
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.8770049Z Flutter 3.47.7 • channel stable • https://github.com/flutter/flutter.git
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.8771428Z Framework • revision abaf9c5237 (10 days ago) • 2026-10-08 09:51:21 -0700
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.8772757Z Engine • hash d8a2d6c768c334d53e16277f837970ffa1e2de81 (revision deb287481e) (10 days ago) • 2026-10-07 17:09:12.000Z
+dart (format · analyze · test · web build)	flutter --version	2026-10-18T04:46:08.8773796Z Tools • Dart 3.13.5 • DevTools 2.60.0
+dart (format · analyze · test · web build)	flutter pub get	﻿2026-10-18T04:46:08.8839858Z ##[group]Run flutter pub get --enforce-lockfile
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8840453Z [36;1mflutter pub get --enforce-lockfile[0m
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8904106Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8904497Z env:
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8904719Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8904998Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8905275Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8905633Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.7-x64/flutter
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8906078Z   PUB_CACHE: /home/runner/.pub-cache
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:08.8906376Z ##[endgroup]
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.0668342Z Resolving dependencies...
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.1831983Z Downloading packages...
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2589201Z   build 4.0.11 (5.0.0 available)
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2590122Z   build_config 1.3.3 (1.4.0 available)
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2612016Z   build_runner 2.16.2 (2.17.1 available)
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2612635Z   material_color_utilities 0.13.0 (0.13.1 available)
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2613514Z   meta 1.18.3 (1.19.0 available)
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2614245Z   test_api 0.7.12 (0.7.15 available)
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2614835Z   vector_math 2.4.0 (2.4.3 available)
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2615350Z Got dependencies!
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2615959Z 7 packages have newer versions incompatible with dependency constraints.
+dart (format · analyze · test · web build)	flutter pub get	2026-10-18T04:46:09.2616735Z Try `flutter pub outdated` for more information.
+dart (format · analyze · test · web build)	dart format	﻿2026-10-18T04:46:09.9077986Z ##[group]Run dart format --output=none --set-exit-if-changed .
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9078776Z [36;1mdart format --output=none --set-exit-if-changed .[0m
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9144935Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9145338Z env:
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9145556Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9145834Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9146106Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9146457Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.7-x64/flutter
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9146903Z   PUB_CACHE: /home/runner/.pub-cache
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:09.9147200Z ##[endgroup]
+dart (format · analyze · test · web build)	dart format	2026-10-18T04:46:10.2446054Z Formatted 43 files (0 changed) in 0.12 seconds.
+dart (format · analyze · test · web build)	flutter analyze	﻿2026-10-18T04:46:10.4064883Z ##[group]Run flutter analyze --fatal-infos
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4065537Z [36;1mflutter analyze --fatal-infos[0m
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4129381Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4129756Z env:
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4129963Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4130217Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4130462Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4131041Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.7-x64/flutter
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4131485Z   PUB_CACHE: /home/runner/.pub-cache
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.4131756Z ##[endgroup]
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.5957761Z Resolving dependencies...
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7083682Z Downloading packages...
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7582251Z   build 4.0.11 (5.0.0 available)
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7582822Z   build_config 1.3.3 (1.4.0 available)
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7583339Z   build_runner 2.16.2 (2.17.1 available)
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7583889Z   material_color_utilities 0.13.0 (0.13.1 available)
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7584465Z   meta 1.18.3 (1.19.0 available)
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7584958Z   test_api 0.7.12 (0.7.15 available)
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7585418Z   vector_math 2.4.0 (2.4.3 available)
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7585855Z Got dependencies!
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7588020Z 7 packages have newer versions incompatible with dependency constraints.
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:10.7588804Z Try `flutter pub outdated` for more information.
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:27.6874662Z Analyzing mobile...                                             
+dart (format · analyze · test · web build)	flutter analyze	2026-10-18T04:46:27.6891160Z No issues found! (ran in 16.3s)
+dart (format · analyze · test · web build)	flutter test	﻿2026-10-18T04:46:27.7043838Z ##[group]Run flutter test
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7044371Z [36;1mflutter test[0m
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7127803Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7128168Z env:
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7128369Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7128629Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7128871Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7129361Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.7-x64/flutter
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7129769Z   PUB_CACHE: /home/runner/.pub-cache
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.7130037Z ##[endgroup]
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.8879159Z Resolving dependencies...
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:27.9916213Z Downloading packages...
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0446246Z   build 4.0.11 (5.0.0 available)
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0446825Z   build_config 1.3.3 (1.4.0 available)
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0447565Z   build_runner 2.16.2 (2.17.1 available)
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0448285Z   material_color_utilities 0.13.0 (0.13.1 available)
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0449010Z   meta 1.18.3 (1.19.0 available)
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0449644Z   test_api 0.7.12 (0.7.15 available)
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0450222Z   vector_math 2.4.0 (2.4.3 available)
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0451005Z Got dependencies!
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0452186Z 7 packages have newer versions incompatible with dependency constraints.
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.0453090Z Try `flutter pub outdated` for more information.
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:28.9450854Z 
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.1807426Z ##[group]✅ Passing tests
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.1811884Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 默认最多保留 500 条，满了丢弃最早的
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.1882089Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 条目按时间从早到晚，时间为 UTC
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.1900166Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 框架错误：记类型与脱敏后的首行摘要，并继续交给原处理器
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.1907669Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 环形缓冲 返回的列表不可修改
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.1937804Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 断言错误：记断言说明（脱敏）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.1961757Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 detail 中的所有数字（含全角）替换为 #
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.1972850Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 其他异常只记类型；返回原处理器的结果
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.2011631Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 没有原处理器时返回 false，保持默认处理
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.2085702Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 detail 只保留首行，去掉控制字符并截断
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.2118145Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 标识符只允许小写字母、下划线与点（debug 断言，release 兜底替换）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.2240143Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 错误只记异常类型与代码位置，不记异常正文
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.2280336Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 不记录金额与正文 codeLocations 只提取 package:/dart: 位置，最多 6 个
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.2324467Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 通知延迟到微任务里合并发出（构建期间写日志也安全）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:37.2372536Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 释放后不再通知
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:47.4362267Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 底部导航是五个主 Tab，顺序为 总览/卡包/规划/发现/我的
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:47.5555592Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统与加密库占位
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:47.5633250Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 启动后停在总览，显示页名与首次空白文案
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:47.8792043Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 「复制诊断信息」把报告放进剪贴板，并给出轻提示
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.1507033Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 下一阶段登记加密库状态后，诊断页直接显示
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.1545709Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 报告只含元数据与脱敏日志
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.1569706Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 源码版本：CI 注入提交号时显示前 12 位，本机构建显示"本机构建"
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.1676083Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部五个 Tab
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.3543593Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 应用信息读取失败时显示错误而不是空白
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.7104545Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9413394Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: minorDigits 表 与服务端引擎 money.py 的 MINOR_DIGITS 完全一致
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9443550Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: minorDigits 表 覆盖 0、2、3 三种位数
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9488587Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: minorDigits 表 未登记的币种直接报错，不猜小数位
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9530593Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: minorDigits 表 每个币种都有读屏名称
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9569989Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: formatMinorAbs 2 位小数（CNY）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9597202Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: formatMinorAbs 0 位小数（JPY、KRW、VND）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9622058Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: formatMinorAbs 3 位小数（KWD、BHD、JOD）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9689009Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: formatMinorAbs 64 位整数的边界不溢出
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9716207Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: describeMoney CNY 用 ¥，其他币种用 ISO 代码
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9739099Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: describeMoney 零是真实的 0，不是空白
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9762545Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: describeMoney 没有金额时显示"—"，不显示 0
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9791971Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: describeMoney 负数用"−"（U+2212）加语义词，读屏读语义词而不是负号
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9829270Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: describeMoney 负数漏传语义词在 debug 下断言失败
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9853402Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: describeMoney 读屏带前缀：本期应还 人民币 8,000.00 元
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9883929Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: describeMoney 金额隐藏：固定 4 个"•"，不随位数变化，不泄露数字
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:48.9907984Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_format_test.dart: describeMoney 金额隐藏时负数仍保留语义词
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:49.2444595Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 切换 Tab 保留栈位置；再次点按当前 Tab 回到根页
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:49.4295094Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 规划的首次空白主操作跳到卡包
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:49.5108523Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 未开放的操作显示为禁用并附说明
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:49.7552746Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 欢迎页全屏覆盖底部导航，返回后回到"我的"
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:49.8932783Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 未知路径显示"已不存在"，可回到总览
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.0894656Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/navigation_test.dart: 路由变化写入诊断日志，只记路由模板
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.5924396Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 等宽数字、默认右对齐、按币种小数位显示
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.6343573Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 0 位与 3 位小数币种
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.6662881Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 负数：语义词 + "−" + 语义色（不只靠符号）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.6956242Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 深色主题下负数使用深色语义色
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.7195246Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 贷方余额可用中性色调
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.7529145Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 读屏朗读完整语义
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.7829087Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 全局金额隐藏：显示"••••"，读屏读"金额已隐藏"
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.8303410Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 切换全局开关后立即生效；单个组件可显式覆盖
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:50.8551569Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/money_text_test.dart: 没有金额时显示"—"
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.4982894Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） text.primary
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5006993Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） text.secondary
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5031617Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） action
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5054901Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） risk.robust
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5077710Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） risk.attention
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5100096Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） risk.danger
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5127689Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） risk.unknown
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5152883Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） risk.defect
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5176918Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） confirm.bank
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5202557Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） border.input
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5227865Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） demo（横幅文字对横幅底色）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5265738Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录） 文字类 token 不低于 4.5:1，非文本控件边不低于 3:1
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5644150Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: ThemeData Brightness.dark：颜色全部来自 token
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5685734Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: ThemeData Brightness.dark：字号阶梯来自 token，所有文字样式使用等宽数字
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5726266Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: ThemeData Brightness.dark：触控目标不小于 48
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5752913Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: ThemeData Brightness.light：颜色全部来自 token
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5777423Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: ThemeData Brightness.light：字号阶梯来自 token，所有文字样式使用等宽数字
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5805105Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: ThemeData Brightness.light：触控目标不小于 48
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:51.5832890Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/theme_test.dart: 间距取 4pt 网格
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.1414331Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.2681878Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 Bundle ID 只在 Flutter/CardFlow.xcconfig 中定义
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.2723438Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 签名参数为空，由用户在安装前自行签名
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.2762767Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 Debug/Release.xcconfig 引入 CardFlow.xcconfig（在 Generated 之后）
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.2847576Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 每个 target 配置都以 Debug/Release.xcconfig 为基础，且不覆盖 Bundle ID 与签名
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.2945105Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: Bundle ID 与签名参数 仓库内没有团队 ID、证书、描述文件或 entitlements
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.2972231Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: 最低系统版本 Xcode 工程的 IPHONEOS_DEPLOYMENT_TARGET 全部为 15.0
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.2995004Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: 最低系统版本 若引入 CocoaPods，Podfile 必须声明 platform :ios, 15.0
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.3021386Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: Info.plist 显示名为"卡序"，Bundle ID 来自构建设置
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.3072410Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: Info.plist 声明 zh_CN 与 en 两种语言
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.3101736Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: Info.plist 没有权限用途说明、后台模式或 App Group
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.3125516Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: PrivacyInfo.xcprivacy 不跟踪、不收集数据
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.3163273Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: PrivacyInfo.xcprivacy 登记 Flutter 应用常见的 Required Reason API
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.3198511Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/ios/ios_config_test.dart: PrivacyInfo.xcprivacy 已加入 Runner target 的资源构建阶段
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.3614683Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /cards（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.4888336Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /planner（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.6062954Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /discover（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:52.7976833Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:53.0633153Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/diagnostics（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:53.2580149Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/welcome（Brightness.dark）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:53.3346461Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /overview（Brightness.light）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:53.4479840Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /cards（Brightness.light）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:53.5430422Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /planner（Brightness.light）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:53.6388301Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /discover（Brightness.light）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:53.7337724Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings（Brightness.light）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:53.8757992Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/diagnostics（Brightness.light）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:54.0010973Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/welcome（Brightness.light）满足触控尺寸、标签与文字对比度要求
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:54.3461190Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:54.6349418Z ✅ /home/runner/work/cardflow/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x 时所有页面正常布局
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:54.6610677Z ##[endgroup]
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:54.6611221Z 
+dart (format · analyze · test · web build)	flutter test	2026-10-18T04:46:54.6618664Z 🎉 103 tests passed.
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	﻿2026-10-18T04:46:54.7509434Z ##[group]Run flutter build web --release
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7509811Z [36;1mflutter build web --release[0m
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7573486Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7573857Z env:
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7574069Z   FLUTTER_VERSION: 3.47.7
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7574336Z   BUNDLE_ID: li.yep.cardflow
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7574591Z   MIN_IOS: 15.0
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7574915Z   FLUTTER_ROOT: /opt/hostedtoolcache/flutter/stable-3.47.7-x64/flutter
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7575329Z   PUB_CACHE: /home/runner/.pub-cache
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.7575599Z ##[endgroup]
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:54.9163748Z Resolving dependencies...
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0184094Z Downloading packages...
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0690099Z   build 4.0.11 (5.0.0 available)
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0691257Z   build_config 1.3.3 (1.4.0 available)
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0691790Z   build_runner 2.16.2 (2.17.1 available)
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0692329Z   material_color_utilities 0.13.0 (0.13.1 available)
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0692853Z   meta 1.18.3 (1.19.0 available)
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0693340Z   test_api 0.7.12 (0.7.15 available)
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0693773Z   vector_math 2.4.0 (2.4.3 available)
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0694302Z Got dependencies!
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0695111Z 7 packages have newer versions incompatible with dependency constraints.
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:46:55.0695944Z Try `flutter pub outdated` for more information.
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:47:52.3678032Z Compiling lib/main.dart for the Web...                          
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:47:52.3688535Z Wasm dry run succeeded. Consider building and testing your application with the `--wasm` flag. See docs for more info: https://docs.flutter.dev/platform-integration/web/wasm
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:47:52.3690287Z Use --no-wasm-dry-run to disable these warnings.
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:47:54.5398189Z Expected to find fonts for (MaterialIcons, packages/cupertino_icons/CupertinoIcons), but found (MaterialIcons). This usually means you are referring to font families in an IconData class but not including them in the assets section of your pubspec.yaml, are missing the package that would include them, or are missing "uses-material-design: true".
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:47:54.5480345Z Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 9792 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:47:54.8375126Z Compiling lib/main.dart for the Web...                             59.4s
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-18T04:47:54.8382827Z ✓ Built build/web
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	﻿2026-10-18T04:47:54.8644562Z Post job cleanup.
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	2026-10-18T04:47:54.8648425Z ##[start-action display=Cache pub dependencies;id=__c8b9f3a8-a1e1-4882-83b9-71fde08101fe.cache-pub]
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	2026-10-18T04:47:54.9959050Z Post job cleanup.
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	2026-10-18T04:47:55.1272902Z Cache hit occurred on the primary key flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-242e0d860aec8827cf2d28c5dfba0d2ac8a8ffc6260e2f917f78faf9036e8d57, not saving cache.
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	2026-10-18T04:47:55.1328763Z ##[end-action id=__c8b9f3a8-a1e1-4882-83b9-71fde08101fe.cache-pub;outcome=success;conclusion=success;duration_ms=267]
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	2026-10-18T04:47:55.1331726Z ##[start-action display=Cache Flutter;id=__c8b9f3a8-a1e1-4882-83b9-71fde08101fe.cache-flutter]
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	2026-10-18T04:47:55.1370375Z Post job cleanup.
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	2026-10-18T04:47:55.2827318Z Cache hit occurred on the primary key flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8, not saving cache.
+dart (format · analyze · test · web build)	Post Run subosito/flutter-action@v2	2026-10-18T04:47:55.2897246Z ##[end-action id=__c8b9f3a8-a1e1-4882-83b9-71fde08101fe.cache-flutter;outcome=success;conclusion=success;duration_ms=156]
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	﻿2026-10-18T04:47:55.3033646Z Post job cleanup.
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.3871620Z [command]/usr/bin/git version
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.3909199Z git version 2.55.0
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.3952058Z Temporarily overriding HOME='/home/runner/work/_temp/ddab4651-7d92-4c63-ade3-2440ba1ba95e' before making global git config changes
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.3953497Z Adding repository directory to the temporary git global config as a safe directory
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.3957827Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cardflow/cardflow
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.3989843Z Removing SSH command configuration
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.3996309Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4032623Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4319958Z Removing HTTP extra header
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4325536Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4361999Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4621810Z Removing includeIf entries pointing to credentials config files
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4629015Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4660408Z includeif.gitdir:/home/runner/work/cardflow/cardflow/.git.path
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4661614Z includeif.gitdir:/home/runner/work/cardflow/cardflow/.git/worktrees/*.path
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4662557Z includeif.gitdir:/github/workspace/.git.path
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4663598Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4670608Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cardflow/cardflow/.git.path
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4696501Z /home/runner/work/_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4709231Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cardflow/cardflow/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-007ba808\-4838\-4103\-b257\-6aabf783045e\.config
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4749348Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cardflow/cardflow/.git/worktrees/*.path
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4775941Z /home/runner/work/_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4800167Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cardflow/cardflow/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-007ba808\-4838\-4103\-b257\-6aabf783045e\.config
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4838097Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4866203Z /github/runner_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4881776Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-007ba808\-4838\-4103\-b257\-6aabf783045e\.config
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4921329Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4950674Z /github/runner_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4958403Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-007ba808\-4838\-4103\-b257\-6aabf783045e\.config
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.4999136Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+dart (format · analyze · test · web build)	Post Run actions/checkout@v7	2026-10-18T04:47:55.5222626Z Removing credentials config '/home/runner/work/_temp/git-credentials-007ba808-4838-4103-b257-6aabf783045e.config'
+dart (format · analyze · test · web build)	Complete job	﻿2026-10-18T04:47:55.5362980Z Cleaning up orphan processes
+ios-unsigned (IPA without codesign)	Set up job	﻿2026-10-18T04:48:05.8079400Z Current runner version: '2.337.0'
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8098140Z ##[group]Runner Image Provisioner
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8098760Z Hosted Compute Agent
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8099130Z Version: 20261012.601
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8099530Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8100000Z Build Date: 2026-10-12T17:48:21Z
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8100440Z Worker ID: {e005acb5-1599-4857-8309-989afa7d4777}
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8100900Z Region: westus
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8101260Z Cloud: MacCloud
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8101610Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8102580Z ##[group]Operating System
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8102970Z macOS
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8103290Z 26.6.2
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8103610Z 25G83
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8103930Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8104270Z ##[group]Runner Image
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8104640Z Image: macos-26-arm64
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8105030Z Version: 20261013.0424.1
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8105960Z Included Software: https://github.com/actions/runner-images/blob/macos-26-arm64/20261013.0424/images/macos/macos-26-arm64-Readme.md
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8107140Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-26-arm64%2F20261013.0424
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8107970Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8108730Z ##[group]GITHUB_TOKEN Permissions
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8110160Z Contents: read
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8110530Z Metadata: read
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8110900Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8112340Z Secret source: Actions
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8113030Z Cache mode: write
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8113490Z Prepare workflow directory
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8415510Z Prepare all required actions
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.8454240Z Getting action download info
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:05.9998430Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:06.2558560Z Download action repository 'subosito/flutter-action@v2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:06.8234360Z Download action repository 'actions/upload-artifact@v7' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:07.7162670Z Getting action download info
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:07.7735130Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+ios-unsigned (IPA without codesign)	Set up job	2026-10-18T04:48:07.8999070Z Complete job name: ios-unsigned (IPA without codesign)
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	﻿2026-10-18T04:48:07.9535140Z ##[group]Run actions/checkout@v7
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9535800Z with:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9536160Z   repository: YePiXpert/cardflow
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9539190Z   token: ***
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9539520Z   ssh-strict: true
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9539850Z   ssh-user: git
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9540190Z   persist-credentials: true
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9540560Z   clean: true
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9540900Z   sparse-checkout-cone-mode: true
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9541300Z   fetch-depth: 1
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9541630Z   fetch-tags: false
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9541970Z   show-progress: true
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9542320Z   lfs: false
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9542630Z   submodules: false
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9543080Z   set-safe-directory: true
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9543470Z   allow-unsafe-pr-checkout: false
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9544030Z env:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9544360Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9544730Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9545090Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:07.9545420Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.3974260Z Syncing repository: YePiXpert/cardflow
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.3976710Z ##[group]Getting Git version info
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.3977420Z Working directory is '/Users/runner/work/cardflow/cardflow'
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.3978610Z [command]/opt/homebrew/bin/git version
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4288020Z git version 2.56.0
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4309100Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4320840Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/11d9f595-a858-4277-87bc-83d787b81234/.gitconfig'
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4349560Z Temporarily overriding HOME='/Users/runner/work/_temp/11d9f595-a858-4277-87bc-83d787b81234' before making global git config changes
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4362490Z Adding repository directory to the temporary git global config as a safe directory
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4403510Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/cardflow/cardflow
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4707030Z Deleting the contents of '/Users/runner/work/cardflow/cardflow'
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4709930Z ##[group]Determining repository object format
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4712250Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4714460Z ##[group]Initializing the repository
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.4719190Z [command]/opt/homebrew/bin/git init /Users/runner/work/cardflow/cardflow
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5124620Z hint: Using 'master' as the name for the initial branch. This default branch name
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5129590Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5143460Z hint: to use in all of your new repositories, which will suppress this warning,
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5146920Z hint: call:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5148400Z hint:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5150380Z hint: 	git config --global init.defaultBranch <name>
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5152780Z hint:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5154950Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5160800Z hint: 'development'. The just-created branch can be renamed via this command:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5164560Z hint:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5166100Z hint: 	git branch -m <name>
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5167990Z hint:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5170480Z hint: Disable this message with "git config set advice.defaultBranchName false"
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5174860Z Initialized empty Git repository in /Users/runner/work/cardflow/cardflow/.git/
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5181730Z [command]/opt/homebrew/bin/git remote add origin https://github.com/YePiXpert/cardflow
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5278940Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5287380Z ##[group]Disabling automatic garbage collection
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5310230Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5363010Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5365210Z ##[group]Setting up auth
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5366370Z Removing SSH command configuration
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5367840Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.5453140Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.6704630Z Removing HTTP extra header
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.6711880Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.6843880Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.8549550Z Removing includeIf entries pointing to credentials config files
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.8651710Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:08.8967850Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:09.0605450Z [command]/opt/homebrew/bin/git config --file /Users/runner/work/_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:09.0734460Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/cardflow/cardflow/.git.path /Users/runner/work/_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:09.0844020Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/cardflow/cardflow/.git/worktrees/*.path /Users/runner/work/_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:09.0849650Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:09.0855220Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:09.0906170Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:09.0910590Z ##[group]Fetching the repository
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:09.0913260Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +eaed4a87e3a304ef2bbe44aa7002a42997905360:refs/remotes/origin/main
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0085120Z From https://github.com/YePiXpert/cardflow
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0200850Z  * [new ref]         eaed4a87e3a304ef2bbe44aa7002a42997905360 -> origin/main
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0399870Z [command]/opt/homebrew/bin/git branch --list --remote origin/main
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0401430Z   origin/main
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0403300Z [command]/opt/homebrew/bin/git rev-parse refs/remotes/origin/main
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0404510Z eaed4a87e3a304ef2bbe44aa7002a42997905360
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0407250Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0408270Z ##[group]Determining the checkout info
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0409430Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0410230Z [command]/opt/homebrew/bin/git sparse-checkout disable
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0433140Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0590170Z ##[group]Checking out the ref
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.0597760Z [command]/opt/homebrew/bin/git checkout --progress --force -B main refs/remotes/origin/main
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.1649750Z Switched to a new branch 'main'
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.1665660Z branch 'main' set up to track 'origin/main'.
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.1684020Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.1761270Z [command]/opt/homebrew/bin/git log -1 --format=%H
+ios-unsigned (IPA without codesign)	Run actions/checkout@v7	2026-10-18T04:48:10.1836620Z eaed4a87e3a304ef2bbe44aa7002a42997905360
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	﻿2026-10-18T04:48:10.2423570Z ##[group]Run subosito/flutter-action@v2
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2424440Z with:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2424940Z   flutter-version: 3.47.7
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2425490Z   channel: stable
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2425990Z   cache: true
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2426480Z   architecture: ARM64
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2427030Z   pub-cache-path: default
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2427590Z   dry-run: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2428250Z   git-source: https://github.com/flutter/flutter.git
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2428980Z env:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2429460Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2430040Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2430610Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2431110Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2486720Z ##[start-action display=Make yq tool available on Windows runners;id=__subosito_flutter-action.__run]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2522810Z ##[end-action id=__subosito_flutter-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2527500Z ##[start-action display=Make setup script executable;id=__subosito_flutter-action.__run_2]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2660790Z ##[group]Run chmod +x "$GITHUB_ACTION_PATH/setup.sh"
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2661750Z [36;1mchmod +x "$GITHUB_ACTION_PATH/setup.sh"[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2718500Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2719390Z env:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2719910Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2720540Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2721160Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.2721750Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3228320Z ##[end-action id=__subosito_flutter-action.__run_2;outcome=success;conclusion=success;duration_ms=69]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3233150Z ##[start-action display=Set action inputs;id=__subosito_flutter-action.flutter-action]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3282120Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh -p \
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3283030Z [36;1m$GITHUB_ACTION_PATH/setup.sh -p \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3283760Z [36;1m  -n '3.47.7' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3284350Z [36;1m  -f '' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3285300Z [36;1m  -a 'ARM64' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3285860Z [36;1m  -k '' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3286420Z [36;1m  -c '' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3286970Z [36;1m  -l '' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3287520Z [36;1m  -d 'default' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3288270Z [36;1m  -g 'https://github.com/flutter/flutter.git' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3289140Z [36;1m  stable[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3324640Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3325630Z env:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3326160Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3326810Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3327810Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.3328380Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6130050Z ##[end-action id=__subosito_flutter-action.flutter-action;outcome=success;conclusion=success;duration_ms=289]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6136580Z ##[start-action display=Cache Flutter;id=__subosito_flutter-action.cache-flutter]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6224740Z ##[group]Run actions/cache@v5
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6225400Z with:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6226050Z   path: /Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6227160Z   key: flutter-macos-stable-3.47.7-arm64-abaf9c523780a608bd46686fd5e53740a07077f8
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6228260Z   enableCrossOsArchive: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6228900Z   fail-on-cache-miss: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6229480Z   lookup-only: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6230030Z   save-always: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6230630Z env:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6231130Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6231710Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6232270Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.6232740Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.8043100Z Cache not found for input keys: flutter-macos-stable-3.47.7-arm64-abaf9c523780a608bd46686fd5e53740a07077f8
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.8084500Z ##[end-action id=__subosito_flutter-action.cache-flutter;outcome=success;conclusion=success;duration_ms=194]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:10.8089070Z ##[start-action display=Cache pub dependencies;id=__subosito_flutter-action.cache-pub]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0917250Z ##[group]Run actions/cache@v5
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0918100Z with:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0918630Z   path: /Users/runner/.pub-cache
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0920520Z   key: flutter-pub-macos-stable-3.47.7-arm64-abaf9c523780a608bd46686fd5e53740a07077f8-242e0d860aec8827cf2d28c5dfba0d2ac8a8ffc6260e2f917f78faf9036e8d57
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0922350Z   enableCrossOsArchive: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0922960Z   fail-on-cache-miss: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0923530Z   lookup-only: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0924060Z   save-always: false
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0924590Z env:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0925070Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0925640Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0926220Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.0926700Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3183150Z Cache not found for input keys: flutter-pub-macos-stable-3.47.7-arm64-abaf9c523780a608bd46686fd5e53740a07077f8-242e0d860aec8827cf2d28c5dfba0d2ac8a8ffc6260e2f917f78faf9036e8d57
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3195800Z ##[end-action id=__subosito_flutter-action.cache-pub;outcome=success;conclusion=success;duration_ms=510]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3199940Z ##[start-action display=Run setup script;id=__subosito_flutter-action.__run_3]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3247180Z ##[group]Run $GITHUB_ACTION_PATH/setup.sh \
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3247920Z [36;1m$GITHUB_ACTION_PATH/setup.sh \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3248520Z [36;1m  -n '3.47.7' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3249050Z [36;1m  -a 'arm64' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3249820Z [36;1m  -c '/Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3250700Z [36;1m  -d '/Users/runner/.pub-cache' \[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3251400Z [36;1m  stable[0m
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3284800Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3285680Z env:
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3286210Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3286870Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3287480Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.3288260Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.5872550Z   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.5901580Z                                  Dload  Upload   Total   Spent    Left  Speed
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:11.5906300Z 
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:12.5709940Z   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:13.5729730Z   3 2159M    3 80.3M    0     0  81.2M      0  0:00:26 --:--:--  0:00:26 81.2M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:14.5730310Z   7 2159M    7  158M    0     0  79.7M      0  0:00:27  0:00:01  0:00:26 79.7M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:15.5721500Z  11 2159M   11  246M    0     0  82.4M      0  0:00:26  0:00:02  0:00:24 82.4M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:16.5724990Z  15 2159M   15  334M    0     0  83.8M      0  0:00:25  0:00:03  0:00:22 83.8M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:17.5730790Z  19 2159M   19  421M    0     0  84.5M      0  0:00:25  0:00:04  0:00:21 84.5M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:18.5790510Z  23 2159M   23  511M    0     0  85.3M      0  0:00:25  0:00:05  0:00:20 86.1M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:19.5737000Z  27 2159M   27  593M    0     0  84.9M      0  0:00:25  0:00:06  0:00:19 86.9M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:20.5755440Z  31 2159M   31  674M    0     0  84.4M      0  0:00:25  0:00:07  0:00:18 85.6M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:21.5751240Z  35 2159M   35  757M    0     0  84.2M      0  0:00:25  0:00:08  0:00:17 84.6M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:22.5748900Z  38 2159M   38  838M    0     0  83.9M      0  0:00:25  0:00:09  0:00:16 83.3M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:23.5756380Z  42 2159M   42  918M    0     0  83.5M      0  0:00:25  0:00:10  0:00:15 81.3M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:24.5769580Z  46 2159M   46 1007M    0     0  84.0M      0  0:00:25  0:00:11  0:00:14 82.8M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:25.5764530Z  50 2159M   50 1092M    0     0  84.1M      0  0:00:25  0:00:12  0:00:13 83.6M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:26.5828740Z  54 2159M   54 1180M    0     0  84.4M      0  0:00:25  0:00:13  0:00:12 84.6M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:27.5823680Z  58 2159M   58 1265M    0     0  84.4M      0  0:00:25  0:00:14  0:00:11 85.4M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:28.5790090Z  62 2159M   62 1349M    0     0  84.4M      0  0:00:25  0:00:15  0:00:10 86.3M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:29.5792840Z  65 2159M   65 1419M    0     0  83.5M      0  0:00:25  0:00:16  0:00:09 82.4M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:30.5798480Z  69 2159M   69 1506M    0     0  83.7M      0  0:00:25  0:00:17  0:00:08 82.7M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:31.5797300Z  73 2159M   73 1587M    0     0  83.6M      0  0:00:25  0:00:18  0:00:07 81.3M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:32.5801050Z  77 2159M   77 1667M    0     0  83.4M      0  0:00:25  0:00:19  0:00:06 80.3M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:33.5867820Z  80 2159M   80 1745M    0     0  83.1M      0  0:00:25  0:00:20  0:00:05 79.0M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:34.5860280Z  84 2159M   84 1825M    0     0  83.0M      0  0:00:26  0:00:21  0:00:05 81.1M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:35.5821070Z  87 2159M   87 1897M    0     0  82.5M      0  0:00:26  0:00:22  0:00:04 78.1M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:36.5829140Z  91 2159M   91 1971M    0     0  82.1M      0  0:00:26  0:00:23  0:00:03 76.8M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:37.5833360Z  94 2159M   94 2047M    0     0  81.9M      0  0:00:26  0:00:24  0:00:02 76.0M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:37.9295990Z  98 2159M   98 2130M    0     0  81.9M      0  0:00:26  0:00:25  0:00:01 76.9M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:48:37.9311710Z 100 2159M  100 2159M    0     0  81.9M      0  0:00:26  0:00:26 --:--:-- 76.7M
+ios-unsigned (IPA without codesign)	Run subosito/flutter-action@v2	2026-10-18T04:49:21.4397760Z ##[end-action id=__subosito_flutter-action.__run_3;outcome=success;conclusion=success;duration_ms=70084]
+ios-unsigned (IPA without codesign)	Toolchain versions	﻿2026-10-18T04:49:21.4490680Z ##[group]Run mkdir -p build-logs
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4491120Z [36;1mmkdir -p build-logs[0m
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4491340Z [36;1m{[0m
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4491580Z [36;1m  flutter --version[0m
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4491820Z [36;1m  xcodebuild -version[0m
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4492150Z [36;1m  sw_vers[0m
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4492370Z [36;1m} 2>&1 | tee build-logs/toolchain.txt[0m
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4492770Z [36;1mflutter doctor -v > build-logs/flutter-doctor.txt 2>&1 || true[0m
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4711410Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4711780Z env:
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4712130Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4715280Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4715600Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4715980Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64/flutter
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4716510Z   PUB_CACHE: /Users/runner/.pub-cache
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.4716850Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.9954150Z Flutter 3.47.7 • channel stable • https://github.com/flutter/flutter.git
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.9955440Z Framework • revision abaf9c5237 (10 days ago) • 2026-10-08 09:51:21 -0700
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.9956270Z Engine • hash d8a2d6c768c334d53e16277f837970ffa1e2de81 (revision deb287481e) (10 days ago) • 2026-10-07 17:09:12.000Z
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:21.9957030Z Tools • Dart 3.13.5 • DevTools 2.60.0
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:22.3951390Z Xcode 26.6
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:22.3962210Z Build version 17F113
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:22.4082150Z ProductName:		macOS
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:22.4083280Z ProductVersion:		26.6.2
+ios-unsigned (IPA without codesign)	Toolchain versions	2026-10-18T04:49:22.4083760Z BuildVersion:		25G83
+ios-unsigned (IPA without codesign)	flutter pub get	﻿2026-10-18T04:49:43.1838420Z ##[group]Run flutter pub get --enforce-lockfile
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.1838830Z [36;1mflutter pub get --enforce-lockfile[0m
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.2075690Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.2076090Z env:
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.2076400Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.2076720Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.2076990Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.2077380Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64/flutter
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.2077790Z   PUB_CACHE: /Users/runner/.pub-cache
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.2078100Z ##[endgroup]
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.6107490Z Resolving dependencies...
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:43.8937010Z Downloading packages...
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8087840Z   build 4.0.11 (5.0.0 available)
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8088380Z   build_config 1.3.3 (1.4.0 available)
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8088800Z   build_runner 2.16.2 (2.17.1 available)
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8089250Z   material_color_utilities 0.13.0 (0.13.1 available)
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8090120Z   meta 1.18.3 (1.19.0 available)
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8090440Z   test_api 0.7.12 (0.7.15 available)
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8090720Z   vector_math 2.4.0 (2.4.3 available)
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8091100Z Got dependencies!
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8091470Z 7 packages have newer versions incompatible with dependency constraints.
+ios-unsigned (IPA without codesign)	flutter pub get	2026-10-18T04:49:46.8092010Z Try `flutter pub outdated` for more information.
+ios-unsigned (IPA without codesign)	Lint iOS property lists	﻿2026-10-18T04:49:47.2450980Z ##[group]Run plutil -lint ios/Runner/Info.plist ios/Runner/PrivacyInfo.xcprivacy ios/Runner.xcodeproj/project.pbxproj
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2451730Z [36;1mplutil -lint ios/Runner/Info.plist ios/Runner/PrivacyInfo.xcprivacy ios/Runner.xcodeproj/project.pbxproj[0m
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2482280Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2482620Z env:
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2482880Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2483120Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2483490Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2483800Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64/flutter
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2484300Z   PUB_CACHE: /Users/runner/.pub-cache
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2484590Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2867090Z ios/Runner/Info.plist: OK
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2868150Z ios/Runner/PrivacyInfo.xcprivacy: OK
+ios-unsigned (IPA without codesign)	Lint iOS property lists	2026-10-18T04:49:47.2874470Z ios/Runner.xcodeproj/project.pbxproj: OK
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	﻿2026-10-18T04:49:47.2911490Z ##[group]Run set -o pipefail
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2924360Z [36;1mset -o pipefail[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2924690Z [36;1mif ! flutter build ios --release --no-codesign \[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2924960Z [36;1m    --build-number="2" \[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2925250Z [36;1m    --dart-define=CARDFLOW_GIT_SHA="${GITHUB_SHA}" \[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2925800Z [36;1m    -v > build-logs/flutter-build-ios.log 2>&1; then[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2926440Z [36;1m  echo "::error::flutter build ios failed; last 200 lines below, full log in the ios-build-logs artifact"[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2927090Z [36;1m  tail -n 200 build-logs/flutter-build-ios.log[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2932850Z [36;1m  exit 1[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2933060Z [36;1mfi[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2933270Z [36;1mtail -n 40 build-logs/flutter-build-ios.log[0m
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2962390Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2962680Z env:
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2962830Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2963130Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2963290Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2963580Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64/flutter
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2963970Z   PUB_CACHE: /Users/runner/.pub-cache
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:49:47.2964300Z ##[endgroup]
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1488350Z            			<key>UIWindowSceneSessionRoleApplication</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1490710Z            			<array>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1491260Z            				<dict>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1491710Z            					<key>UISceneClassName</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1492110Z            					<string>UIWindowScene</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1492910Z            					<key>UISceneConfigurationName</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1493380Z            					<string>flutter</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1494100Z            					<key>UISceneDelegateClassName</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1494480Z            					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1495160Z            					<key>UISceneStoryboardFile</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1495810Z            					<string>Main</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1496660Z            				</dict>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1497180Z            			</array>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1497790Z            		</dict>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1498170Z            	</dict>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1498840Z            	<key>UIApplicationSupportsIndirectInputEvents</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1499430Z            	<true/>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1499860Z            	<key>UILaunchStoryboardName</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1500380Z            	<string>LaunchScreen</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1500750Z            	<key>UIMainStoryboardFile</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1501370Z            	<string>Main</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1501710Z            	<key>UISupportedInterfaceOrientations</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1502230Z            	<array>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1502620Z            		<string>UIInterfaceOrientationPortrait</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1503040Z            		<string>UIInterfaceOrientationLandscapeLeft</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1503540Z            		<string>UIInterfaceOrientationLandscapeRight</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1503870Z            	</array>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1504540Z            	<key>UISupportedInterfaceOrientations~ipad</key>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1504950Z            	<array>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1505300Z            		<string>UIInterfaceOrientationPortrait</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1505790Z            		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1506420Z            		<string>UIInterfaceOrientationLandscapeLeft</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1506860Z            		<string>UIInterfaceOrientationLandscapeRight</string>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1507420Z            	</array>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1507950Z            </dict>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1509720Z            </plist>
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1514330Z [   +4 ms] "flutter ios" took 82,690ms.
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1519610Z [   +1 ms] Running 3 shutdown hooks
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1520330Z [        ] Shutdown hooks complete
+ios-unsigned (IPA without codesign)	flutter build ios --release --no-codesign	2026-10-18T04:51:10.1521860Z [        ] exiting with code 0
+ios-unsigned (IPA without codesign)	Package unsigned IPA	﻿2026-10-18T04:51:10.1698520Z ##[group]Run set -euo pipefail
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1699950Z [36;1mset -euo pipefail[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1700240Z [36;1mbase="cardflow-unsigned-${GITHUB_SHA:0:7}"[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1700820Z [36;1mname="$base.ipa"[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1701130Z [36;1mrm -rf Payload "$name"[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1701590Z [36;1mmkdir Payload[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1701910Z [36;1mcp -R build/ios/iphoneos/Runner.app Payload/[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1702350Z [36;1mzip -qry "$name" Payload[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1702750Z [36;1mecho "base=$base" >> "$GITHUB_OUTPUT"[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.1729360Z [36;1mecho "name=$name" >> "$GITHUB_OUTPUT"[0m
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.2341840Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.2342310Z env:
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.2342700Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.2342950Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.2343420Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.2343760Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64/flutter
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.2344630Z   PUB_CACHE: /Users/runner/.pub-cache
+ios-unsigned (IPA without codesign)	Package unsigned IPA	2026-10-18T04:51:10.2344890Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Verify IPA	﻿2026-10-18T04:51:11.1311760Z ##[group]Run set -euo pipefail
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1312050Z [36;1mset -euo pipefail[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1312270Z [36;1mname="cardflow-unsigned-eaed4a8.ipa"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1312650Z [36;1mplist=Payload/Runner.app/Info.plist[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1313020Z [36;1mread_key() { /usr/libexec/PlistBuddy -c "Print :$1" "$plist"; }[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1313530Z [36;1mbundle_id="$(read_key CFBundleIdentifier)"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1313990Z [36;1mmin_os="$(read_key MinimumOSVersion)"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1314310Z [36;1mversion="$(read_key CFBundleShortVersionString)"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1315140Z [36;1mbuild="$(read_key CFBundleVersion)"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1315400Z [36;1mdisplay_name="$(read_key CFBundleDisplayName)"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1315830Z [36;1mecho "CFBundleIdentifier=$bundle_id MinimumOSVersion=$min_os version=$version build=$build"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1316440Z [36;1mtest "$bundle_id" = "$BUNDLE_ID" || { echo "::error::CFBundleIdentifier is $bundle_id, expected $BUNDLE_ID"; exit 1; }[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1317410Z [36;1mtest "$min_os" = "$MIN_IOS" || { echo "::error::MinimumOSVersion is $min_os, expected $MIN_IOS"; exit 1; }[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1318070Z [36;1mtest ! -e Payload/Runner.app/embedded.mobileprovision || { echo "::error::unexpected embedded.mobileprovision"; exit 1; }[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1319170Z [36;1mtest -f Payload/Runner.app/PrivacyInfo.xcprivacy || { echo "::error::PrivacyInfo.xcprivacy missing from Runner.app"; exit 1; }[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1319810Z [36;1mtest -d Payload/Runner.app/Frameworks/Flutter.framework[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1320250Z [36;1mtest -d Payload/Runner.app/Frameworks/App.framework[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1320650Z [36;1munzip -l "$name" | tail -n 1[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1321020Z [36;1msize="$(stat -f %z "$name")"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1321270Z [36;1msha256="$(shasum -a 256 "$name" | cut -d ' ' -f 1)"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1321510Z [36;1m{[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1321920Z [36;1m  echo "### Unsigned IPA"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1322240Z [36;1m  echo ""[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1322490Z [36;1m  echo "| key | value |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1322720Z [36;1m  echo "|---|---|"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1322900Z [36;1m  echo "| file | \`$name\` |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1323360Z [36;1m  echo "| size (bytes) | $size |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1323720Z [36;1m  echo "| sha256 | \`$sha256\` |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1324090Z [36;1m  echo "| CFBundleIdentifier | $bundle_id |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1324380Z [36;1m  echo "| CFBundleDisplayName | $display_name |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1324940Z [36;1m  echo "| CFBundleShortVersionString | $version |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1325310Z [36;1m  echo "| CFBundleVersion | $build |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1325790Z [36;1m  echo "| MinimumOSVersion | $min_os |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1326050Z [36;1m  echo "| source | ${GITHUB_SHA} |"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1326530Z [36;1m} >> "$GITHUB_STEP_SUMMARY"[0m
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1366990Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1367400Z env:
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1367730Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1368320Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1368570Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1369040Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64/flutter
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1369440Z   PUB_CACHE: /Users/runner/.pub-cache
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.1370040Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.2089560Z CFBundleIdentifier=li.yep.cardflow MinimumOSVersion=15.0 version=0.0.1 build=2
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-18T04:51:11.2201930Z  16518689                     71 files
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	﻿2026-10-18T04:51:11.3504150Z ##[group]Run actions/upload-artifact@v7
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3504430Z with:
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3504620Z   name: cardflow-unsigned-eaed4a8
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3504920Z   path: apps/mobile/cardflow-unsigned-eaed4a8.ipa
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3505200Z   retention-days: 14
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3505370Z   compression-level: 0
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3505550Z   if-no-files-found: error
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3505730Z   overwrite: false
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3505900Z   include-hidden-files: false
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3506090Z   archive: true
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3506240Z env:
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3506390Z   FLUTTER_VERSION: 3.47.7
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3506580Z   BUNDLE_ID: li.yep.cardflow
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3506790Z   MIN_IOS: 15.0
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3507070Z   FLUTTER_ROOT: /Users/runner/hostedtoolcache/flutter/stable-3.47.7-arm64/flutter
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3507450Z   PUB_CACHE: /Users/runner/.pub-cache
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.3507650Z ##[endgroup]
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.7260080Z With the provided path, there will be 1 file uploaded
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.7263450Z Artifact name is valid!
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.7263780Z Root directory input is valid!
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.9308040Z Uploading artifact: cardflow-unsigned-eaed4a8.zip
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:11.9308620Z Beginning upload of artifact content to blob storage
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:12.1665180Z Uploaded bytes 6995295
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:12.1820730Z Finished uploading artifact content to blob storage!
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:12.1823620Z SHA256 digest of uploaded artifact is 7c37c0357afddf86dfcf13afc80cd13af422b115a9f0d5a823022f98a1b0d18b
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:12.1829210Z Finalizing artifact upload
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:12.4730660Z Artifact cardflow-unsigned-eaed4a8 successfully finalized. Artifact ID 12125766769
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:12.4875620Z Artifact cardflow-unsigned-eaed4a8 has been successfully uploaded! Final size is 6995295 bytes. Artifact ID is 12125766769
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-18T04:51:12.4907240Z Artifact download URL: https://github.com/YePiXpert/cardflow/actions/runs/39098193527/artifacts/12125766769
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	﻿2026-10-18T04:51:12.5446330Z Post job cleanup.
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:12.5459330Z ##[start-action display=Cache pub dependencies;id=__5ecf73fa-df91-4572-a462-1bd3c89ab4e6.cache-pub]
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:13.1377340Z Post job cleanup.
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:13.4660120Z [command]/opt/homebrew/bin/gtar --posix -cf cache.tzst --exclude cache.tzst -P -C /Users/runner/work/cardflow/cardflow --files-from manifest.txt --delay-directory-restore --use-compress-program zstdmt
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:21.3774500Z Sent 54031849 of 54031849 (100.0%), 63.5 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:21.4677750Z Cache saved with key: flutter-pub-macos-stable-3.47.7-arm64-abaf9c523780a608bd46686fd5e53740a07077f8-242e0d860aec8827cf2d28c5dfba0d2ac8a8ffc6260e2f917f78faf9036e8d57
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:21.4739760Z ##[end-action id=__5ecf73fa-df91-4572-a462-1bd3c89ab4e6.cache-pub;outcome=success;conclusion=success;duration_ms=8923]
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:21.4750060Z ##[start-action display=Cache Flutter;id=__5ecf73fa-df91-4572-a462-1bd3c89ab4e6.cache-flutter]
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:21.4820870Z Post job cleanup.
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:21.6739800Z [command]/opt/homebrew/bin/gtar --posix -cf cache.tzst --exclude cache.tzst -P -C /Users/runner/work/cardflow/cardflow --files-from manifest.txt --delay-directory-restore --use-compress-program zstdmt
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:37.6776010Z Sent 0 of 2223045256 (0.0%), 0.0 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:38.6735370Z Sent 0 of 2223045256 (0.0%), 0.0 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:39.6714850Z Sent 0 of 2223045256 (0.0%), 0.0 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:40.6719080Z Sent 536870912 of 2223045256 (24.2%), 127.9 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:41.6731110Z Sent 536870912 of 2223045256 (24.2%), 102.3 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:42.6751220Z Sent 536870912 of 2223045256 (24.2%), 85.2 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:43.6781970Z Sent 1073741824 of 2223045256 (48.3%), 146.1 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:44.6788140Z Sent 1073741824 of 2223045256 (48.3%), 127.8 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:45.6798690Z Sent 1073741824 of 2223045256 (48.3%), 113.6 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:46.6804740Z Sent 1073741824 of 2223045256 (48.3%), 102.3 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:47.6820960Z Sent 1610612736 of 2223045256 (72.5%), 139.5 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:48.6824940Z Sent 1610612736 of 2223045256 (72.5%), 127.9 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:49.6850020Z Sent 1610612736 of 2223045256 (72.5%), 118.0 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:50.6891890Z Sent 2155936392 of 2223045256 (97.0%), 146.6 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:51.3874630Z Sent 2223045256 of 2223045256 (100.0%), 144.0 MBs/sec
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:51.4540610Z Cache saved with key: flutter-macos-stable-3.47.7-arm64-abaf9c523780a608bd46686fd5e53740a07077f8
+ios-unsigned (IPA without codesign)	Post Run subosito/flutter-action@v2	2026-10-18T04:51:51.4923320Z ##[end-action id=__5ecf73fa-df91-4572-a462-1bd3c89ab4e6.cache-flutter;outcome=success;conclusion=success;duration_ms=30002]
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	﻿2026-10-18T04:51:51.5081920Z Post job cleanup.
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.6581930Z [command]/opt/homebrew/bin/git version
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.6816520Z git version 2.56.0
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.6835320Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/7fdf0e27-b5ca-481b-90ad-5f3f92114ec0/.gitconfig'
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.6848280Z Temporarily overriding HOME='/Users/runner/work/_temp/7fdf0e27-b5ca-481b-90ad-5f3f92114ec0' before making global git config changes
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.6849230Z Adding repository directory to the temporary git global config as a safe directory
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.6852800Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/cardflow/cardflow
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.6970370Z Removing SSH command configuration
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.6975620Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.7045940Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.9358380Z Removing HTTP extra header
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.9362970Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:51.9436600Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0222090Z Removing includeIf entries pointing to credentials config files
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0227400Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0284150Z includeif.gitdir:/Users/runner/work/cardflow/cardflow/.git.path
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0284690Z includeif.gitdir:/Users/runner/work/cardflow/cardflow/.git/worktrees/*.path
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0285160Z includeif.gitdir:/github/workspace/.git.path
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0285610Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0291190Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/cardflow/cardflow/.git.path
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0349340Z /Users/runner/work/_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0356620Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/cardflow/cardflow/.git.path \/Users\/runner\/work\/_temp\/git\-credentials\-76611f78\-6deb\-4be9\-bfed\-41e31a731dd9\.config
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0493900Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/cardflow/cardflow/.git/worktrees/*.path
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0515550Z /Users/runner/work/_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0609720Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/cardflow/cardflow/.git/worktrees/*.path \/Users\/runner\/work\/_temp\/git\-credentials\-76611f78\-6deb\-4be9\-bfed\-41e31a731dd9\.config
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0617010Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0667950Z /github/runner_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0674170Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-76611f78\-6deb\-4be9\-bfed\-41e31a731dd9\.config
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0746680Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0810070Z /github/runner_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0814080Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-76611f78\-6deb\-4be9\-bfed\-41e31a731dd9\.config
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.0886110Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+ios-unsigned (IPA without codesign)	Post Run actions/checkout@v7	2026-10-18T04:51:52.1645920Z Removing credentials config '/Users/runner/work/_temp/git-credentials-76611f78-6deb-4be9-bfed-41e31a731dd9.config'
+ios-unsigned (IPA without codesign)	Complete job	﻿2026-10-18T04:51:52.1744750Z Cleaning up orphan processes
+ios-unsigned (IPA without codesign)	Complete job	2026-10-18T04:51:52.9668810Z Terminate orphan process: pid (9237) (ibtoold)
+ios-unsigned (IPA without codesign)	Complete job	2026-10-18T04:51:53.4630860Z Terminate orphan process: pid (8012) (ibtoold)
+ios-unsigned (IPA without codesign)	Complete job	2026-10-18T04:51:53.5039970Z Terminate orphan process: pid (8008) (ibtoold)
+ios-unsigned (IPA without codesign)	Complete job	2026-10-18T04:51:53.8317010Z Terminate orphan process: pid (6166) (adb)

@@ -1,0 +1,254 @@
+# I-0a 未签名 IPA 检查 · 2026-10-18T04:52:53Z
+# 运行：https://github.com/YePiXpert/cardflow/actions/runs/39098193527 （workflow_dispatch，main @ eaed4a8，ios-unsigned job 117589307876）
+# artifact 页面 URL：https://github.com/YePiXpert/cardflow/actions/runs/39098193527/artifacts/12125766769
+# artifact API 下载 URL（需登录）：https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12125766769/zip
+# 本机没有 unzip，用 python3 -m zipfile -l 代替 unzip -l；Info.plist 用 python plistlib 解析（不解压到磁盘）。
+
+$ gh api repos/YePiXpert/cardflow/actions/runs/39098193527/artifacts --jq '.artifacts[]'
+{"archive_download_url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12125766769/zip","created_at":"2026-10-18T04:51:12Z","digest":"sha256:7c37c0357afddf86dfcf13afc80cd13af422b115a9f0d5a823022f98a1b0d18b","expires_at":"2026-11-01T04:51:11Z","id":12125766769,"name":"cardflow-unsigned-eaed4a8","size_in_bytes":6995295}
+
+$ gh run download 39098193527 -n cardflow-unsigned-eaed4a8 -D <新建空目录>
+$ ls -l cardflow-unsigned-eaed4a8.ipa && sha256sum cardflow-unsigned-eaed4a8.ipa
+-rw-r--r-- 1 root root 6995123 Oct 18 05:52 cardflow-unsigned-eaed4a8.ipa
+53e46d9ebf48e7d6bf323acd78bddde6a428fa91f13e9c4264f356e184e8dd5a  cardflow-unsigned-eaed4a8.ipa
+
+$ python3 -I -m zipfile -l cardflow-unsigned-eaed4a8.ipa
+File Name                                             Modified             Size
+Payload/                                       2026-10-18 04:51:10            0
+Payload/Runner.app/                            2026-10-18 04:51:10            0
+Payload/Runner.app/AppIcon60x60@2x.png         2026-10-18 04:51:10          987
+Payload/Runner.app/Runner                      2026-10-18 04:51:10       131760
+Payload/Runner.app/Base.lproj/                 2026-10-18 04:51:10            0
+Payload/Runner.app/Base.lproj/Main.storyboardc/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Base.lproj/Main.storyboardc/UIViewController-BYZ-38-t0r.nib 2026-10-18 04:51:10          951
+Payload/Runner.app/Base.lproj/Main.storyboardc/BYZ-38-t0r-view-8bC-Xf-vdC.nib 2026-10-18 04:51:10         1835
+Payload/Runner.app/Base.lproj/Main.storyboardc/Info.plist 2026-10-18 04:51:10          258
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib 2026-10-18 04:51:10         2281
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib 2026-10-18 04:51:10          924
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/Info.plist 2026-10-18 04:51:10          258
+Payload/Runner.app/Assets.car                  2026-10-18 04:51:10        66920
+Payload/Runner.app/AppFrameworkInfo.plist      2026-10-18 04:51:10          347
+Payload/Runner.app/AppIcon76x76@2x~ipad.png    2026-10-18 04:51:10         1362
+Payload/Runner.app/PrivacyInfo.xcprivacy       2026-10-18 04:51:10         1753
+Payload/Runner.app/Frameworks/                 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/Flutter.framework/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/Flutter.framework/_CodeSignature/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/Flutter.framework/_CodeSignature/CodeResources 2026-10-18 04:51:10         7070
+Payload/Runner.app/Frameworks/Flutter.framework/icudtl.dat 2026-10-18 04:51:10       864880
+Payload/Runner.app/Frameworks/Flutter.framework/Flutter 2026-10-18 04:51:10      9416112
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterSceneDelegate.h 2026-10-18 04:51:10          893
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterEngine.h 2026-10-18 04:51:10        21724
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterChannels.h 2026-10-18 04:51:10        18414
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPlugin.h 2026-10-18 04:51:10        19326
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterAppDelegate.h 2026-10-18 04:51:10         2283
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterTexture.h 2026-10-18 04:51:10         2263
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterEngineGroup.h 2026-10-18 04:51:10         4755
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPlatformViews.h 2026-10-18 04:51:10         1966
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterHeadlessDartRunner.h 2026-10-18 04:51:10         3927
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterCodecs.h 2026-10-18 04:51:10        15290
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/Flutter.h 2026-10-18 04:51:10          921
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterViewController.h 2026-10-18 04:51:10        10734
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterMacros.h 2026-10-18 04:51:10         1823
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterDartProject.h 2026-10-18 04:51:10         3914
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterHourFormat.h 2026-10-18 04:51:10          536
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPluginAppLifeCycleDelegate.h 2026-10-18 04:51:10         5318
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterBinaryMessenger.h 2026-10-18 04:51:10         3761
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterCallbackCache.h 2026-10-18 04:51:10         1724
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterSceneLifeCycle.h 2026-10-18 04:51:10         8387
+Payload/Runner.app/Frameworks/Flutter.framework/PrivacyInfo.xcprivacy 2026-10-18 04:51:10          845
+Payload/Runner.app/Frameworks/Flutter.framework/Modules/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/Flutter.framework/Modules/module.modulemap 2026-10-18 04:51:10           95
+Payload/Runner.app/Frameworks/Flutter.framework/Info.plist 2026-10-18 04:51:10         1078
+Payload/Runner.app/Frameworks/App.framework/   2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/App.framework/_CodeSignature/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/App.framework/_CodeSignature/CodeResources 2026-10-18 04:51:10         3924
+Payload/Runner.app/Frameworks/App.framework/App 2026-10-18 04:51:10      5764432
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/NOTICES.Z 2026-10-18 04:51:10       100754
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/NativeAssetsManifest.json 2026-10-18 04:51:10           45
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/FontManifest.json 2026-10-18 04:51:10           82
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/shaders/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/shaders/ink_sparkle.frag 2026-10-18 04:51:10         4960
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/ink_sparkle.frag 2026-10-18 04:51:10         4960
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/stretch_effect.frag 2026-10-18 04:51:10         4408
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/AssetManifest.bin 2026-10-18 04:51:10          107
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/fonts/ 2026-10-18 04:51:10            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/fonts/MaterialIcons-Regular.otf 2026-10-18 04:51:10         3656
+Payload/Runner.app/Frameworks/App.framework/Info.plist 2026-10-18 04:51:10          754
+Payload/Runner.app/Info.plist                  2026-10-18 04:51:10         1829
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/ 2026-10-18 04:51:10            0
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/PrivacyInfo.xcprivacy 2026-10-18 04:51:10          373
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/Info.plist 2026-10-18 04:51:10          722
+Payload/Runner.app/PkgInfo                     2026-10-18 04:51:10            8
+
+$ python3 -I inspect_ipa.py cardflow-unsigned-eaed4a8.ipa   # 脚本全文附在文末
+file: cardflow-unsigned-eaed4a8.ipa
+size_bytes: 6995123
+sha256: 53e46d9ebf48e7d6bf323acd78bddde6a428fa91f13e9c4264f356e184e8dd5a
+entries: 71
+top_level: ['Payload']
+payload_children: ['Payload/Runner.app']
+Info.plist CFBundleIdentifier: 'li.yep.cardflow'
+Info.plist CFBundleDisplayName: '卡序'
+Info.plist CFBundleName: 'cardflow'
+Info.plist CFBundleShortVersionString: '0.0.1'
+Info.plist CFBundleVersion: '2'
+Info.plist MinimumOSVersion: '15.0'
+Info.plist CFBundleLocalizations: ['zh_CN', 'en']
+Info.plist CFBundleExecutable: 'Runner'
+Info.plist UIDeviceFamily: [1, 2]
+Info.plist DTPlatformName: 'iphoneos'
+Info.plist DTPlatformVersion: '26.5'
+Info.plist DTSDKName: 'iphoneos26.5'
+Info.plist DTXcode: '2660'
+Info.plist DTXcodeBuild: '17F113'
+Info.plist usage descriptions: []
+Info.plist UIBackgroundModes: None
+embedded.mobileprovision present: False
+Runner.app/_CodeSignature present: False
+entitlement files: []
+nested _CodeSignature dirs: ['Payload/Runner.app/Frameworks/App.framework', 'Payload/Runner.app/Frameworks/Flutter.framework']
+Frameworks: ['App.framework', 'Flutter.framework']
+PrivacyInfo NSPrivacyTracking: False
+PrivacyInfo APIs: [('NSPrivacyAccessedAPICategoryUserDefaults', ['CA92.1']), ('NSPrivacyAccessedAPICategoryFileTimestamp', ['C617.1']), ('NSPrivacyAccessedAPICategorySystemBootTime', ['35F9.1']), ('NSPrivacyAccessedAPICategoryDiskSpace', ['E174.1'])]
+CHECK structure Payload/Runner.app only: PASS
+CHECK CFBundleIdentifier == li.yep.cardflow: PASS
+CHECK MinimumOSVersion == 15.0: PASS
+CHECK no embedded.mobileprovision: PASS
+CHECK PrivacyInfo.xcprivacy bundled: PASS
+CHECK CFBundleDisplayName == 卡序: PASS
+exit=0
+
+----- inspect_ipa.py -----
+"""Inspect an unsigned IPA without extracting it: structure, Info.plist, signing leftovers, hashes."""
+import hashlib
+import io
+import plistlib
+import sys
+import zipfile
+
+path = sys.argv[1]
+data = open(path, 'rb').read()
+print(f'file: {path.rsplit("/", 1)[-1]}')
+print(f'size_bytes: {len(data)}')
+print(f'sha256: {hashlib.sha256(data).hexdigest()}')
+
+zf = zipfile.ZipFile(io.BytesIO(data))
+names = zf.namelist()
+print(f'entries: {len(names)}')
+top = sorted({n.split('/')[0] for n in names})
+print(f'top_level: {top}')
+apps = sorted({'Payload/' + n.split('/')[1] for n in names if n.startswith('Payload/') and n.split('/')[1]})
+print(f'payload_children: {apps}')
+
+info = plistlib.loads(zf.read('Payload/Runner.app/Info.plist'))
+keys = ['CFBundleIdentifier', 'CFBundleDisplayName', 'CFBundleName', 'CFBundleShortVersionString',
+        'CFBundleVersion', 'MinimumOSVersion', 'CFBundleLocalizations', 'CFBundleExecutable',
+        'UIDeviceFamily', 'DTPlatformName', 'DTPlatformVersion', 'DTSDKName', 'DTXcode', 'DTXcodeBuild']
+for k in keys:
+    print(f'Info.plist {k}: {info.get(k)!r}')
+print('Info.plist usage descriptions:', sorted(k for k in info if k.endswith('UsageDescription')))
+print('Info.plist UIBackgroundModes:', info.get('UIBackgroundModes'))
+
+def exists(suffix):
+    return any(n == suffix or n.startswith(suffix + '/') for n in names)
+
+print('embedded.mobileprovision present:', exists('Payload/Runner.app/embedded.mobileprovision'))
+print('Runner.app/_CodeSignature present:', exists('Payload/Runner.app/_CodeSignature'))
+print('entitlement files:', [n for n in names if n.endswith(('.entitlements', '.xcent'))])
+print('nested _CodeSignature dirs:', sorted({n.split('/_CodeSignature/')[0] for n in names if '/_CodeSignature/' in n}))
+frameworks = sorted({n.split('/')[3] for n in names if n.startswith('Payload/Runner.app/Frameworks/') and n.count('/') >= 4})
+print('Frameworks:', frameworks)
+privacy = 'Payload/Runner.app/PrivacyInfo.xcprivacy'
+if privacy in names:
+    p = plistlib.loads(zf.read(privacy))
+    print('PrivacyInfo NSPrivacyTracking:', p.get('NSPrivacyTracking'))
+    print('PrivacyInfo APIs:', [(a['NSPrivacyAccessedAPIType'], a['NSPrivacyAccessedAPITypeReasons']) for a in p.get('NSPrivacyAccessedAPITypes', [])])
+else:
+    print('PrivacyInfo.xcprivacy: MISSING')
+checks = {
+    'structure Payload/Runner.app only': top == ['Payload'] and apps == ['Payload/Runner.app'],
+    'CFBundleIdentifier == li.yep.cardflow': info.get('CFBundleIdentifier') == 'li.yep.cardflow',
+    'MinimumOSVersion == 15.0': info.get('MinimumOSVersion') == '15.0',
+    'no embedded.mobileprovision': not exists('Payload/Runner.app/embedded.mobileprovision'),
+    'PrivacyInfo.xcprivacy bundled': privacy in names,
+    'CFBundleDisplayName == 卡序': info.get('CFBundleDisplayName') == '卡序',
+}
+for k, v in checks.items():
+    print(f'CHECK {k}: {"PASS" if v else "FAIL"}')
+sys.exit(0 if all(checks.values()) else 1)
+
+$ python3 -I macho_sig.py cardflow-unsigned-eaed4a8.ipa   # Mach-O 签名状态（脚本全文附后）
+Payload/Runner.app/Runner: cpu=16777228 no LC_CODE_SIGNATURE (unsigned)
+Payload/Runner.app/Frameworks/App.framework/App: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None
+Payload/Runner.app/Frameworks/Flutter.framework/Flutter: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None
+exit=0
+# 结论：主程序 Runner 未签名；App.framework 与 Flutter.framework 只有临时（ad-hoc）签名、无团队 ID、无 CMS 签名。
+# 用户签名时必须连同 Frameworks 下的嵌套 framework 一起重签。
+
+----- macho_sig.py -----
+"""Report the code-signature state of Mach-O binaries inside an IPA (read in memory, no extraction)."""
+import io, struct, sys, zipfile
+
+LC_CODE_SIGNATURE = 0x1d
+
+def thin_slices(b):
+    magic = struct.unpack('>I', b[:4])[0]
+    if magic in (0xcafebabe, 0xcafebabf):  # fat
+        n = struct.unpack('>I', b[4:8])[0]
+        out = []
+        for i in range(n):
+            if magic == 0xcafebabe:
+                cputype, _, off, size, _ = struct.unpack('>iiIII', b[8 + i * 20: 28 + i * 20])
+            else:
+                cputype, _, off, size, _, _ = struct.unpack('>iiQQII', b[8 + i * 32: 40 + i * 32])
+            out.append((cputype, b[off:off + size]))
+        return out
+    return [(None, b)]
+
+def describe(b):
+    magic = struct.unpack('<I', b[:4])[0]
+    if magic not in (0xfeedfacf, 0xfeedface):
+        return 'not a Mach-O'
+    is64 = magic == 0xfeedfacf
+    cputype, _, _, ncmds, _, _ = struct.unpack('<iiIIII', b[4:28])
+    off = 32 if is64 else 28
+    for _ in range(ncmds):
+        cmd, cmdsize = struct.unpack('<II', b[off:off + 8])
+        if cmd == LC_CODE_SIGNATURE:
+            dataoff, datasize = struct.unpack('<II', b[off + 8:off + 16])
+            blob = b[dataoff:dataoff + datasize]
+            sb_magic, _, count = struct.unpack('>III', blob[:12])
+            if sb_magic != 0xfade0cc0:
+                return f'cpu={cputype} LC_CODE_SIGNATURE present, unknown superblob'
+            has_cms = False
+            flags = team = None
+            for i in range(count):
+                _, boff = struct.unpack('>II', blob[12 + i * 8: 20 + i * 8])
+                bmagic, blen = struct.unpack('>II', blob[boff:boff + 8])
+                if bmagic == 0xfade0b01 and blen > 8:
+                    has_cms = True
+                if bmagic == 0xfade0c02:
+                    cd = blob[boff:boff + blen]
+                    version, flags = struct.unpack('>II', cd[8:16])
+                    if version >= 0x20200:
+                        team_off = struct.unpack('>I', cd[48:52])[0]
+                        if team_off:
+                            team = cd[team_off:cd.index(b'\0', team_off)].decode()
+            adhoc = bool(flags is not None and flags & 0x2)
+            return f'cpu={cputype} signed: adhoc={adhoc} cms_signature={has_cms} team_id={team!r}'
+        off += cmdsize
+    return f'cpu={cputype} no LC_CODE_SIGNATURE (unsigned)'
+
+zf = zipfile.ZipFile(io.BytesIO(open(sys.argv[1], 'rb').read()))
+for name in ('Payload/Runner.app/Runner',
+             'Payload/Runner.app/Frameworks/App.framework/App',
+             'Payload/Runner.app/Frameworks/Flutter.framework/Flutter'):
+    data = zf.read(name)
+    for cpu, sl in thin_slices(data):
+        print(f'{name}: {describe(sl)}')
