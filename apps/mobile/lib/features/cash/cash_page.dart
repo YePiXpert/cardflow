@@ -259,6 +259,12 @@ class _AccountTile extends StatelessWidget {
               ),
             if (snapshot != null && !summary.stale)
               Text('快照 ${ageText(summary.ageDays!)}'),
+            if (summary.active && (summary.stale || summary.missingSnapshot))
+              TextButton(
+                onPressed: () =>
+                    context.go(AppRoutes.recordCashSnapshot(row.id)),
+                child: const Text('记录新快照'),
+              ),
           ],
         ),
       ),

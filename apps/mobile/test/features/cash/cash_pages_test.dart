@@ -293,6 +293,11 @@ void main() {
     await goTo(tester, AppRoutes.cash);
     expect(find.text('10 天前'), findsOneWidget);
     expect(find.text('未计入规划（缺快照）'), findsOneWidget);
+    expect(
+      find.widgetWithText(TextButton, '记录新快照'),
+      findsNWidgets(2),
+      reason: '陈旧与缺快照的账户行都有「记录新快照」',
+    );
     await goTo(tester, AppRoutes.cashAccount(staleId));
     expect(find.textContaining('余额快照已是 10 天前'), findsOneWidget);
     await _tap(tester, find.widgetWithText(OutlinedButton, '记录新快照'));
