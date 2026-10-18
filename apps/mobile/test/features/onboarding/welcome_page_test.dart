@@ -1,5 +1,7 @@
 // P-22 首次使用/欢迎/演示模式（ui-spec §6 P-22、§4.2）与演示横幅：开始方式的开放与禁用、体验演示
 // （生成合成数据、横幅常驻且不可关闭、退出须确认）、真实↔演示切换须确认、清除演示数据写明影响数量。
+import 'dart:async';
+
 import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/app/widgets/demo_banner.dart';
 import 'package:cardflow/data/repositories/models.dart';
@@ -7,9 +9,27 @@ import 'package:cardflow/data/repositories/providers.dart';
 import 'package:cardflow/features/onboarding/welcome_page.dart';
 import 'package:cardflow/features/overview/overview_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_helpers.dart';
+
+/// 当前工作空间的替身：没有工作空间；进入演示时按 [demo] 的结果（挂起或失败）。
+class _FakeWorkspace extends CurrentWorkspace {
+  _FakeWorkspace(this.demo);
+
+  final Future<Workspace> Function() demo;
+  int demoCalls = 0;
+
+  @override
+  Future<Workspace?> build() async => null;
+
+  @override
+  Future<Workspace> enterDemo() {
+    demoCalls++;
+    return demo();
+  }
+}
 
 Finder _option(String label) => find.ancestor(
   of: find.text(label),
@@ -43,6 +63,39 @@ void main() {
           .map((o) => o.stage),
       <String>['I-3 提供', 'I-4 提供', '后续提供（自托管同步）'],
     );
+  });
+
+  testWidgets('加载：演示数据生成中（按钮暂不可再点）', (tester) async {
+    final pending = Completer<Workspace>();
+    final fake = _FakeWorkspace(() => pending.future);
+    await pumpCardFlowApp(
+      tester,
+      workspace: TestWorkspace.none,
+      overrides: <Override>[currentWorkspaceProvider.overrideWith(() => fake)],
+    );
+    await tester.tap(_option('体验演示'));
+    await tester.pump();
+    expect(find.text(WelcomePage.demoLoading), findsOneWidget);
+    expect(tester.widget<ButtonStyleButton>(_option('体验演示')).onPressed, isNull);
+  });
+
+  testWidgets('错误：演示数据生成失败不影响真实空间，可「重试生成」', (tester) async {
+    final fake = _FakeWorkspace(
+      () => Future<Workspace>.error(StateError('seed failed')),
+    );
+    await pumpCardFlowApp(
+      tester,
+      workspace: TestWorkspace.none,
+      overrides: <Override>[currentWorkspaceProvider.overrideWith(() => fake)],
+    );
+    await tester.tap(_option('体验演示'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining(WelcomePage.demoFailed), findsOneWidget);
+    expect(find.textContaining('StateError'), findsOneWidget);
+    await tester.tap(find.text('重试生成'));
+    await tester.pumpAndSettle();
+    expect(fake.demoCalls, 2);
+    expect(appBarTitle(WelcomePage.title), findsOneWidget);
   });
 
   testWidgets('体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认', (tester) async {

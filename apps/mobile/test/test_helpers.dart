@@ -12,6 +12,7 @@ import 'package:cardflow/data/time/clock.dart';
 import 'package:cardflow/features/diagnostics/crypto_status.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -207,3 +208,25 @@ Finder navLabel(String label) =>
 /// 顶栏中的页名。
 Finder appBarTitle(String title) =>
     find.descendant(of: find.byType(AppBar), matching: find.text(title));
+
+/// 截获写入剪贴板的文字。
+List<String> captureClipboard(WidgetTester tester) {
+  final copied = <String>[];
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    SystemChannels.platform,
+    (call) async {
+      if (call.method == 'Clipboard.setData') {
+        final arguments = call.arguments as Map<Object?, Object?>;
+        copied.add(arguments['text']! as String);
+      }
+      return null;
+    },
+  );
+  addTearDown(
+    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
+    ),
+  );
+  return copied;
+}

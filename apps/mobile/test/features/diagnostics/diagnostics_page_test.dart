@@ -10,34 +10,11 @@ import 'package:cardflow/features/diagnostics/diagnostics_page.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_report.dart';
 import 'package:cardflow/features/diagnostics/platform_description.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../data/db/db_test_support.dart';
 import '../../test_helpers.dart';
-
-/// 截获写入剪贴板的文字。
-List<String> captureClipboard(WidgetTester tester) {
-  final copied = <String>[];
-  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-    SystemChannels.platform,
-    (call) async {
-      if (call.method == 'Clipboard.setData') {
-        final arguments = call.arguments as Map<Object?, Object?>;
-        copied.add(arguments['text']! as String);
-      }
-      return null;
-    },
-  );
-  addTearDown(
-    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
-      SystemChannels.platform,
-      null,
-    ),
-  );
-  return copied;
-}
 
 /// 固定结果的基准控制器：记录点击次数，不做真实 I/O。
 class _FakeBenchmark extends DatabaseBenchmark {

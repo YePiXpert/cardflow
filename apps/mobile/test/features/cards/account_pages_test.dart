@@ -207,6 +207,41 @@ void main() {
   group('P-04 信用账户设置', () {
     setUp(() => _section = RuleEditorSection);
 
+    testWidgets('加载：骨架', (tester) async {
+      final pending = Completer<WalletView>();
+      await pumpCardFlowApp(
+        tester,
+        seed: _bareCard,
+        overrides: <Override>[
+          walletProvider.overrideWith((ref) => pending.future),
+        ],
+      );
+      await goTo(tester, AppRoutes.accountSettings(await _onlyAccount(tester)));
+      expect(find.byType(LoadingSkeleton), findsOneWidget);
+    });
+
+    testWidgets('错误：读取失败显示错误码与「重试」', (tester) async {
+      await pumpCardFlowApp(
+        tester,
+        seed: _bareCard,
+        overrides: <Override>[
+          walletProvider.overrideWith(
+            (ref) => Future<WalletView>.error(StateError('x')),
+          ),
+        ],
+      );
+      await goTo(tester, AppRoutes.accountSettings('x'));
+      expect(find.text('读取失败'), findsOneWidget);
+      expect(find.text('错误码：StateError'), findsOneWidget);
+      expect(find.text('重试'), findsOneWidget);
+    });
+
+    testWidgets('不在当前空间的账户："已不存在"', (tester) async {
+      await pumpCardFlowApp(tester, seed: _bareCard);
+      await goTo(tester, AppRoutes.accountSettings('no-such-account'));
+      expect(find.text('已不存在'), findsOneWidget);
+    });
+
     Future<void> openSettings(WidgetTester tester, {String? section}) async {
       final id = await _onlyAccount(tester);
       await goTo(tester, AppRoutes.accountSettings(id, section: section));
