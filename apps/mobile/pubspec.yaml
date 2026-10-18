@@ -41,7 +41,8 @@ flutter:
 # 写法出处：drift 文档 Encryption 页（https://drift.simonbinder.eu/platforms/encryption/）与
 # sqlite3 3.7.1 的 doc/hook.md（README 的 "hook options page"）；摘录见 evidence/i0/I0-b/hook-source.txt。
 # 钩子下载 sqlite3.dart GitHub release 中预编译的 sqlite3mc，并用包内记录的 sha256 校验。
-# 启动时 PRAGMA cipher_version 为空即拒绝打开数据库（lib/data/db/encryption.dart），不会退回明文库。
+# 打开数据库前检查 PRAGMA cipher 与 sqlite3mc_version() 均非空，否则拒绝打开，不会退回明文库
+# （lib/data/db/encryption.dart；PRAGMA cipher_version 是 SQLCipher 的 PRAGMA，sqlite3mc 对它返回空）。
 hooks:
   user_defines:
     sqlite3:
