@@ -20,6 +20,12 @@ dependencies:
   go_router: 18.1.0
   intl: 0.20.3
   package_info_plus: 10.2.2
+  # 加密本地库（ADR-001，PoC-1）：drift + sqlite3（构建钩子选 SQLite3MultipleCiphers，见文末 hooks）。
+  drift: 2.35.2
+  drift_flutter: 0.3.1
+  sqlite3: 3.7.1
+  flutter_secure_storage: 11.2.0
+  path_provider: 2.1.6
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +36,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+# sqlite3 包的构建钩子选项：把 SQLite3MultipleCiphers（sqlite3mc）而不是普通 SQLite 打进 App。
+# 写法出处：drift 文档 Encryption 页（https://drift.simonbinder.eu/platforms/encryption/）与
+# sqlite3 3.7.1 的 doc/hook.md（README 的 "hook options page"）；摘录见 evidence/i0/I0-b/hook-source.txt。
+# 钩子下载 sqlite3.dart GitHub release 中预编译的 sqlite3mc，并用包内记录的 sha256 校验。
+# 启动时 PRAGMA cipher_version 为空即拒绝打开数据库（lib/data/db/encryption.dart），不会退回明文库。
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc
