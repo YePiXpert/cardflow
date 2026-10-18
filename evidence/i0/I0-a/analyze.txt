@@ -1,4 +1,4 @@
-# I-0a 本机静态检查 · 2026-10-18T04:39:50Z · 21e0af0+工作区
+# I-0a 本机静态检查 · 2026-10-18T04:53:52Z · 提交 186ece7
 $ cd apps/mobile && flutter pub get --enforce-lockfile
    Woah! You appear to be trying to run flutter as root.
    We strongly recommend running the flutter tool without superuser privileges.
@@ -23,7 +23,7 @@ $ dart format --output=none --set-exit-if-changed .
    We strongly recommend running the flutter tool without superuser privileges.
   /
 📎
-Formatted 43 files (0 changed) in 0.10 seconds.
+Formatted 43 files (0 changed) in 0.07 seconds.
 exit=0
 
 $ flutter analyze --fatal-infos
@@ -32,5 +32,5 @@ $ flutter analyze --fatal-infos
   /
 📎
 Analyzing mobile...                                             
-No issues found! (ran in 2.3s)
+No issues found! (ran in 0.8s)
 exit=0

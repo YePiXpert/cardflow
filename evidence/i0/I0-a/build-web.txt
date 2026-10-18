@@ -1,4 +1,4 @@
-# I-0a 本机 Web 编译烟雾测试 · 2026-10-18T04:40:16Z
+# I-0a 本机 Web 编译烟雾测试 · 2026-10-18T04:53:58Z · 提交 186ece7
 $ cd apps/mobile && flutter build web --release
    Woah! You appear to be trying to run flutter as root.
    We strongly recommend running the flutter tool without superuser privileges.
@@ -9,24 +9,24 @@ Wasm dry run succeeded. Consider building and testing your application with the 
 Use --no-wasm-dry-run to disable these warnings.
 Expected to find fonts for (MaterialIcons, packages/cupertino_icons/CupertinoIcons), but found (MaterialIcons). This usually means you are referring to font families in an IconData class but not including them in the assets section of your pubspec.yaml, are missing the package that would include them, or are missing "uses-material-design: true".
 Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 9792 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             37.5s
+Compiling lib/main.dart for the Web...                             38.2s
 ✓ Built build/web
 exit=0
 
 $ ls -la build/web && du -sh build/web
 total 2648
-drwxr-xr-x 5 root root    4096 Oct 18 05:40 .
-drwxr-xr-x 6 root root    4096 Oct 18 05:40 ..
-drwxr-xr-x 5 root root    4096 Oct 18 05:40 assets
-drwxr-xr-x 4 root root    4096 Oct 18 05:40 canvaskit
--rw-r--r-- 1 root root     917 Oct 18 05:40 favicon.png
--rw-r--r-- 1 root root   13093 Oct 18 05:40 flutter_bootstrap.js
--rw-r--r-- 1 root root   12136 Oct 18 05:40 flutter.js
--rw-r--r-- 1 root root     784 Oct 18 05:40 flutter_service_worker.js
-drwxr-xr-x 2 root root    4096 Oct 18 05:40 icons
--rw-r--r-- 1 root root    1567 Oct 18 05:40 index.html
--rw-r--r-- 1 root root      32 Oct 18 05:40 .last_build_id
--rw-r--r-- 1 root root 2634344 Oct 18 05:40 main.dart.js
--rw-r--r-- 1 root root     960 Oct 18 05:40 manifest.json
--rw-r--r-- 1 root root      86 Oct 18 05:40 version.json
+drwxr-xr-x 5 root root    4096 Oct 18 05:54 .
+drwxr-xr-x 6 root root    4096 Oct 18 05:53 ..
+drwxr-xr-x 5 root root    4096 Oct 18 05:54 assets
+drwxr-xr-x 4 root root    4096 Oct 18 05:53 canvaskit
+-rw-r--r-- 1 root root     917 Oct 18 05:54 favicon.png
+-rw-r--r-- 1 root root   13094 Oct 18 05:53 flutter_bootstrap.js
+-rw-r--r-- 1 root root   12136 Oct 18 05:53 flutter.js
+-rw-r--r-- 1 root root     784 Oct 18 05:54 flutter_service_worker.js
+drwxr-xr-x 2 root root    4096 Oct 18 05:54 icons
+-rw-r--r-- 1 root root    1567 Oct 18 05:53 index.html
+-rw-r--r-- 1 root root      32 Oct 18 05:54 .last_build_id
+-rw-r--r-- 1 root root 2634520 Oct 18 05:54 main.dart.js
+-rw-r--r-- 1 root root     960 Oct 18 05:54 manifest.json
+-rw-r--r-- 1 root root      86 Oct 18 05:54 version.json
 41M	build/web
