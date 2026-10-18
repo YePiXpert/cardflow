@@ -12,6 +12,8 @@ analyzer:
     - build/**
     - ios/**
     - web/**
+    # 纯 Dart 领域包有自己的 pubspec 与分析配置，在其目录下用 `dart analyze --fatal-infos` 检查。
+    - packages/**
 
 linter:
   rules:

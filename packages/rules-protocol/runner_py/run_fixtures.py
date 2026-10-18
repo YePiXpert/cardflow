@@ -3,7 +3,7 @@
 Usage, from the repository root::
 
     uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py \\
-        [FIXTURE_OR_DIRECTORY ...]
+        [--dump DIR] [FIXTURE_OR_DIRECTORY ...]
 
 Default: every ``fixtures/*.v1.json``; a directory means its ``*.v1.json`` files. For each
 fixture: strict JSON parse -> JSON Schema ``Fixture.schema.json`` (Draft 2020-12 with the
@@ -12,6 +12,13 @@ format checker; integers must be integer tokens) -> no JSON float anywhere excep
 every case: ``cycles`` (billing cycles), ``verify`` (independent verifier, no solver) or
 ``plan`` (engine run with the case's profile and decision scenario; one run per pair) -> the
 output is validated against its schema -> every assertion is evaluated and printed.
+
+``--dump DIR`` additionally writes the output of every ``cycles`` and ``verify`` case as canonical
+JSON plus a newline to ``DIR/<fixture file name without .v1.json>/<NN>-<case name>.<kind>.json``
+(``NN`` = the case's two-digit position in ``expected``) -- the reference outputs the Dart runner
+(``dart run cardflow_domain:run_fixtures --dump DIR``) is compared with byte for byte. ``plan``
+outputs are not written: they carry a run id, a clock time and solver timings, and the Dart client
+has no solver to compute them.
 
 Exit status: 0 every assertion holds; 1 a mismatch (or an output that violates its schema);
 2 invalid input (unreadable file, bad JSON, schema or protocol violation) -- 2 wins over 1.
@@ -35,6 +42,7 @@ from cardflow.planner.engine import MODEL_VERSION
 from cardflow.planner.engine.protocol import (
     PROTOCOL_VERSION,
     ProtocolError,
+    canonical_json,
     card_cycles_to_protocol,
     inputs_from_protocol,
     parse_json,
@@ -275,8 +283,26 @@ def _summary(outcome: dict[str, Json]) -> str:
     )
 
 
-def run_fixture(path: Path, registry: Registry, emit: Emit) -> int:
-    """Run one fixture; returns PASSED, MISMATCH or INVALID."""
+def fixture_stem(path: Path) -> str:
+    """Directory name of a fixture's dumped outputs: the file name without ``.v1.json``."""
+    name = path.name
+    for suffix in (".v1.json", ".json"):
+        if name.endswith(suffix):
+            return name[: -len(suffix)]
+    return name
+
+
+def dump_output(dump: Path, path: Path, index: int, case: dict[str, Json], output: Json) -> Path:
+    """Write one case output as canonical JSON plus a newline (``--dump``)."""
+    target = dump / fixture_stem(path) / f"{index:02d}-{case['name']}.{case['kind']}.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(canonical_json(output) + b"\n")
+    return target
+
+
+def run_fixture(path: Path, registry: Registry, emit: Emit, dump: Path | None = None) -> int:
+    """Run one fixture; returns PASSED, MISMATCH or INVALID. With ``dump``, every cycles and
+    verify output is also written there (:func:`dump_output`)."""
     emit(f"== {_relative(path)}")
     try:
         doc = _load(path, registry)
@@ -289,7 +315,7 @@ def run_fixture(path: Path, registry: Registry, emit: Emit) -> int:
     )
     plans: dict[tuple[str, str], dict[str, Json]] = {}
     total = failed = bad_outputs = 0
-    for case in doc["expected"]:
+    for index, case in enumerate(doc["expected"]):
         kind = case["kind"]
         try:
             if kind == "cycles":
@@ -313,6 +339,8 @@ def run_fixture(path: Path, registry: Registry, emit: Emit) -> int:
             return INVALID
         errors = schema_errors(registry, OUTPUT_SCHEMAS[kind], output)
         emit(f"   case {case['name']} [{label}]")
+        if dump is not None and kind != "plan":
+            emit(f"     dumped {dump_output(dump, path, index, case, output)}")
         if kind == "plan":
             emit(f"     {_summary(output)}")
         if errors:
@@ -350,8 +378,22 @@ def _targets(args: list[str]) -> list[Path]:
 
 
 def main(argv: list[str] | None = None, emit: Emit | None = None) -> int:
-    args = sys.argv[1:] if argv is None else argv
+    args = list(sys.argv[1:] if argv is None else argv)
     write: Emit = emit or (lambda line: sys.stdout.write(line + "\n"))
+    dump: Path | None = None
+    if "--dump" in args:
+        at = args.index("--dump")
+        if at + 1 >= len(args):
+            write(__doc__ or "")
+            return INVALID
+        dump = Path(args[at + 1])
+        del args[at : at + 2]
+    else:
+        for at, arg in enumerate(args):
+            if arg.startswith("--dump="):
+                dump = Path(arg.removeprefix("--dump="))
+                del args[at]
+                break
     if any(a.startswith("-") for a in args):
         write(__doc__ or "")
         return INVALID
@@ -364,7 +406,7 @@ def main(argv: list[str] | None = None, emit: Emit | None = None) -> int:
         write("no *.v1.json fixtures found")
         return INVALID
     registry = load_registry()
-    results = [run_fixture(path, registry, write) for path in targets]
+    results = [run_fixture(path, registry, write, dump) for path in targets]
     status = max(results)
     write(
         f"summary: {len(results)} fixture(s): {results.count(PASSED)} passed, "

@@ -1,0 +1,27 @@
+# cardflow_domain（纯 Dart 领域层）静态分析配置；与 App（apps/mobile/analysis_options.yaml）同一基线。
+# CI 以 `dart analyze --fatal-infos` 运行，要求零输出。
+#
+# 禁止二进制浮点（ADR-008、architecture §3）：lib/ 与 bin/ 中不得出现 double、num、toDouble()、
+# 小数或指数字面量与浮点除法 `/`（整数除法用 `~/`）。金额是 int 最小单位，利率与系数是 Rational
+# （BigInt 分数）。可执行检查：test/no_double_test.dart（注释中允许出现，代码与字符串内插中不允许）。
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    always_declare_return_types: true
+    avoid_dynamic_calls: true
+    cancel_subscriptions: true
+    close_sinks: true
+    directives_ordering: true
+    only_throw_errors: true
+    prefer_final_locals: true
+    prefer_single_quotes: true
+    unawaited_futures: true
+    unnecessary_lambdas: true

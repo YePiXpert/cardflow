@@ -1,0 +1,21 @@
+name: cardflow_domain
+description: >-
+  卡序 CardFlow 纯 Dart 领域层：金额、业务日期与时间戳、账期规则、现金时间线、独立验证器、
+  有限搜索与规则协议 v1（严格 JSON、规范化 JSON 与 input_hash、fixture 运行器）。
+  不依赖 Flutter 与数据库；语义以 Python 引擎 1.1.0 与 engine-spec §12/§12.1 为准。
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.13.5
+
+# 版本写死到补丁号。
+# crypto：docs/20-architecture/architecture.md §11（2026-10-18 登记）：规范化 JSON 的 sha256（input_hash）。
+dependencies:
+  crypto: 3.0.7
+
+# flutter_lints：§11 表内（与 App 同一 lint 基线；纯 Dart 包，只依赖 lints）。
+# test：`dart test` 的测试运行器（I-0c 简报要求领域包能用 `dart test` 独立运行；只用于开发与 CI）。
+dev_dependencies:
+  flutter_lints: 6.0.0
+  test: 1.33.0
