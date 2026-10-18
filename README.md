@@ -14,9 +14,9 @@
 | `docs/` | 规划文档（唯一事实来源） | 已完成 |
 | `poc/engine_reference/` | 参考引擎 PoC（golden-fixture 预言机，非生产代码） | 已验证 |
 | `services/api/` | 服务端：FastAPI 模块化单体 + worker + CLI；Python 3.13，uv 管理，包 `cardflow`（平铺布局，模块划分见 architecture §4） | M0 骨架（T-002） |
-| `apps/mobile/` | Flutter 移动端（iOS 优先；骨架、主题、金额组件、诊断页；CI 出未签名 IPA） | I-0b 已验证（骨架 + 加密库） |
+| `apps/mobile/` | Flutter 移动端（iOS 优先；骨架、主题、金额组件、诊断页、加密本地库；`packages/cardflow_domain` 纯 Dart 领域包；CI 出未签名 IPA） | I-0c 已验证（骨架 + 加密库 + 领域层/有限搜索） |
 | `apps/admin/` | Web 后台 React SPA（占位，T-031） | 未实现 |
-| `packages/rules-protocol/` | 规则协议 v1 JSON Schema 与运行器（占位，T-004） | 未实现 |
+| `packages/rules-protocol/` | 规则协议 v1 JSON Schema、golden fixture、Python 运行器；Dart 端在 `apps/mobile/packages/cardflow_domain`，CI `protocol-parity` 双端逐字节一致 | v1 已冻结（1.1.0） |
 | `deploy/` | Compose 文件：`compose.dev.yaml` = 开发库（项目名 `cardflow-dev`，仅 127.0.0.1:18432）；`compose.yaml` = 自托管部署（项目名 `cardflow`，仅 127.0.0.1:18080，见下文"部署"）；`.env.example`；`secrets/`（只有 README 入库） | 开发库可用；部署可用（T-012） |
 | `tools/` | 开发脚本：`dev-db.sh`（开发库管理）、`build-api-image.sh`（构建 `cardflow/api` 镜像）、`gen-secrets.sh`（生成部署 secret）、`pii_scan.py`（日志 PII 扫描） | |
 | `evidence/m0/<任务ID>/` | M0 验收证据：工具输出原文（用 `tee` 保存）；不得含口令、令牌或真实金融数据 | |

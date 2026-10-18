@@ -1,6 +1,6 @@
 # 接续说明（handoff）
 
-> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-18（I-0b 验收后）。
+> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-18（I-0c 验收后）。
 
 ## 1. 当前状态
 
@@ -11,7 +11,8 @@
 - 服务器上的 `cardflow`、`cardflow-dev` Compose 项目已停止，卷保留（`cardflow_pgdata`、`cardflow_attachments`、`cardflow-dev_pgdata`）。
 - 已完成：**I-0a**（Flutter 骨架、主题、金额组件、诊断页；iOS 配置；CI）。第一个未签名 IPA：https://github.com/YePiXpert/cardflow/actions/runs/39098193527/artifacts/12125766769（源码 eaed4a8，sha256 53e46d9e…，2026-11-01 过期）。证据 `evidence/i0/I0-a/`。
 - 已完成：**I-0b**（drift + sqlite3mc 钩子加密库、Keychain 原始密钥、失败即止、诊断页加密状态与 10 万行基准）。第二个 IPA：https://github.com/YePiXpert/cardflow/actions/runs/39101728143/artifacts/12126439551（源码 4d720c9，sha256 4119031e…，2026-11-01 过期；4 个嵌套 framework 需一并重签）。证据 `evidence/i0/I0-b/`。
-- 进行中：**I-0c** Dart 领域层移植 + Dart fixture 运行器 + 有限搜索，简报见 `briefs/I0-c.md`，证据目录 `evidence/i0/I0-c/`。本任务不出 IPA。
+- 已完成：**I-0c**（纯 Dart 领域包 `apps/mobile/packages/cardflow_domain`：金额/日期/账期/现金时间线/验证器/有限搜索/协议 v1 适配与哈希；Dart fixture 运行器 `dart run cardflow_domain:run_fixtures [--dump DIR]`；Python 运行器 `--dump`；CI `protocol-parity` job 双端逐字节一致）。265 项领域测试、App 154 项；CI 运行 39114057360 全绿。不出 IPA。证据 `evidence/i0/I0-c/`。I-1 的领域包 API 说明见 `apps/mobile/README.md`"领域层"一节与 `packages/rules-protocol/README.md` 末节。
+- I-0 代码部分已全部完成；阶段退出还差：用户真机回传（IPA 4d720c9 的诊断信息）与阶段末审查（一次，只修 blocker/major）。
 
 ## 2. 如何判断进行中任务做到哪了
 
@@ -22,10 +23,9 @@
 
 ## 3. 下一步（按顺序，一次一个代理）
 
-1. 等用户对第一个 IPA 的签名安装反馈（能装、能打开、诊断页能复制）；不阻塞 I-0b。
-2. 等用户对第二个 IPA 回传：加密库状态应为"已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）"，密钥"已生成"，基准 `open_ms + count_ms < 1000`。
-3. **I-0c**（进行中）：Dart 领域层移植（Money/EventTime、账期、现金时间线、验证器、有限搜索 K≤3）+ Dart fixture 运行器：读 `packages/rules-protocol/schema/v1`、`fixtures/*.v1.json`，复现 README 的规范化哈希（F-18 的 `protocol_input_hash` = `ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8`），cycles/verify 两类 case 全过；Python 引擎 1.1.0 是对照基准，语义以 `docs/30-rules-engine/engine-spec.md` §12/§12.1 为准。
-4. 之后进入 I-1（卡片、账期、现金流），见 `ios-first-plan.md` §3。
+1. **I-0 阶段末审查**（一个审查代理，只读 + 写 `evidence/i0/review-i0.md`）：范围 apps/mobile（含领域包）与 `.github/workflows/mobile.yml`；重点：金额/日期语义与 Python 引擎的偏离、密钥与日志泄露、失败即止是否有绕过、协议适配层的拒绝清单是否齐、CI 是否可能静默跳过检查。只修 blocker/major，其余记 `backlog.md`。
+2. 等用户对 IPA 4d720c9 回传：加密库状态应为"已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）"，密钥"已生成"，基准 `open_ms + count_ms < 1000`。若真机加密库不可用，按 ADR-001 回退 sqflite_sqlcipher（只换 drift 的执行器，领域包与数据层接口不变）。
+3. **I-1**（卡片、账期、现金流；`ios-first-plan.md` §3）：写简报 `briefs/I1.md` 再派发。数据层把表行映射成领域对象/协议文档（见 `apps/mobile/README.md`"领域层"与 `packages/rules-protocol/README.md` 末节的映射规则）；真机回传未到时也可开始，但 DB 层必须留在 `openAppDatabase` 抽象之后以便回退。阶段末触发一次 iOS 构建。
 
 ## 4. 执行规则（已与用户约定）
 

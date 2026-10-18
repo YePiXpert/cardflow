@@ -4,7 +4,7 @@
 由任务 T-004 在本目录实现，见 `docs/20-architecture/architecture.md` §10 与 `docs/80-delivery/m0-execution-plan.md` §4。
 金额字段一律为整数最小单位 + 币种，schema 不允许 float 金额。
 
-状态：v1 已实现（T-004，2026-10-17），冻结前按 engine-spec §12 修订（T-004c，2026-10-18，引擎模型 1.1.0，见文末修订记录）；Python 运行器对 F-18 通过；Dart 运行器由 T-022 实现（待环境）。
+状态：v1 已实现（T-004，2026-10-17），冻结前按 engine-spec §12 修订（T-004c，2026-10-18，引擎模型 1.1.0，见文末修订记录）；Python 运行器对 F-18 通过；Dart 运行器已实现（I-0c，2026-10-18，`apps/mobile/packages/cardflow_domain`），CI `protocol-parity` job 保证两端 cycles/verify 输出逐字节一致（见文末"Dart 端实现与 parity"）。
 引擎侧适配层：`services/api/cardflow/planner/engine/protocol.py`（只用标准库）；测试：`services/api/tests/protocol/`。
 
 ## 目录结构
@@ -214,7 +214,7 @@ uv run --project services/api ruff format --check packages/rules-protocol
 ## Dart 端实现与 parity（I-0c，2026-10-18）
 
 本节补充上文"Dart 端（T-022）如何复用"：Dart 端已实现，位于 `apps/mobile/packages/cardflow_domain`（纯 Dart 包，
-不依赖 Flutter、drift；App 以 path 依赖引入）。上文状态行里"Dart 运行器由 T-022 实现（待环境）"已由本节取代。
+不依赖 Flutter、drift；App 以 path 依赖引入）。原计划编号 T-022/T-023 的内容由 I-0c 交付。
 
 **模块对应**（语义与引擎 1.1.0 一一对应，以 engine-spec §12/§12.1 为准）：
 

@@ -150,8 +150,8 @@ Compose 服务：`api`（含 /admin 静态）、`worker`、`db`（postgres:18.6-
 | 移动 | flutter_riverpod / riverpod_annotation / riverpod_generator | 3.4.3 / 4.0.7 / 4.0.9 | MIT | 状态管理 |
 | 移动 | go_router | 18.1.0 | BSD-3 | feature-complete，仅修复 |
 | 移动 | drift / drift_flutter / sqlite3 | 2.35.2 / 0.3.1 / 3.7.1 | MIT | 加密经 sqlite3 构建钩子（ADR-001）；钩子从 GitHub release 下载预编译 sqlite3mc 并校验 sha256 |
-| 移动（dev） | drift_dev / build_runner / flutter_lints / riverpod_generator | 2.35.1 / 2.16.2 / 6.0.0 / 4.0.9 | MIT / BSD-3 | 2026-10-18 登记；build_runner 2.17 与 riverpod_generator 4.0.9 冲突 |
-| 移动 | crypto（dart.dev） | 3.x 最新 | BSD-3 | 2026-10-18 登记：Dart fixture 运行器计算规范化 JSON 的 sha256 |
+| 移动（dev） | drift_dev / build_runner / flutter_lints / riverpod_generator / test | 2.35.1 / 2.16.2 / 6.0.0 / 4.0.9 / 1.33.0 | MIT / BSD-3 | 2026-10-18 登记；build_runner 2.17 与 riverpod_generator 4.0.9 冲突；`test` 仅用于纯 Dart 领域包 `cardflow_domain` 的独立 `dart test`（I-0c） |
+| 移动 | crypto（dart.dev） | 3.0.7 | BSD-3 | 2026-10-18 登记：领域包 `protocolInputHash`（规范化 JSON 的 sha256） |
 | 移动 | flutter_secure_storage | 11.2.0 | BSD-3 | 密钥存储 |
 | 移动 | local_auth | 3.0.2 | BSD-3 | 系统生物识别 |
 | 移动 | flutter_local_notifications | 22.3.2 | BSD-3 | Android 14 精确闹钟变更；iOS 26 后需 UIScene |
@@ -160,7 +160,7 @@ Compose 服务：`api`（含 /admin 静态）、`worker`、`db`（postgres:18.6-
 | 移动 | url_launcher / path_provider / connectivity_plus / package_info_plus / app_links | 6.3.3 / 2.1.6 / 7.3.2 / 10.2.2 / 7.2.2 | BSD-3 / Apache-2.0 | |
 | 移动 | google_mlkit_text_recognition | 0.17.1 | MIT（社区维护） | 中文脚本另加模型；iOS ≥15.5；iOS 每脚本约 38 MB |
 | 移动 | pdfrx | 2.6.5 | MIT | PDFium 渲染与文本层 |
-| 移动 | decimal / intl / freezed / json_serializable / dio | 3.2.6 / 0.20.3 / 4.0.2 / 6.14.1 / 5.11.1 | Apache-2.0 / BSD-3 / MIT / BSD-3 / MIT | |
+| 移动 | decimal / intl / freezed / json_serializable / dio | 3.2.6 / 0.20.3 / 4.0.2 / 6.14.1 / 5.11.1 | Apache-2.0 / BSD-3 / MIT / BSD-3 / MIT | `decimal` 未采用：领域包自写 `Rational`（ADR-008 修订，2026-10-18）；freezed/json_serializable/dio 尚未引入 |
 | 移动（可选） | another_telephony | 0.4.1 | MIT | Android 短信适配器，独立 flavor |
 | 后端 | Python / FastAPI / uvicorn / pydantic | 3.13 / 0.143.2 / 0.54.0 / 2.14.1 | PSF / MIT / BSD-3 / MIT | uvicorn 许可证经 M0 T-002 核对为 BSD-3 |
 | 后端 | SQLAlchemy / Alembic / psycopg | 2.1.4 / 1.20.0 / 3.3.6 | MIT / MIT / LGPL-3.0 | |
