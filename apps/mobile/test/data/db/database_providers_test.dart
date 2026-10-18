@@ -5,6 +5,7 @@ import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_errors.dart';
 import 'package:cardflow/data/db/database_location.dart';
 import 'package:cardflow/data/db/database_providers.dart';
+import 'package:cardflow/data/db/schema.dart';
 import 'package:cardflow/features/diagnostics/app_diagnostics.dart';
 import 'package:cardflow/features/diagnostics/crypto_status.dart';
 import 'package:cardflow/features/diagnostics/database_benchmark_controller.dart';
@@ -91,7 +92,10 @@ void main() {
 
     final db = await container.read(databaseProvider.future);
     expect(db, isA<AppDatabase>());
-    expect((await db.readMeta()).schemaVersion, 1);
+    expect(
+      (await db.readMeta()).schemaVersion,
+      LocalSchema.currentSchemaVersion,
+    );
 
     final status = await container.read(cryptoLibraryStatusProvider.future);
     expect(status, isA<CryptoLibraryReady>());

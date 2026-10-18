@@ -8,7 +8,6 @@ import 'package:cardflow/data/db/database_location.dart';
 import 'package:cardflow/data/db/database_platform.dart';
 import 'package:cardflow/data/db/encryption.dart';
 import 'package:cardflow/data/db/schema.dart';
-import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart' show sqlite3;
@@ -26,48 +25,6 @@ Future<OpenedAppDatabase> _open(
   location: location,
   clock: () => _createdAt,
 );
-
-/// 以 v2 schema 打开（多一张表）的数据库，用来走一遍 drift 的升级路径。
-class _AppDatabaseV2 extends AppDatabase {
-  _AppDatabaseV2(super.executor) : super.forTesting();
-
-  static final Map<int, SchemaMigrationStep> steps = <int, SchemaMigrationStep>{
-    1: (db) => db.customStatement('CREATE TABLE extra (x INTEGER) STRICT'),
-  };
-
-  @override
-  int get schemaVersion => 2;
-
-  @override
-  MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) async => fail('v2 测试库只用于升级已有的 v1 库，不应走 onCreate'),
-    onUpgrade: (m, from, to) =>
-        migrateSchema(this, from: from, to: to, steps: steps),
-  );
-}
-
-QueryExecutor _connect(DatabaseLocation location, String keyHex) =>
-    connectEncryptedDatabase(
-      name: 'cardflow_test',
-      path: databasePathIn(location, appDatabaseFileName),
-      tempDirectory: null,
-      rawKeyLiteral: DatabaseKey.decode(keyHex).rawKeyLiteral(),
-    );
-
-Future<bool> _tableExists(GeneratedDatabase db, String name) async {
-  final rows = await db
-      .customSelect(
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
-        variables: <Variable<Object>>[Variable<String>(name)],
-      )
-      .get();
-  return rows.isNotEmpty;
-}
-
-Future<int> _userVersion(GeneratedDatabase db) async =>
-    (await db.customSelect('PRAGMA user_version').getSingle()).read<int>(
-      'user_version',
-    );
 
 void main() {
   late DatabaseLocation location;
@@ -205,98 +162,5 @@ void main() {
         await ensureForeignKeys(db);
       },
     );
-  });
-
-  group('迁移骨架', () {
-    test('drift 升级路径：v1 库用 v2 打开时按步骤升级，meta 记录新版本', () async {
-      final store = InMemoryDatabaseKeyStore();
-      await (await _open(location, store)).database.close();
-
-      final v2 = _AppDatabaseV2(_connect(location, store.value!));
-      expect((await v2.readMeta()).schemaVersion, 2);
-      expect(await _tableExists(v2, 'extra'), isTrue);
-      await v2.close();
-
-      // 再用 v1 的 App 打开 v2 的库：拒绝降级。
-      await expectOpenError(
-        () => _open(location, store),
-        DatabaseErrorCode.schemaTooNew,
-      );
-    });
-
-    test('缺少某一步 → migration_failed，不做任何改动', () async {
-      final opened = await _open(location, InMemoryDatabaseKeyStore());
-      addTearDown(opened.database.close);
-      await expectOpenError(
-        () => migrateSchema(
-          opened.database,
-          from: 1,
-          to: 3,
-          steps: _AppDatabaseV2.steps,
-        ),
-        DatabaseErrorCode.migrationFailed,
-      );
-      expect((await opened.database.readMeta()).schemaVersion, 1);
-      expect(await _tableExists(opened.database, 'extra'), isFalse);
-    });
-
-    test('某一步出错 → migration_failed，整个迁移回滚', () async {
-      final opened = await _open(location, InMemoryDatabaseKeyStore());
-      addTearDown(opened.database.close);
-      await expectOpenError(
-        () => migrateSchema(
-          opened.database,
-          from: 1,
-          to: 3,
-          steps: <int, SchemaMigrationStep>{
-            1: (db) => db.customStatement('CREATE TABLE extra (x INTEGER)'),
-            2: (db) => db.customStatement('THIS IS NOT SQL'),
-          },
-        ),
-        DatabaseErrorCode.migrationFailed,
-      );
-      expect((await opened.database.readMeta()).schemaVersion, 1);
-      expect(await _tableExists(opened.database, 'extra'), isFalse);
-    });
-
-    test('from > to（库来自更新的 App）→ schema_too_new', () async {
-      final opened = await _open(location, InMemoryDatabaseKeyStore());
-      addTearDown(opened.database.close);
-      await expectOpenError(
-        () => migrateSchema(opened.database, from: 2, to: 1),
-        DatabaseErrorCode.schemaTooNew,
-      );
-    });
-
-    test('迁移与 user_version 在同一事务提交；某一步失败时 user_version 不变', () async {
-      final opened = await _open(location, InMemoryDatabaseKeyStore());
-      addTearDown(opened.database.close);
-      final db = opened.database;
-      expect(await _userVersion(db), 1, reason: '新建库时 createSchema 已在事务里写入');
-
-      await expectOpenError(
-        () => migrateSchema(
-          db,
-          from: 1,
-          to: 2,
-          steps: <int, SchemaMigrationStep>{
-            1: (db) => db.customStatement('THIS IS NOT SQL'),
-          },
-        ),
-        DatabaseErrorCode.migrationFailed,
-      );
-      expect(await _userVersion(db), 1);
-
-      // 直接调用迁移（绕过 drift 自己写 user_version 的那一步）：提交后 user_version 已是新版本，
-      // 即使 App 在 drift 写 user_version 之前退出，下次也不会重跑这一步。
-      await migrateSchema(db, from: 1, to: 2, steps: _AppDatabaseV2.steps);
-      expect(await _userVersion(db), 2);
-      expect((await db.readMeta()).schemaVersion, 2);
-    });
-
-    test('v1 没有登记任何迁移步骤；当前版本为 1', () {
-      expect(LocalSchema.currentSchemaVersion, 1);
-      expect(schemaMigrations, isEmpty);
-    });
   });
 }

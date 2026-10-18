@@ -8,6 +8,11 @@ import 'database_location.dart';
 import 'database_platform.dart';
 import 'encryption.dart';
 import 'schema.dart';
+import 'tables.dart';
+
+export 'tables.dart';
+
+part 'app_database.g.dart';
 
 /// 本机数据库文件名。
 const String appDatabaseFileName = 'cardflow.sqlite';
@@ -26,13 +31,27 @@ final class DatabaseMeta {
 /// 卡序本地数据库（drift）。
 ///
 /// 加密在连接层完成（`encryption.dart` 的 `applyEncryption` 作为 drift 的 `setup`），
-/// 本类只负责 schema 与查询。
+/// 本类只负责 schema 与查询。业务表用 drift 表 DSL 定义（`tables.dart`），代码生成产物
+/// `app_database.g.dart` 随源码提交；索引、触发器与迁移步骤在 `schema.dart`。
 ///
 /// **只能经 [openAppDatabase] 取得实例**（App 代码里通常是 `databaseProvider`）：构造函数是
 /// 私有的，[openAppDatabase] 在同一个库里，先取密钥、建加密连接，再做全部检查。这样仓库代码
 /// 无法拿一个未加密的执行器直接 new 出数据库而绕过检查（审查 §4 第 9 条）。测试用
 /// [AppDatabase.forTesting]（`@visibleForTesting`，在 lib/ 里使用会被静态分析拦下）。
-class AppDatabase extends GeneratedDatabase {
+@DriftDatabase(
+  tables: <Type>[
+    Workspaces,
+    AppSettings,
+    Banks,
+    CreditPools,
+    CreditAccounts,
+    CurrencyAccounts,
+    Cards,
+    BillingRuleVersions,
+    LimitSnapshots,
+  ],
+)
+class AppDatabase extends _$AppDatabase {
   AppDatabase._(super.executor, {DateTime Function()? clock})
     : _clock = clock ?? DateTime.now;
 
@@ -48,12 +67,8 @@ class AppDatabase extends GeneratedDatabase {
   int get schemaVersion => LocalSchema.currentSchemaVersion;
 
   @override
-  Iterable<TableInfo<Table, Object?>> get allTables =>
-      const <TableInfo<Table, Object?>>[];
-
-  @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) => createSchema(this, createdAt: _clock()),
+    onCreate: (m) => createSchema(this, m, createdAt: _clock()),
     onUpgrade: (m, from, to) => migrateSchema(this, from: from, to: to),
     beforeOpen: (details) => ensureForeignKeys(this),
   );

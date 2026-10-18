@@ -6,9 +6,13 @@
 // 错误信息，不会跳过（见 encryption_test.dart 的第一个测试）。
 import 'dart:io';
 
+import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_errors.dart';
 import 'package:cardflow/data/db/database_key.dart';
 import 'package:cardflow/data/db/database_location.dart';
+import 'package:cardflow/data/db/database_platform.dart';
+import 'package:cardflow/data/db/schema.dart';
+import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:flutter_test/flutter_test.dart';
 
 export '../../support/sensitive_text.dart' show containsKeyMaterial;
@@ -101,4 +105,113 @@ Future<DatabaseOpenException> expectOpenError(
     return error;
   }
   fail('expected DatabaseOpenException(${code.code})');
+}
+
+/// 固定的建库时间（测试用）。
+final DateTime testCreatedAt = DateTime.utc(2026, 10, 18, 6, 30);
+
+/// 用 [store] 里的密钥（没有则生成）在 [location] 打开（必要时新建）本机加密数据库。
+Future<OpenedAppDatabase> openTestDatabase(
+  DatabaseLocation location,
+  InMemoryDatabaseKeyStore store, {
+  String fileName = appDatabaseFileName,
+}) => openAppDatabase(
+  keys: DatabaseKeyManager(store),
+  location: location,
+  fileName: fileName,
+  clock: () => testCreatedAt,
+);
+
+/// I-0b（schema v1）的 App 建出的库：只有 meta 表，`user_version = 1`。
+class LegacyV1Database extends GeneratedDatabase {
+  LegacyV1Database(super.executor);
+
+  @override
+  int get schemaVersion => 1;
+
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      const <TableInfo<Table, Object?>>[];
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await customStatement(LocalSchema.createMetaTable);
+      await customStatement(
+        'INSERT INTO meta (id, schema_version, created_at) VALUES (1, 1, ?)',
+        <Object>[testCreatedAt.toIso8601String()],
+      );
+    },
+  );
+}
+
+/// 在 [location] 用密钥 [keyHex] 建一个 v1 的加密库文件并关闭（模拟 I-0b 版本 App 留下的库）。
+Future<void> createV1DatabaseFile(
+  DatabaseLocation location,
+  String keyHex, {
+  String fileName = appDatabaseFileName,
+}) async {
+  final legacy = LegacyV1Database(
+    encryptedConnection(location, keyHex, fileName: fileName),
+  );
+  await legacy.customSelect('SELECT 1').get();
+  await legacy.close();
+}
+
+/// 直接建一个加密连接（不经 openAppDatabase 的检查与迁移），供测试用各种 schema 版本打开。
+QueryExecutor encryptedConnection(
+  DatabaseLocation location,
+  String keyHex, {
+  String fileName = appDatabaseFileName,
+}) => connectEncryptedDatabase(
+  name: 'cardflow_test',
+  path: databasePathIn(location, fileName),
+  tempDirectory: null,
+  rawKeyLiteral: DatabaseKey.decode(keyHex).rawKeyLiteral(),
+);
+
+/// 数据库结构的完整文本描述：`PRAGMA user_version`、sqlite_master 的每一行（类型、名称、所属表、
+/// SQL 原文），以及每张表的列（`table_xinfo`）、外键（`foreign_key_list`）、索引
+/// （`index_list` + `index_xinfo`）。用于比较"新建"与"升级"两条路径。
+Future<String> schemaDump(GeneratedDatabase db) async {
+  final buffer = StringBuffer();
+  Future<List<Map<String, Object?>>> rows(String sql) async =>
+      (await db.customSelect(sql).get()).map((r) => r.data).toList();
+  String line(Map<String, Object?> row) =>
+      row.entries.map((e) => '${e.key}=${e.value}').join(' | ');
+
+  final version = await rows('PRAGMA user_version');
+  buffer.writeln('-- user_version: ${version.single.values.single}');
+  final master = await rows(
+    'SELECT type, name, tbl_name, sql FROM sqlite_master ORDER BY type, name',
+  );
+  for (final row in master) {
+    buffer
+      ..writeln('-- ${row['type']} ${row['name']} (table ${row['tbl_name']})')
+      ..writeln(row['sql'] ?? '(no sql: internal)');
+  }
+  final tables = master
+      .where((r) => r['type'] == 'table')
+      .map((r) => r['name']! as String)
+      .toList();
+  for (final table in tables) {
+    buffer.writeln('-- columns of $table');
+    for (final column in await rows("PRAGMA table_xinfo('$table')")) {
+      buffer.writeln(line(column));
+    }
+    buffer.writeln('-- foreign keys of $table');
+    for (final fk in await rows("PRAGMA foreign_key_list('$table')")) {
+      buffer.writeln(line(fk));
+    }
+    buffer.writeln('-- indexes of $table');
+    for (final index in await rows("PRAGMA index_list('$table')")) {
+      buffer.writeln(line(index));
+      for (final column in await rows(
+        "PRAGMA index_xinfo('${index['name']}')",
+      )) {
+        buffer.writeln('    ${line(column)}');
+      }
+    }
+  }
+  return buffer.toString();
 }
