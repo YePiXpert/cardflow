@@ -22,7 +22,7 @@
 | T-014 | 日志 PII 扫描器与 CI 任务 | security §4 | `tools/pii_scan.py`、CI 配置 | 注入含金额的日志样本被检出 | S | Opus | T-001 |
 | T-015 | CI 流水线（lint、测试、迁移往返、fixture、pip-audit） | test-plan §10 | `.github/workflows/*` 或等价 | 全绿一次记录 | M | Opus | T-003~T-007 |
 | T-020 | Flutter 工程骨架：五 tab 导航、Riverpod、go_router、主题 token、金额组件；Bundle ID/applicationId 与签名配置参数化 | ADR-001、ADR-015、UI 规格 §设计规范 | `apps/mobile/` | `flutter analyze` 零警告；空页面可导航；仓库内无签名密钥、证书与团队 ID | M | Opus（待环境） | T-001 |
-| T-021 | PoC-1 加密 drift（sqlite3 钩子 sqlite3mc）真机验证 | ADR-001、S20/S21 | `apps/mobile/lib/data/db/*`、`evidence/m0/poc1-*.md` | 真机 `PRAGMA cipher_version` 非空；10 万行冷启动 <1 s；失败则记录并切换回退 | L | Opus（待环境） | T-020 |
+| T-021 | PoC-1 加密 drift（sqlite3 钩子 sqlite3mc）真机验证 | ADR-001、S20/S21 | `apps/mobile/lib/data/db/*`、`evidence/m0/poc1-*.md` | 真机加密自检通过（ADR-001）；10 万行冷启动 <1 s；失败则记录并切换回退 | L | Opus（待环境） | T-020 |
 | T-022 | Dart 领域层移植：Money/EventTime、billing、cash timeline、verifier | PoC 代码、engine-spec §8 | `apps/mobile/packages/domain/` + 测试 | F-18 fixture 在 Dart 运行器通过 | L | Opus（待环境） | T-004/T-020 |
 | T-023 | 有限搜索（K≤3，候选切点，≤2 s）与"非证明"标注 | engine-spec §8 | domain 包 | 样本返回 A8000+C2000 可行；K=1 返回"本地未找到" | M | Opus（待环境） | T-022 |
 | T-024 | PoC-2 文件接入（file_picker、receive_sharing_intent 1.9.0 UIScene） | ADR-009、ADR-015 | `apps/mobile/lib/features/imports/intake/*`、证据 | iOS/Android 接收 PDF/.eml/图片进入导入中心；iOS 分享扩展在用户自签构建上验证，不可用则启用"用其他应用打开"回退并记录 | M | Opus（待环境） | T-020 |

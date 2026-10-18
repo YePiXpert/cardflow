@@ -149,7 +149,9 @@ Compose 服务：`api`（含 /admin 静态）、`worker`、`db`（postgres:18.6-
 | 移动 | Flutter / Dart | 3.47.7 / 3.13.5 | BSD-3（未逐一核验） | 最低 iOS 15、Android API 24 |
 | 移动 | flutter_riverpod / riverpod_annotation / riverpod_generator | 3.4.3 / 4.0.7 / 4.0.9 | MIT | 状态管理 |
 | 移动 | go_router | 18.1.0 | BSD-3 | feature-complete，仅修复 |
-| 移动 | drift / drift_flutter / sqlite3 | 2.35.2 / 0.3.1 / 3.7.1 | MIT | 加密经 sqlite3 构建钩子（ADR-001） |
+| 移动 | drift / drift_flutter / sqlite3 | 2.35.2 / 0.3.1 / 3.7.1 | MIT | 加密经 sqlite3 构建钩子（ADR-001）；钩子从 GitHub release 下载预编译 sqlite3mc 并校验 sha256 |
+| 移动（dev） | drift_dev / build_runner / flutter_lints / riverpod_generator | 2.35.1 / 2.16.2 / 6.0.0 / 4.0.9 | MIT / BSD-3 | 2026-10-18 登记；build_runner 2.17 与 riverpod_generator 4.0.9 冲突 |
+| 移动 | crypto（dart.dev） | 3.x 最新 | BSD-3 | 2026-10-18 登记：Dart fixture 运行器计算规范化 JSON 的 sha256 |
 | 移动 | flutter_secure_storage | 11.2.0 | BSD-3 | 密钥存储 |
 | 移动 | local_auth | 3.0.2 | BSD-3 | 系统生物识别 |
 | 移动 | flutter_local_notifications | 22.3.2 | BSD-3 | Android 14 精确闹钟变更；iOS 26 后需 UIScene |
@@ -176,7 +178,7 @@ Compose 服务：`api`（含 /admin 静态）、`worker`、`db`（postgres:18.6-
 
 | 编号 | 风险 | PoC / 退出条件 |
 |---|---|---|
-| PoC-1 | drift 加密走 sqlite3 构建钩子（sqlite3mc）在 iOS/Android 真机的可用性与和其他插件的符号冲突 | 真机 `PRAGMA cipher_version` 返回非空；冷启动打开 10 万行库 <1 s；失败则回退 sqflite_sqlcipher |
+| PoC-1 | drift 加密走 sqlite3 构建钩子（sqlite3mc）在 iOS/Android 真机的可用性与和其他插件的符号冲突 | 真机加密自检通过（见 ADR-001；sqlite3mc 无 `cipher_version`）；10 万行库重新打开 + COUNT <1 s；失败则回退 sqflite_sqlcipher |
 | PoC-2 | 系统分享接收（receive_sharing_intent 1.9.0 需 UIScene/SwiftPM） | iOS/Android 都能接收 PDF/.eml/图片进入导入中心 |
 | PoC-3 | ML Kit 中文 OCR 体积与准确率 | 中文账单截图字段识别率 ≥90%（样本集）；包体增量记录 |
 | PoC-4 | 本地通知在 Android 14+/iOS 的调度、撤销、静默 | 修改到期日后旧通知撤销；静默时段不弹 |
