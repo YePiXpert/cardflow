@@ -86,5 +86,11 @@ CI 设计：
 | P-1 | GitHub 仓库 | **已定**：`YePiXpert/cardflow`（2026-10-18 创建） |
 | P-2 | 仓库可见性 | **已定**：公开（用户决定；macOS 构建分钟不计费）。因此仓库内不得出现宿主服务清单、端口清单、口令、令牌；首次推送前已做清理与扫描 |
 | P-3 | Bundle ID（之后不可改） | **已定**：`li.yep.cardflow` |
-| P-4 | 停止服务器上的后端部署与开发库（保留卷） | **执行中**（2026-10-18） |
-| P-5 | 服务器安装 Flutter SDK | **执行中**（2026-10-18） |
+| P-4 | 停止服务器上的后端部署与开发库（保留卷） | **已完成**（2026-10-18；卷 cardflow_pgdata、cardflow_attachments、cardflow-dev_pgdata 保留） |
+| P-5 | 服务器安装 Flutter SDK | **已完成**（2026-10-18，Flutter 3.47.7 stable，/opt/flutter-sdk；只用于 analyze/test/web 编译检查） |
+
+## 9. 执行记录
+
+| 日期 | 事项 |
+|---|---|
+| 2026-10-18 | 仓库 `YePiXpert/cardflow` 创建并推送首个提交（377 文件；宿主服务清单已脱敏；无 Claude 署名）；后端两个 Compose 项目停止；Flutter 3.47.7 安装；I-0a（骨架 + iOS 配置 + CI 未签名 IPA）派发 |
