@@ -94,3 +94,4 @@ CI 设计：
 | 日期 | 事项 |
 |---|---|
 | 2026-10-18 | 仓库 `YePiXpert/cardflow` 创建并推送首个提交（377 文件；宿主服务清单已脱敏；无 Claude 署名）；后端两个 Compose 项目停止；Flutter 3.47.7 安装；I-0a（骨架 + iOS 配置 + CI 未签名 IPA）派发 |
+| 2026-10-18 | I-0a 完成并验收：analyze 零输出、104 项测试、CI dart job 两次绿、ios-unsigned 首次即成功（Xcode 26.6，3m51s）；IPA `cardflow-unsigned-eaed4a8`（Bundle ID、MinimumOSVersion 15.0 核对无误）。I-0b 派发 |

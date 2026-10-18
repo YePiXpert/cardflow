@@ -14,7 +14,7 @@
 | `docs/` | 规划文档（唯一事实来源） | 已完成 |
 | `poc/engine_reference/` | 参考引擎 PoC（golden-fixture 预言机，非生产代码） | 已验证 |
 | `services/api/` | 服务端：FastAPI 模块化单体 + worker + CLI；Python 3.13，uv 管理，包 `cardflow`（平铺布局，模块划分见 architecture §4） | M0 骨架（T-002） |
-| `apps/mobile/` | Flutter 移动端（占位：待 Flutter 环境，见 external-dependencies B-06、ADR-015） | 未实现 |
+| `apps/mobile/` | Flutter 移动端（iOS 优先；骨架、主题、金额组件、诊断页；CI 出未签名 IPA） | I-0a 已验证 |
 | `apps/admin/` | Web 后台 React SPA（占位，T-031） | 未实现 |
 | `packages/rules-protocol/` | 规则协议 v1 JSON Schema 与运行器（占位，T-004） | 未实现 |
 | `deploy/` | Compose 文件：`compose.dev.yaml` = 开发库（项目名 `cardflow-dev`，仅 127.0.0.1:18432）；`compose.yaml` = 自托管部署（项目名 `cardflow`，仅 127.0.0.1:18080，见下文"部署"）；`.env.example`；`secrets/`（只有 README 入库） | 开发库可用；部署可用（T-012） |

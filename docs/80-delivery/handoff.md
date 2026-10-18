@@ -1,6 +1,6 @@
 # 接续说明（handoff）
 
-> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-18。
+> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-18（I-0a 验收后）。
 
 ## 1. 当前状态
 
@@ -9,19 +9,20 @@
 - Flutter 3.47.7 stable 在 `/opt/flutter-sdk`（`export PATH=/opt/flutter-sdk/bin:$PATH`）；本机只能 analyze / test / build web。
 - iOS 构建：GitHub Actions `macos-26` runner，`flutter build ios --release --no-codesign` → 未签名 IPA artifact；用户自己签名安装。Bundle ID `li.yep.cardflow`（不可改）。
 - 服务器上的 `cardflow`、`cardflow-dev` Compose 项目已停止，卷保留（`cardflow_pgdata`、`cardflow_attachments`、`cardflow-dev_pgdata`）。
-- 进行中：**I-0a**（Flutter 骨架 + iOS 配置 + CI 出第一个未签名 IPA），简报见 `briefs/I0-a.md`，证据目录 `evidence/i0/I0-a/`。
+- 已完成：**I-0a**（Flutter 骨架、主题、金额组件、诊断页；iOS 配置；CI）。第一个未签名 IPA：https://github.com/YePiXpert/cardflow/actions/runs/39098193527/artifacts/12125766769（源码 eaed4a8，sha256 53e46d9e…，2026-11-01 过期）。证据 `evidence/i0/I0-a/`。
+- 进行中：**I-0b** 加密本地库 PoC-1 + 诊断页登记加密状态 + 第二个 IPA，简报见 `briefs/I0-b.md`，证据目录 `evidence/i0/I0-b/`。
 
-## 2. 如何判断 I-0a 做到哪了
+## 2. 如何判断进行中任务做到哪了
 
-1. `git log --oneline -10` 与 `git status`：看 apps/mobile、.github/workflows/mobile.yml 是否已提交。
-2. `ls evidence/i0/I0-a/`：按简报的验收清单核对哪些证据已存在。
+1. `git log --oneline -10` 与 `git status`：看该任务路径是否已提交。
+2. `ls evidence/i0/<任务>/`：按简报的验收清单核对哪些证据已存在。
 3. `gh run list --workflow mobile.yml --limit 5`：看 dart / ios-unsigned job 是否跑过、是否绿。
-4. 若代理被用量上限打断：同一会话用 SendMessage 续跑；新会话则按 `briefs/I0-a.md` 重新派发，并在简报开头注明"先核对磁盘现状，不要重复创建"。
+4. 若代理被用量上限打断：同一会话用 SendMessage 续跑；新会话则按 `briefs/<任务>.md` 重新派发，并在简报开头注明"先核对磁盘现状，不要重复创建"。
 
 ## 3. 下一步（按顺序，一次一个代理）
 
-1. 核对 I-0a 的 IPA：`unzip -l` 结构为 `Payload/Runner.app`，Info.plist 的 CFBundleIdentifier=li.yep.cardflow、MinimumOSVersion=15.0。把 artifact 链接给用户，等用户签名安装反馈（能装、能打开、诊断页能复制）。
-2. **I-0b**：加密本地库 PoC-1（drift + sqlite3 构建钩子 sqlite3mc；运行时 `PRAGMA cipher_version` 非空；密钥存 Keychain WhenUnlockedThisDeviceOnly；失败回退 sqflite_sqlcipher）+ 诊断页登记加密状态。出第二个 IPA 让用户回传 cipher_version。
+1. 等用户对第一个 IPA 的签名安装反馈（能装、能打开、诊断页能复制）；不阻塞 I-0b。
+2. **I-0b**（进行中）：加密本地库 PoC-1 + 诊断页登记加密状态 + 数据库基准按钮；出第二个 IPA 让用户回传 cipher_version 与基准毫秒数。
 3. **I-0c**：Dart 领域层移植（Money/EventTime、账期、现金时间线、验证器、有限搜索 K≤3）+ Dart fixture 运行器：读 `packages/rules-protocol/schema/v1`、`fixtures/*.v1.json`，复现 README 的规范化哈希（F-18 的 `protocol_input_hash` = `ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8`），cycles/verify 两类 case 全过；Python 引擎 1.1.0 是对照基准，语义以 `docs/30-rules-engine/engine-spec.md` §12/§12.1 为准。
 4. 之后进入 I-1（卡片、账期、现金流），见 `ios-first-plan.md` §3。
 
@@ -37,5 +38,5 @@
 
 ## 5. 待用户的事
 
-- I-0a 的 IPA 签名安装结果（能否安装、打开、复制诊断信息）。
+- 第一个 IPA 的签名安装结果（能否安装、打开、复制诊断信息；诊断页"源码版本"应为 eaed4a8）。签名时嵌套的 Frameworks 要一并重签。
 - 以后每个阶段的真机反馈：诊断页导出 + 问题描述；崩溃时附 iPhone"设置 › 隐私与安全性 › 分析与改进"里的崩溃日志。
