@@ -2,6 +2,9 @@
 #
 # dart（ubuntu-latest）：push / pull_request 且移动端或本文件有变动时运行；
 #   格式检查 → 静态分析 → 测试 → Web 编译（只作编译烟雾测试，不发布）。
+#   测试会运行 sqlite3 包的构建钩子（pubspec.yaml 的 hooks.user_defines 选 sqlite3mc），
+#   钩子从 sqlite3.dart 的 GitHub release 下载预编译的 SQLite3MultipleCiphers 并校验 sha256；
+#   加密库测试用的就是这份真实的库。
 #
 # ios-unsigned（macos-26）：只在手动触发（workflow_dispatch）或推送 ios-v* 标签时运行；
 #   flutter build ios --release --no-codesign → 把 Runner.app 打成未签名 IPA → 上传为 artifact。
@@ -151,6 +154,18 @@ jobs:
           test -f Payload/Runner.app/PrivacyInfo.xcprivacy || { echo "::error::PrivacyInfo.xcprivacy missing from Runner.app"; exit 1; }
           test -d Payload/Runner.app/Frameworks/Flutter.framework
           test -d Payload/Runner.app/Frameworks/App.framework
+          ls Payload/Runner.app/Frameworks
+          # 加密本地库（I-0b）：sqlite3 构建钩子打进包里的必须是 SQLite3MultipleCiphers。
+          cipher_fw=""
+          for fw in Payload/Runner.app/Frameworks/*.framework; do
+            case "$(basename "$fw")" in App.framework|Flutter.framework) continue ;; esac
+            bin="$fw/$(basename "$fw" .framework)"
+            if [ -f "$bin" ] && grep -aq "SQLite3 Multiple Ciphers" "$bin"; then
+              cipher_fw="$(basename "$fw")"
+            fi
+          done
+          test -n "$cipher_fw" || { echo "::error::no framework in Runner.app contains SQLite3 Multiple Ciphers (check hooks.user_defines in pubspec.yaml)"; exit 1; }
+          echo "SQLite3MultipleCiphers framework: $cipher_fw"
           unzip -l "$name" | tail -n 1
           size="$(stat -f %z "$name")"
           sha256="$(shasum -a 256 "$name" | cut -d ' ' -f 1)"
@@ -168,6 +183,7 @@ jobs:
             echo "| CFBundleShortVersionString | $version |"
             echo "| CFBundleVersion | $build |"
             echo "| MinimumOSVersion | $min_os |"
+            echo "| SQLite3MultipleCiphers | \`$cipher_fw\` |"
             echo "| source | ${GITHUB_SHA} |"
           } >> "$GITHUB_STEP_SUMMARY"
 
