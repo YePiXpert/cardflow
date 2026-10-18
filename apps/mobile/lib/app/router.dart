@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../features/cards/cards_page.dart';
+import '../features/cards/new_card_page.dart';
 import '../features/diagnostics/diagnostics_page.dart';
 import '../features/onboarding/welcome_page.dart';
 import '../features/overview/overview_page.dart';
@@ -94,6 +95,17 @@ GoRouter createAppRouter({
                 path: AppRoutes.cards,
                 pageBuilder: (context, state) =>
                     _page(state, const CardsPage()),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'new',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      const NewCardPage(),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

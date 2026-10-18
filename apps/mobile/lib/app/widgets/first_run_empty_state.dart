@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
 
-/// 首次空白态里的一个操作。`onPressed` 为 null 表示该功能尚未开放。
+/// 首次空白态里的一个操作。`onPressed` 为 null 表示该功能尚未开放，[stage] 注明在哪个阶段提供。
 @immutable
 class EmptyStateAction {
-  const EmptyStateAction({required this.label, this.onPressed});
+  const EmptyStateAction({required this.label, this.onPressed, this.stage});
 
   final String label;
   final VoidCallback? onPressed;
+
+  /// 未开放时所属的阶段，如"I-3 提供"。
+  final String? stage;
 }
 
-/// 本版本尚未开放的操作旁边的统一说明。
-const String notYetAvailableNote = '尚未开放：本版本只用于验证安装与导航，功能将在后续版本提供。';
+/// 未开放、又没有注明阶段的操作旁边的统一说明。
+const String notYetAvailableNote = '尚未开放：功能将在后续版本提供。';
 
 /// ui-spec §2"首次空白"：图标 + 页面文案 + 一句用途 + 主操作。
 ///
@@ -44,7 +47,9 @@ class FirstRunEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = CardFlowColors.of(context);
-    final hasUnavailable = actions.any((a) => a.onPressed == null);
+    final hasUnavailable = actions.any(
+      (a) => a.onPressed == null && a.stage == null,
+    );
     return SingleChildScrollView(
       padding: const EdgeInsets.all(CfSpace.md),
       child: Column(
@@ -84,6 +89,17 @@ class FirstRunEmptyState extends StatelessWidget {
               OutlinedButton(
                 onPressed: actions[i].onPressed,
                 child: Text(actions[i].label, textAlign: TextAlign.center),
+              ),
+            if (actions[i].onPressed == null && actions[i].stage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: CfSpace.xxs),
+                child: Text(
+                  '${actions[i].label}：${actions[i].stage}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
           ],
           if (hasUnavailable) ...<Widget>[
