@@ -158,6 +158,50 @@ Future<void> createV1DatabaseFile(
   await legacy.close();
 }
 
+/// I-1a（schema v2）的 App 建出的库：meta + 冻结的 v2 结构（`SchemaV2`，与当时 drift 生成的一字不差），
+/// `user_version = 2`。[seed] 在建好结构后写入 v2 的数据（升级后应原样保留）。
+class LegacyV2Database extends GeneratedDatabase {
+  LegacyV2Database(super.executor, {this.seed = const <String>[]});
+
+  final List<String> seed;
+
+  @override
+  int get schemaVersion => 2;
+
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      const <TableInfo<Table, Object?>>[];
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await customStatement(LocalSchema.createMetaTable);
+      await customStatement(
+        'INSERT INTO meta (id, schema_version, created_at) VALUES (1, 2, ?)',
+        <Object>[testCreatedAt.toIso8601String()],
+      );
+      for (final statement in <String>[...SchemaV2.migration, ...seed]) {
+        await customStatement(statement);
+      }
+    },
+  );
+}
+
+/// 在 [location] 用密钥 [keyHex] 建一个 v2 的加密库文件并关闭（模拟 I-1a 版本 App 留下的库）。
+Future<void> createV2DatabaseFile(
+  DatabaseLocation location,
+  String keyHex, {
+  String fileName = appDatabaseFileName,
+  List<String> seed = const <String>[],
+}) async {
+  final legacy = LegacyV2Database(
+    encryptedConnection(location, keyHex, fileName: fileName),
+    seed: seed,
+  );
+  await legacy.customSelect('SELECT 1').get();
+  await legacy.close();
+}
+
 /// 直接建一个加密连接（不经 openAppDatabase 的检查与迁移），供测试用各种 schema 版本打开。
 QueryExecutor encryptedConnection(
   DatabaseLocation location,

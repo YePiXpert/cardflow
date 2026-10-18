@@ -95,6 +95,7 @@ void main() {
         )
         .get();
     expect(checks.map((r) => r.read<String>('name')).toSet(), <String>{
+      'cash_accounts',
       'credit_pools',
       'currency_accounts',
     });

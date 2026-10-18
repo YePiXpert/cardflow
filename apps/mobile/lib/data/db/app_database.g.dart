@@ -6338,6 +6338,5808 @@ class LimitSnapshotsCompanion extends UpdateCompanion<LimitSnapshotRow> {
   }
 }
 
+class $CashAccountsTable extends CashAccounts
+    with TableInfo<$CashAccountsTable, CashAccountRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CashAccountsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyMeta = const VerificationMeta(
+    'currency',
+  );
+  @override
+  late final GeneratedColumn<String> currency = GeneratedColumn<String>(
+    'currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usableForRepaymentMeta =
+      const VerificationMeta('usableForRepayment');
+  @override
+  late final GeneratedColumn<bool> usableForRepayment = GeneratedColumn<bool>(
+    'usable_for_repayment',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("usable_for_repayment" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _availableFromMeta = const VerificationMeta(
+    'availableFrom',
+  );
+  @override
+  late final GeneratedColumn<String> availableFrom = GeneratedColumn<String>(
+    'available_from',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reserveFloorMinorMeta = const VerificationMeta(
+    'reserveFloorMinor',
+  );
+  @override
+  late final GeneratedColumn<int> reserveFloorMinor = GeneratedColumn<int>(
+    'reserve_floor_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('active'),
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    name,
+    currency,
+    kind,
+    usableForRepayment,
+    availableFrom,
+    reserveFloorMinor,
+    status,
+    rowVersion,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cash_accounts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CashAccountRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('currency')) {
+      context.handle(
+        _currencyMeta,
+        currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('usable_for_repayment')) {
+      context.handle(
+        _usableForRepaymentMeta,
+        usableForRepayment.isAcceptableOrUnknown(
+          data['usable_for_repayment']!,
+          _usableForRepaymentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('available_from')) {
+      context.handle(
+        _availableFromMeta,
+        availableFrom.isAcceptableOrUnknown(
+          data['available_from']!,
+          _availableFromMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reserve_floor_minor')) {
+      context.handle(
+        _reserveFloorMinorMeta,
+        reserveFloorMinor.isAcceptableOrUnknown(
+          data['reserve_floor_minor']!,
+          _reserveFloorMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+  ];
+  @override
+  CashAccountRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CashAccountRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      currency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      usableForRepayment: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}usable_for_repayment'],
+      )!,
+      availableFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}available_from'],
+      ),
+      reserveFloorMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reserve_floor_minor'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $CashAccountsTable createAlias(String alias) {
+    return $CashAccountsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class CashAccountRow extends DataClass implements Insertable<CashAccountRow> {
+  final String id;
+  final String workspaceId;
+  final String name;
+  final String currency;
+
+  /// `bank` / `wallet` / `wealth` / `restricted`。
+  final String kind;
+  final bool usableForRepayment;
+
+  /// 理财/受限资金可用于还款的起始日（`YYYY-MM-DD`）；空 = 未设置。
+  final String? availableFrom;
+
+  /// 用户最低储备（硬约束，≥0）。
+  final int reserveFloorMinor;
+
+  /// `active` / `closed`（已停用：不进入资金日历，历史保留）。
+  final String status;
+  final int rowVersion;
+  final String createdAt;
+  final String updatedAt;
+  final String? deletedAt;
+  const CashAccountRow({
+    required this.id,
+    required this.workspaceId,
+    required this.name,
+    required this.currency,
+    required this.kind,
+    required this.usableForRepayment,
+    this.availableFrom,
+    required this.reserveFloorMinor,
+    required this.status,
+    required this.rowVersion,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['name'] = Variable<String>(name);
+    map['currency'] = Variable<String>(currency);
+    map['kind'] = Variable<String>(kind);
+    map['usable_for_repayment'] = Variable<bool>(usableForRepayment);
+    if (!nullToAbsent || availableFrom != null) {
+      map['available_from'] = Variable<String>(availableFrom);
+    }
+    map['reserve_floor_minor'] = Variable<int>(reserveFloorMinor);
+    map['status'] = Variable<String>(status);
+    map['row_version'] = Variable<int>(rowVersion);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<String>(deletedAt);
+    }
+    return map;
+  }
+
+  CashAccountsCompanion toCompanion(bool nullToAbsent) {
+    return CashAccountsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      name: Value(name),
+      currency: Value(currency),
+      kind: Value(kind),
+      usableForRepayment: Value(usableForRepayment),
+      availableFrom: availableFrom == null && nullToAbsent
+          ? const Value.absent()
+          : Value(availableFrom),
+      reserveFloorMinor: Value(reserveFloorMinor),
+      status: Value(status),
+      rowVersion: Value(rowVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory CashAccountRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CashAccountRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      name: serializer.fromJson<String>(json['name']),
+      currency: serializer.fromJson<String>(json['currency']),
+      kind: serializer.fromJson<String>(json['kind']),
+      usableForRepayment: serializer.fromJson<bool>(json['usableForRepayment']),
+      availableFrom: serializer.fromJson<String?>(json['availableFrom']),
+      reserveFloorMinor: serializer.fromJson<int>(json['reserveFloorMinor']),
+      status: serializer.fromJson<String>(json['status']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'name': serializer.toJson<String>(name),
+      'currency': serializer.toJson<String>(currency),
+      'kind': serializer.toJson<String>(kind),
+      'usableForRepayment': serializer.toJson<bool>(usableForRepayment),
+      'availableFrom': serializer.toJson<String?>(availableFrom),
+      'reserveFloorMinor': serializer.toJson<int>(reserveFloorMinor),
+      'status': serializer.toJson<String>(status),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
+    };
+  }
+
+  CashAccountRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? name,
+    String? currency,
+    String? kind,
+    bool? usableForRepayment,
+    Value<String?> availableFrom = const Value.absent(),
+    int? reserveFloorMinor,
+    String? status,
+    int? rowVersion,
+    String? createdAt,
+    String? updatedAt,
+    Value<String?> deletedAt = const Value.absent(),
+  }) => CashAccountRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    name: name ?? this.name,
+    currency: currency ?? this.currency,
+    kind: kind ?? this.kind,
+    usableForRepayment: usableForRepayment ?? this.usableForRepayment,
+    availableFrom: availableFrom.present
+        ? availableFrom.value
+        : this.availableFrom,
+    reserveFloorMinor: reserveFloorMinor ?? this.reserveFloorMinor,
+    status: status ?? this.status,
+    rowVersion: rowVersion ?? this.rowVersion,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  CashAccountRow copyWithCompanion(CashAccountsCompanion data) {
+    return CashAccountRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      name: data.name.present ? data.name.value : this.name,
+      currency: data.currency.present ? data.currency.value : this.currency,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      usableForRepayment: data.usableForRepayment.present
+          ? data.usableForRepayment.value
+          : this.usableForRepayment,
+      availableFrom: data.availableFrom.present
+          ? data.availableFrom.value
+          : this.availableFrom,
+      reserveFloorMinor: data.reserveFloorMinor.present
+          ? data.reserveFloorMinor.value
+          : this.reserveFloorMinor,
+      status: data.status.present ? data.status.value : this.status,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CashAccountRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('name: $name, ')
+          ..write('currency: $currency, ')
+          ..write('kind: $kind, ')
+          ..write('usableForRepayment: $usableForRepayment, ')
+          ..write('availableFrom: $availableFrom, ')
+          ..write('reserveFloorMinor: $reserveFloorMinor, ')
+          ..write('status: $status, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    name,
+    currency,
+    kind,
+    usableForRepayment,
+    availableFrom,
+    reserveFloorMinor,
+    status,
+    rowVersion,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CashAccountRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.name == this.name &&
+          other.currency == this.currency &&
+          other.kind == this.kind &&
+          other.usableForRepayment == this.usableForRepayment &&
+          other.availableFrom == this.availableFrom &&
+          other.reserveFloorMinor == this.reserveFloorMinor &&
+          other.status == this.status &&
+          other.rowVersion == this.rowVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class CashAccountsCompanion extends UpdateCompanion<CashAccountRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> name;
+  final Value<String> currency;
+  final Value<String> kind;
+  final Value<bool> usableForRepayment;
+  final Value<String?> availableFrom;
+  final Value<int> reserveFloorMinor;
+  final Value<String> status;
+  final Value<int> rowVersion;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<String?> deletedAt;
+  final Value<int> rowid;
+  const CashAccountsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.currency = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.usableForRepayment = const Value.absent(),
+    this.availableFrom = const Value.absent(),
+    this.reserveFloorMinor = const Value.absent(),
+    this.status = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CashAccountsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String name,
+    required String currency,
+    required String kind,
+    this.usableForRepayment = const Value.absent(),
+    this.availableFrom = const Value.absent(),
+    this.reserveFloorMinor = const Value.absent(),
+    this.status = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       name = Value(name),
+       currency = Value(currency),
+       kind = Value(kind),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<CashAccountRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? name,
+    Expression<String>? currency,
+    Expression<String>? kind,
+    Expression<bool>? usableForRepayment,
+    Expression<String>? availableFrom,
+    Expression<int>? reserveFloorMinor,
+    Expression<String>? status,
+    Expression<int>? rowVersion,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<String>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (name != null) 'name': name,
+      if (currency != null) 'currency': currency,
+      if (kind != null) 'kind': kind,
+      if (usableForRepayment != null)
+        'usable_for_repayment': usableForRepayment,
+      if (availableFrom != null) 'available_from': availableFrom,
+      if (reserveFloorMinor != null) 'reserve_floor_minor': reserveFloorMinor,
+      if (status != null) 'status': status,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CashAccountsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? name,
+    Value<String>? currency,
+    Value<String>? kind,
+    Value<bool>? usableForRepayment,
+    Value<String?>? availableFrom,
+    Value<int>? reserveFloorMinor,
+    Value<String>? status,
+    Value<int>? rowVersion,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<String?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return CashAccountsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      name: name ?? this.name,
+      currency: currency ?? this.currency,
+      kind: kind ?? this.kind,
+      usableForRepayment: usableForRepayment ?? this.usableForRepayment,
+      availableFrom: availableFrom ?? this.availableFrom,
+      reserveFloorMinor: reserveFloorMinor ?? this.reserveFloorMinor,
+      status: status ?? this.status,
+      rowVersion: rowVersion ?? this.rowVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (currency.present) {
+      map['currency'] = Variable<String>(currency.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (usableForRepayment.present) {
+      map['usable_for_repayment'] = Variable<bool>(usableForRepayment.value);
+    }
+    if (availableFrom.present) {
+      map['available_from'] = Variable<String>(availableFrom.value);
+    }
+    if (reserveFloorMinor.present) {
+      map['reserve_floor_minor'] = Variable<int>(reserveFloorMinor.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CashAccountsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('name: $name, ')
+          ..write('currency: $currency, ')
+          ..write('kind: $kind, ')
+          ..write('usableForRepayment: $usableForRepayment, ')
+          ..write('availableFrom: $availableFrom, ')
+          ..write('reserveFloorMinor: $reserveFloorMinor, ')
+          ..write('status: $status, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CashBalanceSnapshotsTable extends CashBalanceSnapshots
+    with TableInfo<$CashBalanceSnapshotsTable, CashSnapshotRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CashBalanceSnapshotsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cashAccountIdMeta = const VerificationMeta(
+    'cashAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> cashAccountId = GeneratedColumn<String>(
+    'cash_account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _balanceMinorMeta = const VerificationMeta(
+    'balanceMinor',
+  );
+  @override
+  late final GeneratedColumn<int> balanceMinor = GeneratedColumn<int>(
+    'balance_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _balanceAsOfMeta = const VerificationMeta(
+    'balanceAsOf',
+  );
+  @override
+  late final GeneratedColumn<String> balanceAsOf = GeneratedColumn<String>(
+    'balance_as_of',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _observedAtMeta = const VerificationMeta(
+    'observedAt',
+  );
+  @override
+  late final GeneratedColumn<String> observedAt = GeneratedColumn<String>(
+    'observed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceKindMeta = const VerificationMeta(
+    'sourceKind',
+  );
+  @override
+  late final GeneratedColumn<String> sourceKind = GeneratedColumn<String>(
+    'source_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _confirmationLevelMeta = const VerificationMeta(
+    'confirmationLevel',
+  );
+  @override
+  late final GeneratedColumn<String> confirmationLevel =
+      GeneratedColumn<String>(
+        'confirmation_level',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _recordedAtMeta = const VerificationMeta(
+    'recordedAt',
+  );
+  @override
+  late final GeneratedColumn<String> recordedAt = GeneratedColumn<String>(
+    'recorded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    cashAccountId,
+    balanceMinor,
+    balanceAsOf,
+    observedAt,
+    sourceKind,
+    confirmationLevel,
+    recordedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cash_balance_snapshots';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CashSnapshotRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('cash_account_id')) {
+      context.handle(
+        _cashAccountIdMeta,
+        cashAccountId.isAcceptableOrUnknown(
+          data['cash_account_id']!,
+          _cashAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_cashAccountIdMeta);
+    }
+    if (data.containsKey('balance_minor')) {
+      context.handle(
+        _balanceMinorMeta,
+        balanceMinor.isAcceptableOrUnknown(
+          data['balance_minor']!,
+          _balanceMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_balanceMinorMeta);
+    }
+    if (data.containsKey('balance_as_of')) {
+      context.handle(
+        _balanceAsOfMeta,
+        balanceAsOf.isAcceptableOrUnknown(
+          data['balance_as_of']!,
+          _balanceAsOfMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_balanceAsOfMeta);
+    }
+    if (data.containsKey('observed_at')) {
+      context.handle(
+        _observedAtMeta,
+        observedAt.isAcceptableOrUnknown(data['observed_at']!, _observedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_observedAtMeta);
+    }
+    if (data.containsKey('source_kind')) {
+      context.handle(
+        _sourceKindMeta,
+        sourceKind.isAcceptableOrUnknown(data['source_kind']!, _sourceKindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceKindMeta);
+    }
+    if (data.containsKey('confirmation_level')) {
+      context.handle(
+        _confirmationLevelMeta,
+        confirmationLevel.isAcceptableOrUnknown(
+          data['confirmation_level']!,
+          _confirmationLevelMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_confirmationLevelMeta);
+    }
+    if (data.containsKey('recorded_at')) {
+      context.handle(
+        _recordedAtMeta,
+        recordedAt.isAcceptableOrUnknown(data['recorded_at']!, _recordedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, cashAccountId, id},
+  ];
+  @override
+  CashSnapshotRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CashSnapshotRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      cashAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cash_account_id'],
+      )!,
+      balanceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}balance_minor'],
+      )!,
+      balanceAsOf: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}balance_as_of'],
+      )!,
+      observedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}observed_at'],
+      )!,
+      sourceKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_kind'],
+      )!,
+      confirmationLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}confirmation_level'],
+      )!,
+      recordedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CashBalanceSnapshotsTable createAlias(String alias) {
+    return $CashBalanceSnapshotsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class CashSnapshotRow extends DataClass implements Insertable<CashSnapshotRow> {
+  final String id;
+  final String workspaceId;
+  final String cashAccountId;
+
+  /// 余额（最小单位，可为负：透支）。
+  final int balanceMinor;
+
+  /// `YYYY-MM-DD`。
+  final String balanceAsOf;
+
+  /// RFC 3339。
+  final String observedAt;
+
+  /// `bank_app` / `statement` / `user` / `import`。
+  final String sourceKind;
+
+  /// `system_estimated` / `user_confirmed` / `bank_confirmed`。
+  final String confirmationLevel;
+  final String recordedAt;
+  const CashSnapshotRow({
+    required this.id,
+    required this.workspaceId,
+    required this.cashAccountId,
+    required this.balanceMinor,
+    required this.balanceAsOf,
+    required this.observedAt,
+    required this.sourceKind,
+    required this.confirmationLevel,
+    required this.recordedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['cash_account_id'] = Variable<String>(cashAccountId);
+    map['balance_minor'] = Variable<int>(balanceMinor);
+    map['balance_as_of'] = Variable<String>(balanceAsOf);
+    map['observed_at'] = Variable<String>(observedAt);
+    map['source_kind'] = Variable<String>(sourceKind);
+    map['confirmation_level'] = Variable<String>(confirmationLevel);
+    map['recorded_at'] = Variable<String>(recordedAt);
+    return map;
+  }
+
+  CashBalanceSnapshotsCompanion toCompanion(bool nullToAbsent) {
+    return CashBalanceSnapshotsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      cashAccountId: Value(cashAccountId),
+      balanceMinor: Value(balanceMinor),
+      balanceAsOf: Value(balanceAsOf),
+      observedAt: Value(observedAt),
+      sourceKind: Value(sourceKind),
+      confirmationLevel: Value(confirmationLevel),
+      recordedAt: Value(recordedAt),
+    );
+  }
+
+  factory CashSnapshotRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CashSnapshotRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      cashAccountId: serializer.fromJson<String>(json['cashAccountId']),
+      balanceMinor: serializer.fromJson<int>(json['balanceMinor']),
+      balanceAsOf: serializer.fromJson<String>(json['balanceAsOf']),
+      observedAt: serializer.fromJson<String>(json['observedAt']),
+      sourceKind: serializer.fromJson<String>(json['sourceKind']),
+      confirmationLevel: serializer.fromJson<String>(json['confirmationLevel']),
+      recordedAt: serializer.fromJson<String>(json['recordedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'cashAccountId': serializer.toJson<String>(cashAccountId),
+      'balanceMinor': serializer.toJson<int>(balanceMinor),
+      'balanceAsOf': serializer.toJson<String>(balanceAsOf),
+      'observedAt': serializer.toJson<String>(observedAt),
+      'sourceKind': serializer.toJson<String>(sourceKind),
+      'confirmationLevel': serializer.toJson<String>(confirmationLevel),
+      'recordedAt': serializer.toJson<String>(recordedAt),
+    };
+  }
+
+  CashSnapshotRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? cashAccountId,
+    int? balanceMinor,
+    String? balanceAsOf,
+    String? observedAt,
+    String? sourceKind,
+    String? confirmationLevel,
+    String? recordedAt,
+  }) => CashSnapshotRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    cashAccountId: cashAccountId ?? this.cashAccountId,
+    balanceMinor: balanceMinor ?? this.balanceMinor,
+    balanceAsOf: balanceAsOf ?? this.balanceAsOf,
+    observedAt: observedAt ?? this.observedAt,
+    sourceKind: sourceKind ?? this.sourceKind,
+    confirmationLevel: confirmationLevel ?? this.confirmationLevel,
+    recordedAt: recordedAt ?? this.recordedAt,
+  );
+  CashSnapshotRow copyWithCompanion(CashBalanceSnapshotsCompanion data) {
+    return CashSnapshotRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      cashAccountId: data.cashAccountId.present
+          ? data.cashAccountId.value
+          : this.cashAccountId,
+      balanceMinor: data.balanceMinor.present
+          ? data.balanceMinor.value
+          : this.balanceMinor,
+      balanceAsOf: data.balanceAsOf.present
+          ? data.balanceAsOf.value
+          : this.balanceAsOf,
+      observedAt: data.observedAt.present
+          ? data.observedAt.value
+          : this.observedAt,
+      sourceKind: data.sourceKind.present
+          ? data.sourceKind.value
+          : this.sourceKind,
+      confirmationLevel: data.confirmationLevel.present
+          ? data.confirmationLevel.value
+          : this.confirmationLevel,
+      recordedAt: data.recordedAt.present
+          ? data.recordedAt.value
+          : this.recordedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CashSnapshotRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('balanceMinor: $balanceMinor, ')
+          ..write('balanceAsOf: $balanceAsOf, ')
+          ..write('observedAt: $observedAt, ')
+          ..write('sourceKind: $sourceKind, ')
+          ..write('confirmationLevel: $confirmationLevel, ')
+          ..write('recordedAt: $recordedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    cashAccountId,
+    balanceMinor,
+    balanceAsOf,
+    observedAt,
+    sourceKind,
+    confirmationLevel,
+    recordedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CashSnapshotRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.cashAccountId == this.cashAccountId &&
+          other.balanceMinor == this.balanceMinor &&
+          other.balanceAsOf == this.balanceAsOf &&
+          other.observedAt == this.observedAt &&
+          other.sourceKind == this.sourceKind &&
+          other.confirmationLevel == this.confirmationLevel &&
+          other.recordedAt == this.recordedAt);
+}
+
+class CashBalanceSnapshotsCompanion extends UpdateCompanion<CashSnapshotRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> cashAccountId;
+  final Value<int> balanceMinor;
+  final Value<String> balanceAsOf;
+  final Value<String> observedAt;
+  final Value<String> sourceKind;
+  final Value<String> confirmationLevel;
+  final Value<String> recordedAt;
+  final Value<int> rowid;
+  const CashBalanceSnapshotsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.cashAccountId = const Value.absent(),
+    this.balanceMinor = const Value.absent(),
+    this.balanceAsOf = const Value.absent(),
+    this.observedAt = const Value.absent(),
+    this.sourceKind = const Value.absent(),
+    this.confirmationLevel = const Value.absent(),
+    this.recordedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CashBalanceSnapshotsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String cashAccountId,
+    required int balanceMinor,
+    required String balanceAsOf,
+    required String observedAt,
+    required String sourceKind,
+    required String confirmationLevel,
+    required String recordedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       cashAccountId = Value(cashAccountId),
+       balanceMinor = Value(balanceMinor),
+       balanceAsOf = Value(balanceAsOf),
+       observedAt = Value(observedAt),
+       sourceKind = Value(sourceKind),
+       confirmationLevel = Value(confirmationLevel),
+       recordedAt = Value(recordedAt);
+  static Insertable<CashSnapshotRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? cashAccountId,
+    Expression<int>? balanceMinor,
+    Expression<String>? balanceAsOf,
+    Expression<String>? observedAt,
+    Expression<String>? sourceKind,
+    Expression<String>? confirmationLevel,
+    Expression<String>? recordedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (cashAccountId != null) 'cash_account_id': cashAccountId,
+      if (balanceMinor != null) 'balance_minor': balanceMinor,
+      if (balanceAsOf != null) 'balance_as_of': balanceAsOf,
+      if (observedAt != null) 'observed_at': observedAt,
+      if (sourceKind != null) 'source_kind': sourceKind,
+      if (confirmationLevel != null) 'confirmation_level': confirmationLevel,
+      if (recordedAt != null) 'recorded_at': recordedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CashBalanceSnapshotsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? cashAccountId,
+    Value<int>? balanceMinor,
+    Value<String>? balanceAsOf,
+    Value<String>? observedAt,
+    Value<String>? sourceKind,
+    Value<String>? confirmationLevel,
+    Value<String>? recordedAt,
+    Value<int>? rowid,
+  }) {
+    return CashBalanceSnapshotsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      cashAccountId: cashAccountId ?? this.cashAccountId,
+      balanceMinor: balanceMinor ?? this.balanceMinor,
+      balanceAsOf: balanceAsOf ?? this.balanceAsOf,
+      observedAt: observedAt ?? this.observedAt,
+      sourceKind: sourceKind ?? this.sourceKind,
+      confirmationLevel: confirmationLevel ?? this.confirmationLevel,
+      recordedAt: recordedAt ?? this.recordedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (cashAccountId.present) {
+      map['cash_account_id'] = Variable<String>(cashAccountId.value);
+    }
+    if (balanceMinor.present) {
+      map['balance_minor'] = Variable<int>(balanceMinor.value);
+    }
+    if (balanceAsOf.present) {
+      map['balance_as_of'] = Variable<String>(balanceAsOf.value);
+    }
+    if (observedAt.present) {
+      map['observed_at'] = Variable<String>(observedAt.value);
+    }
+    if (sourceKind.present) {
+      map['source_kind'] = Variable<String>(sourceKind.value);
+    }
+    if (confirmationLevel.present) {
+      map['confirmation_level'] = Variable<String>(confirmationLevel.value);
+    }
+    if (recordedAt.present) {
+      map['recorded_at'] = Variable<String>(recordedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CashBalanceSnapshotsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('balanceMinor: $balanceMinor, ')
+          ..write('balanceAsOf: $balanceAsOf, ')
+          ..write('observedAt: $observedAt, ')
+          ..write('sourceKind: $sourceKind, ')
+          ..write('confirmationLevel: $confirmationLevel, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RecurringItemsTable extends RecurringItems
+    with TableInfo<$RecurringItemsTable, RecurringItemRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecurringItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cashAccountIdMeta = const VerificationMeta(
+    'cashAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> cashAccountId = GeneratedColumn<String>(
+    'cash_account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clsMeta = const VerificationMeta('cls');
+  @override
+  late final GeneratedColumn<String> cls = GeneratedColumn<String>(
+    'cls',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _frequencyMeta = const VerificationMeta(
+    'frequency',
+  );
+  @override
+  late final GeneratedColumn<String> frequency = GeneratedColumn<String>(
+    'frequency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _anchorOnMeta = const VerificationMeta(
+    'anchorOn',
+  );
+  @override
+  late final GeneratedColumn<String> anchorOn = GeneratedColumn<String>(
+    'anchor_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dayRuleMeta = const VerificationMeta(
+    'dayRule',
+  );
+  @override
+  late final GeneratedColumn<String> dayRule = GeneratedColumn<String>(
+    'day_rule',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('anchor_day'),
+  );
+  static const VerificationMeta _startOnMeta = const VerificationMeta(
+    'startOn',
+  );
+  @override
+  late final GeneratedColumn<String> startOn = GeneratedColumn<String>(
+    'start_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endOnMeta = const VerificationMeta('endOn');
+  @override
+  late final GeneratedColumn<String> endOn = GeneratedColumn<String>(
+    'end_on',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activeMeta = const VerificationMeta('active');
+  @override
+  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
+    'active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    cashAccountId,
+    label,
+    amountMinor,
+    cls,
+    category,
+    frequency,
+    anchorOn,
+    dayRule,
+    startOn,
+    endOn,
+    active,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recurring_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecurringItemRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('cash_account_id')) {
+      context.handle(
+        _cashAccountIdMeta,
+        cashAccountId.isAcceptableOrUnknown(
+          data['cash_account_id']!,
+          _cashAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_cashAccountIdMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorMeta);
+    }
+    if (data.containsKey('cls')) {
+      context.handle(
+        _clsMeta,
+        cls.isAcceptableOrUnknown(data['cls']!, _clsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clsMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('frequency')) {
+      context.handle(
+        _frequencyMeta,
+        frequency.isAcceptableOrUnknown(data['frequency']!, _frequencyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_frequencyMeta);
+    }
+    if (data.containsKey('anchor_on')) {
+      context.handle(
+        _anchorOnMeta,
+        anchorOn.isAcceptableOrUnknown(data['anchor_on']!, _anchorOnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_anchorOnMeta);
+    }
+    if (data.containsKey('day_rule')) {
+      context.handle(
+        _dayRuleMeta,
+        dayRule.isAcceptableOrUnknown(data['day_rule']!, _dayRuleMeta),
+      );
+    }
+    if (data.containsKey('start_on')) {
+      context.handle(
+        _startOnMeta,
+        startOn.isAcceptableOrUnknown(data['start_on']!, _startOnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startOnMeta);
+    }
+    if (data.containsKey('end_on')) {
+      context.handle(
+        _endOnMeta,
+        endOn.isAcceptableOrUnknown(data['end_on']!, _endOnMeta),
+      );
+    }
+    if (data.containsKey('active')) {
+      context.handle(
+        _activeMeta,
+        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
+      );
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, cashAccountId, id},
+  ];
+  @override
+  RecurringItemRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecurringItemRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      cashAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cash_account_id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      )!,
+      cls: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cls'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      frequency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}frequency'],
+      )!,
+      anchorOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}anchor_on'],
+      )!,
+      dayRule: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}day_rule'],
+      )!,
+      startOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}start_on'],
+      )!,
+      endOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}end_on'],
+      ),
+      active: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}active'],
+      )!,
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $RecurringItemsTable createAlias(String alias) {
+    return $RecurringItemsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class RecurringItemRow extends DataClass
+    implements Insertable<RecurringItemRow> {
+  final String id;
+  final String workspaceId;
+  final String cashAccountId;
+  final String label;
+  final int amountMinor;
+
+  /// `confirmed` / `expected` / `planned`。
+  final String cls;
+
+  /// `income` / `bill` / `living` / `repayment` / `fee` / `other`。
+  final String category;
+
+  /// `monthly` / `weekly` / `biweekly` / `yearly`。
+  final String frequency;
+  final String anchorOn;
+
+  /// `anchor_day` / `month_end`。
+  final String dayRule;
+  final String startOn;
+  final String? endOn;
+  final bool active;
+  final int rowVersion;
+  final String createdAt;
+  final String updatedAt;
+  const RecurringItemRow({
+    required this.id,
+    required this.workspaceId,
+    required this.cashAccountId,
+    required this.label,
+    required this.amountMinor,
+    required this.cls,
+    required this.category,
+    required this.frequency,
+    required this.anchorOn,
+    required this.dayRule,
+    required this.startOn,
+    this.endOn,
+    required this.active,
+    required this.rowVersion,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['cash_account_id'] = Variable<String>(cashAccountId);
+    map['label'] = Variable<String>(label);
+    map['amount_minor'] = Variable<int>(amountMinor);
+    map['cls'] = Variable<String>(cls);
+    map['category'] = Variable<String>(category);
+    map['frequency'] = Variable<String>(frequency);
+    map['anchor_on'] = Variable<String>(anchorOn);
+    map['day_rule'] = Variable<String>(dayRule);
+    map['start_on'] = Variable<String>(startOn);
+    if (!nullToAbsent || endOn != null) {
+      map['end_on'] = Variable<String>(endOn);
+    }
+    map['active'] = Variable<bool>(active);
+    map['row_version'] = Variable<int>(rowVersion);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  RecurringItemsCompanion toCompanion(bool nullToAbsent) {
+    return RecurringItemsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      cashAccountId: Value(cashAccountId),
+      label: Value(label),
+      amountMinor: Value(amountMinor),
+      cls: Value(cls),
+      category: Value(category),
+      frequency: Value(frequency),
+      anchorOn: Value(anchorOn),
+      dayRule: Value(dayRule),
+      startOn: Value(startOn),
+      endOn: endOn == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endOn),
+      active: Value(active),
+      rowVersion: Value(rowVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory RecurringItemRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecurringItemRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      cashAccountId: serializer.fromJson<String>(json['cashAccountId']),
+      label: serializer.fromJson<String>(json['label']),
+      amountMinor: serializer.fromJson<int>(json['amountMinor']),
+      cls: serializer.fromJson<String>(json['cls']),
+      category: serializer.fromJson<String>(json['category']),
+      frequency: serializer.fromJson<String>(json['frequency']),
+      anchorOn: serializer.fromJson<String>(json['anchorOn']),
+      dayRule: serializer.fromJson<String>(json['dayRule']),
+      startOn: serializer.fromJson<String>(json['startOn']),
+      endOn: serializer.fromJson<String?>(json['endOn']),
+      active: serializer.fromJson<bool>(json['active']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'cashAccountId': serializer.toJson<String>(cashAccountId),
+      'label': serializer.toJson<String>(label),
+      'amountMinor': serializer.toJson<int>(amountMinor),
+      'cls': serializer.toJson<String>(cls),
+      'category': serializer.toJson<String>(category),
+      'frequency': serializer.toJson<String>(frequency),
+      'anchorOn': serializer.toJson<String>(anchorOn),
+      'dayRule': serializer.toJson<String>(dayRule),
+      'startOn': serializer.toJson<String>(startOn),
+      'endOn': serializer.toJson<String?>(endOn),
+      'active': serializer.toJson<bool>(active),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  RecurringItemRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? cashAccountId,
+    String? label,
+    int? amountMinor,
+    String? cls,
+    String? category,
+    String? frequency,
+    String? anchorOn,
+    String? dayRule,
+    String? startOn,
+    Value<String?> endOn = const Value.absent(),
+    bool? active,
+    int? rowVersion,
+    String? createdAt,
+    String? updatedAt,
+  }) => RecurringItemRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    cashAccountId: cashAccountId ?? this.cashAccountId,
+    label: label ?? this.label,
+    amountMinor: amountMinor ?? this.amountMinor,
+    cls: cls ?? this.cls,
+    category: category ?? this.category,
+    frequency: frequency ?? this.frequency,
+    anchorOn: anchorOn ?? this.anchorOn,
+    dayRule: dayRule ?? this.dayRule,
+    startOn: startOn ?? this.startOn,
+    endOn: endOn.present ? endOn.value : this.endOn,
+    active: active ?? this.active,
+    rowVersion: rowVersion ?? this.rowVersion,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  RecurringItemRow copyWithCompanion(RecurringItemsCompanion data) {
+    return RecurringItemRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      cashAccountId: data.cashAccountId.present
+          ? data.cashAccountId.value
+          : this.cashAccountId,
+      label: data.label.present ? data.label.value : this.label,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+      cls: data.cls.present ? data.cls.value : this.cls,
+      category: data.category.present ? data.category.value : this.category,
+      frequency: data.frequency.present ? data.frequency.value : this.frequency,
+      anchorOn: data.anchorOn.present ? data.anchorOn.value : this.anchorOn,
+      dayRule: data.dayRule.present ? data.dayRule.value : this.dayRule,
+      startOn: data.startOn.present ? data.startOn.value : this.startOn,
+      endOn: data.endOn.present ? data.endOn.value : this.endOn,
+      active: data.active.present ? data.active.value : this.active,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurringItemRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('label: $label, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('cls: $cls, ')
+          ..write('category: $category, ')
+          ..write('frequency: $frequency, ')
+          ..write('anchorOn: $anchorOn, ')
+          ..write('dayRule: $dayRule, ')
+          ..write('startOn: $startOn, ')
+          ..write('endOn: $endOn, ')
+          ..write('active: $active, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    cashAccountId,
+    label,
+    amountMinor,
+    cls,
+    category,
+    frequency,
+    anchorOn,
+    dayRule,
+    startOn,
+    endOn,
+    active,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecurringItemRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.cashAccountId == this.cashAccountId &&
+          other.label == this.label &&
+          other.amountMinor == this.amountMinor &&
+          other.cls == this.cls &&
+          other.category == this.category &&
+          other.frequency == this.frequency &&
+          other.anchorOn == this.anchorOn &&
+          other.dayRule == this.dayRule &&
+          other.startOn == this.startOn &&
+          other.endOn == this.endOn &&
+          other.active == this.active &&
+          other.rowVersion == this.rowVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class RecurringItemsCompanion extends UpdateCompanion<RecurringItemRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> cashAccountId;
+  final Value<String> label;
+  final Value<int> amountMinor;
+  final Value<String> cls;
+  final Value<String> category;
+  final Value<String> frequency;
+  final Value<String> anchorOn;
+  final Value<String> dayRule;
+  final Value<String> startOn;
+  final Value<String?> endOn;
+  final Value<bool> active;
+  final Value<int> rowVersion;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const RecurringItemsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.cashAccountId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.cls = const Value.absent(),
+    this.category = const Value.absent(),
+    this.frequency = const Value.absent(),
+    this.anchorOn = const Value.absent(),
+    this.dayRule = const Value.absent(),
+    this.startOn = const Value.absent(),
+    this.endOn = const Value.absent(),
+    this.active = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecurringItemsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String cashAccountId,
+    required String label,
+    required int amountMinor,
+    required String cls,
+    required String category,
+    required String frequency,
+    required String anchorOn,
+    this.dayRule = const Value.absent(),
+    required String startOn,
+    this.endOn = const Value.absent(),
+    this.active = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       cashAccountId = Value(cashAccountId),
+       label = Value(label),
+       amountMinor = Value(amountMinor),
+       cls = Value(cls),
+       category = Value(category),
+       frequency = Value(frequency),
+       anchorOn = Value(anchorOn),
+       startOn = Value(startOn),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<RecurringItemRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? cashAccountId,
+    Expression<String>? label,
+    Expression<int>? amountMinor,
+    Expression<String>? cls,
+    Expression<String>? category,
+    Expression<String>? frequency,
+    Expression<String>? anchorOn,
+    Expression<String>? dayRule,
+    Expression<String>? startOn,
+    Expression<String>? endOn,
+    Expression<bool>? active,
+    Expression<int>? rowVersion,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (cashAccountId != null) 'cash_account_id': cashAccountId,
+      if (label != null) 'label': label,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (cls != null) 'cls': cls,
+      if (category != null) 'category': category,
+      if (frequency != null) 'frequency': frequency,
+      if (anchorOn != null) 'anchor_on': anchorOn,
+      if (dayRule != null) 'day_rule': dayRule,
+      if (startOn != null) 'start_on': startOn,
+      if (endOn != null) 'end_on': endOn,
+      if (active != null) 'active': active,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecurringItemsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? cashAccountId,
+    Value<String>? label,
+    Value<int>? amountMinor,
+    Value<String>? cls,
+    Value<String>? category,
+    Value<String>? frequency,
+    Value<String>? anchorOn,
+    Value<String>? dayRule,
+    Value<String>? startOn,
+    Value<String?>? endOn,
+    Value<bool>? active,
+    Value<int>? rowVersion,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return RecurringItemsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      cashAccountId: cashAccountId ?? this.cashAccountId,
+      label: label ?? this.label,
+      amountMinor: amountMinor ?? this.amountMinor,
+      cls: cls ?? this.cls,
+      category: category ?? this.category,
+      frequency: frequency ?? this.frequency,
+      anchorOn: anchorOn ?? this.anchorOn,
+      dayRule: dayRule ?? this.dayRule,
+      startOn: startOn ?? this.startOn,
+      endOn: endOn ?? this.endOn,
+      active: active ?? this.active,
+      rowVersion: rowVersion ?? this.rowVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (cashAccountId.present) {
+      map['cash_account_id'] = Variable<String>(cashAccountId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (cls.present) {
+      map['cls'] = Variable<String>(cls.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (frequency.present) {
+      map['frequency'] = Variable<String>(frequency.value);
+    }
+    if (anchorOn.present) {
+      map['anchor_on'] = Variable<String>(anchorOn.value);
+    }
+    if (dayRule.present) {
+      map['day_rule'] = Variable<String>(dayRule.value);
+    }
+    if (startOn.present) {
+      map['start_on'] = Variable<String>(startOn.value);
+    }
+    if (endOn.present) {
+      map['end_on'] = Variable<String>(endOn.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurringItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('label: $label, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('cls: $cls, ')
+          ..write('category: $category, ')
+          ..write('frequency: $frequency, ')
+          ..write('anchorOn: $anchorOn, ')
+          ..write('dayRule: $dayRule, ')
+          ..write('startOn: $startOn, ')
+          ..write('endOn: $endOn, ')
+          ..write('active: $active, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CashEventsTable extends CashEvents
+    with TableInfo<$CashEventsTable, CashEventRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CashEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cashAccountIdMeta = const VerificationMeta(
+    'cashAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> cashAccountId = GeneratedColumn<String>(
+    'cash_account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventOnMeta = const VerificationMeta(
+    'eventOn',
+  );
+  @override
+  late final GeneratedColumn<String> eventOn = GeneratedColumn<String>(
+    'event_on',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventAtMeta = const VerificationMeta(
+    'eventAt',
+  );
+  @override
+  late final GeneratedColumn<String> eventAt = GeneratedColumn<String>(
+    'event_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clsMeta = const VerificationMeta('cls');
+  @override
+  late final GeneratedColumn<String> cls = GeneratedColumn<String>(
+    'cls',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _postingStatusMeta = const VerificationMeta(
+    'postingStatus',
+  );
+  @override
+  late final GeneratedColumn<String> postingStatus = GeneratedColumn<String>(
+    'posting_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('planned'),
+  );
+  static const VerificationMeta _recurringItemIdMeta = const VerificationMeta(
+    'recurringItemId',
+  );
+  @override
+  late final GeneratedColumn<String> recurringItemId = GeneratedColumn<String>(
+    'recurring_item_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occurrenceKeyMeta = const VerificationMeta(
+    'occurrenceKey',
+  );
+  @override
+  late final GeneratedColumn<String> occurrenceKey = GeneratedColumn<String>(
+    'occurrence_key',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _transferGroupIdMeta = const VerificationMeta(
+    'transferGroupId',
+  );
+  @override
+  late final GeneratedColumn<String> transferGroupId = GeneratedColumn<String>(
+    'transfer_group_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _linkedRepaymentIdMeta = const VerificationMeta(
+    'linkedRepaymentId',
+  );
+  @override
+  late final GeneratedColumn<String> linkedRepaymentId =
+      GeneratedColumn<String>(
+        'linked_repayment_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _linkedPlanRunIdMeta = const VerificationMeta(
+    'linkedPlanRunId',
+  );
+  @override
+  late final GeneratedColumn<String> linkedPlanRunId = GeneratedColumn<String>(
+    'linked_plan_run_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    cashAccountId,
+    eventOn,
+    eventAt,
+    amountMinor,
+    cls,
+    category,
+    label,
+    postingStatus,
+    recurringItemId,
+    occurrenceKey,
+    transferGroupId,
+    linkedRepaymentId,
+    linkedPlanRunId,
+    rowVersion,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cash_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CashEventRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('cash_account_id')) {
+      context.handle(
+        _cashAccountIdMeta,
+        cashAccountId.isAcceptableOrUnknown(
+          data['cash_account_id']!,
+          _cashAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_cashAccountIdMeta);
+    }
+    if (data.containsKey('event_on')) {
+      context.handle(
+        _eventOnMeta,
+        eventOn.isAcceptableOrUnknown(data['event_on']!, _eventOnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_eventOnMeta);
+    }
+    if (data.containsKey('event_at')) {
+      context.handle(
+        _eventAtMeta,
+        eventAt.isAcceptableOrUnknown(data['event_at']!, _eventAtMeta),
+      );
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorMeta);
+    }
+    if (data.containsKey('cls')) {
+      context.handle(
+        _clsMeta,
+        cls.isAcceptableOrUnknown(data['cls']!, _clsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_clsMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    if (data.containsKey('posting_status')) {
+      context.handle(
+        _postingStatusMeta,
+        postingStatus.isAcceptableOrUnknown(
+          data['posting_status']!,
+          _postingStatusMeta,
+        ),
+      );
+    }
+    if (data.containsKey('recurring_item_id')) {
+      context.handle(
+        _recurringItemIdMeta,
+        recurringItemId.isAcceptableOrUnknown(
+          data['recurring_item_id']!,
+          _recurringItemIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('occurrence_key')) {
+      context.handle(
+        _occurrenceKeyMeta,
+        occurrenceKey.isAcceptableOrUnknown(
+          data['occurrence_key']!,
+          _occurrenceKeyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('transfer_group_id')) {
+      context.handle(
+        _transferGroupIdMeta,
+        transferGroupId.isAcceptableOrUnknown(
+          data['transfer_group_id']!,
+          _transferGroupIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('linked_repayment_id')) {
+      context.handle(
+        _linkedRepaymentIdMeta,
+        linkedRepaymentId.isAcceptableOrUnknown(
+          data['linked_repayment_id']!,
+          _linkedRepaymentIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('linked_plan_run_id')) {
+      context.handle(
+        _linkedPlanRunIdMeta,
+        linkedPlanRunId.isAcceptableOrUnknown(
+          data['linked_plan_run_id']!,
+          _linkedPlanRunIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, cashAccountId, id},
+  ];
+  @override
+  CashEventRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CashEventRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      cashAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cash_account_id'],
+      )!,
+      eventOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_on'],
+      )!,
+      eventAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_at'],
+      ),
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      )!,
+      cls: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cls'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
+      postingStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}posting_status'],
+      )!,
+      recurringItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recurring_item_id'],
+      ),
+      occurrenceKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occurrence_key'],
+      ),
+      transferGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transfer_group_id'],
+      ),
+      linkedRepaymentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}linked_repayment_id'],
+      ),
+      linkedPlanRunId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}linked_plan_run_id'],
+      ),
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $CashEventsTable createAlias(String alias) {
+    return $CashEventsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class CashEventRow extends DataClass implements Insertable<CashEventRow> {
+  final String id;
+  final String workspaceId;
+  final String cashAccountId;
+
+  /// 业务日期 `YYYY-MM-DD`。
+  final String eventOn;
+
+  /// 精确时刻（RFC 3339，按其自身偏移的日期必须等于 `event_on`）；空 = 只知道日期。
+  final String? eventAt;
+  final int amountMinor;
+
+  /// `confirmed` / `expected` / `planned`。
+  final String cls;
+
+  /// `income` / `bill` / `living` / `repayment` / `transfer_in` / `transfer_out` / `fee` / `other`。
+  final String category;
+  final String? label;
+
+  /// `planned` / `posted`。
+  final String postingStatus;
+  final String? recurringItemId;
+
+  /// 周期事项的期键：该期的原定日期 `YYYY-MM-DD`。
+  final String? occurrenceKey;
+  final String? transferGroupId;
+  final String? linkedRepaymentId;
+  final String? linkedPlanRunId;
+  final int rowVersion;
+  final String createdAt;
+  final String updatedAt;
+  final String? deletedAt;
+  const CashEventRow({
+    required this.id,
+    required this.workspaceId,
+    required this.cashAccountId,
+    required this.eventOn,
+    this.eventAt,
+    required this.amountMinor,
+    required this.cls,
+    required this.category,
+    this.label,
+    required this.postingStatus,
+    this.recurringItemId,
+    this.occurrenceKey,
+    this.transferGroupId,
+    this.linkedRepaymentId,
+    this.linkedPlanRunId,
+    required this.rowVersion,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['cash_account_id'] = Variable<String>(cashAccountId);
+    map['event_on'] = Variable<String>(eventOn);
+    if (!nullToAbsent || eventAt != null) {
+      map['event_at'] = Variable<String>(eventAt);
+    }
+    map['amount_minor'] = Variable<int>(amountMinor);
+    map['cls'] = Variable<String>(cls);
+    map['category'] = Variable<String>(category);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
+    map['posting_status'] = Variable<String>(postingStatus);
+    if (!nullToAbsent || recurringItemId != null) {
+      map['recurring_item_id'] = Variable<String>(recurringItemId);
+    }
+    if (!nullToAbsent || occurrenceKey != null) {
+      map['occurrence_key'] = Variable<String>(occurrenceKey);
+    }
+    if (!nullToAbsent || transferGroupId != null) {
+      map['transfer_group_id'] = Variable<String>(transferGroupId);
+    }
+    if (!nullToAbsent || linkedRepaymentId != null) {
+      map['linked_repayment_id'] = Variable<String>(linkedRepaymentId);
+    }
+    if (!nullToAbsent || linkedPlanRunId != null) {
+      map['linked_plan_run_id'] = Variable<String>(linkedPlanRunId);
+    }
+    map['row_version'] = Variable<int>(rowVersion);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<String>(deletedAt);
+    }
+    return map;
+  }
+
+  CashEventsCompanion toCompanion(bool nullToAbsent) {
+    return CashEventsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      cashAccountId: Value(cashAccountId),
+      eventOn: Value(eventOn),
+      eventAt: eventAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventAt),
+      amountMinor: Value(amountMinor),
+      cls: Value(cls),
+      category: Value(category),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+      postingStatus: Value(postingStatus),
+      recurringItemId: recurringItemId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurringItemId),
+      occurrenceKey: occurrenceKey == null && nullToAbsent
+          ? const Value.absent()
+          : Value(occurrenceKey),
+      transferGroupId: transferGroupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(transferGroupId),
+      linkedRepaymentId: linkedRepaymentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedRepaymentId),
+      linkedPlanRunId: linkedPlanRunId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedPlanRunId),
+      rowVersion: Value(rowVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory CashEventRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CashEventRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      cashAccountId: serializer.fromJson<String>(json['cashAccountId']),
+      eventOn: serializer.fromJson<String>(json['eventOn']),
+      eventAt: serializer.fromJson<String?>(json['eventAt']),
+      amountMinor: serializer.fromJson<int>(json['amountMinor']),
+      cls: serializer.fromJson<String>(json['cls']),
+      category: serializer.fromJson<String>(json['category']),
+      label: serializer.fromJson<String?>(json['label']),
+      postingStatus: serializer.fromJson<String>(json['postingStatus']),
+      recurringItemId: serializer.fromJson<String?>(json['recurringItemId']),
+      occurrenceKey: serializer.fromJson<String?>(json['occurrenceKey']),
+      transferGroupId: serializer.fromJson<String?>(json['transferGroupId']),
+      linkedRepaymentId: serializer.fromJson<String?>(
+        json['linkedRepaymentId'],
+      ),
+      linkedPlanRunId: serializer.fromJson<String?>(json['linkedPlanRunId']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'cashAccountId': serializer.toJson<String>(cashAccountId),
+      'eventOn': serializer.toJson<String>(eventOn),
+      'eventAt': serializer.toJson<String?>(eventAt),
+      'amountMinor': serializer.toJson<int>(amountMinor),
+      'cls': serializer.toJson<String>(cls),
+      'category': serializer.toJson<String>(category),
+      'label': serializer.toJson<String?>(label),
+      'postingStatus': serializer.toJson<String>(postingStatus),
+      'recurringItemId': serializer.toJson<String?>(recurringItemId),
+      'occurrenceKey': serializer.toJson<String?>(occurrenceKey),
+      'transferGroupId': serializer.toJson<String?>(transferGroupId),
+      'linkedRepaymentId': serializer.toJson<String?>(linkedRepaymentId),
+      'linkedPlanRunId': serializer.toJson<String?>(linkedPlanRunId),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
+    };
+  }
+
+  CashEventRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? cashAccountId,
+    String? eventOn,
+    Value<String?> eventAt = const Value.absent(),
+    int? amountMinor,
+    String? cls,
+    String? category,
+    Value<String?> label = const Value.absent(),
+    String? postingStatus,
+    Value<String?> recurringItemId = const Value.absent(),
+    Value<String?> occurrenceKey = const Value.absent(),
+    Value<String?> transferGroupId = const Value.absent(),
+    Value<String?> linkedRepaymentId = const Value.absent(),
+    Value<String?> linkedPlanRunId = const Value.absent(),
+    int? rowVersion,
+    String? createdAt,
+    String? updatedAt,
+    Value<String?> deletedAt = const Value.absent(),
+  }) => CashEventRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    cashAccountId: cashAccountId ?? this.cashAccountId,
+    eventOn: eventOn ?? this.eventOn,
+    eventAt: eventAt.present ? eventAt.value : this.eventAt,
+    amountMinor: amountMinor ?? this.amountMinor,
+    cls: cls ?? this.cls,
+    category: category ?? this.category,
+    label: label.present ? label.value : this.label,
+    postingStatus: postingStatus ?? this.postingStatus,
+    recurringItemId: recurringItemId.present
+        ? recurringItemId.value
+        : this.recurringItemId,
+    occurrenceKey: occurrenceKey.present
+        ? occurrenceKey.value
+        : this.occurrenceKey,
+    transferGroupId: transferGroupId.present
+        ? transferGroupId.value
+        : this.transferGroupId,
+    linkedRepaymentId: linkedRepaymentId.present
+        ? linkedRepaymentId.value
+        : this.linkedRepaymentId,
+    linkedPlanRunId: linkedPlanRunId.present
+        ? linkedPlanRunId.value
+        : this.linkedPlanRunId,
+    rowVersion: rowVersion ?? this.rowVersion,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  CashEventRow copyWithCompanion(CashEventsCompanion data) {
+    return CashEventRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      cashAccountId: data.cashAccountId.present
+          ? data.cashAccountId.value
+          : this.cashAccountId,
+      eventOn: data.eventOn.present ? data.eventOn.value : this.eventOn,
+      eventAt: data.eventAt.present ? data.eventAt.value : this.eventAt,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+      cls: data.cls.present ? data.cls.value : this.cls,
+      category: data.category.present ? data.category.value : this.category,
+      label: data.label.present ? data.label.value : this.label,
+      postingStatus: data.postingStatus.present
+          ? data.postingStatus.value
+          : this.postingStatus,
+      recurringItemId: data.recurringItemId.present
+          ? data.recurringItemId.value
+          : this.recurringItemId,
+      occurrenceKey: data.occurrenceKey.present
+          ? data.occurrenceKey.value
+          : this.occurrenceKey,
+      transferGroupId: data.transferGroupId.present
+          ? data.transferGroupId.value
+          : this.transferGroupId,
+      linkedRepaymentId: data.linkedRepaymentId.present
+          ? data.linkedRepaymentId.value
+          : this.linkedRepaymentId,
+      linkedPlanRunId: data.linkedPlanRunId.present
+          ? data.linkedPlanRunId.value
+          : this.linkedPlanRunId,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CashEventRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('eventOn: $eventOn, ')
+          ..write('eventAt: $eventAt, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('cls: $cls, ')
+          ..write('category: $category, ')
+          ..write('label: $label, ')
+          ..write('postingStatus: $postingStatus, ')
+          ..write('recurringItemId: $recurringItemId, ')
+          ..write('occurrenceKey: $occurrenceKey, ')
+          ..write('transferGroupId: $transferGroupId, ')
+          ..write('linkedRepaymentId: $linkedRepaymentId, ')
+          ..write('linkedPlanRunId: $linkedPlanRunId, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    cashAccountId,
+    eventOn,
+    eventAt,
+    amountMinor,
+    cls,
+    category,
+    label,
+    postingStatus,
+    recurringItemId,
+    occurrenceKey,
+    transferGroupId,
+    linkedRepaymentId,
+    linkedPlanRunId,
+    rowVersion,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CashEventRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.cashAccountId == this.cashAccountId &&
+          other.eventOn == this.eventOn &&
+          other.eventAt == this.eventAt &&
+          other.amountMinor == this.amountMinor &&
+          other.cls == this.cls &&
+          other.category == this.category &&
+          other.label == this.label &&
+          other.postingStatus == this.postingStatus &&
+          other.recurringItemId == this.recurringItemId &&
+          other.occurrenceKey == this.occurrenceKey &&
+          other.transferGroupId == this.transferGroupId &&
+          other.linkedRepaymentId == this.linkedRepaymentId &&
+          other.linkedPlanRunId == this.linkedPlanRunId &&
+          other.rowVersion == this.rowVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class CashEventsCompanion extends UpdateCompanion<CashEventRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> cashAccountId;
+  final Value<String> eventOn;
+  final Value<String?> eventAt;
+  final Value<int> amountMinor;
+  final Value<String> cls;
+  final Value<String> category;
+  final Value<String?> label;
+  final Value<String> postingStatus;
+  final Value<String?> recurringItemId;
+  final Value<String?> occurrenceKey;
+  final Value<String?> transferGroupId;
+  final Value<String?> linkedRepaymentId;
+  final Value<String?> linkedPlanRunId;
+  final Value<int> rowVersion;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<String?> deletedAt;
+  final Value<int> rowid;
+  const CashEventsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.cashAccountId = const Value.absent(),
+    this.eventOn = const Value.absent(),
+    this.eventAt = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.cls = const Value.absent(),
+    this.category = const Value.absent(),
+    this.label = const Value.absent(),
+    this.postingStatus = const Value.absent(),
+    this.recurringItemId = const Value.absent(),
+    this.occurrenceKey = const Value.absent(),
+    this.transferGroupId = const Value.absent(),
+    this.linkedRepaymentId = const Value.absent(),
+    this.linkedPlanRunId = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CashEventsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String cashAccountId,
+    required String eventOn,
+    this.eventAt = const Value.absent(),
+    required int amountMinor,
+    required String cls,
+    required String category,
+    this.label = const Value.absent(),
+    this.postingStatus = const Value.absent(),
+    this.recurringItemId = const Value.absent(),
+    this.occurrenceKey = const Value.absent(),
+    this.transferGroupId = const Value.absent(),
+    this.linkedRepaymentId = const Value.absent(),
+    this.linkedPlanRunId = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       cashAccountId = Value(cashAccountId),
+       eventOn = Value(eventOn),
+       amountMinor = Value(amountMinor),
+       cls = Value(cls),
+       category = Value(category),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<CashEventRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? cashAccountId,
+    Expression<String>? eventOn,
+    Expression<String>? eventAt,
+    Expression<int>? amountMinor,
+    Expression<String>? cls,
+    Expression<String>? category,
+    Expression<String>? label,
+    Expression<String>? postingStatus,
+    Expression<String>? recurringItemId,
+    Expression<String>? occurrenceKey,
+    Expression<String>? transferGroupId,
+    Expression<String>? linkedRepaymentId,
+    Expression<String>? linkedPlanRunId,
+    Expression<int>? rowVersion,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<String>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (cashAccountId != null) 'cash_account_id': cashAccountId,
+      if (eventOn != null) 'event_on': eventOn,
+      if (eventAt != null) 'event_at': eventAt,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (cls != null) 'cls': cls,
+      if (category != null) 'category': category,
+      if (label != null) 'label': label,
+      if (postingStatus != null) 'posting_status': postingStatus,
+      if (recurringItemId != null) 'recurring_item_id': recurringItemId,
+      if (occurrenceKey != null) 'occurrence_key': occurrenceKey,
+      if (transferGroupId != null) 'transfer_group_id': transferGroupId,
+      if (linkedRepaymentId != null) 'linked_repayment_id': linkedRepaymentId,
+      if (linkedPlanRunId != null) 'linked_plan_run_id': linkedPlanRunId,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CashEventsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? cashAccountId,
+    Value<String>? eventOn,
+    Value<String?>? eventAt,
+    Value<int>? amountMinor,
+    Value<String>? cls,
+    Value<String>? category,
+    Value<String?>? label,
+    Value<String>? postingStatus,
+    Value<String?>? recurringItemId,
+    Value<String?>? occurrenceKey,
+    Value<String?>? transferGroupId,
+    Value<String?>? linkedRepaymentId,
+    Value<String?>? linkedPlanRunId,
+    Value<int>? rowVersion,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<String?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return CashEventsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      cashAccountId: cashAccountId ?? this.cashAccountId,
+      eventOn: eventOn ?? this.eventOn,
+      eventAt: eventAt ?? this.eventAt,
+      amountMinor: amountMinor ?? this.amountMinor,
+      cls: cls ?? this.cls,
+      category: category ?? this.category,
+      label: label ?? this.label,
+      postingStatus: postingStatus ?? this.postingStatus,
+      recurringItemId: recurringItemId ?? this.recurringItemId,
+      occurrenceKey: occurrenceKey ?? this.occurrenceKey,
+      transferGroupId: transferGroupId ?? this.transferGroupId,
+      linkedRepaymentId: linkedRepaymentId ?? this.linkedRepaymentId,
+      linkedPlanRunId: linkedPlanRunId ?? this.linkedPlanRunId,
+      rowVersion: rowVersion ?? this.rowVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (cashAccountId.present) {
+      map['cash_account_id'] = Variable<String>(cashAccountId.value);
+    }
+    if (eventOn.present) {
+      map['event_on'] = Variable<String>(eventOn.value);
+    }
+    if (eventAt.present) {
+      map['event_at'] = Variable<String>(eventAt.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (cls.present) {
+      map['cls'] = Variable<String>(cls.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (postingStatus.present) {
+      map['posting_status'] = Variable<String>(postingStatus.value);
+    }
+    if (recurringItemId.present) {
+      map['recurring_item_id'] = Variable<String>(recurringItemId.value);
+    }
+    if (occurrenceKey.present) {
+      map['occurrence_key'] = Variable<String>(occurrenceKey.value);
+    }
+    if (transferGroupId.present) {
+      map['transfer_group_id'] = Variable<String>(transferGroupId.value);
+    }
+    if (linkedRepaymentId.present) {
+      map['linked_repayment_id'] = Variable<String>(linkedRepaymentId.value);
+    }
+    if (linkedPlanRunId.present) {
+      map['linked_plan_run_id'] = Variable<String>(linkedPlanRunId.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CashEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('eventOn: $eventOn, ')
+          ..write('eventAt: $eventAt, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('cls: $cls, ')
+          ..write('category: $category, ')
+          ..write('label: $label, ')
+          ..write('postingStatus: $postingStatus, ')
+          ..write('recurringItemId: $recurringItemId, ')
+          ..write('occurrenceKey: $occurrenceKey, ')
+          ..write('transferGroupId: $transferGroupId, ')
+          ..write('linkedRepaymentId: $linkedRepaymentId, ')
+          ..write('linkedPlanRunId: $linkedPlanRunId, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SnapshotIncludedEventsTable extends SnapshotIncludedEvents
+    with TableInfo<$SnapshotIncludedEventsTable, SnapshotIncludedEventRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SnapshotIncludedEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cashAccountIdMeta = const VerificationMeta(
+    'cashAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> cashAccountId = GeneratedColumn<String>(
+    'cash_account_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _snapshotIdMeta = const VerificationMeta(
+    'snapshotId',
+  );
+  @override
+  late final GeneratedColumn<String> snapshotId = GeneratedColumn<String>(
+    'snapshot_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cashEventIdMeta = const VerificationMeta(
+    'cashEventId',
+  );
+  @override
+  late final GeneratedColumn<String> cashEventId = GeneratedColumn<String>(
+    'cash_event_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    workspaceId,
+    cashAccountId,
+    snapshotId,
+    cashEventId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'snapshot_included_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SnapshotIncludedEventRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('cash_account_id')) {
+      context.handle(
+        _cashAccountIdMeta,
+        cashAccountId.isAcceptableOrUnknown(
+          data['cash_account_id']!,
+          _cashAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_cashAccountIdMeta);
+    }
+    if (data.containsKey('snapshot_id')) {
+      context.handle(
+        _snapshotIdMeta,
+        snapshotId.isAcceptableOrUnknown(data['snapshot_id']!, _snapshotIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_snapshotIdMeta);
+    }
+    if (data.containsKey('cash_event_id')) {
+      context.handle(
+        _cashEventIdMeta,
+        cashEventId.isAcceptableOrUnknown(
+          data['cash_event_id']!,
+          _cashEventIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_cashEventIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {snapshotId, cashEventId};
+  @override
+  SnapshotIncludedEventRow map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SnapshotIncludedEventRow(
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      cashAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cash_account_id'],
+      )!,
+      snapshotId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}snapshot_id'],
+      )!,
+      cashEventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cash_event_id'],
+      )!,
+    );
+  }
+
+  @override
+  $SnapshotIncludedEventsTable createAlias(String alias) {
+    return $SnapshotIncludedEventsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class SnapshotIncludedEventRow extends DataClass
+    implements Insertable<SnapshotIncludedEventRow> {
+  final String workspaceId;
+  final String cashAccountId;
+  final String snapshotId;
+  final String cashEventId;
+  const SnapshotIncludedEventRow({
+    required this.workspaceId,
+    required this.cashAccountId,
+    required this.snapshotId,
+    required this.cashEventId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['cash_account_id'] = Variable<String>(cashAccountId);
+    map['snapshot_id'] = Variable<String>(snapshotId);
+    map['cash_event_id'] = Variable<String>(cashEventId);
+    return map;
+  }
+
+  SnapshotIncludedEventsCompanion toCompanion(bool nullToAbsent) {
+    return SnapshotIncludedEventsCompanion(
+      workspaceId: Value(workspaceId),
+      cashAccountId: Value(cashAccountId),
+      snapshotId: Value(snapshotId),
+      cashEventId: Value(cashEventId),
+    );
+  }
+
+  factory SnapshotIncludedEventRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SnapshotIncludedEventRow(
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      cashAccountId: serializer.fromJson<String>(json['cashAccountId']),
+      snapshotId: serializer.fromJson<String>(json['snapshotId']),
+      cashEventId: serializer.fromJson<String>(json['cashEventId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'cashAccountId': serializer.toJson<String>(cashAccountId),
+      'snapshotId': serializer.toJson<String>(snapshotId),
+      'cashEventId': serializer.toJson<String>(cashEventId),
+    };
+  }
+
+  SnapshotIncludedEventRow copyWith({
+    String? workspaceId,
+    String? cashAccountId,
+    String? snapshotId,
+    String? cashEventId,
+  }) => SnapshotIncludedEventRow(
+    workspaceId: workspaceId ?? this.workspaceId,
+    cashAccountId: cashAccountId ?? this.cashAccountId,
+    snapshotId: snapshotId ?? this.snapshotId,
+    cashEventId: cashEventId ?? this.cashEventId,
+  );
+  SnapshotIncludedEventRow copyWithCompanion(
+    SnapshotIncludedEventsCompanion data,
+  ) {
+    return SnapshotIncludedEventRow(
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      cashAccountId: data.cashAccountId.present
+          ? data.cashAccountId.value
+          : this.cashAccountId,
+      snapshotId: data.snapshotId.present
+          ? data.snapshotId.value
+          : this.snapshotId,
+      cashEventId: data.cashEventId.present
+          ? data.cashEventId.value
+          : this.cashEventId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SnapshotIncludedEventRow(')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('snapshotId: $snapshotId, ')
+          ..write('cashEventId: $cashEventId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(workspaceId, cashAccountId, snapshotId, cashEventId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SnapshotIncludedEventRow &&
+          other.workspaceId == this.workspaceId &&
+          other.cashAccountId == this.cashAccountId &&
+          other.snapshotId == this.snapshotId &&
+          other.cashEventId == this.cashEventId);
+}
+
+class SnapshotIncludedEventsCompanion
+    extends UpdateCompanion<SnapshotIncludedEventRow> {
+  final Value<String> workspaceId;
+  final Value<String> cashAccountId;
+  final Value<String> snapshotId;
+  final Value<String> cashEventId;
+  final Value<int> rowid;
+  const SnapshotIncludedEventsCompanion({
+    this.workspaceId = const Value.absent(),
+    this.cashAccountId = const Value.absent(),
+    this.snapshotId = const Value.absent(),
+    this.cashEventId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SnapshotIncludedEventsCompanion.insert({
+    required String workspaceId,
+    required String cashAccountId,
+    required String snapshotId,
+    required String cashEventId,
+    this.rowid = const Value.absent(),
+  }) : workspaceId = Value(workspaceId),
+       cashAccountId = Value(cashAccountId),
+       snapshotId = Value(snapshotId),
+       cashEventId = Value(cashEventId);
+  static Insertable<SnapshotIncludedEventRow> custom({
+    Expression<String>? workspaceId,
+    Expression<String>? cashAccountId,
+    Expression<String>? snapshotId,
+    Expression<String>? cashEventId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (cashAccountId != null) 'cash_account_id': cashAccountId,
+      if (snapshotId != null) 'snapshot_id': snapshotId,
+      if (cashEventId != null) 'cash_event_id': cashEventId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SnapshotIncludedEventsCompanion copyWith({
+    Value<String>? workspaceId,
+    Value<String>? cashAccountId,
+    Value<String>? snapshotId,
+    Value<String>? cashEventId,
+    Value<int>? rowid,
+  }) {
+    return SnapshotIncludedEventsCompanion(
+      workspaceId: workspaceId ?? this.workspaceId,
+      cashAccountId: cashAccountId ?? this.cashAccountId,
+      snapshotId: snapshotId ?? this.snapshotId,
+      cashEventId: cashEventId ?? this.cashEventId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (cashAccountId.present) {
+      map['cash_account_id'] = Variable<String>(cashAccountId.value);
+    }
+    if (snapshotId.present) {
+      map['snapshot_id'] = Variable<String>(snapshotId.value);
+    }
+    if (cashEventId.present) {
+      map['cash_event_id'] = Variable<String>(cashEventId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SnapshotIncludedEventsCompanion(')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('snapshotId: $snapshotId, ')
+          ..write('cashEventId: $cashEventId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RecurringOverridesTable extends RecurringOverrides
+    with TableInfo<$RecurringOverridesTable, RecurringOverrideRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecurringOverridesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recurringItemIdMeta = const VerificationMeta(
+    'recurringItemId',
+  );
+  @override
+  late final GeneratedColumn<String> recurringItemId = GeneratedColumn<String>(
+    'recurring_item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _occurrenceKeyMeta = const VerificationMeta(
+    'occurrenceKey',
+  );
+  @override
+  late final GeneratedColumn<String> occurrenceKey = GeneratedColumn<String>(
+    'occurrence_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actionMeta = const VerificationMeta('action');
+  @override
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+    'action',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _eventOnMeta = const VerificationMeta(
+    'eventOn',
+  );
+  @override
+  late final GeneratedColumn<String> eventOn = GeneratedColumn<String>(
+    'event_on',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _eventAtMeta = const VerificationMeta(
+    'eventAt',
+  );
+  @override
+  late final GeneratedColumn<String> eventAt = GeneratedColumn<String>(
+    'event_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    workspaceId,
+    recurringItemId,
+    occurrenceKey,
+    action,
+    amountMinor,
+    eventOn,
+    eventAt,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recurring_overrides';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecurringOverrideRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('recurring_item_id')) {
+      context.handle(
+        _recurringItemIdMeta,
+        recurringItemId.isAcceptableOrUnknown(
+          data['recurring_item_id']!,
+          _recurringItemIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recurringItemIdMeta);
+    }
+    if (data.containsKey('occurrence_key')) {
+      context.handle(
+        _occurrenceKeyMeta,
+        occurrenceKey.isAcceptableOrUnknown(
+          data['occurrence_key']!,
+          _occurrenceKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_occurrenceKeyMeta);
+    }
+    if (data.containsKey('action')) {
+      context.handle(
+        _actionMeta,
+        action.isAcceptableOrUnknown(data['action']!, _actionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_actionMeta);
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('event_on')) {
+      context.handle(
+        _eventOnMeta,
+        eventOn.isAcceptableOrUnknown(data['event_on']!, _eventOnMeta),
+      );
+    }
+    if (data.containsKey('event_at')) {
+      context.handle(
+        _eventAtMeta,
+        eventAt.isAcceptableOrUnknown(data['event_at']!, _eventAtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {recurringItemId, occurrenceKey};
+  @override
+  RecurringOverrideRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecurringOverrideRow(
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      recurringItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recurring_item_id'],
+      )!,
+      occurrenceKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occurrence_key'],
+      )!,
+      action: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}action'],
+      )!,
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      ),
+      eventOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_on'],
+      ),
+      eventAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_at'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $RecurringOverridesTable createAlias(String alias) {
+    return $RecurringOverridesTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class RecurringOverrideRow extends DataClass
+    implements Insertable<RecurringOverrideRow> {
+  final String workspaceId;
+  final String recurringItemId;
+
+  /// 被覆盖的那一期的原定日期。
+  final String occurrenceKey;
+
+  /// `skip` / `override`。
+  final String action;
+  final int? amountMinor;
+  final String? eventOn;
+  final String? eventAt;
+  final String createdAt;
+  final String updatedAt;
+  const RecurringOverrideRow({
+    required this.workspaceId,
+    required this.recurringItemId,
+    required this.occurrenceKey,
+    required this.action,
+    this.amountMinor,
+    this.eventOn,
+    this.eventAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['recurring_item_id'] = Variable<String>(recurringItemId);
+    map['occurrence_key'] = Variable<String>(occurrenceKey);
+    map['action'] = Variable<String>(action);
+    if (!nullToAbsent || amountMinor != null) {
+      map['amount_minor'] = Variable<int>(amountMinor);
+    }
+    if (!nullToAbsent || eventOn != null) {
+      map['event_on'] = Variable<String>(eventOn);
+    }
+    if (!nullToAbsent || eventAt != null) {
+      map['event_at'] = Variable<String>(eventAt);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  RecurringOverridesCompanion toCompanion(bool nullToAbsent) {
+    return RecurringOverridesCompanion(
+      workspaceId: Value(workspaceId),
+      recurringItemId: Value(recurringItemId),
+      occurrenceKey: Value(occurrenceKey),
+      action: Value(action),
+      amountMinor: amountMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(amountMinor),
+      eventOn: eventOn == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventOn),
+      eventAt: eventAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventAt),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory RecurringOverrideRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecurringOverrideRow(
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      recurringItemId: serializer.fromJson<String>(json['recurringItemId']),
+      occurrenceKey: serializer.fromJson<String>(json['occurrenceKey']),
+      action: serializer.fromJson<String>(json['action']),
+      amountMinor: serializer.fromJson<int?>(json['amountMinor']),
+      eventOn: serializer.fromJson<String?>(json['eventOn']),
+      eventAt: serializer.fromJson<String?>(json['eventAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'recurringItemId': serializer.toJson<String>(recurringItemId),
+      'occurrenceKey': serializer.toJson<String>(occurrenceKey),
+      'action': serializer.toJson<String>(action),
+      'amountMinor': serializer.toJson<int?>(amountMinor),
+      'eventOn': serializer.toJson<String?>(eventOn),
+      'eventAt': serializer.toJson<String?>(eventAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  RecurringOverrideRow copyWith({
+    String? workspaceId,
+    String? recurringItemId,
+    String? occurrenceKey,
+    String? action,
+    Value<int?> amountMinor = const Value.absent(),
+    Value<String?> eventOn = const Value.absent(),
+    Value<String?> eventAt = const Value.absent(),
+    String? createdAt,
+    String? updatedAt,
+  }) => RecurringOverrideRow(
+    workspaceId: workspaceId ?? this.workspaceId,
+    recurringItemId: recurringItemId ?? this.recurringItemId,
+    occurrenceKey: occurrenceKey ?? this.occurrenceKey,
+    action: action ?? this.action,
+    amountMinor: amountMinor.present ? amountMinor.value : this.amountMinor,
+    eventOn: eventOn.present ? eventOn.value : this.eventOn,
+    eventAt: eventAt.present ? eventAt.value : this.eventAt,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  RecurringOverrideRow copyWithCompanion(RecurringOverridesCompanion data) {
+    return RecurringOverrideRow(
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      recurringItemId: data.recurringItemId.present
+          ? data.recurringItemId.value
+          : this.recurringItemId,
+      occurrenceKey: data.occurrenceKey.present
+          ? data.occurrenceKey.value
+          : this.occurrenceKey,
+      action: data.action.present ? data.action.value : this.action,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+      eventOn: data.eventOn.present ? data.eventOn.value : this.eventOn,
+      eventAt: data.eventAt.present ? data.eventAt.value : this.eventAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurringOverrideRow(')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('recurringItemId: $recurringItemId, ')
+          ..write('occurrenceKey: $occurrenceKey, ')
+          ..write('action: $action, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('eventOn: $eventOn, ')
+          ..write('eventAt: $eventAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    workspaceId,
+    recurringItemId,
+    occurrenceKey,
+    action,
+    amountMinor,
+    eventOn,
+    eventAt,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecurringOverrideRow &&
+          other.workspaceId == this.workspaceId &&
+          other.recurringItemId == this.recurringItemId &&
+          other.occurrenceKey == this.occurrenceKey &&
+          other.action == this.action &&
+          other.amountMinor == this.amountMinor &&
+          other.eventOn == this.eventOn &&
+          other.eventAt == this.eventAt &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class RecurringOverridesCompanion
+    extends UpdateCompanion<RecurringOverrideRow> {
+  final Value<String> workspaceId;
+  final Value<String> recurringItemId;
+  final Value<String> occurrenceKey;
+  final Value<String> action;
+  final Value<int?> amountMinor;
+  final Value<String?> eventOn;
+  final Value<String?> eventAt;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const RecurringOverridesCompanion({
+    this.workspaceId = const Value.absent(),
+    this.recurringItemId = const Value.absent(),
+    this.occurrenceKey = const Value.absent(),
+    this.action = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.eventOn = const Value.absent(),
+    this.eventAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecurringOverridesCompanion.insert({
+    required String workspaceId,
+    required String recurringItemId,
+    required String occurrenceKey,
+    required String action,
+    this.amountMinor = const Value.absent(),
+    this.eventOn = const Value.absent(),
+    this.eventAt = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : workspaceId = Value(workspaceId),
+       recurringItemId = Value(recurringItemId),
+       occurrenceKey = Value(occurrenceKey),
+       action = Value(action),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<RecurringOverrideRow> custom({
+    Expression<String>? workspaceId,
+    Expression<String>? recurringItemId,
+    Expression<String>? occurrenceKey,
+    Expression<String>? action,
+    Expression<int>? amountMinor,
+    Expression<String>? eventOn,
+    Expression<String>? eventAt,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (recurringItemId != null) 'recurring_item_id': recurringItemId,
+      if (occurrenceKey != null) 'occurrence_key': occurrenceKey,
+      if (action != null) 'action': action,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (eventOn != null) 'event_on': eventOn,
+      if (eventAt != null) 'event_at': eventAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecurringOverridesCompanion copyWith({
+    Value<String>? workspaceId,
+    Value<String>? recurringItemId,
+    Value<String>? occurrenceKey,
+    Value<String>? action,
+    Value<int?>? amountMinor,
+    Value<String?>? eventOn,
+    Value<String?>? eventAt,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return RecurringOverridesCompanion(
+      workspaceId: workspaceId ?? this.workspaceId,
+      recurringItemId: recurringItemId ?? this.recurringItemId,
+      occurrenceKey: occurrenceKey ?? this.occurrenceKey,
+      action: action ?? this.action,
+      amountMinor: amountMinor ?? this.amountMinor,
+      eventOn: eventOn ?? this.eventOn,
+      eventAt: eventAt ?? this.eventAt,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (recurringItemId.present) {
+      map['recurring_item_id'] = Variable<String>(recurringItemId.value);
+    }
+    if (occurrenceKey.present) {
+      map['occurrence_key'] = Variable<String>(occurrenceKey.value);
+    }
+    if (action.present) {
+      map['action'] = Variable<String>(action.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (eventOn.present) {
+      map['event_on'] = Variable<String>(eventOn.value);
+    }
+    if (eventAt.present) {
+      map['event_at'] = Variable<String>(eventAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurringOverridesCompanion(')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('recurringItemId: $recurringItemId, ')
+          ..write('occurrenceKey: $occurrenceKey, ')
+          ..write('action: $action, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('eventOn: $eventOn, ')
+          ..write('eventAt: $eventAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ScenariosTable extends Scenarios
+    with TableInfo<$ScenariosTable, ScenarioRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScenariosTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _includeExpectedMeta = const VerificationMeta(
+    'includeExpected',
+  );
+  @override
+  late final GeneratedColumn<bool> includeExpected = GeneratedColumn<bool>(
+    'include_expected',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("include_expected" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _incomeDelayDaysMeta = const VerificationMeta(
+    'incomeDelayDays',
+  );
+  @override
+  late final GeneratedColumn<int> incomeDelayDays = GeneratedColumn<int>(
+    'income_delay_days',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _incomeScaleMeta = const VerificationMeta(
+    'incomeScale',
+  );
+  @override
+  late final GeneratedColumn<String> incomeScale = GeneratedColumn<String>(
+    'income_scale',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('1'),
+  );
+  static const VerificationMeta _expenseScaleMeta = const VerificationMeta(
+    'expenseScale',
+  );
+  @override
+  late final GeneratedColumn<String> expenseScale = GeneratedColumn<String>(
+    'expense_scale',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('1'),
+  );
+  static const VerificationMeta _sameDayOrderMeta = const VerificationMeta(
+    'sameDayOrder',
+  );
+  @override
+  late final GeneratedColumn<String> sameDayOrder = GeneratedColumn<String>(
+    'same_day_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('conservative'),
+  );
+  static const VerificationMeta _limitChangesMeta = const VerificationMeta(
+    'limitChanges',
+  );
+  @override
+  late final GeneratedColumn<String> limitChanges = GeneratedColumn<String>(
+    'limit_changes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _eventOverridesMeta = const VerificationMeta(
+    'eventOverrides',
+  );
+  @override
+  late final GeneratedColumn<String> eventOverrides = GeneratedColumn<String>(
+    'event_overrides',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    name,
+    kind,
+    includeExpected,
+    incomeDelayDays,
+    incomeScale,
+    expenseScale,
+    sameDayOrder,
+    limitChanges,
+    eventOverrides,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'scenarios';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ScenarioRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('include_expected')) {
+      context.handle(
+        _includeExpectedMeta,
+        includeExpected.isAcceptableOrUnknown(
+          data['include_expected']!,
+          _includeExpectedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_includeExpectedMeta);
+    }
+    if (data.containsKey('income_delay_days')) {
+      context.handle(
+        _incomeDelayDaysMeta,
+        incomeDelayDays.isAcceptableOrUnknown(
+          data['income_delay_days']!,
+          _incomeDelayDaysMeta,
+        ),
+      );
+    }
+    if (data.containsKey('income_scale')) {
+      context.handle(
+        _incomeScaleMeta,
+        incomeScale.isAcceptableOrUnknown(
+          data['income_scale']!,
+          _incomeScaleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('expense_scale')) {
+      context.handle(
+        _expenseScaleMeta,
+        expenseScale.isAcceptableOrUnknown(
+          data['expense_scale']!,
+          _expenseScaleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('same_day_order')) {
+      context.handle(
+        _sameDayOrderMeta,
+        sameDayOrder.isAcceptableOrUnknown(
+          data['same_day_order']!,
+          _sameDayOrderMeta,
+        ),
+      );
+    }
+    if (data.containsKey('limit_changes')) {
+      context.handle(
+        _limitChangesMeta,
+        limitChanges.isAcceptableOrUnknown(
+          data['limit_changes']!,
+          _limitChangesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('event_overrides')) {
+      context.handle(
+        _eventOverridesMeta,
+        eventOverrides.isAcceptableOrUnknown(
+          data['event_overrides']!,
+          _eventOverridesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, name},
+  ];
+  @override
+  ScenarioRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScenarioRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      includeExpected: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}include_expected'],
+      )!,
+      incomeDelayDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}income_delay_days'],
+      )!,
+      incomeScale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}income_scale'],
+      )!,
+      expenseScale: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}expense_scale'],
+      )!,
+      sameDayOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}same_day_order'],
+      )!,
+      limitChanges: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}limit_changes'],
+      )!,
+      eventOverrides: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_overrides'],
+      )!,
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ScenariosTable createAlias(String alias) {
+    return $ScenariosTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class ScenarioRow extends DataClass implements Insertable<ScenarioRow> {
+  final String id;
+  final String workspaceId;
+  final String name;
+
+  /// `builtin_confirmed` / `builtin_baseline` / `user_stress`。
+  final String kind;
+  final bool includeExpected;
+  final int incomeDelayDays;
+  final String incomeScale;
+  final String expenseScale;
+
+  /// `conservative` / `timestamp`。
+  final String sameDayOrder;
+
+  /// `[{"credit_account_id", "on", "change_minor"}]`。
+  final String limitChanges;
+
+  /// `[{"event_id", "on"?, "amount_minor"?}]`。
+  final String eventOverrides;
+  final int rowVersion;
+  final String createdAt;
+  final String updatedAt;
+  const ScenarioRow({
+    required this.id,
+    required this.workspaceId,
+    required this.name,
+    required this.kind,
+    required this.includeExpected,
+    required this.incomeDelayDays,
+    required this.incomeScale,
+    required this.expenseScale,
+    required this.sameDayOrder,
+    required this.limitChanges,
+    required this.eventOverrides,
+    required this.rowVersion,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['name'] = Variable<String>(name);
+    map['kind'] = Variable<String>(kind);
+    map['include_expected'] = Variable<bool>(includeExpected);
+    map['income_delay_days'] = Variable<int>(incomeDelayDays);
+    map['income_scale'] = Variable<String>(incomeScale);
+    map['expense_scale'] = Variable<String>(expenseScale);
+    map['same_day_order'] = Variable<String>(sameDayOrder);
+    map['limit_changes'] = Variable<String>(limitChanges);
+    map['event_overrides'] = Variable<String>(eventOverrides);
+    map['row_version'] = Variable<int>(rowVersion);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  ScenariosCompanion toCompanion(bool nullToAbsent) {
+    return ScenariosCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      name: Value(name),
+      kind: Value(kind),
+      includeExpected: Value(includeExpected),
+      incomeDelayDays: Value(incomeDelayDays),
+      incomeScale: Value(incomeScale),
+      expenseScale: Value(expenseScale),
+      sameDayOrder: Value(sameDayOrder),
+      limitChanges: Value(limitChanges),
+      eventOverrides: Value(eventOverrides),
+      rowVersion: Value(rowVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ScenarioRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ScenarioRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      name: serializer.fromJson<String>(json['name']),
+      kind: serializer.fromJson<String>(json['kind']),
+      includeExpected: serializer.fromJson<bool>(json['includeExpected']),
+      incomeDelayDays: serializer.fromJson<int>(json['incomeDelayDays']),
+      incomeScale: serializer.fromJson<String>(json['incomeScale']),
+      expenseScale: serializer.fromJson<String>(json['expenseScale']),
+      sameDayOrder: serializer.fromJson<String>(json['sameDayOrder']),
+      limitChanges: serializer.fromJson<String>(json['limitChanges']),
+      eventOverrides: serializer.fromJson<String>(json['eventOverrides']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'name': serializer.toJson<String>(name),
+      'kind': serializer.toJson<String>(kind),
+      'includeExpected': serializer.toJson<bool>(includeExpected),
+      'incomeDelayDays': serializer.toJson<int>(incomeDelayDays),
+      'incomeScale': serializer.toJson<String>(incomeScale),
+      'expenseScale': serializer.toJson<String>(expenseScale),
+      'sameDayOrder': serializer.toJson<String>(sameDayOrder),
+      'limitChanges': serializer.toJson<String>(limitChanges),
+      'eventOverrides': serializer.toJson<String>(eventOverrides),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  ScenarioRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? name,
+    String? kind,
+    bool? includeExpected,
+    int? incomeDelayDays,
+    String? incomeScale,
+    String? expenseScale,
+    String? sameDayOrder,
+    String? limitChanges,
+    String? eventOverrides,
+    int? rowVersion,
+    String? createdAt,
+    String? updatedAt,
+  }) => ScenarioRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    name: name ?? this.name,
+    kind: kind ?? this.kind,
+    includeExpected: includeExpected ?? this.includeExpected,
+    incomeDelayDays: incomeDelayDays ?? this.incomeDelayDays,
+    incomeScale: incomeScale ?? this.incomeScale,
+    expenseScale: expenseScale ?? this.expenseScale,
+    sameDayOrder: sameDayOrder ?? this.sameDayOrder,
+    limitChanges: limitChanges ?? this.limitChanges,
+    eventOverrides: eventOverrides ?? this.eventOverrides,
+    rowVersion: rowVersion ?? this.rowVersion,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ScenarioRow copyWithCompanion(ScenariosCompanion data) {
+    return ScenarioRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      name: data.name.present ? data.name.value : this.name,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      includeExpected: data.includeExpected.present
+          ? data.includeExpected.value
+          : this.includeExpected,
+      incomeDelayDays: data.incomeDelayDays.present
+          ? data.incomeDelayDays.value
+          : this.incomeDelayDays,
+      incomeScale: data.incomeScale.present
+          ? data.incomeScale.value
+          : this.incomeScale,
+      expenseScale: data.expenseScale.present
+          ? data.expenseScale.value
+          : this.expenseScale,
+      sameDayOrder: data.sameDayOrder.present
+          ? data.sameDayOrder.value
+          : this.sameDayOrder,
+      limitChanges: data.limitChanges.present
+          ? data.limitChanges.value
+          : this.limitChanges,
+      eventOverrides: data.eventOverrides.present
+          ? data.eventOverrides.value
+          : this.eventOverrides,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScenarioRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('name: $name, ')
+          ..write('kind: $kind, ')
+          ..write('includeExpected: $includeExpected, ')
+          ..write('incomeDelayDays: $incomeDelayDays, ')
+          ..write('incomeScale: $incomeScale, ')
+          ..write('expenseScale: $expenseScale, ')
+          ..write('sameDayOrder: $sameDayOrder, ')
+          ..write('limitChanges: $limitChanges, ')
+          ..write('eventOverrides: $eventOverrides, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    name,
+    kind,
+    includeExpected,
+    incomeDelayDays,
+    incomeScale,
+    expenseScale,
+    sameDayOrder,
+    limitChanges,
+    eventOverrides,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScenarioRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.name == this.name &&
+          other.kind == this.kind &&
+          other.includeExpected == this.includeExpected &&
+          other.incomeDelayDays == this.incomeDelayDays &&
+          other.incomeScale == this.incomeScale &&
+          other.expenseScale == this.expenseScale &&
+          other.sameDayOrder == this.sameDayOrder &&
+          other.limitChanges == this.limitChanges &&
+          other.eventOverrides == this.eventOverrides &&
+          other.rowVersion == this.rowVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ScenariosCompanion extends UpdateCompanion<ScenarioRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> name;
+  final Value<String> kind;
+  final Value<bool> includeExpected;
+  final Value<int> incomeDelayDays;
+  final Value<String> incomeScale;
+  final Value<String> expenseScale;
+  final Value<String> sameDayOrder;
+  final Value<String> limitChanges;
+  final Value<String> eventOverrides;
+  final Value<int> rowVersion;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const ScenariosCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.includeExpected = const Value.absent(),
+    this.incomeDelayDays = const Value.absent(),
+    this.incomeScale = const Value.absent(),
+    this.expenseScale = const Value.absent(),
+    this.sameDayOrder = const Value.absent(),
+    this.limitChanges = const Value.absent(),
+    this.eventOverrides = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ScenariosCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String name,
+    required String kind,
+    required bool includeExpected,
+    this.incomeDelayDays = const Value.absent(),
+    this.incomeScale = const Value.absent(),
+    this.expenseScale = const Value.absent(),
+    this.sameDayOrder = const Value.absent(),
+    this.limitChanges = const Value.absent(),
+    this.eventOverrides = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       name = Value(name),
+       kind = Value(kind),
+       includeExpected = Value(includeExpected),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<ScenarioRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? name,
+    Expression<String>? kind,
+    Expression<bool>? includeExpected,
+    Expression<int>? incomeDelayDays,
+    Expression<String>? incomeScale,
+    Expression<String>? expenseScale,
+    Expression<String>? sameDayOrder,
+    Expression<String>? limitChanges,
+    Expression<String>? eventOverrides,
+    Expression<int>? rowVersion,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (name != null) 'name': name,
+      if (kind != null) 'kind': kind,
+      if (includeExpected != null) 'include_expected': includeExpected,
+      if (incomeDelayDays != null) 'income_delay_days': incomeDelayDays,
+      if (incomeScale != null) 'income_scale': incomeScale,
+      if (expenseScale != null) 'expense_scale': expenseScale,
+      if (sameDayOrder != null) 'same_day_order': sameDayOrder,
+      if (limitChanges != null) 'limit_changes': limitChanges,
+      if (eventOverrides != null) 'event_overrides': eventOverrides,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ScenariosCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? name,
+    Value<String>? kind,
+    Value<bool>? includeExpected,
+    Value<int>? incomeDelayDays,
+    Value<String>? incomeScale,
+    Value<String>? expenseScale,
+    Value<String>? sameDayOrder,
+    Value<String>? limitChanges,
+    Value<String>? eventOverrides,
+    Value<int>? rowVersion,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ScenariosCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      name: name ?? this.name,
+      kind: kind ?? this.kind,
+      includeExpected: includeExpected ?? this.includeExpected,
+      incomeDelayDays: incomeDelayDays ?? this.incomeDelayDays,
+      incomeScale: incomeScale ?? this.incomeScale,
+      expenseScale: expenseScale ?? this.expenseScale,
+      sameDayOrder: sameDayOrder ?? this.sameDayOrder,
+      limitChanges: limitChanges ?? this.limitChanges,
+      eventOverrides: eventOverrides ?? this.eventOverrides,
+      rowVersion: rowVersion ?? this.rowVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (includeExpected.present) {
+      map['include_expected'] = Variable<bool>(includeExpected.value);
+    }
+    if (incomeDelayDays.present) {
+      map['income_delay_days'] = Variable<int>(incomeDelayDays.value);
+    }
+    if (incomeScale.present) {
+      map['income_scale'] = Variable<String>(incomeScale.value);
+    }
+    if (expenseScale.present) {
+      map['expense_scale'] = Variable<String>(expenseScale.value);
+    }
+    if (sameDayOrder.present) {
+      map['same_day_order'] = Variable<String>(sameDayOrder.value);
+    }
+    if (limitChanges.present) {
+      map['limit_changes'] = Variable<String>(limitChanges.value);
+    }
+    if (eventOverrides.present) {
+      map['event_overrides'] = Variable<String>(eventOverrides.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScenariosCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('name: $name, ')
+          ..write('kind: $kind, ')
+          ..write('includeExpected: $includeExpected, ')
+          ..write('incomeDelayDays: $incomeDelayDays, ')
+          ..write('incomeScale: $incomeScale, ')
+          ..write('expenseScale: $expenseScale, ')
+          ..write('sameDayOrder: $sameDayOrder, ')
+          ..write('limitChanges: $limitChanges, ')
+          ..write('eventOverrides: $eventOverrides, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ScenarioRunsTable extends ScenarioRuns
+    with TableInfo<$ScenarioRunsTable, ScenarioRunRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScenarioRunsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _scenarioIdMeta = const VerificationMeta(
+    'scenarioId',
+  );
+  @override
+  late final GeneratedColumn<String> scenarioId = GeneratedColumn<String>(
+    'scenario_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionNoMeta = const VerificationMeta(
+    'versionNo',
+  );
+  @override
+  late final GeneratedColumn<int> versionNo = GeneratedColumn<int>(
+    'version_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _computedAtMeta = const VerificationMeta(
+    'computedAt',
+  );
+  @override
+  late final GeneratedColumn<String> computedAt = GeneratedColumn<String>(
+    'computed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _horizonFromMeta = const VerificationMeta(
+    'horizonFrom',
+  );
+  @override
+  late final GeneratedColumn<String> horizonFrom = GeneratedColumn<String>(
+    'horizon_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _horizonToMeta = const VerificationMeta(
+    'horizonTo',
+  );
+  @override
+  late final GeneratedColumn<String> horizonTo = GeneratedColumn<String>(
+    'horizon_to',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _inputsHashMeta = const VerificationMeta(
+    'inputsHash',
+  );
+  @override
+  late final GeneratedColumn<String> inputsHash = GeneratedColumn<String>(
+    'inputs_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _resultMeta = const VerificationMeta('result');
+  @override
+  late final GeneratedColumn<String> result = GeneratedColumn<String>(
+    'result',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    scenarioId,
+    versionNo,
+    computedAt,
+    horizonFrom,
+    horizonTo,
+    inputsHash,
+    result,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'scenario_runs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ScenarioRunRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('scenario_id')) {
+      context.handle(
+        _scenarioIdMeta,
+        scenarioId.isAcceptableOrUnknown(data['scenario_id']!, _scenarioIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_scenarioIdMeta);
+    }
+    if (data.containsKey('version_no')) {
+      context.handle(
+        _versionNoMeta,
+        versionNo.isAcceptableOrUnknown(data['version_no']!, _versionNoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionNoMeta);
+    }
+    if (data.containsKey('computed_at')) {
+      context.handle(
+        _computedAtMeta,
+        computedAt.isAcceptableOrUnknown(data['computed_at']!, _computedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_computedAtMeta);
+    }
+    if (data.containsKey('horizon_from')) {
+      context.handle(
+        _horizonFromMeta,
+        horizonFrom.isAcceptableOrUnknown(
+          data['horizon_from']!,
+          _horizonFromMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_horizonFromMeta);
+    }
+    if (data.containsKey('horizon_to')) {
+      context.handle(
+        _horizonToMeta,
+        horizonTo.isAcceptableOrUnknown(data['horizon_to']!, _horizonToMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_horizonToMeta);
+    }
+    if (data.containsKey('inputs_hash')) {
+      context.handle(
+        _inputsHashMeta,
+        inputsHash.isAcceptableOrUnknown(data['inputs_hash']!, _inputsHashMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_inputsHashMeta);
+    }
+    if (data.containsKey('result')) {
+      context.handle(
+        _resultMeta,
+        result.isAcceptableOrUnknown(data['result']!, _resultMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_resultMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {scenarioId, versionNo},
+  ];
+  @override
+  ScenarioRunRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScenarioRunRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      scenarioId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scenario_id'],
+      )!,
+      versionNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version_no'],
+      )!,
+      computedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}computed_at'],
+      )!,
+      horizonFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}horizon_from'],
+      )!,
+      horizonTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}horizon_to'],
+      )!,
+      inputsHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}inputs_hash'],
+      )!,
+      result: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}result'],
+      )!,
+    );
+  }
+
+  @override
+  $ScenarioRunsTable createAlias(String alias) {
+    return $ScenarioRunsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class ScenarioRunRow extends DataClass implements Insertable<ScenarioRunRow> {
+  final String id;
+  final String workspaceId;
+  final String scenarioId;
+  final int versionNo;
+  final String computedAt;
+  final String horizonFrom;
+  final String horizonTo;
+
+  /// 输入的 sha256（小写十六进制）：与当前输入不同即"过期"。
+  final String inputsHash;
+  final String result;
+  const ScenarioRunRow({
+    required this.id,
+    required this.workspaceId,
+    required this.scenarioId,
+    required this.versionNo,
+    required this.computedAt,
+    required this.horizonFrom,
+    required this.horizonTo,
+    required this.inputsHash,
+    required this.result,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['scenario_id'] = Variable<String>(scenarioId);
+    map['version_no'] = Variable<int>(versionNo);
+    map['computed_at'] = Variable<String>(computedAt);
+    map['horizon_from'] = Variable<String>(horizonFrom);
+    map['horizon_to'] = Variable<String>(horizonTo);
+    map['inputs_hash'] = Variable<String>(inputsHash);
+    map['result'] = Variable<String>(result);
+    return map;
+  }
+
+  ScenarioRunsCompanion toCompanion(bool nullToAbsent) {
+    return ScenarioRunsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      scenarioId: Value(scenarioId),
+      versionNo: Value(versionNo),
+      computedAt: Value(computedAt),
+      horizonFrom: Value(horizonFrom),
+      horizonTo: Value(horizonTo),
+      inputsHash: Value(inputsHash),
+      result: Value(result),
+    );
+  }
+
+  factory ScenarioRunRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ScenarioRunRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      scenarioId: serializer.fromJson<String>(json['scenarioId']),
+      versionNo: serializer.fromJson<int>(json['versionNo']),
+      computedAt: serializer.fromJson<String>(json['computedAt']),
+      horizonFrom: serializer.fromJson<String>(json['horizonFrom']),
+      horizonTo: serializer.fromJson<String>(json['horizonTo']),
+      inputsHash: serializer.fromJson<String>(json['inputsHash']),
+      result: serializer.fromJson<String>(json['result']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'scenarioId': serializer.toJson<String>(scenarioId),
+      'versionNo': serializer.toJson<int>(versionNo),
+      'computedAt': serializer.toJson<String>(computedAt),
+      'horizonFrom': serializer.toJson<String>(horizonFrom),
+      'horizonTo': serializer.toJson<String>(horizonTo),
+      'inputsHash': serializer.toJson<String>(inputsHash),
+      'result': serializer.toJson<String>(result),
+    };
+  }
+
+  ScenarioRunRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? scenarioId,
+    int? versionNo,
+    String? computedAt,
+    String? horizonFrom,
+    String? horizonTo,
+    String? inputsHash,
+    String? result,
+  }) => ScenarioRunRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    scenarioId: scenarioId ?? this.scenarioId,
+    versionNo: versionNo ?? this.versionNo,
+    computedAt: computedAt ?? this.computedAt,
+    horizonFrom: horizonFrom ?? this.horizonFrom,
+    horizonTo: horizonTo ?? this.horizonTo,
+    inputsHash: inputsHash ?? this.inputsHash,
+    result: result ?? this.result,
+  );
+  ScenarioRunRow copyWithCompanion(ScenarioRunsCompanion data) {
+    return ScenarioRunRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      scenarioId: data.scenarioId.present
+          ? data.scenarioId.value
+          : this.scenarioId,
+      versionNo: data.versionNo.present ? data.versionNo.value : this.versionNo,
+      computedAt: data.computedAt.present
+          ? data.computedAt.value
+          : this.computedAt,
+      horizonFrom: data.horizonFrom.present
+          ? data.horizonFrom.value
+          : this.horizonFrom,
+      horizonTo: data.horizonTo.present ? data.horizonTo.value : this.horizonTo,
+      inputsHash: data.inputsHash.present
+          ? data.inputsHash.value
+          : this.inputsHash,
+      result: data.result.present ? data.result.value : this.result,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScenarioRunRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('scenarioId: $scenarioId, ')
+          ..write('versionNo: $versionNo, ')
+          ..write('computedAt: $computedAt, ')
+          ..write('horizonFrom: $horizonFrom, ')
+          ..write('horizonTo: $horizonTo, ')
+          ..write('inputsHash: $inputsHash, ')
+          ..write('result: $result')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    scenarioId,
+    versionNo,
+    computedAt,
+    horizonFrom,
+    horizonTo,
+    inputsHash,
+    result,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScenarioRunRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.scenarioId == this.scenarioId &&
+          other.versionNo == this.versionNo &&
+          other.computedAt == this.computedAt &&
+          other.horizonFrom == this.horizonFrom &&
+          other.horizonTo == this.horizonTo &&
+          other.inputsHash == this.inputsHash &&
+          other.result == this.result);
+}
+
+class ScenarioRunsCompanion extends UpdateCompanion<ScenarioRunRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> scenarioId;
+  final Value<int> versionNo;
+  final Value<String> computedAt;
+  final Value<String> horizonFrom;
+  final Value<String> horizonTo;
+  final Value<String> inputsHash;
+  final Value<String> result;
+  final Value<int> rowid;
+  const ScenarioRunsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.scenarioId = const Value.absent(),
+    this.versionNo = const Value.absent(),
+    this.computedAt = const Value.absent(),
+    this.horizonFrom = const Value.absent(),
+    this.horizonTo = const Value.absent(),
+    this.inputsHash = const Value.absent(),
+    this.result = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ScenarioRunsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String scenarioId,
+    required int versionNo,
+    required String computedAt,
+    required String horizonFrom,
+    required String horizonTo,
+    required String inputsHash,
+    required String result,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       scenarioId = Value(scenarioId),
+       versionNo = Value(versionNo),
+       computedAt = Value(computedAt),
+       horizonFrom = Value(horizonFrom),
+       horizonTo = Value(horizonTo),
+       inputsHash = Value(inputsHash),
+       result = Value(result);
+  static Insertable<ScenarioRunRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? scenarioId,
+    Expression<int>? versionNo,
+    Expression<String>? computedAt,
+    Expression<String>? horizonFrom,
+    Expression<String>? horizonTo,
+    Expression<String>? inputsHash,
+    Expression<String>? result,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (scenarioId != null) 'scenario_id': scenarioId,
+      if (versionNo != null) 'version_no': versionNo,
+      if (computedAt != null) 'computed_at': computedAt,
+      if (horizonFrom != null) 'horizon_from': horizonFrom,
+      if (horizonTo != null) 'horizon_to': horizonTo,
+      if (inputsHash != null) 'inputs_hash': inputsHash,
+      if (result != null) 'result': result,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ScenarioRunsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? scenarioId,
+    Value<int>? versionNo,
+    Value<String>? computedAt,
+    Value<String>? horizonFrom,
+    Value<String>? horizonTo,
+    Value<String>? inputsHash,
+    Value<String>? result,
+    Value<int>? rowid,
+  }) {
+    return ScenarioRunsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      scenarioId: scenarioId ?? this.scenarioId,
+      versionNo: versionNo ?? this.versionNo,
+      computedAt: computedAt ?? this.computedAt,
+      horizonFrom: horizonFrom ?? this.horizonFrom,
+      horizonTo: horizonTo ?? this.horizonTo,
+      inputsHash: inputsHash ?? this.inputsHash,
+      result: result ?? this.result,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (scenarioId.present) {
+      map['scenario_id'] = Variable<String>(scenarioId.value);
+    }
+    if (versionNo.present) {
+      map['version_no'] = Variable<int>(versionNo.value);
+    }
+    if (computedAt.present) {
+      map['computed_at'] = Variable<String>(computedAt.value);
+    }
+    if (horizonFrom.present) {
+      map['horizon_from'] = Variable<String>(horizonFrom.value);
+    }
+    if (horizonTo.present) {
+      map['horizon_to'] = Variable<String>(horizonTo.value);
+    }
+    if (inputsHash.present) {
+      map['inputs_hash'] = Variable<String>(inputsHash.value);
+    }
+    if (result.present) {
+      map['result'] = Variable<String>(result.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScenarioRunsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('scenarioId: $scenarioId, ')
+          ..write('versionNo: $versionNo, ')
+          ..write('computedAt: $computedAt, ')
+          ..write('horizonFrom: $horizonFrom, ')
+          ..write('horizonTo: $horizonTo, ')
+          ..write('inputsHash: $inputsHash, ')
+          ..write('result: $result, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -6353,6 +12155,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $BillingRuleVersionsTable billingRuleVersions =
       $BillingRuleVersionsTable(this);
   late final $LimitSnapshotsTable limitSnapshots = $LimitSnapshotsTable(this);
+  late final $CashAccountsTable cashAccounts = $CashAccountsTable(this);
+  late final $CashBalanceSnapshotsTable cashBalanceSnapshots =
+      $CashBalanceSnapshotsTable(this);
+  late final $RecurringItemsTable recurringItems = $RecurringItemsTable(this);
+  late final $CashEventsTable cashEvents = $CashEventsTable(this);
+  late final $SnapshotIncludedEventsTable snapshotIncludedEvents =
+      $SnapshotIncludedEventsTable(this);
+  late final $RecurringOverridesTable recurringOverrides =
+      $RecurringOverridesTable(this);
+  late final $ScenariosTable scenarios = $ScenariosTable(this);
+  late final $ScenarioRunsTable scenarioRuns = $ScenarioRunsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6367,6 +12180,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     cards,
     billingRuleVersions,
     limitSnapshots,
+    cashAccounts,
+    cashBalanceSnapshots,
+    recurringItems,
+    cashEvents,
+    snapshotIncludedEvents,
+    recurringOverrides,
+    scenarios,
+    scenarioRuns,
   ];
 }
 
@@ -9453,6 +15274,2840 @@ typedef $$LimitSnapshotsTableProcessedTableManager =
       LimitSnapshotRow,
       PrefetchHooks Function()
     >;
+typedef $$CashAccountsTableCreateCompanionBuilder =
+    CashAccountsCompanion Function({
+      required String id,
+      required String workspaceId,
+      required String name,
+      required String currency,
+      required String kind,
+      Value<bool> usableForRepayment,
+      Value<String?> availableFrom,
+      Value<int> reserveFloorMinor,
+      Value<String> status,
+      Value<int> rowVersion,
+      required String createdAt,
+      required String updatedAt,
+      Value<String?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$CashAccountsTableUpdateCompanionBuilder =
+    CashAccountsCompanion Function({
+      Value<String> id,
+      Value<String> workspaceId,
+      Value<String> name,
+      Value<String> currency,
+      Value<String> kind,
+      Value<bool> usableForRepayment,
+      Value<String?> availableFrom,
+      Value<int> reserveFloorMinor,
+      Value<String> status,
+      Value<int> rowVersion,
+      Value<String> createdAt,
+      Value<String> updatedAt,
+      Value<String?> deletedAt,
+      Value<int> rowid,
+    });
+
+class $$CashAccountsTableFilterComposer
+    extends Composer<_$AppDatabase, $CashAccountsTable> {
+  $$CashAccountsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get usableForRepayment => $composableBuilder(
+    column: $table.usableForRepayment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get availableFrom => $composableBuilder(
+    column: $table.availableFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reserveFloorMinor => $composableBuilder(
+    column: $table.reserveFloorMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CashAccountsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CashAccountsTable> {
+  $$CashAccountsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get usableForRepayment => $composableBuilder(
+    column: $table.usableForRepayment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get availableFrom => $composableBuilder(
+    column: $table.availableFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reserveFloorMinor => $composableBuilder(
+    column: $table.reserveFloorMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CashAccountsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CashAccountsTable> {
+  $$CashAccountsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get currency =>
+      $composableBuilder(column: $table.currency, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<bool> get usableForRepayment => $composableBuilder(
+    column: $table.usableForRepayment,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get availableFrom => $composableBuilder(
+    column: $table.availableFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reserveFloorMinor => $composableBuilder(
+    column: $table.reserveFloorMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$CashAccountsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CashAccountsTable,
+          CashAccountRow,
+          $$CashAccountsTableFilterComposer,
+          $$CashAccountsTableOrderingComposer,
+          $$CashAccountsTableAnnotationComposer,
+          $$CashAccountsTableCreateCompanionBuilder,
+          $$CashAccountsTableUpdateCompanionBuilder,
+          (
+            CashAccountRow,
+            BaseReferences<_$AppDatabase, $CashAccountsTable, CashAccountRow>,
+          ),
+          CashAccountRow,
+          PrefetchHooks Function()
+        > {
+  $$CashAccountsTableTableManager(_$AppDatabase db, $CashAccountsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CashAccountsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CashAccountsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CashAccountsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> currency = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<bool> usableForRepayment = const Value.absent(),
+                Value<String?> availableFrom = const Value.absent(),
+                Value<int> reserveFloorMinor = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<String?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CashAccountsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                name: name,
+                currency: currency,
+                kind: kind,
+                usableForRepayment: usableForRepayment,
+                availableFrom: availableFrom,
+                reserveFloorMinor: reserveFloorMinor,
+                status: status,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String name,
+                required String currency,
+                required String kind,
+                Value<bool> usableForRepayment = const Value.absent(),
+                Value<String?> availableFrom = const Value.absent(),
+                Value<int> reserveFloorMinor = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<String?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CashAccountsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                name: name,
+                currency: currency,
+                kind: kind,
+                usableForRepayment: usableForRepayment,
+                availableFrom: availableFrom,
+                reserveFloorMinor: reserveFloorMinor,
+                status: status,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CashAccountsTable, CashAccountRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $CashAccountsTable,
+                    CashAccountRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CashAccountsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CashAccountsTable,
+      CashAccountRow,
+      $$CashAccountsTableFilterComposer,
+      $$CashAccountsTableOrderingComposer,
+      $$CashAccountsTableAnnotationComposer,
+      $$CashAccountsTableCreateCompanionBuilder,
+      $$CashAccountsTableUpdateCompanionBuilder,
+      (
+        CashAccountRow,
+        BaseReferences<_$AppDatabase, $CashAccountsTable, CashAccountRow>,
+      ),
+      CashAccountRow,
+      PrefetchHooks Function()
+    >;
+typedef $$CashBalanceSnapshotsTableCreateCompanionBuilder =
+    CashBalanceSnapshotsCompanion Function({
+      required String id,
+      required String workspaceId,
+      required String cashAccountId,
+      required int balanceMinor,
+      required String balanceAsOf,
+      required String observedAt,
+      required String sourceKind,
+      required String confirmationLevel,
+      required String recordedAt,
+      Value<int> rowid,
+    });
+typedef $$CashBalanceSnapshotsTableUpdateCompanionBuilder =
+    CashBalanceSnapshotsCompanion Function({
+      Value<String> id,
+      Value<String> workspaceId,
+      Value<String> cashAccountId,
+      Value<int> balanceMinor,
+      Value<String> balanceAsOf,
+      Value<String> observedAt,
+      Value<String> sourceKind,
+      Value<String> confirmationLevel,
+      Value<String> recordedAt,
+      Value<int> rowid,
+    });
+
+class $$CashBalanceSnapshotsTableFilterComposer
+    extends Composer<_$AppDatabase, $CashBalanceSnapshotsTable> {
+  $$CashBalanceSnapshotsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get balanceMinor => $composableBuilder(
+    column: $table.balanceMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get balanceAsOf => $composableBuilder(
+    column: $table.balanceAsOf,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get confirmationLevel => $composableBuilder(
+    column: $table.confirmationLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CashBalanceSnapshotsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CashBalanceSnapshotsTable> {
+  $$CashBalanceSnapshotsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get balanceMinor => $composableBuilder(
+    column: $table.balanceMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get balanceAsOf => $composableBuilder(
+    column: $table.balanceAsOf,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get confirmationLevel => $composableBuilder(
+    column: $table.confirmationLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CashBalanceSnapshotsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CashBalanceSnapshotsTable> {
+  $$CashBalanceSnapshotsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get balanceMinor => $composableBuilder(
+    column: $table.balanceMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get balanceAsOf => $composableBuilder(
+    column: $table.balanceAsOf,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get observedAt => $composableBuilder(
+    column: $table.observedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get confirmationLevel => $composableBuilder(
+    column: $table.confirmationLevel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$CashBalanceSnapshotsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CashBalanceSnapshotsTable,
+          CashSnapshotRow,
+          $$CashBalanceSnapshotsTableFilterComposer,
+          $$CashBalanceSnapshotsTableOrderingComposer,
+          $$CashBalanceSnapshotsTableAnnotationComposer,
+          $$CashBalanceSnapshotsTableCreateCompanionBuilder,
+          $$CashBalanceSnapshotsTableUpdateCompanionBuilder,
+          (
+            CashSnapshotRow,
+            BaseReferences<
+              _$AppDatabase,
+              $CashBalanceSnapshotsTable,
+              CashSnapshotRow
+            >,
+          ),
+          CashSnapshotRow,
+          PrefetchHooks Function()
+        > {
+  $$CashBalanceSnapshotsTableTableManager(
+    _$AppDatabase db,
+    $CashBalanceSnapshotsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CashBalanceSnapshotsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CashBalanceSnapshotsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CashBalanceSnapshotsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> cashAccountId = const Value.absent(),
+                Value<int> balanceMinor = const Value.absent(),
+                Value<String> balanceAsOf = const Value.absent(),
+                Value<String> observedAt = const Value.absent(),
+                Value<String> sourceKind = const Value.absent(),
+                Value<String> confirmationLevel = const Value.absent(),
+                Value<String> recordedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CashBalanceSnapshotsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                cashAccountId: cashAccountId,
+                balanceMinor: balanceMinor,
+                balanceAsOf: balanceAsOf,
+                observedAt: observedAt,
+                sourceKind: sourceKind,
+                confirmationLevel: confirmationLevel,
+                recordedAt: recordedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String cashAccountId,
+                required int balanceMinor,
+                required String balanceAsOf,
+                required String observedAt,
+                required String sourceKind,
+                required String confirmationLevel,
+                required String recordedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CashBalanceSnapshotsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                cashAccountId: cashAccountId,
+                balanceMinor: balanceMinor,
+                balanceAsOf: balanceAsOf,
+                observedAt: observedAt,
+                sourceKind: sourceKind,
+                confirmationLevel: confirmationLevel,
+                recordedAt: recordedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CashBalanceSnapshotsTable, CashSnapshotRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $CashBalanceSnapshotsTable,
+                    CashSnapshotRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CashBalanceSnapshotsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CashBalanceSnapshotsTable,
+      CashSnapshotRow,
+      $$CashBalanceSnapshotsTableFilterComposer,
+      $$CashBalanceSnapshotsTableOrderingComposer,
+      $$CashBalanceSnapshotsTableAnnotationComposer,
+      $$CashBalanceSnapshotsTableCreateCompanionBuilder,
+      $$CashBalanceSnapshotsTableUpdateCompanionBuilder,
+      (
+        CashSnapshotRow,
+        BaseReferences<
+          _$AppDatabase,
+          $CashBalanceSnapshotsTable,
+          CashSnapshotRow
+        >,
+      ),
+      CashSnapshotRow,
+      PrefetchHooks Function()
+    >;
+typedef $$RecurringItemsTableCreateCompanionBuilder =
+    RecurringItemsCompanion Function({
+      required String id,
+      required String workspaceId,
+      required String cashAccountId,
+      required String label,
+      required int amountMinor,
+      required String cls,
+      required String category,
+      required String frequency,
+      required String anchorOn,
+      Value<String> dayRule,
+      required String startOn,
+      Value<String?> endOn,
+      Value<bool> active,
+      Value<int> rowVersion,
+      required String createdAt,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$RecurringItemsTableUpdateCompanionBuilder =
+    RecurringItemsCompanion Function({
+      Value<String> id,
+      Value<String> workspaceId,
+      Value<String> cashAccountId,
+      Value<String> label,
+      Value<int> amountMinor,
+      Value<String> cls,
+      Value<String> category,
+      Value<String> frequency,
+      Value<String> anchorOn,
+      Value<String> dayRule,
+      Value<String> startOn,
+      Value<String?> endOn,
+      Value<bool> active,
+      Value<int> rowVersion,
+      Value<String> createdAt,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$RecurringItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $RecurringItemsTable> {
+  $$RecurringItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cls => $composableBuilder(
+    column: $table.cls,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get anchorOn => $composableBuilder(
+    column: $table.anchorOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dayRule => $composableBuilder(
+    column: $table.dayRule,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startOn => $composableBuilder(
+    column: $table.startOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endOn => $composableBuilder(
+    column: $table.endOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RecurringItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecurringItemsTable> {
+  $$RecurringItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cls => $composableBuilder(
+    column: $table.cls,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get anchorOn => $composableBuilder(
+    column: $table.anchorOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dayRule => $composableBuilder(
+    column: $table.dayRule,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startOn => $composableBuilder(
+    column: $table.startOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endOn => $composableBuilder(
+    column: $table.endOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RecurringItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecurringItemsTable> {
+  $$RecurringItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cls =>
+      $composableBuilder(column: $table.cls, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get frequency =>
+      $composableBuilder(column: $table.frequency, builder: (column) => column);
+
+  GeneratedColumn<String> get anchorOn =>
+      $composableBuilder(column: $table.anchorOn, builder: (column) => column);
+
+  GeneratedColumn<String> get dayRule =>
+      $composableBuilder(column: $table.dayRule, builder: (column) => column);
+
+  GeneratedColumn<String> get startOn =>
+      $composableBuilder(column: $table.startOn, builder: (column) => column);
+
+  GeneratedColumn<String> get endOn =>
+      $composableBuilder(column: $table.endOn, builder: (column) => column);
+
+  GeneratedColumn<bool> get active =>
+      $composableBuilder(column: $table.active, builder: (column) => column);
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$RecurringItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecurringItemsTable,
+          RecurringItemRow,
+          $$RecurringItemsTableFilterComposer,
+          $$RecurringItemsTableOrderingComposer,
+          $$RecurringItemsTableAnnotationComposer,
+          $$RecurringItemsTableCreateCompanionBuilder,
+          $$RecurringItemsTableUpdateCompanionBuilder,
+          (
+            RecurringItemRow,
+            BaseReferences<
+              _$AppDatabase,
+              $RecurringItemsTable,
+              RecurringItemRow
+            >,
+          ),
+          RecurringItemRow,
+          PrefetchHooks Function()
+        > {
+  $$RecurringItemsTableTableManager(
+    _$AppDatabase db,
+    $RecurringItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecurringItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecurringItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecurringItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> cashAccountId = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<int> amountMinor = const Value.absent(),
+                Value<String> cls = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String> frequency = const Value.absent(),
+                Value<String> anchorOn = const Value.absent(),
+                Value<String> dayRule = const Value.absent(),
+                Value<String> startOn = const Value.absent(),
+                Value<String?> endOn = const Value.absent(),
+                Value<bool> active = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecurringItemsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                cashAccountId: cashAccountId,
+                label: label,
+                amountMinor: amountMinor,
+                cls: cls,
+                category: category,
+                frequency: frequency,
+                anchorOn: anchorOn,
+                dayRule: dayRule,
+                startOn: startOn,
+                endOn: endOn,
+                active: active,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String cashAccountId,
+                required String label,
+                required int amountMinor,
+                required String cls,
+                required String category,
+                required String frequency,
+                required String anchorOn,
+                Value<String> dayRule = const Value.absent(),
+                required String startOn,
+                Value<String?> endOn = const Value.absent(),
+                Value<bool> active = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => RecurringItemsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                cashAccountId: cashAccountId,
+                label: label,
+                amountMinor: amountMinor,
+                cls: cls,
+                category: category,
+                frequency: frequency,
+                anchorOn: anchorOn,
+                dayRule: dayRule,
+                startOn: startOn,
+                endOn: endOn,
+                active: active,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecurringItemsTable, RecurringItemRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $RecurringItemsTable,
+                    RecurringItemRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RecurringItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecurringItemsTable,
+      RecurringItemRow,
+      $$RecurringItemsTableFilterComposer,
+      $$RecurringItemsTableOrderingComposer,
+      $$RecurringItemsTableAnnotationComposer,
+      $$RecurringItemsTableCreateCompanionBuilder,
+      $$RecurringItemsTableUpdateCompanionBuilder,
+      (
+        RecurringItemRow,
+        BaseReferences<_$AppDatabase, $RecurringItemsTable, RecurringItemRow>,
+      ),
+      RecurringItemRow,
+      PrefetchHooks Function()
+    >;
+typedef $$CashEventsTableCreateCompanionBuilder = CashEventsCompanion Function({
+  required String id,
+  required String workspaceId,
+  required String cashAccountId,
+  required String eventOn,
+  Value<String?> eventAt,
+  required int amountMinor,
+  required String cls,
+  required String category,
+  Value<String?> label,
+  Value<String> postingStatus,
+  Value<String?> recurringItemId,
+  Value<String?> occurrenceKey,
+  Value<String?> transferGroupId,
+  Value<String?> linkedRepaymentId,
+  Value<String?> linkedPlanRunId,
+  Value<int> rowVersion,
+  required String createdAt,
+  required String updatedAt,
+  Value<String?> deletedAt,
+  Value<int> rowid,
+});
+typedef $$CashEventsTableUpdateCompanionBuilder = CashEventsCompanion Function({
+  Value<String> id,
+  Value<String> workspaceId,
+  Value<String> cashAccountId,
+  Value<String> eventOn,
+  Value<String?> eventAt,
+  Value<int> amountMinor,
+  Value<String> cls,
+  Value<String> category,
+  Value<String?> label,
+  Value<String> postingStatus,
+  Value<String?> recurringItemId,
+  Value<String?> occurrenceKey,
+  Value<String?> transferGroupId,
+  Value<String?> linkedRepaymentId,
+  Value<String?> linkedPlanRunId,
+  Value<int> rowVersion,
+  Value<String> createdAt,
+  Value<String> updatedAt,
+  Value<String?> deletedAt,
+  Value<int> rowid,
+});
+
+class $$CashEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $CashEventsTable> {
+  $$CashEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventOn => $composableBuilder(
+    column: $table.eventOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventAt => $composableBuilder(
+    column: $table.eventAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cls => $composableBuilder(
+    column: $table.cls,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get postingStatus => $composableBuilder(
+    column: $table.postingStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recurringItemId => $composableBuilder(
+    column: $table.recurringItemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occurrenceKey => $composableBuilder(
+    column: $table.occurrenceKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get transferGroupId => $composableBuilder(
+    column: $table.transferGroupId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get linkedRepaymentId => $composableBuilder(
+    column: $table.linkedRepaymentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get linkedPlanRunId => $composableBuilder(
+    column: $table.linkedPlanRunId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CashEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CashEventsTable> {
+  $$CashEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventOn => $composableBuilder(
+    column: $table.eventOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventAt => $composableBuilder(
+    column: $table.eventAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cls => $composableBuilder(
+    column: $table.cls,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get postingStatus => $composableBuilder(
+    column: $table.postingStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recurringItemId => $composableBuilder(
+    column: $table.recurringItemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occurrenceKey => $composableBuilder(
+    column: $table.occurrenceKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get transferGroupId => $composableBuilder(
+    column: $table.transferGroupId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get linkedRepaymentId => $composableBuilder(
+    column: $table.linkedRepaymentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get linkedPlanRunId => $composableBuilder(
+    column: $table.linkedPlanRunId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CashEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CashEventsTable> {
+  $$CashEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get eventOn =>
+      $composableBuilder(column: $table.eventOn, builder: (column) => column);
+
+  GeneratedColumn<String> get eventAt =>
+      $composableBuilder(column: $table.eventAt, builder: (column) => column);
+
+  GeneratedColumn<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cls =>
+      $composableBuilder(column: $table.cls, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get postingStatus => $composableBuilder(
+    column: $table.postingStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recurringItemId => $composableBuilder(
+    column: $table.recurringItemId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get occurrenceKey => $composableBuilder(
+    column: $table.occurrenceKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get transferGroupId => $composableBuilder(
+    column: $table.transferGroupId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get linkedRepaymentId => $composableBuilder(
+    column: $table.linkedRepaymentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get linkedPlanRunId => $composableBuilder(
+    column: $table.linkedPlanRunId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$CashEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CashEventsTable,
+          CashEventRow,
+          $$CashEventsTableFilterComposer,
+          $$CashEventsTableOrderingComposer,
+          $$CashEventsTableAnnotationComposer,
+          $$CashEventsTableCreateCompanionBuilder,
+          $$CashEventsTableUpdateCompanionBuilder,
+          (
+            CashEventRow,
+            BaseReferences<_$AppDatabase, $CashEventsTable, CashEventRow>,
+          ),
+          CashEventRow,
+          PrefetchHooks Function()
+        > {
+  $$CashEventsTableTableManager(_$AppDatabase db, $CashEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CashEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CashEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CashEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> cashAccountId = const Value.absent(),
+                Value<String> eventOn = const Value.absent(),
+                Value<String?> eventAt = const Value.absent(),
+                Value<int> amountMinor = const Value.absent(),
+                Value<String> cls = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String?> label = const Value.absent(),
+                Value<String> postingStatus = const Value.absent(),
+                Value<String?> recurringItemId = const Value.absent(),
+                Value<String?> occurrenceKey = const Value.absent(),
+                Value<String?> transferGroupId = const Value.absent(),
+                Value<String?> linkedRepaymentId = const Value.absent(),
+                Value<String?> linkedPlanRunId = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<String?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CashEventsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                cashAccountId: cashAccountId,
+                eventOn: eventOn,
+                eventAt: eventAt,
+                amountMinor: amountMinor,
+                cls: cls,
+                category: category,
+                label: label,
+                postingStatus: postingStatus,
+                recurringItemId: recurringItemId,
+                occurrenceKey: occurrenceKey,
+                transferGroupId: transferGroupId,
+                linkedRepaymentId: linkedRepaymentId,
+                linkedPlanRunId: linkedPlanRunId,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String cashAccountId,
+                required String eventOn,
+                Value<String?> eventAt = const Value.absent(),
+                required int amountMinor,
+                required String cls,
+                required String category,
+                Value<String?> label = const Value.absent(),
+                Value<String> postingStatus = const Value.absent(),
+                Value<String?> recurringItemId = const Value.absent(),
+                Value<String?> occurrenceKey = const Value.absent(),
+                Value<String?> transferGroupId = const Value.absent(),
+                Value<String?> linkedRepaymentId = const Value.absent(),
+                Value<String?> linkedPlanRunId = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<String?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CashEventsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                cashAccountId: cashAccountId,
+                eventOn: eventOn,
+                eventAt: eventAt,
+                amountMinor: amountMinor,
+                cls: cls,
+                category: category,
+                label: label,
+                postingStatus: postingStatus,
+                recurringItemId: recurringItemId,
+                occurrenceKey: occurrenceKey,
+                transferGroupId: transferGroupId,
+                linkedRepaymentId: linkedRepaymentId,
+                linkedPlanRunId: linkedPlanRunId,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CashEventsTable, CashEventRow>(table),
+                  BaseReferences<_$AppDatabase, $CashEventsTable, CashEventRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CashEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CashEventsTable,
+      CashEventRow,
+      $$CashEventsTableFilterComposer,
+      $$CashEventsTableOrderingComposer,
+      $$CashEventsTableAnnotationComposer,
+      $$CashEventsTableCreateCompanionBuilder,
+      $$CashEventsTableUpdateCompanionBuilder,
+      (
+        CashEventRow,
+        BaseReferences<_$AppDatabase, $CashEventsTable, CashEventRow>,
+      ),
+      CashEventRow,
+      PrefetchHooks Function()
+    >;
+typedef $$SnapshotIncludedEventsTableCreateCompanionBuilder =
+    SnapshotIncludedEventsCompanion Function({
+      required String workspaceId,
+      required String cashAccountId,
+      required String snapshotId,
+      required String cashEventId,
+      Value<int> rowid,
+    });
+typedef $$SnapshotIncludedEventsTableUpdateCompanionBuilder =
+    SnapshotIncludedEventsCompanion Function({
+      Value<String> workspaceId,
+      Value<String> cashAccountId,
+      Value<String> snapshotId,
+      Value<String> cashEventId,
+      Value<int> rowid,
+    });
+
+class $$SnapshotIncludedEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $SnapshotIncludedEventsTable> {
+  $$SnapshotIncludedEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get snapshotId => $composableBuilder(
+    column: $table.snapshotId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashEventId => $composableBuilder(
+    column: $table.cashEventId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SnapshotIncludedEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SnapshotIncludedEventsTable> {
+  $$SnapshotIncludedEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get snapshotId => $composableBuilder(
+    column: $table.snapshotId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cashEventId => $composableBuilder(
+    column: $table.cashEventId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SnapshotIncludedEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SnapshotIncludedEventsTable> {
+  $$SnapshotIncludedEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get snapshotId => $composableBuilder(
+    column: $table.snapshotId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cashEventId => $composableBuilder(
+    column: $table.cashEventId,
+    builder: (column) => column,
+  );
+}
+
+class $$SnapshotIncludedEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SnapshotIncludedEventsTable,
+          SnapshotIncludedEventRow,
+          $$SnapshotIncludedEventsTableFilterComposer,
+          $$SnapshotIncludedEventsTableOrderingComposer,
+          $$SnapshotIncludedEventsTableAnnotationComposer,
+          $$SnapshotIncludedEventsTableCreateCompanionBuilder,
+          $$SnapshotIncludedEventsTableUpdateCompanionBuilder,
+          (
+            SnapshotIncludedEventRow,
+            BaseReferences<
+              _$AppDatabase,
+              $SnapshotIncludedEventsTable,
+              SnapshotIncludedEventRow
+            >,
+          ),
+          SnapshotIncludedEventRow,
+          PrefetchHooks Function()
+        > {
+  $$SnapshotIncludedEventsTableTableManager(
+    _$AppDatabase db,
+    $SnapshotIncludedEventsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SnapshotIncludedEventsTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$SnapshotIncludedEventsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SnapshotIncludedEventsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> cashAccountId = const Value.absent(),
+                Value<String> snapshotId = const Value.absent(),
+                Value<String> cashEventId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SnapshotIncludedEventsCompanion(
+                workspaceId: workspaceId,
+                cashAccountId: cashAccountId,
+                snapshotId: snapshotId,
+                cashEventId: cashEventId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String workspaceId,
+                required String cashAccountId,
+                required String snapshotId,
+                required String cashEventId,
+                Value<int> rowid = const Value.absent(),
+              }) => SnapshotIncludedEventsCompanion.insert(
+                workspaceId: workspaceId,
+                cashAccountId: cashAccountId,
+                snapshotId: snapshotId,
+                cashEventId: cashEventId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $SnapshotIncludedEventsTable,
+                    SnapshotIncludedEventRow
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $SnapshotIncludedEventsTable,
+                    SnapshotIncludedEventRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SnapshotIncludedEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SnapshotIncludedEventsTable,
+      SnapshotIncludedEventRow,
+      $$SnapshotIncludedEventsTableFilterComposer,
+      $$SnapshotIncludedEventsTableOrderingComposer,
+      $$SnapshotIncludedEventsTableAnnotationComposer,
+      $$SnapshotIncludedEventsTableCreateCompanionBuilder,
+      $$SnapshotIncludedEventsTableUpdateCompanionBuilder,
+      (
+        SnapshotIncludedEventRow,
+        BaseReferences<
+          _$AppDatabase,
+          $SnapshotIncludedEventsTable,
+          SnapshotIncludedEventRow
+        >,
+      ),
+      SnapshotIncludedEventRow,
+      PrefetchHooks Function()
+    >;
+typedef $$RecurringOverridesTableCreateCompanionBuilder =
+    RecurringOverridesCompanion Function({
+      required String workspaceId,
+      required String recurringItemId,
+      required String occurrenceKey,
+      required String action,
+      Value<int?> amountMinor,
+      Value<String?> eventOn,
+      Value<String?> eventAt,
+      required String createdAt,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$RecurringOverridesTableUpdateCompanionBuilder =
+    RecurringOverridesCompanion Function({
+      Value<String> workspaceId,
+      Value<String> recurringItemId,
+      Value<String> occurrenceKey,
+      Value<String> action,
+      Value<int?> amountMinor,
+      Value<String?> eventOn,
+      Value<String?> eventAt,
+      Value<String> createdAt,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$RecurringOverridesTableFilterComposer
+    extends Composer<_$AppDatabase, $RecurringOverridesTable> {
+  $$RecurringOverridesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recurringItemId => $composableBuilder(
+    column: $table.recurringItemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occurrenceKey => $composableBuilder(
+    column: $table.occurrenceKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventOn => $composableBuilder(
+    column: $table.eventOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventAt => $composableBuilder(
+    column: $table.eventAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RecurringOverridesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecurringOverridesTable> {
+  $$RecurringOverridesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recurringItemId => $composableBuilder(
+    column: $table.recurringItemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occurrenceKey => $composableBuilder(
+    column: $table.occurrenceKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get action => $composableBuilder(
+    column: $table.action,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventOn => $composableBuilder(
+    column: $table.eventOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventAt => $composableBuilder(
+    column: $table.eventAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RecurringOverridesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecurringOverridesTable> {
+  $$RecurringOverridesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recurringItemId => $composableBuilder(
+    column: $table.recurringItemId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get occurrenceKey => $composableBuilder(
+    column: $table.occurrenceKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get action =>
+      $composableBuilder(column: $table.action, builder: (column) => column);
+
+  GeneratedColumn<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get eventOn =>
+      $composableBuilder(column: $table.eventOn, builder: (column) => column);
+
+  GeneratedColumn<String> get eventAt =>
+      $composableBuilder(column: $table.eventAt, builder: (column) => column);
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$RecurringOverridesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecurringOverridesTable,
+          RecurringOverrideRow,
+          $$RecurringOverridesTableFilterComposer,
+          $$RecurringOverridesTableOrderingComposer,
+          $$RecurringOverridesTableAnnotationComposer,
+          $$RecurringOverridesTableCreateCompanionBuilder,
+          $$RecurringOverridesTableUpdateCompanionBuilder,
+          (
+            RecurringOverrideRow,
+            BaseReferences<
+              _$AppDatabase,
+              $RecurringOverridesTable,
+              RecurringOverrideRow
+            >,
+          ),
+          RecurringOverrideRow,
+          PrefetchHooks Function()
+        > {
+  $$RecurringOverridesTableTableManager(
+    _$AppDatabase db,
+    $RecurringOverridesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecurringOverridesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecurringOverridesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecurringOverridesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> recurringItemId = const Value.absent(),
+                Value<String> occurrenceKey = const Value.absent(),
+                Value<String> action = const Value.absent(),
+                Value<int?> amountMinor = const Value.absent(),
+                Value<String?> eventOn = const Value.absent(),
+                Value<String?> eventAt = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecurringOverridesCompanion(
+                workspaceId: workspaceId,
+                recurringItemId: recurringItemId,
+                occurrenceKey: occurrenceKey,
+                action: action,
+                amountMinor: amountMinor,
+                eventOn: eventOn,
+                eventAt: eventAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String workspaceId,
+                required String recurringItemId,
+                required String occurrenceKey,
+                required String action,
+                Value<int?> amountMinor = const Value.absent(),
+                Value<String?> eventOn = const Value.absent(),
+                Value<String?> eventAt = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => RecurringOverridesCompanion.insert(
+                workspaceId: workspaceId,
+                recurringItemId: recurringItemId,
+                occurrenceKey: occurrenceKey,
+                action: action,
+                amountMinor: amountMinor,
+                eventOn: eventOn,
+                eventAt: eventAt,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecurringOverridesTable, RecurringOverrideRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $RecurringOverridesTable,
+                    RecurringOverrideRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RecurringOverridesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecurringOverridesTable,
+      RecurringOverrideRow,
+      $$RecurringOverridesTableFilterComposer,
+      $$RecurringOverridesTableOrderingComposer,
+      $$RecurringOverridesTableAnnotationComposer,
+      $$RecurringOverridesTableCreateCompanionBuilder,
+      $$RecurringOverridesTableUpdateCompanionBuilder,
+      (
+        RecurringOverrideRow,
+        BaseReferences<
+          _$AppDatabase,
+          $RecurringOverridesTable,
+          RecurringOverrideRow
+        >,
+      ),
+      RecurringOverrideRow,
+      PrefetchHooks Function()
+    >;
+typedef $$ScenariosTableCreateCompanionBuilder = ScenariosCompanion Function({
+  required String id,
+  required String workspaceId,
+  required String name,
+  required String kind,
+  required bool includeExpected,
+  Value<int> incomeDelayDays,
+  Value<String> incomeScale,
+  Value<String> expenseScale,
+  Value<String> sameDayOrder,
+  Value<String> limitChanges,
+  Value<String> eventOverrides,
+  Value<int> rowVersion,
+  required String createdAt,
+  required String updatedAt,
+  Value<int> rowid,
+});
+typedef $$ScenariosTableUpdateCompanionBuilder = ScenariosCompanion Function({
+  Value<String> id,
+  Value<String> workspaceId,
+  Value<String> name,
+  Value<String> kind,
+  Value<bool> includeExpected,
+  Value<int> incomeDelayDays,
+  Value<String> incomeScale,
+  Value<String> expenseScale,
+  Value<String> sameDayOrder,
+  Value<String> limitChanges,
+  Value<String> eventOverrides,
+  Value<int> rowVersion,
+  Value<String> createdAt,
+  Value<String> updatedAt,
+  Value<int> rowid,
+});
+
+class $$ScenariosTableFilterComposer
+    extends Composer<_$AppDatabase, $ScenariosTable> {
+  $$ScenariosTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get includeExpected => $composableBuilder(
+    column: $table.includeExpected,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get incomeDelayDays => $composableBuilder(
+    column: $table.incomeDelayDays,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get incomeScale => $composableBuilder(
+    column: $table.incomeScale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get expenseScale => $composableBuilder(
+    column: $table.expenseScale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sameDayOrder => $composableBuilder(
+    column: $table.sameDayOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get limitChanges => $composableBuilder(
+    column: $table.limitChanges,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventOverrides => $composableBuilder(
+    column: $table.eventOverrides,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ScenariosTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScenariosTable> {
+  $$ScenariosTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get includeExpected => $composableBuilder(
+    column: $table.includeExpected,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get incomeDelayDays => $composableBuilder(
+    column: $table.incomeDelayDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get incomeScale => $composableBuilder(
+    column: $table.incomeScale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get expenseScale => $composableBuilder(
+    column: $table.expenseScale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sameDayOrder => $composableBuilder(
+    column: $table.sameDayOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get limitChanges => $composableBuilder(
+    column: $table.limitChanges,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventOverrides => $composableBuilder(
+    column: $table.eventOverrides,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ScenariosTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScenariosTable> {
+  $$ScenariosTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<bool> get includeExpected => $composableBuilder(
+    column: $table.includeExpected,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get incomeDelayDays => $composableBuilder(
+    column: $table.incomeDelayDays,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get incomeScale => $composableBuilder(
+    column: $table.incomeScale,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get expenseScale => $composableBuilder(
+    column: $table.expenseScale,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sameDayOrder => $composableBuilder(
+    column: $table.sameDayOrder,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get limitChanges => $composableBuilder(
+    column: $table.limitChanges,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get eventOverrides => $composableBuilder(
+    column: $table.eventOverrides,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ScenariosTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ScenariosTable,
+          ScenarioRow,
+          $$ScenariosTableFilterComposer,
+          $$ScenariosTableOrderingComposer,
+          $$ScenariosTableAnnotationComposer,
+          $$ScenariosTableCreateCompanionBuilder,
+          $$ScenariosTableUpdateCompanionBuilder,
+          (
+            ScenarioRow,
+            BaseReferences<_$AppDatabase, $ScenariosTable, ScenarioRow>,
+          ),
+          ScenarioRow,
+          PrefetchHooks Function()
+        > {
+  $$ScenariosTableTableManager(_$AppDatabase db, $ScenariosTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScenariosTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ScenariosTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ScenariosTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<bool> includeExpected = const Value.absent(),
+                Value<int> incomeDelayDays = const Value.absent(),
+                Value<String> incomeScale = const Value.absent(),
+                Value<String> expenseScale = const Value.absent(),
+                Value<String> sameDayOrder = const Value.absent(),
+                Value<String> limitChanges = const Value.absent(),
+                Value<String> eventOverrides = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ScenariosCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                name: name,
+                kind: kind,
+                includeExpected: includeExpected,
+                incomeDelayDays: incomeDelayDays,
+                incomeScale: incomeScale,
+                expenseScale: expenseScale,
+                sameDayOrder: sameDayOrder,
+                limitChanges: limitChanges,
+                eventOverrides: eventOverrides,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String name,
+                required String kind,
+                required bool includeExpected,
+                Value<int> incomeDelayDays = const Value.absent(),
+                Value<String> incomeScale = const Value.absent(),
+                Value<String> expenseScale = const Value.absent(),
+                Value<String> sameDayOrder = const Value.absent(),
+                Value<String> limitChanges = const Value.absent(),
+                Value<String> eventOverrides = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ScenariosCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                name: name,
+                kind: kind,
+                includeExpected: includeExpected,
+                incomeDelayDays: incomeDelayDays,
+                incomeScale: incomeScale,
+                expenseScale: expenseScale,
+                sameDayOrder: sameDayOrder,
+                limitChanges: limitChanges,
+                eventOverrides: eventOverrides,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ScenariosTable, ScenarioRow>(table),
+                  BaseReferences<_$AppDatabase, $ScenariosTable, ScenarioRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ScenariosTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ScenariosTable,
+      ScenarioRow,
+      $$ScenariosTableFilterComposer,
+      $$ScenariosTableOrderingComposer,
+      $$ScenariosTableAnnotationComposer,
+      $$ScenariosTableCreateCompanionBuilder,
+      $$ScenariosTableUpdateCompanionBuilder,
+      (
+        ScenarioRow,
+        BaseReferences<_$AppDatabase, $ScenariosTable, ScenarioRow>,
+      ),
+      ScenarioRow,
+      PrefetchHooks Function()
+    >;
+typedef $$ScenarioRunsTableCreateCompanionBuilder =
+    ScenarioRunsCompanion Function({
+      required String id,
+      required String workspaceId,
+      required String scenarioId,
+      required int versionNo,
+      required String computedAt,
+      required String horizonFrom,
+      required String horizonTo,
+      required String inputsHash,
+      required String result,
+      Value<int> rowid,
+    });
+typedef $$ScenarioRunsTableUpdateCompanionBuilder =
+    ScenarioRunsCompanion Function({
+      Value<String> id,
+      Value<String> workspaceId,
+      Value<String> scenarioId,
+      Value<int> versionNo,
+      Value<String> computedAt,
+      Value<String> horizonFrom,
+      Value<String> horizonTo,
+      Value<String> inputsHash,
+      Value<String> result,
+      Value<int> rowid,
+    });
+
+class $$ScenarioRunsTableFilterComposer
+    extends Composer<_$AppDatabase, $ScenarioRunsTable> {
+  $$ScenarioRunsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scenarioId => $composableBuilder(
+    column: $table.scenarioId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get versionNo => $composableBuilder(
+    column: $table.versionNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get computedAt => $composableBuilder(
+    column: $table.computedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get horizonFrom => $composableBuilder(
+    column: $table.horizonFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get horizonTo => $composableBuilder(
+    column: $table.horizonTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get inputsHash => $composableBuilder(
+    column: $table.inputsHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get result => $composableBuilder(
+    column: $table.result,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ScenarioRunsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScenarioRunsTable> {
+  $$ScenarioRunsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scenarioId => $composableBuilder(
+    column: $table.scenarioId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get versionNo => $composableBuilder(
+    column: $table.versionNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get computedAt => $composableBuilder(
+    column: $table.computedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get horizonFrom => $composableBuilder(
+    column: $table.horizonFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get horizonTo => $composableBuilder(
+    column: $table.horizonTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get inputsHash => $composableBuilder(
+    column: $table.inputsHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get result => $composableBuilder(
+    column: $table.result,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ScenarioRunsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScenarioRunsTable> {
+  $$ScenarioRunsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get scenarioId => $composableBuilder(
+    column: $table.scenarioId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get versionNo =>
+      $composableBuilder(column: $table.versionNo, builder: (column) => column);
+
+  GeneratedColumn<String> get computedAt => $composableBuilder(
+    column: $table.computedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get horizonFrom => $composableBuilder(
+    column: $table.horizonFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get horizonTo =>
+      $composableBuilder(column: $table.horizonTo, builder: (column) => column);
+
+  GeneratedColumn<String> get inputsHash => $composableBuilder(
+    column: $table.inputsHash,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get result =>
+      $composableBuilder(column: $table.result, builder: (column) => column);
+}
+
+class $$ScenarioRunsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ScenarioRunsTable,
+          ScenarioRunRow,
+          $$ScenarioRunsTableFilterComposer,
+          $$ScenarioRunsTableOrderingComposer,
+          $$ScenarioRunsTableAnnotationComposer,
+          $$ScenarioRunsTableCreateCompanionBuilder,
+          $$ScenarioRunsTableUpdateCompanionBuilder,
+          (
+            ScenarioRunRow,
+            BaseReferences<_$AppDatabase, $ScenarioRunsTable, ScenarioRunRow>,
+          ),
+          ScenarioRunRow,
+          PrefetchHooks Function()
+        > {
+  $$ScenarioRunsTableTableManager(_$AppDatabase db, $ScenarioRunsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScenarioRunsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ScenarioRunsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ScenarioRunsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> scenarioId = const Value.absent(),
+                Value<int> versionNo = const Value.absent(),
+                Value<String> computedAt = const Value.absent(),
+                Value<String> horizonFrom = const Value.absent(),
+                Value<String> horizonTo = const Value.absent(),
+                Value<String> inputsHash = const Value.absent(),
+                Value<String> result = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ScenarioRunsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                scenarioId: scenarioId,
+                versionNo: versionNo,
+                computedAt: computedAt,
+                horizonFrom: horizonFrom,
+                horizonTo: horizonTo,
+                inputsHash: inputsHash,
+                result: result,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String scenarioId,
+                required int versionNo,
+                required String computedAt,
+                required String horizonFrom,
+                required String horizonTo,
+                required String inputsHash,
+                required String result,
+                Value<int> rowid = const Value.absent(),
+              }) => ScenarioRunsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                scenarioId: scenarioId,
+                versionNo: versionNo,
+                computedAt: computedAt,
+                horizonFrom: horizonFrom,
+                horizonTo: horizonTo,
+                inputsHash: inputsHash,
+                result: result,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ScenarioRunsTable, ScenarioRunRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ScenarioRunsTable,
+                    ScenarioRunRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ScenarioRunsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ScenarioRunsTable,
+      ScenarioRunRow,
+      $$ScenarioRunsTableFilterComposer,
+      $$ScenarioRunsTableOrderingComposer,
+      $$ScenarioRunsTableAnnotationComposer,
+      $$ScenarioRunsTableCreateCompanionBuilder,
+      $$ScenarioRunsTableUpdateCompanionBuilder,
+      (
+        ScenarioRunRow,
+        BaseReferences<_$AppDatabase, $ScenarioRunsTable, ScenarioRunRow>,
+      ),
+      ScenarioRunRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9475,4 +18130,23 @@ class $AppDatabaseManager {
       $$BillingRuleVersionsTableTableManager(_db, _db.billingRuleVersions);
   $$LimitSnapshotsTableTableManager get limitSnapshots =>
       $$LimitSnapshotsTableTableManager(_db, _db.limitSnapshots);
+  $$CashAccountsTableTableManager get cashAccounts =>
+      $$CashAccountsTableTableManager(_db, _db.cashAccounts);
+  $$CashBalanceSnapshotsTableTableManager get cashBalanceSnapshots =>
+      $$CashBalanceSnapshotsTableTableManager(_db, _db.cashBalanceSnapshots);
+  $$RecurringItemsTableTableManager get recurringItems =>
+      $$RecurringItemsTableTableManager(_db, _db.recurringItems);
+  $$CashEventsTableTableManager get cashEvents =>
+      $$CashEventsTableTableManager(_db, _db.cashEvents);
+  $$SnapshotIncludedEventsTableTableManager get snapshotIncludedEvents =>
+      $$SnapshotIncludedEventsTableTableManager(
+        _db,
+        _db.snapshotIncludedEvents,
+      );
+  $$RecurringOverridesTableTableManager get recurringOverrides =>
+      $$RecurringOverridesTableTableManager(_db, _db.recurringOverrides);
+  $$ScenariosTableTableManager get scenarios =>
+      $$ScenariosTableTableManager(_db, _db.scenarios);
+  $$ScenarioRunsTableTableManager get scenarioRuns =>
+      $$ScenarioRunsTableTableManager(_db, _db.scenarioRuns);
 }

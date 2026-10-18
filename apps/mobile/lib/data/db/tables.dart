@@ -1,4 +1,5 @@
-/// 本地库 v2 的业务表（drift 表 DSL；`dart run build_runner build` 生成 `app_database.g.dart`）。
+/// 本地库的业务表（drift 表 DSL；`dart run build_runner build` 生成 `app_database.g.dart`）：
+/// v2（I-1a）的工作空间、银行、信用账户与额度，v3（I-1b）的现金账户、现金事件与情景。
 ///
 /// 约定（data-model §10.14、I-1a 简报 §1）：
 /// - 主键 `id` 是 TEXT 的 UUID v4（`lib/data/ids.dart`）；
@@ -524,5 +525,478 @@ class LimitSnapshots extends Table {
     "CHECK (observed_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
     "CHECK (recorded_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
     "CHECK (confirmation_level IN ('system_estimated', 'user_confirmed', 'bank_confirmed'))",
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// v3（I-1b）：现金账户、余额快照与已包含事件、现金事件（唯一现金事实表）、周期事项与单期覆盖、
+// 情景与情景计算版本。约定同上；另见 data-model §3/§4、§10.5（同账户一致用携带账户列的复合外键）。
+// ---------------------------------------------------------------------------
+
+/// 现金账户（R-CASH-01）：可用于还款的资金账户。
+///
+/// 可用性（数据层 → 领域映射见 `lib/data/mapping/cash_mapping.dart`）：`kind = restricted` 或
+/// `usable_for_repayment = 0` 且没有 `available_from` 的账户不进入可用现金；有 `available_from`
+/// 的从该日起可用。受限账户不能直接标为可用于还款（CHECK），只能设可用日期。
+/// 现金账户没有业务时区列：日期与时刻按默认业务时区（Asia/Shanghai）解释。
+@DataClassName('CashAccountRow')
+class CashAccounts extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get name => text()();
+
+  TextColumn get currency => text()();
+
+  /// `bank` / `wallet` / `wealth` / `restricted`。
+  TextColumn get kind => text()();
+
+  BoolColumn get usableForRepayment =>
+      boolean().withDefault(const Constant(true))();
+
+  /// 理财/受限资金可用于还款的起始日（`YYYY-MM-DD`）；空 = 未设置。
+  TextColumn get availableFrom => text().nullable()();
+
+  /// 用户最低储备（硬约束，≥0）。
+  IntColumn get reserveFloorMinor => integer().withDefault(const Constant(0))();
+
+  /// `active` / `closed`（已停用：不进入资金日历，历史保留）。
+  TextColumn get status => text().withDefault(const Constant('active'))();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  TextColumn get deletedAt => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id) REFERENCES workspaces (id)',
+    'CHECK (length(name) BETWEEN 1 AND 20)',
+    "CHECK (name NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')",
+    "CHECK (currency IN ('CNY', 'USD', 'EUR', 'HKD', 'GBP', 'MOP', 'TWD', 'JPY', 'KRW', 'VND', 'KWD', 'BHD', 'JOD'))",
+    "CHECK (kind IN ('bank', 'wallet', 'wealth', 'restricted'))",
+    "CHECK (kind <> 'restricted' OR usable_for_repayment = 0)",
+    "CHECK (available_from IS NULL OR available_from GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    'CHECK (reserve_floor_minor BETWEEN 0 AND 10000000000000)',
+    "CHECK (status IN ('active', 'closed'))",
+    'CHECK (row_version >= 1)',
+  ];
+}
+
+/// 现金余额快照（R-CASH-01/06）：`balance_as_of` 是余额对应的业务日期，`observed_at` 是实际时点
+/// （G3：不晚于现在，缺实际时点不可存）。只追加，不修改（触发器）。快照当天、余额已经包含的事件
+/// 记在 [SnapshotIncludedEvents]。
+@DataClassName('CashSnapshotRow')
+class CashBalanceSnapshots extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get cashAccountId => text()();
+
+  /// 余额（最小单位，可为负：透支）。
+  IntColumn get balanceMinor => integer()();
+
+  /// `YYYY-MM-DD`。
+  TextColumn get balanceAsOf => text()();
+
+  /// RFC 3339。
+  TextColumn get observedAt => text()();
+
+  /// `bank_app` / `statement` / `user` / `import`。
+  TextColumn get sourceKind => text()();
+
+  /// `system_estimated` / `user_confirmed` / `bank_confirmed`。
+  TextColumn get confirmationLevel => text()();
+
+  TextColumn get recordedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, cashAccountId, id},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, cash_account_id) REFERENCES cash_accounts (workspace_id, id)',
+    'CHECK (balance_minor BETWEEN -10000000000000 AND 10000000000000)',
+    "CHECK (balance_as_of GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (observed_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (recorded_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (source_kind IN ('bank_app', 'statement', 'user', 'import'))",
+    "CHECK (confirmation_level IN ('system_estimated', 'user_confirmed', 'bank_confirmed'))",
+  ];
+}
+
+/// 快照当天（及以前）余额已经包含的事件（R-CASH-06）。复合外键带 `cash_account_id`：只能列
+/// 本账户的事件；事件日期不得晚于快照日（仓库校验，触发器兜底；规则协议 v1 的交叉规则 R3E-14）。
+@DataClassName('SnapshotIncludedEventRow')
+class SnapshotIncludedEvents extends Table {
+  TextColumn get workspaceId => text()();
+
+  TextColumn get cashAccountId => text()();
+
+  TextColumn get snapshotId => text()();
+
+  TextColumn get cashEventId => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {snapshotId, cashEventId};
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, cash_account_id, snapshot_id) REFERENCES cash_balance_snapshots (workspace_id, cash_account_id, id)',
+    'FOREIGN KEY (workspace_id, cash_account_id, cash_event_id) REFERENCES cash_events (workspace_id, cash_account_id, id)',
+  ];
+}
+
+/// 现金事件：唯一的现金事实表（data-model §3）。收入为正、支出为负（符号按类别约束，R2-16）。
+///
+/// - `cls`：`confirmed` 确定 / `expected` 预计 / `planned` 计划（系统生成：还款、计划运行）；没有任何
+///   "概率"字段（R-CASH-03）；
+/// - `posting_status`：`planned` 尚未发生 / `posted` 已发生（已发生的必为确定）；
+/// - 周期事项展开的事件带 `recurring_item_id` + `occurrence_key`（该期原定日期）；
+/// - 调拨是两条事件共享 `transfer_group_id`（转出为负、到账为正，到账日不早于转出日，两端账户
+///   不同、币种相同；触发器兜底），两条腿只能一起删除；
+/// - `linked_repayment_id`（I-1c 的还款）与 `linked_plan_run_id`（I-2 的计划运行）暂无外键。
+@DataClassName('CashEventRow')
+class CashEvents extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get cashAccountId => text()();
+
+  /// 业务日期 `YYYY-MM-DD`。
+  TextColumn get eventOn => text()();
+
+  /// 精确时刻（RFC 3339，按其自身偏移的日期必须等于 `event_on`）；空 = 只知道日期。
+  TextColumn get eventAt => text().nullable()();
+
+  IntColumn get amountMinor => integer()();
+
+  /// `confirmed` / `expected` / `planned`。
+  TextColumn get cls => text()();
+
+  /// `income` / `bill` / `living` / `repayment` / `transfer_in` / `transfer_out` / `fee` / `other`。
+  TextColumn get category => text()();
+
+  TextColumn get label => text().nullable()();
+
+  /// `planned` / `posted`。
+  TextColumn get postingStatus =>
+      text().withDefault(const Constant('planned'))();
+
+  TextColumn get recurringItemId => text().nullable()();
+
+  /// 周期事项的期键：该期的原定日期 `YYYY-MM-DD`。
+  TextColumn get occurrenceKey => text().nullable()();
+
+  TextColumn get transferGroupId => text().nullable()();
+
+  TextColumn get linkedRepaymentId => text().nullable()();
+
+  TextColumn get linkedPlanRunId => text().nullable()();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  TextColumn get deletedAt => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, cashAccountId, id},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, cash_account_id) REFERENCES cash_accounts (workspace_id, id)',
+    'FOREIGN KEY (workspace_id, cash_account_id, recurring_item_id) REFERENCES recurring_items (workspace_id, cash_account_id, id)',
+    "CHECK (event_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (event_at IS NULL OR (event_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*' AND substr(event_at, 1, 10) = event_on))",
+    'CHECK (amount_minor <> 0 AND amount_minor BETWEEN -10000000000000 AND 10000000000000)',
+    "CHECK (cls IN ('confirmed', 'expected', 'planned'))",
+    "CHECK (category IN ('income', 'bill', 'living', 'repayment', 'transfer_in', 'transfer_out', 'fee', 'other'))",
+    "CHECK ((category IN ('income', 'transfer_in') AND amount_minor > 0) OR (category IN ('bill', 'living', 'repayment', 'transfer_out', 'fee') AND amount_minor < 0) OR category = 'other')",
+    'CHECK (label IS NULL OR length(label) BETWEEN 1 AND 20)',
+    "CHECK (label NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')",
+    "CHECK (posting_status IN ('planned', 'posted'))",
+    "CHECK (posting_status = 'planned' OR cls = 'confirmed')",
+    'CHECK ((recurring_item_id IS NULL) = (occurrence_key IS NULL))',
+    "CHECK (occurrence_key IS NULL OR occurrence_key GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK ((transfer_group_id IS NOT NULL) = (category IN ('transfer_in', 'transfer_out')))",
+    'CHECK (transfer_group_id IS NULL OR recurring_item_id IS NULL)',
+    'CHECK (row_version >= 1)',
+  ];
+}
+
+/// 周期事项（R-CASH-02）：按需展开成 [CashEvents]（展开到 horizon，`occurrence_key` = 该期原定日期），
+/// 单期可覆盖/跳过而不影响他期（[RecurringOverrides]）。
+///
+/// 期的规则：`anchor_on + k·周期`（k ≥ 0）落在 `[start_on, end_on]` 内；按月/按年时 `day_rule`
+/// 为 `anchor_day`（锚定日的日号，小月截到月末）或 `month_end`（每月最后一天）。不支持工作日规则
+/// （本阶段没有已核验的节假日日历）。调拨不能做成周期事项。
+@DataClassName('RecurringItemRow')
+class RecurringItems extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get cashAccountId => text()();
+
+  TextColumn get label => text()();
+
+  IntColumn get amountMinor => integer()();
+
+  /// `confirmed` / `expected` / `planned`。
+  TextColumn get cls => text()();
+
+  /// `income` / `bill` / `living` / `repayment` / `fee` / `other`。
+  TextColumn get category => text()();
+
+  /// `monthly` / `weekly` / `biweekly` / `yearly`。
+  TextColumn get frequency => text()();
+
+  TextColumn get anchorOn => text()();
+
+  /// `anchor_day` / `month_end`。
+  TextColumn get dayRule => text().withDefault(const Constant('anchor_day'))();
+
+  TextColumn get startOn => text()();
+
+  TextColumn get endOn => text().nullable()();
+
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, cashAccountId, id},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, cash_account_id) REFERENCES cash_accounts (workspace_id, id)',
+    'CHECK (length(label) BETWEEN 1 AND 20)',
+    "CHECK (label NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')",
+    'CHECK (amount_minor <> 0 AND amount_minor BETWEEN -10000000000000 AND 10000000000000)',
+    "CHECK (cls IN ('confirmed', 'expected', 'planned'))",
+    "CHECK (category IN ('income', 'bill', 'living', 'repayment', 'fee', 'other'))",
+    "CHECK ((category = 'income' AND amount_minor > 0) OR (category IN ('bill', 'living', 'repayment', 'fee') AND amount_minor < 0) OR category = 'other')",
+    "CHECK (frequency IN ('monthly', 'weekly', 'biweekly', 'yearly'))",
+    "CHECK (day_rule IN ('anchor_day', 'month_end'))",
+    "CHECK (day_rule = 'anchor_day' OR frequency IN ('monthly', 'yearly'))",
+    "CHECK (anchor_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (start_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (end_on IS NULL OR end_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    'CHECK (start_on >= anchor_on)',
+    'CHECK (end_on IS NULL OR end_on >= start_on)',
+    'CHECK (row_version >= 1)',
+  ];
+}
+
+/// 周期事项的单期例外：`skip` 跳过该期；`override` 改该期的金额和/或日期、时刻。
+@DataClassName('RecurringOverrideRow')
+class RecurringOverrides extends Table {
+  TextColumn get workspaceId => text()();
+
+  TextColumn get recurringItemId => text()();
+
+  /// 被覆盖的那一期的原定日期。
+  TextColumn get occurrenceKey => text()();
+
+  /// `skip` / `override`。
+  TextColumn get action => text()();
+
+  IntColumn get amountMinor => integer().nullable()();
+
+  TextColumn get eventOn => text().nullable()();
+
+  TextColumn get eventAt => text().nullable()();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {recurringItemId, occurrenceKey};
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, recurring_item_id) REFERENCES recurring_items (workspace_id, id)',
+    "CHECK (occurrence_key GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (action IN ('skip', 'override'))",
+    "CHECK ((action = 'skip' AND amount_minor IS NULL AND event_on IS NULL AND event_at IS NULL) OR (action = 'override' AND (amount_minor IS NOT NULL OR event_on IS NOT NULL)))",
+    'CHECK (amount_minor IS NULL OR (amount_minor <> 0 AND amount_minor BETWEEN -10000000000000 AND 10000000000000))',
+    "CHECK (event_on IS NULL OR event_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (event_at IS NULL OR (event_on IS NOT NULL AND event_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*' AND substr(event_at, 1, 10) = event_on))",
+  ];
+}
+
+/// 现金情景（R-CASH-04，engine-spec §2 Scenario）。内置两条（`builtin_confirmed` 已确认、
+/// `builtin_baseline` 基准）只读，参数固定（CHECK + 触发器）；用户压力情景 `user_stress` 只允许变差：
+/// 收入延迟 0–180 天、收入比例 0–1、支出比例 1–10（规则协议 v1 的 ScaleFactor 上限）。系数存规范
+/// 十进制文本（`Rational.parseDecimal` 可读）。`limit_changes`（额度变化，I-2 使用）与
+/// `event_overrides` 是 JSON 数组。
+@DataClassName('ScenarioRow')
+class Scenarios extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get name => text()();
+
+  /// `builtin_confirmed` / `builtin_baseline` / `user_stress`。
+  TextColumn get kind => text()();
+
+  BoolColumn get includeExpected => boolean()();
+
+  IntColumn get incomeDelayDays => integer().withDefault(const Constant(0))();
+
+  TextColumn get incomeScale => text().withDefault(const Constant('1'))();
+
+  TextColumn get expenseScale => text().withDefault(const Constant('1'))();
+
+  /// `conservative` / `timestamp`。
+  TextColumn get sameDayOrder =>
+      text().withDefault(const Constant('conservative'))();
+
+  /// `[{"credit_account_id", "on", "change_minor"}]`。
+  TextColumn get limitChanges => text().withDefault(const Constant('[]'))();
+
+  /// `[{"event_id", "on"?, "amount_minor"?}]`。
+  TextColumn get eventOverrides => text().withDefault(const Constant('[]'))();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, name},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id) REFERENCES workspaces (id)',
+    'CHECK (length(name) BETWEEN 1 AND 20)',
+    "CHECK (name NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')",
+    "CHECK (kind IN ('builtin_confirmed', 'builtin_baseline', 'user_stress'))",
+    'CHECK (income_delay_days BETWEEN 0 AND 180)',
+    "CHECK (length(income_scale) BETWEEN 1 AND 12 AND income_scale NOT GLOB '*[^0-9.]*')",
+    "CHECK (length(expense_scale) BETWEEN 1 AND 12 AND expense_scale NOT GLOB '*[^0-9.]*')",
+    "CHECK (same_day_order IN ('conservative', 'timestamp'))",
+    "CHECK (json_valid(limit_changes) AND json_type(limit_changes) = 'array')",
+    "CHECK (json_valid(event_overrides) AND json_type(event_overrides) = 'array')",
+    "CHECK (kind = 'user_stress' OR (income_delay_days = 0 AND income_scale = '1' AND expense_scale = '1' AND same_day_order = 'conservative' AND limit_changes = '[]' AND event_overrides = '[]'))",
+    "CHECK ((kind = 'builtin_confirmed') = (include_expected = 0))",
+    'CHECK (row_version >= 1)',
+  ];
+}
+
+/// 情景的一次计算（P-09「重算」）：版本号逐个递增，旧版本保留用于对比；只追加，不修改。
+/// `result` 是 JSON 对象（逐账户最低点与缺口点、假设、数据问题，见 `cash_mapping.dart`）。
+@DataClassName('ScenarioRunRow')
+class ScenarioRuns extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get scenarioId => text()();
+
+  IntColumn get versionNo => integer()();
+
+  TextColumn get computedAt => text()();
+
+  TextColumn get horizonFrom => text()();
+
+  TextColumn get horizonTo => text()();
+
+  /// 输入的 sha256（小写十六进制）：与当前输入不同即"过期"。
+  TextColumn get inputsHash => text()();
+
+  TextColumn get result => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {scenarioId, versionNo},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, scenario_id) REFERENCES scenarios (workspace_id, id)',
+    'CHECK (version_no >= 1)',
+    "CHECK (computed_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (horizon_from GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (horizon_to GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    'CHECK (horizon_to >= horizon_from)',
+    "CHECK (length(inputs_hash) = 64 AND inputs_hash NOT GLOB '*[^0-9a-f]*')",
+    "CHECK (json_valid(result) AND json_type(result) = 'object')",
   ];
 }

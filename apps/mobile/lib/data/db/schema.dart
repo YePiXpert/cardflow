@@ -14,7 +14,7 @@ import 'database_errors.dart';
 /// `test/data/db/schema_test.dart` 要求两条路径得到的 `sqlite_master`（表、列、索引、触发器）
 /// 完全一致，所以改了 `tables.dart` 却没有写迁移、或冻结 SQL 抄错，测试都会失败。
 ///
-/// 加表与迁移（I-1b 起照此办理）：
+/// 加表与迁移（I-1b 的 v3 即照此办理）：
 /// 1. 在 `tables.dart` 加表或加列（drift 表 DSL），`app_database.dart` 的 `@DriftDatabase` 登记新表，
 ///    运行 `dart run build_runner build` 与 `dart format .`；
 /// 2. [LocalSchema.currentSchemaVersion] 加 1；
@@ -33,7 +33,7 @@ import 'database_errors.dart';
 /// 也一律写 `IF NOT EXISTS`，重跑不报错（schema_test 有"重跑 1→2"的测试）。
 abstract final class LocalSchema {
   /// 当前 schema 版本（drift 的 `PRAGMA user_version` 与 meta 表同时记录）。
-  static const int currentSchemaVersion = 2;
+  static const int currentSchemaVersion = 3;
 
   /// v1：meta 表（单行）——schema 版本与建库时间（UTC，ISO-8601）。
   static const String createMetaTable = '''
@@ -443,11 +443,384 @@ BEGIN SELECT RAISE(ABORT, 'limit_snapshots: append only'); END''',
   ];
 }
 
+/// v3（I-1b）：现金账户、余额快照与已包含事件、现金事件、周期事项与单期覆盖、情景与情景计算版本。
+/// 表定义见 `tables.dart`；这里是冻结的 SQL（v2 → v3 的迁移步骤使用；只做 expand：只加表、索引与
+/// 触发器，不动 v2 的任何表与数据）。
+abstract final class SchemaV3 {
+  /// v3 新增的表（与 drift 由 `tables.dart` 生成的建表语句一字不差，只多了 `IF NOT EXISTS`）。
+  static const List<String> tables = <String>[
+    // cash_accounts
+    'CREATE TABLE IF NOT EXISTS "cash_accounts" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"name" TEXT NOT NULL, '
+        '"currency" TEXT NOT NULL, '
+        '"kind" TEXT NOT NULL, '
+        '"usable_for_repayment" INTEGER NOT NULL DEFAULT 1 CHECK ("usable_for_repayment" IN (0, 1)), '
+        '"available_from" TEXT NULL, '
+        '"reserve_floor_minor" INTEGER NOT NULL DEFAULT 0, '
+        '"status" TEXT NOT NULL DEFAULT \'active\', '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        '"deleted_at" TEXT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'FOREIGN KEY (workspace_id) REFERENCES workspaces (id), '
+        'CHECK (length(name) BETWEEN 1 AND 20), '
+        'CHECK (name NOT GLOB \'*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\'), '
+        'CHECK (currency IN (\'CNY\', \'USD\', \'EUR\', \'HKD\', \'GBP\', \'MOP\', \'TWD\', \'JPY\', \'KRW\', \'VND\', \'KWD\', \'BHD\', \'JOD\')), '
+        'CHECK (kind IN (\'bank\', \'wallet\', \'wealth\', \'restricted\')), '
+        'CHECK (kind <> \'restricted\' OR usable_for_repayment = 0), '
+        'CHECK (available_from IS NULL OR available_from GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (reserve_floor_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (status IN (\'active\', \'closed\')), '
+        'CHECK (row_version >= 1)'
+        ') STRICT',
+    // cash_balance_snapshots
+    'CREATE TABLE IF NOT EXISTS "cash_balance_snapshots" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"cash_account_id" TEXT NOT NULL, '
+        '"balance_minor" INTEGER NOT NULL, '
+        '"balance_as_of" TEXT NOT NULL, '
+        '"observed_at" TEXT NOT NULL, '
+        '"source_kind" TEXT NOT NULL, '
+        '"confirmation_level" TEXT NOT NULL, '
+        '"recorded_at" TEXT NOT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "cash_account_id", "id"), '
+        'FOREIGN KEY (workspace_id, cash_account_id) REFERENCES cash_accounts (workspace_id, id), '
+        'CHECK (balance_minor BETWEEN -10000000000000 AND 10000000000000), '
+        'CHECK (balance_as_of GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (observed_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (recorded_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (source_kind IN (\'bank_app\', \'statement\', \'user\', \'import\')), '
+        'CHECK (confirmation_level IN (\'system_estimated\', \'user_confirmed\', \'bank_confirmed\'))'
+        ') STRICT',
+    // snapshot_included_events
+    'CREATE TABLE IF NOT EXISTS "snapshot_included_events" ('
+        '"workspace_id" TEXT NOT NULL, '
+        '"cash_account_id" TEXT NOT NULL, '
+        '"snapshot_id" TEXT NOT NULL, '
+        '"cash_event_id" TEXT NOT NULL, '
+        'PRIMARY KEY ("snapshot_id", "cash_event_id"), '
+        'FOREIGN KEY (workspace_id, cash_account_id, snapshot_id) REFERENCES cash_balance_snapshots (workspace_id, cash_account_id, id), '
+        'FOREIGN KEY (workspace_id, cash_account_id, cash_event_id) REFERENCES cash_events (workspace_id, cash_account_id, id)'
+        ') STRICT',
+    // cash_events
+    'CREATE TABLE IF NOT EXISTS "cash_events" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"cash_account_id" TEXT NOT NULL, '
+        '"event_on" TEXT NOT NULL, '
+        '"event_at" TEXT NULL, '
+        '"amount_minor" INTEGER NOT NULL, '
+        '"cls" TEXT NOT NULL, '
+        '"category" TEXT NOT NULL, '
+        '"label" TEXT NULL, '
+        '"posting_status" TEXT NOT NULL DEFAULT \'planned\', '
+        '"recurring_item_id" TEXT NULL, '
+        '"occurrence_key" TEXT NULL, '
+        '"transfer_group_id" TEXT NULL, '
+        '"linked_repayment_id" TEXT NULL, '
+        '"linked_plan_run_id" TEXT NULL, '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        '"deleted_at" TEXT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "cash_account_id", "id"), '
+        'FOREIGN KEY (workspace_id, cash_account_id) REFERENCES cash_accounts (workspace_id, id), '
+        'FOREIGN KEY (workspace_id, cash_account_id, recurring_item_id) REFERENCES recurring_items (workspace_id, cash_account_id, id), '
+        'CHECK (event_on GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (event_at IS NULL OR (event_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\' AND substr(event_at, 1, 10) = event_on)), '
+        'CHECK (amount_minor <> 0 AND amount_minor BETWEEN -10000000000000 AND 10000000000000), '
+        'CHECK (cls IN (\'confirmed\', \'expected\', \'planned\')), '
+        'CHECK (category IN (\'income\', \'bill\', \'living\', \'repayment\', \'transfer_in\', \'transfer_out\', \'fee\', \'other\')), '
+        'CHECK ((category IN (\'income\', \'transfer_in\') AND amount_minor > 0) OR (category IN (\'bill\', \'living\', \'repayment\', \'transfer_out\', \'fee\') AND amount_minor < 0) OR category = \'other\'), '
+        'CHECK (label IS NULL OR length(label) BETWEEN 1 AND 20), '
+        'CHECK (label NOT GLOB \'*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\'), '
+        'CHECK (posting_status IN (\'planned\', \'posted\')), '
+        'CHECK (posting_status = \'planned\' OR cls = \'confirmed\'), '
+        'CHECK ((recurring_item_id IS NULL) = (occurrence_key IS NULL)), '
+        'CHECK (occurrence_key IS NULL OR occurrence_key GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK ((transfer_group_id IS NOT NULL) = (category IN (\'transfer_in\', \'transfer_out\'))), '
+        'CHECK (transfer_group_id IS NULL OR recurring_item_id IS NULL), '
+        'CHECK (row_version >= 1)'
+        ') STRICT',
+    // recurring_items
+    'CREATE TABLE IF NOT EXISTS "recurring_items" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"cash_account_id" TEXT NOT NULL, '
+        '"label" TEXT NOT NULL, '
+        '"amount_minor" INTEGER NOT NULL, '
+        '"cls" TEXT NOT NULL, '
+        '"category" TEXT NOT NULL, '
+        '"frequency" TEXT NOT NULL, '
+        '"anchor_on" TEXT NOT NULL, '
+        '"day_rule" TEXT NOT NULL DEFAULT \'anchor_day\', '
+        '"start_on" TEXT NOT NULL, '
+        '"end_on" TEXT NULL, '
+        '"active" INTEGER NOT NULL DEFAULT 1 CHECK ("active" IN (0, 1)), '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "cash_account_id", "id"), '
+        'FOREIGN KEY (workspace_id, cash_account_id) REFERENCES cash_accounts (workspace_id, id), '
+        'CHECK (length(label) BETWEEN 1 AND 20), '
+        'CHECK (label NOT GLOB \'*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\'), '
+        'CHECK (amount_minor <> 0 AND amount_minor BETWEEN -10000000000000 AND 10000000000000), '
+        'CHECK (cls IN (\'confirmed\', \'expected\', \'planned\')), '
+        'CHECK (category IN (\'income\', \'bill\', \'living\', \'repayment\', \'fee\', \'other\')), '
+        'CHECK ((category = \'income\' AND amount_minor > 0) OR (category IN (\'bill\', \'living\', \'repayment\', \'fee\') AND amount_minor < 0) OR category = \'other\'), '
+        'CHECK (frequency IN (\'monthly\', \'weekly\', \'biweekly\', \'yearly\')), '
+        'CHECK (day_rule IN (\'anchor_day\', \'month_end\')), '
+        'CHECK (day_rule = \'anchor_day\' OR frequency IN (\'monthly\', \'yearly\')), '
+        'CHECK (anchor_on GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (start_on GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (end_on IS NULL OR end_on GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (start_on >= anchor_on), '
+        'CHECK (end_on IS NULL OR end_on >= start_on), '
+        'CHECK (row_version >= 1)'
+        ') STRICT',
+    // recurring_overrides
+    'CREATE TABLE IF NOT EXISTS "recurring_overrides" ('
+        '"workspace_id" TEXT NOT NULL, '
+        '"recurring_item_id" TEXT NOT NULL, '
+        '"occurrence_key" TEXT NOT NULL, '
+        '"action" TEXT NOT NULL, '
+        '"amount_minor" INTEGER NULL, '
+        '"event_on" TEXT NULL, '
+        '"event_at" TEXT NULL, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        'PRIMARY KEY ("recurring_item_id", "occurrence_key"), '
+        'FOREIGN KEY (workspace_id, recurring_item_id) REFERENCES recurring_items (workspace_id, id), '
+        'CHECK (occurrence_key GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (action IN (\'skip\', \'override\')), '
+        'CHECK ((action = \'skip\' AND amount_minor IS NULL AND event_on IS NULL AND event_at IS NULL) OR (action = \'override\' AND (amount_minor IS NOT NULL OR event_on IS NOT NULL))), '
+        'CHECK (amount_minor IS NULL OR (amount_minor <> 0 AND amount_minor BETWEEN -10000000000000 AND 10000000000000)), '
+        'CHECK (event_on IS NULL OR event_on GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (event_at IS NULL OR (event_on IS NOT NULL AND event_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\' AND substr(event_at, 1, 10) = event_on))'
+        ') STRICT',
+    // scenarios
+    'CREATE TABLE IF NOT EXISTS "scenarios" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"name" TEXT NOT NULL, '
+        '"kind" TEXT NOT NULL, '
+        '"include_expected" INTEGER NOT NULL CHECK ("include_expected" IN (0, 1)), '
+        '"income_delay_days" INTEGER NOT NULL DEFAULT 0, '
+        '"income_scale" TEXT NOT NULL DEFAULT \'1\', '
+        '"expense_scale" TEXT NOT NULL DEFAULT \'1\', '
+        '"same_day_order" TEXT NOT NULL DEFAULT \'conservative\', '
+        '"limit_changes" TEXT NOT NULL DEFAULT \'[]\', '
+        '"event_overrides" TEXT NOT NULL DEFAULT \'[]\', '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "name"), '
+        'FOREIGN KEY (workspace_id) REFERENCES workspaces (id), '
+        'CHECK (length(name) BETWEEN 1 AND 20), '
+        'CHECK (name NOT GLOB \'*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\'), '
+        'CHECK (kind IN (\'builtin_confirmed\', \'builtin_baseline\', \'user_stress\')), '
+        'CHECK (income_delay_days BETWEEN 0 AND 180), '
+        'CHECK (length(income_scale) BETWEEN 1 AND 12 AND income_scale NOT GLOB \'*[^0-9.]*\'), '
+        'CHECK (length(expense_scale) BETWEEN 1 AND 12 AND expense_scale NOT GLOB \'*[^0-9.]*\'), '
+        'CHECK (same_day_order IN (\'conservative\', \'timestamp\')), '
+        'CHECK (json_valid(limit_changes) AND json_type(limit_changes) = \'array\'), '
+        'CHECK (json_valid(event_overrides) AND json_type(event_overrides) = \'array\'), '
+        'CHECK (kind = \'user_stress\' OR (income_delay_days = 0 AND income_scale = \'1\' AND expense_scale = \'1\' AND same_day_order = \'conservative\' AND limit_changes = \'[]\' AND event_overrides = \'[]\')), '
+        'CHECK ((kind = \'builtin_confirmed\') = (include_expected = 0)), '
+        'CHECK (row_version >= 1)'
+        ') STRICT',
+    // scenario_runs
+    'CREATE TABLE IF NOT EXISTS "scenario_runs" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"scenario_id" TEXT NOT NULL, '
+        '"version_no" INTEGER NOT NULL, '
+        '"computed_at" TEXT NOT NULL, '
+        '"horizon_from" TEXT NOT NULL, '
+        '"horizon_to" TEXT NOT NULL, '
+        '"inputs_hash" TEXT NOT NULL, '
+        '"result" TEXT NOT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("scenario_id", "version_no"), '
+        'FOREIGN KEY (workspace_id, scenario_id) REFERENCES scenarios (workspace_id, id), '
+        'CHECK (version_no >= 1), '
+        'CHECK (computed_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (horizon_from GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (horizon_to GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (horizon_to >= horizon_from), '
+        'CHECK (length(inputs_hash) = 64 AND inputs_hash NOT GLOB \'*[^0-9a-f]*\'), '
+        'CHECK (json_valid(result) AND json_type(result) = \'object\')'
+        ') STRICT',
+  ];
+
+  /// v3 的索引（外键子表列、部分唯一索引）。
+  static const List<String> indexes = <String>[
+    // 同一工作空间里未删除的现金账户不重名（P-08 的选择、"余额是否已包含"的提问都按名称）。
+    'CREATE UNIQUE INDEX IF NOT EXISTS cash_accounts_live_name '
+        'ON cash_accounts (workspace_id, name) WHERE deleted_at IS NULL',
+    'CREATE INDEX IF NOT EXISTS cash_balance_snapshots_account '
+        'ON cash_balance_snapshots (workspace_id, cash_account_id, balance_as_of DESC)',
+    'CREATE INDEX IF NOT EXISTS snapshot_included_events_snapshot '
+        'ON snapshot_included_events (workspace_id, cash_account_id, snapshot_id)',
+    'CREATE INDEX IF NOT EXISTS snapshot_included_events_event '
+        'ON snapshot_included_events (workspace_id, cash_account_id, cash_event_id)',
+    // data-model §5：按账户与日期的范围查询。
+    'CREATE INDEX IF NOT EXISTS cash_events_account_on '
+        'ON cash_events (workspace_id, cash_account_id, event_on) WHERE deleted_at IS NULL',
+    'CREATE INDEX IF NOT EXISTS cash_events_recurring '
+        'ON cash_events (workspace_id, cash_account_id, recurring_item_id)',
+    // 周期事项每一期最多一条未删除的事件（展开幂等：重复展开被忽略）。
+    'CREATE UNIQUE INDEX IF NOT EXISTS cash_events_occurrence '
+        'ON cash_events (recurring_item_id, occurrence_key) '
+        'WHERE recurring_item_id IS NOT NULL AND deleted_at IS NULL',
+    'CREATE INDEX IF NOT EXISTS cash_events_transfer '
+        'ON cash_events (workspace_id, transfer_group_id) WHERE transfer_group_id IS NOT NULL',
+    // 一笔还款（I-1c）最多对应一条未删除的现金事件。
+    'CREATE UNIQUE INDEX IF NOT EXISTS cash_events_linked_repayment '
+        'ON cash_events (workspace_id, linked_repayment_id) '
+        'WHERE linked_repayment_id IS NOT NULL AND deleted_at IS NULL',
+    'CREATE INDEX IF NOT EXISTS recurring_items_account '
+        'ON recurring_items (workspace_id, cash_account_id)',
+    'CREATE INDEX IF NOT EXISTS recurring_overrides_item '
+        'ON recurring_overrides (workspace_id, recurring_item_id)',
+    // 每个工作空间的两条内置情景各最多一条。
+    'CREATE UNIQUE INDEX IF NOT EXISTS scenarios_one_builtin '
+        "ON scenarios (workspace_id, kind) WHERE kind <> 'user_stress'",
+    'CREATE INDEX IF NOT EXISTS scenario_runs_scenario '
+        'ON scenario_runs (workspace_id, scenario_id, version_no)',
+  ];
+
+  /// v3 的触发器：仓库层规则的数据库兜底（错误消息只有表名与规则，不含任何数据）。
+  static const List<String> triggers = <String>[
+    // 工作空间与币种不可改（R2-04、R2-11）。
+    '''
+CREATE TRIGGER IF NOT EXISTS cash_accounts_immutable
+BEFORE UPDATE OF workspace_id, currency ON cash_accounts
+WHEN NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.currency IS NOT OLD.currency
+BEGIN SELECT RAISE(ABORT, 'cash_accounts: immutable column'); END''',
+    // 余额快照只追加，不修改（data-model §10.3）。
+    '''
+CREATE TRIGGER IF NOT EXISTS cash_balance_snapshots_immutable
+BEFORE UPDATE ON cash_balance_snapshots
+BEGIN SELECT RAISE(ABORT, 'cash_balance_snapshots: append only'); END''',
+    // 快照的包含关系与快照一起写入，之后不改。
+    '''
+CREATE TRIGGER IF NOT EXISTS snapshot_included_events_immutable
+BEFORE UPDATE ON snapshot_included_events
+BEGIN SELECT RAISE(ABORT, 'snapshot_included_events: append only'); END''',
+    // 快照只能包含快照日当天及以前的事件（规则协议 v1 的交叉规则 R3E-14）。
+    '''
+CREATE TRIGGER IF NOT EXISTS snapshot_included_events_on_or_before
+BEFORE INSERT ON snapshot_included_events
+WHEN (
+  SELECT e.event_on FROM cash_events AS e
+  WHERE e.workspace_id = NEW.workspace_id AND e.id = NEW.cash_event_id
+) > (
+  SELECT s.balance_as_of FROM cash_balance_snapshots AS s
+  WHERE s.workspace_id = NEW.workspace_id AND s.id = NEW.snapshot_id
+)
+BEGIN SELECT RAISE(ABORT, 'snapshot_included_events: event after snapshot day'); END''',
+    // 现金事件：归属与来源列不可改；已发生的不能退回尚未发生；删除（tombstone）后不再改动；
+    // 调拨两端的日期、时刻、金额与方向不可改（改调拨 = 删除两端后重建）。
+    '''
+CREATE TRIGGER IF NOT EXISTS cash_events_immutable
+BEFORE UPDATE ON cash_events
+WHEN NEW.id IS NOT OLD.id
+  OR NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.cash_account_id IS NOT OLD.cash_account_id
+  OR NEW.recurring_item_id IS NOT OLD.recurring_item_id
+  OR NEW.occurrence_key IS NOT OLD.occurrence_key
+  OR NEW.transfer_group_id IS NOT OLD.transfer_group_id
+  OR NEW.created_at IS NOT OLD.created_at
+  OR OLD.deleted_at IS NOT NULL
+  OR (OLD.posting_status = 'posted' AND NEW.posting_status <> 'posted')
+  OR (OLD.transfer_group_id IS NOT NULL AND (
+    NEW.event_on IS NOT OLD.event_on
+    OR NEW.event_at IS NOT OLD.event_at
+    OR NEW.amount_minor IS NOT OLD.amount_minor
+    OR NEW.category IS NOT OLD.category
+  ))
+BEGIN SELECT RAISE(ABORT, 'cash_events: immutable column'); END''',
+    // 调拨：一组最多两条；两端账户不同、币种相同、方向相反、金额相反、到账日不早于转出日。
+    '''
+CREATE TRIGGER IF NOT EXISTS cash_events_transfer_pair
+BEFORE INSERT ON cash_events
+WHEN NEW.transfer_group_id IS NOT NULL AND (
+  (SELECT COUNT(*) FROM cash_events AS o
+   WHERE o.workspace_id = NEW.workspace_id
+     AND o.transfer_group_id = NEW.transfer_group_id) >= 2
+  OR EXISTS (
+    SELECT 1 FROM cash_events AS o
+    JOIN cash_accounts AS oa
+      ON oa.workspace_id = o.workspace_id AND oa.id = o.cash_account_id
+    JOIN cash_accounts AS na
+      ON na.workspace_id = NEW.workspace_id AND na.id = NEW.cash_account_id
+    WHERE o.workspace_id = NEW.workspace_id
+      AND o.transfer_group_id = NEW.transfer_group_id
+      AND (o.cash_account_id = NEW.cash_account_id
+        OR o.category = NEW.category
+        OR o.amount_minor <> -NEW.amount_minor
+        OR oa.currency <> na.currency
+        OR (NEW.category = 'transfer_in' AND NEW.event_on < o.event_on)
+        OR (NEW.category = 'transfer_out' AND NEW.event_on > o.event_on))
+  )
+)
+BEGIN SELECT RAISE(ABORT, 'cash_events: invalid transfer pair'); END''',
+    '''
+CREATE TRIGGER IF NOT EXISTS recurring_items_immutable
+BEFORE UPDATE OF workspace_id, cash_account_id ON recurring_items
+WHEN NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.cash_account_id IS NOT OLD.cash_account_id
+BEGIN SELECT RAISE(ABORT, 'recurring_items: immutable column'); END''',
+    // 内置情景只读；情景的种类与工作空间不可改。
+    '''
+CREATE TRIGGER IF NOT EXISTS scenarios_builtin_readonly
+BEFORE UPDATE ON scenarios
+WHEN OLD.kind <> 'user_stress'
+  OR NEW.kind IS NOT OLD.kind
+  OR NEW.workspace_id IS NOT OLD.workspace_id
+BEGIN SELECT RAISE(ABORT, 'scenarios: built-in scenarios are read-only'); END''',
+    // 情景计算版本只追加，不修改（旧版本保留用于对比）。
+    '''
+CREATE TRIGGER IF NOT EXISTS scenario_runs_immutable
+BEFORE UPDATE ON scenario_runs
+BEGIN SELECT RAISE(ABORT, 'scenario_runs: append only'); END''',
+  ];
+
+  /// v2 → v3 的全部语句（顺序：表、索引、触发器）。
+  static const List<String> migration = <String>[
+    ...tables,
+    ...indexes,
+    ...triggers,
+  ];
+}
+
 /// 新库（[createSchema]）使用的索引：当前版本的完整集合。
-const List<String> latestIndexes = SchemaV2.indexes;
+const List<String> latestIndexes = <String>[
+  ...SchemaV2.indexes,
+  ...SchemaV3.indexes,
+];
 
 /// 新库（[createSchema]）使用的触发器：当前版本的完整集合。
-const List<String> latestTriggers = SchemaV2.triggers;
+const List<String> latestTriggers = <String>[
+  ...SchemaV2.triggers,
+  ...SchemaV3.triggers,
+];
 
 /// 一步迁移：把库从版本 v 升到 v + 1。
 typedef SchemaMigrationStep = Future<void> Function(GeneratedDatabase db);
@@ -458,9 +831,15 @@ Future<void> _migrateV1ToV2(GeneratedDatabase db) async {
   }
 }
 
+Future<void> _migrateV2ToV3(GeneratedDatabase db) async {
+  for (final statement in SchemaV3.migration) {
+    await db.customStatement(statement);
+  }
+}
+
 /// 已登记的迁移步骤：键为旧版本 v，值把库从 v 升到 v + 1。
 const Map<int, SchemaMigrationStep> schemaMigrations =
-    <int, SchemaMigrationStep>{1: _migrateV1ToV2};
+    <int, SchemaMigrationStep>{1: _migrateV1ToV2, 2: _migrateV2ToV3};
 
 /// 新库：在一个事务里建出最新版本的完整结构（meta、`db.allTables` 里的全部 drift 表、当前的
 /// 索引与触发器）、写入 meta，并写 `PRAGMA user_version`。

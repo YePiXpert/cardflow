@@ -49,6 +49,14 @@ final class DatabaseMeta {
     Cards,
     BillingRuleVersions,
     LimitSnapshots,
+    CashAccounts,
+    CashBalanceSnapshots,
+    SnapshotIncludedEvents,
+    CashEvents,
+    RecurringItems,
+    RecurringOverrides,
+    Scenarios,
+    ScenarioRuns,
   ],
 )
 class AppDatabase extends _$AppDatabase {

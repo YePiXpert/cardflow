@@ -124,9 +124,19 @@ final class WorkspaceRepository {
   });
 }
 
-/// 带 `workspace_id` 的业务表，按"先子表后父表"的删除顺序排列。I-1b 起新增的业务表必须加进来
+/// 带 `workspace_id` 的业务表，按"先子表后父表"的删除顺序排列。新增的业务表必须加进来
 /// （`workspace_isolation_test` 会检查本表覆盖了 sqlite_master 里所有带 workspace_id 的表）。
 const List<String> workspaceDataTables = <String>[
+  // v3（I-1b）
+  'scenario_runs',
+  'scenarios',
+  'snapshot_included_events',
+  'cash_balance_snapshots',
+  'cash_events',
+  'recurring_overrides',
+  'recurring_items',
+  'cash_accounts',
+  // v2（I-1a）
   'limit_snapshots',
   'billing_rule_versions',
   'cards',
