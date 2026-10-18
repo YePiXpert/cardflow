@@ -1,0 +1,103 @@
+import 'package:flutter/material.dart';
+
+import '../theme/tokens.dart';
+
+/// 首次空白态里的一个操作。`onPressed` 为 null 表示该功能尚未开放。
+@immutable
+class EmptyStateAction {
+  const EmptyStateAction({required this.label, this.onPressed});
+
+  final String label;
+  final VoidCallback? onPressed;
+}
+
+/// 本版本尚未开放的操作旁边的统一说明。
+const String notYetAvailableNote = '尚未开放：本版本只用于验证安装与导航，功能将在后续版本提供。';
+
+/// ui-spec §2"首次空白"：图标 + 页面文案 + 一句用途 + 主操作。
+///
+/// 第一个操作是主操作（实心按钮），其余为次要操作（描边按钮）。
+/// 有任何操作尚未开放时，在按钮下方给出 [notYetAvailableNote]，不让按钮"点了没反应"。
+/// 内容可滚动、不设固定高度，200% 字号下换行而不截断（ui-spec §3.3）。
+class FirstRunEmptyState extends StatelessWidget {
+  const FirstRunEmptyState({
+    super.key,
+    required this.icon,
+    required this.message,
+    required this.purpose,
+    this.actions = const <EmptyStateAction>[],
+  });
+
+  /// 主图标（装饰性，读屏跳过；含义由文字承载）。
+  final IconData icon;
+
+  /// 该页"首次空白"文案，如"还没有信用账户"。
+  final String message;
+
+  /// 一句用途，取自 ui-spec 该页的"目的"。
+  final String purpose;
+
+  /// 主操作与次要操作。
+  final List<EmptyStateAction> actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = CardFlowColors.of(context);
+    final hasUnavailable = actions.any((a) => a.onPressed == null);
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(CfSpace.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const SizedBox(height: CfSpace.xl),
+          ExcludeSemantics(
+            child: Icon(
+              icon,
+              size: CfIconSize.emptyState,
+              color: colors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: CfSpace.md),
+          Text(
+            message,
+            style: theme.textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: CfSpace.xs),
+          Text(
+            purpose,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.textSecondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          if (actions.isNotEmpty) const SizedBox(height: CfSpace.lg),
+          for (var i = 0; i < actions.length; i++) ...<Widget>[
+            if (i > 0) const SizedBox(height: CfTouch.minGap),
+            if (i == 0)
+              FilledButton(
+                onPressed: actions[i].onPressed,
+                child: Text(actions[i].label, textAlign: TextAlign.center),
+              )
+            else
+              OutlinedButton(
+                onPressed: actions[i].onPressed,
+                child: Text(actions[i].label, textAlign: TextAlign.center),
+              ),
+          ],
+          if (hasUnavailable) ...<Widget>[
+            const SizedBox(height: CfSpace.sm),
+            Text(
+              notYetAvailableNote,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}

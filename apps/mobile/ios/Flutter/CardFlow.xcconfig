@@ -1,0 +1,15 @@
+// 卡序 CardFlow：Bundle ID 与签名参数的唯一来源。
+// Debug.xcconfig 与 Release.xcconfig 引入本文件；Profile 配置以 Release.xcconfig 为基础，同样生效。
+//
+// - Bundle ID 安装后不再修改：换 Bundle ID 等于换一个 App，本机数据不会跟过去（ADR-015）。
+// - 仓库与 CI 不保存任何团队 ID、证书或描述文件。CI 用 `flutter build ios --no-codesign`
+//   出未签名包，签名由用户在安装前用自己的证书完成。
+// - 若在 Mac 上自行签名构建，在本目录新建 CardFlow.local.xcconfig（已被 ios/.gitignore 忽略），
+//   在其中设置 DEVELOPMENT_TEAM、CODE_SIGN_STYLE、CODE_SIGN_IDENTITY；不要修改本文件。
+
+PRODUCT_BUNDLE_IDENTIFIER = li.yep.cardflow
+DEVELOPMENT_TEAM =
+CODE_SIGN_STYLE = Manual
+CODE_SIGN_IDENTITY =
+
+#include? "CardFlow.local.xcconfig"

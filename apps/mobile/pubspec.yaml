@@ -1,0 +1,32 @@
+name: cardflow
+description: "卡序 CardFlow：多信用卡管理 App（iOS 优先，纯本地可用）。"
+publish_to: 'none'
+
+# CFBundleShortVersionString = 版本名；CFBundleVersion = 构建号（CI 用 --build-number 覆盖）。
+version: 0.0.1+1
+
+environment:
+  sdk: ^3.13.5
+
+# 版本写死到补丁号，取自 docs/20-architecture/architecture.md §11。
+# build_runner 与 flutter_lints 不在 §11 表内，由 I-0a 简报点名引入，版本见 README"移动端"一节。
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: 3.4.3
+  riverpod_annotation: 4.0.7
+  go_router: 18.1.0
+  intl: 0.20.3
+  package_info_plus: 10.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: 6.0.0
+  build_runner: 2.16.2
+  riverpod_generator: 4.0.9
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,41 @@
+# 卡序 CardFlow 移动端静态分析配置。
+# CI（.github/workflows/mobile.yml）与本机都以 `flutter analyze --fatal-infos` 运行，要求零输出。
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  exclude:
+    - build/**
+    - ios/**
+    - web/**
+
+linter:
+  rules:
+    always_declare_return_types: true
+    avoid_dynamic_calls: true
+    cancel_subscriptions: true
+    close_sinks: true
+    directives_ordering: true
+    only_throw_errors: true
+    prefer_final_locals: true
+    prefer_single_quotes: true
+    unawaited_futures: true
+    unnecessary_lambdas: true
+
+# ---------------------------------------------------------------------------
+# 约定：领域层禁止 double（ADR-008；architecture §3）
+#
+# lib/domain/** 是纯 Dart 领域层（无 Flutter 依赖）。其中：
+#   - 金额一律用 int 最小单位 + 币种（Money{minor, currency}），小数位来自 minorDigits 表；
+#   - 利率、汇率、比例用 decimal 包的 Decimal，取整模式显式传入；
+#   - 禁止出现 double 类型、double 字面量（如 0.1）、num 类型的金额/比率，
+#     以及 toDouble()、double.parse()、double.tryParse() 调用。
+# 展示层（lib/app、lib/features）只在布局尺寸、动画等非金额场景使用 double。
+#
+# 本阶段 lib/domain 为空，上述约定暂由代码评审保证；可执行的检查（自定义 lint 或
+# 扫描 lib/domain 的测试）由下一任务（Dart 领域层移植）随首批领域代码一起加入。
+# ---------------------------------------------------------------------------
