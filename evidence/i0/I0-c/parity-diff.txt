@@ -1,0 +1,33 @@
+# I-0c 双端 parity：Python 与 Dart 运行器 --dump 的输出逐字节比较 · 2026-10-18T09:07:02Z · 提交 fdd7433
+# F-18 的全部 cycles/verify case（3 个）；另：CI 同款的 300 份随机 fixture（1200 个输出）与本机 6 个种子 × 1000 份（24,000 个输出）。
+$ find /tmp/i0c-evidence/golden -name "*.json" | sort
+./dart/regression_2026-10-16_10000/00-cycles.cycles.json
+./dart/regression_2026-10-16_10000/01-plan_A8000_C2000.verify.json
+./dart/regression_2026-10-16_10000/02-plan_B10000.verify.json
+./python/regression_2026-10-16_10000/00-cycles.cycles.json
+./python/regression_2026-10-16_10000/01-plan_A8000_C2000.verify.json
+./python/regression_2026-10-16_10000/02-plan_B10000.verify.json
+$ diff -r /tmp/i0c-evidence/golden/python /tmp/i0c-evidence/golden/dart; echo "diff exit=$?"
+diff exit=0
+# F-18：3 个 cycles/verify 输出，diff 为空（逐字节一致）。各文件 sha256（两端相同）：
+253a59c445472a7ba92be513da4ab131471f1c98ce86df2b5820497c78763a36  python/regression_2026-10-16_10000/00-cycles.cycles.json
+a3dc469a639e77ca7f7f0fb13c7aba2ee4adb3cbf6a0563f0db09b8327b3e831  python/regression_2026-10-16_10000/01-plan_A8000_C2000.verify.json
+eaf8b04bdd5b36dbc212089323faa4719f4b9d6adde8dcdafa76886faba1a207  python/regression_2026-10-16_10000/02-plan_B10000.verify.json
+253a59c445472a7ba92be513da4ab131471f1c98ce86df2b5820497c78763a36  dart/regression_2026-10-16_10000/00-cycles.cycles.json
+a3dc469a639e77ca7f7f0fb13c7aba2ee4adb3cbf6a0563f0db09b8327b3e831  dart/regression_2026-10-16_10000/01-plan_A8000_C2000.verify.json
+eaf8b04bdd5b36dbc212089323faa4719f4b9d6adde8dcdafa76886faba1a207  dart/regression_2026-10-16_10000/02-plan_B10000.verify.json
+
+# 随机 fixture（与 CI protocol-parity job 相同：300 份，种子 20261018）
+wrote 300 fixtures (1200 cases) to /tmp/i0c-evidence/random/fixtures (seed 20261018)
+summary: 300 fixture(s): 300 passed, 0 failed, 0 invalid -> exit 0
+summary: 300 fixture(s): 300 passed, 0 failed, 0 invalid -> exit 0
+diff exit=0 (1200 outputs)
+
+# 本机加测：6 个种子 × 1000 份随机文档（每份 1 cycles + 3 verify）
+seed 1: python exit 0, dart exit 0, outputs 4000, diff exit 0
+seed 2: python exit 0, dart exit 0, outputs 4000, diff exit 0
+seed 3: python exit 0, dart exit 0, outputs 4000, diff exit 0
+seed 11: python exit 0, dart exit 0, outputs 4000, diff exit 0
+seed 12: python exit 0, dart exit 0, outputs 4000, diff exit 0
+seed 13: python exit 0, dart exit 0, outputs 4000, diff exit 0
+# 覆盖面（本机 24,000 个输出）：{"alternative_cycles": 119, "cycles_cards": 15812, "cycles_errors": 225, "data_issues": 1653, "negative_buffer": 471, "not_ok": 15872, "ok": 1375, "structural_ok": 1984, "verified": 17247, "with_assumptions": 4368, "with_breaches": 6701, "with_fees": 13995, "with_global_breaches": 2387}

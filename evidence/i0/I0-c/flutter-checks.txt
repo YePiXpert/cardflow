@@ -1,0 +1,59 @@
+# I-0c App（apps/mobile）的 analyze / test / build web · 2026-10-18T09:07:02Z · 提交 fdd7433
+# MoneyText 的最小单位位数表改为引用领域包后，三项照常通过。flutter analyze 排除 packages/**（领域包另用 dart analyze）。
+$ flutter --version
+Flutter 3.47.7 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision abaf9c5237 (10 days ago) • 2026-10-08 09:51:21 -0700
+Engine • hash d8a2d6c768c334d53e16277f837970ffa1e2de81 (revision deb287481e) (10 days ago) • 2026-10-07 17:09:12.000Z
+Tools • Dart 3.13.5 • DevTools 2.60.0
+$ flutter pub get --enforce-lockfile
+6 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+$ dart format --output=none --set-exit-if-changed .
+Formatted 108 files (0 changed) in 0.19 seconds.
+exit=0
+$ flutter analyze --fatal-infos
+Analyzing mobile...                                             
+No issues found! (ran in 0.8s)
+exit=0
+$ flutter test --reporter expanded
+00:02 +130: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +131: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +132: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +133: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +134: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +135: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +136: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +137: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +138: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +139: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +140: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +141: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:02 +142: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /discover（Brightness.light）满足触控尺寸、标签与文字对比度要求
+00:02 +143: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 切换 Tab 保留栈位置；再次点按当前 Tab 回到根页
+00:02 +144: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 切换 Tab 保留栈位置；再次点按当前 Tab 回到根页
+00:02 +145: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 切换 Tab 保留栈位置；再次点按当前 Tab 回到根页
+00:02 +146: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: /settings/welcome（Brightness.light）满足触控尺寸、标签与文字对比度要求
+00:03 +147: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 规划的首次空白主操作跳到卡包
+00:03 +148: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局
+00:03 +149: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局
+00:03 +150: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局
+00:03 +151: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 未知路径显示"已不存在"，可回到总览
+00:03 +152: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x 时所有页面正常布局
+00:03 +153: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x 时所有页面正常布局
+00:03 +154: All tests passed!
+exit=0
+$ flutter build web --release
+Compiling lib/main.dart for the Web...                          
+Wasm dry run succeeded. Consider building and testing your application with the `--wasm` flag. See docs for more info: https://docs.flutter.dev/platform-integration/web/wasm
+Use --no-wasm-dry-run to disable these warnings.
+Expected to find fonts for (MaterialIcons, packages/cupertino_icons/CupertinoIcons), but found (MaterialIcons). This usually means you are referring to font families in an IconData class but not including them in the assets section of your pubspec.yaml, are missing the package that would include them, or are missing "uses-material-design: true".
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 9944 bytes (99.4% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Compiling lib/main.dart for the Web...                             39.1s
+✓ Built build/web
+exit=0
+$ grep -n "cardflow_domain" lib/app/money/money_format.dart pubspec.yaml
+lib/app/money/money_format.dart:11:/// `cardflow_domain`（packages/cardflow_domain/lib/src/money.dart，与服务端 money.py 逐项一致）；
+lib/app/money/money_format.dart:15:import 'package:cardflow_domain/cardflow_domain.dart' show minorDigitsOf;
+lib/app/money/money_format.dart:17:export 'package:cardflow_domain/cardflow_domain.dart'
+pubspec.yaml:30:  cardflow_domain:
+pubspec.yaml:31:    path: packages/cardflow_domain

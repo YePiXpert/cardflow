@@ -1,0 +1,139 @@
+# I-0c 本地有限搜索（K≤3，非最优证明） · 2026-10-18T09:07:02Z · 提交 fdd7433
+# dart run cardflow_domain:bounded_search；F-18 K≤3 与 K=1 的输出与耗时（默认预算 2 s）。
+# 另：与 Python CP-SAT 引擎在 3000 份随机文档上逐份对照（比较脚本附在文末）。
+$ dart run cardflow_domain:bounded_search ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+== ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+   input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+   decision baseline, profile cash_safety, K <= 3, budget 2000ms
+   outcome found: 本地找到可行方案，非最优证明 (proven: false)
+   allocation A=800000, C=200000
+   verification ok true; weighted buffer 42.4 days; fees 0; failing scenarios confirmed,stress_income_delay
+   objectives {min_margin: 100000, fees: 0, net_verified_benefit: 0, buffer: 42400000, cards: 2}
+     A: 800000 statement 2026-11-10 due 2026-11-28 repay 2026-11-28 from cash-main (buffer 43 days, fee 0)
+     C: 200000 statement 2026-11-05 due 2026-11-25 repay 2026-11-25 from cash-main (buffer 40 days, fee 0)
+   candidates 29, verifier calls 5, exhausted true, timed out false, elapsed 18ms
+$ dart run cardflow_domain:bounded_search --max-cards 1 ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+== ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+   input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+   decision baseline, profile cash_safety, K <= 1, budget 2000ms
+   outcome notFound: 本地未找到（非证明无解） (proven: false)
+   candidates 1, verifier calls 1, exhausted true, timed out false, elapsed 13ms
+# 预算生效：--budget-ms 0（一个候选都不评估）
+$ dart run cardflow_domain:bounded_search --budget-ms 0 ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+== ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+   input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+   decision baseline, profile cash_safety, K <= 3, budget 0ms
+   outcome notFound: 本地未找到（非证明无解） (proven: false)
+   candidates 0, verifier calls 0, exhausted false, timed out true, elapsed 9ms
+# 上面的 elapsed 是 boundedSearch 自己的计时（每条命令都是新进程的首次运行，含这段代码的 JIT 预热，不含进程启动与编译入口）。测试中的同类检查：
+$ dart test test/search_test.dart --reporter expanded
+00:00 +0: loading test/search_test.dart
+00:00 +0: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +1: F-18 (brief acceptance) K = 1 finds nothing locally: "本地未找到（非证明无解）"
+00:00 +2: F-18 (brief acceptance) the decision scenario follows the brief: stress as decision is not found, confirmed is a shortfall
+00:00 +3: F-18 (brief acceptance) data problems stop the search (NEEDS_DATA)
+00:00 +4: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +5: time budget a fake clock that jumps 1 s per reading stops the search within the 2 s budget
+00:00 +6: time budget a zero budget evaluates nothing and says "not found locally"
+00:00 +7: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +8: ties: the lexicographically largest allocation in card input order (as in Python)
+00:00 +9: a fee-bearing plan is verified and never claimed optimal (R3E-07 probe)
+00:00 +10: matches an independent brute-force reference on 200 random small documents
+00:00 +11: All tests passed!
+exit=0
+
+# 与 Python CP-SAT 对照：tool/gen_parity_fixtures.dart 的随机文档（种子 11、12、13，各 1000 份）
+## seed 11: 1000 documents
+{
+ "BASELINE_SHORTFALL -> baselineShortfall": 194,
+ "CONDITIONALLY_FEASIBLE -> found": 38,
+ "FEASIBLE_ROBUST -> found": 304,
+ "INFEASIBLE -> notFound": 362,
+ "NEEDS_DATA -> needsData": 102,
+ "found: same allocation as CP-SAT": 283,
+ "skipped: request K > 3": 122
+}
+mismatches: 0
+## seed 12: 1000 documents
+{
+ "BASELINE_SHORTFALL -> baselineShortfall": 208,
+ "CONDITIONALLY_FEASIBLE -> found": 48,
+ "FEASIBLE_ROBUST -> found": 294,
+ "INFEASIBLE -> notFound": 363,
+ "NEEDS_DATA -> needsData": 87,
+ "found: same allocation as CP-SAT": 277,
+ "skipped: request K > 3": 116
+}
+mismatches: 0
+## seed 13: 1000 documents
+{
+ "BASELINE_SHORTFALL -> baselineShortfall": 191,
+ "CONDITIONALLY_FEASIBLE -> found": 51,
+ "FEASIBLE_ROBUST -> found": 290,
+ "INFEASIBLE -> notFound": 395,
+ "NEEDS_DATA -> needsData": 73,
+ "found: same allocation as CP-SAT": 281,
+ "skipped: request K > 3": 134
+}
+mismatches: 0
+
+# 比较脚本（/tmp/evidence-tools/compare_search.py）
+"""比较 Dart 有限搜索（K <= 3，--json 输出）与 Python CP-SAT 引擎（plan_from_protocol，不算敏感性）。
+
+对每份随机文档：NEEDS_DATA ↔ needsData（数据问题代码相同）、BASELINE_SHORTFALL ↔ baselineShortfall、
+INFEASIBLE ↔ notFound、FEASIBLE_ROBUST/CONDITIONALLY_FEASIBLE ↔ found 且分配、未通过情景、各目标层取值、
+验证结果（协议形式）与 CP-SAT 的完全相同。请求的 K > 3 的文档不比较求解结果（本地搜索只到 3 张卡）。
+"""
+import collections
+import json
+import sys
+from pathlib import Path
+
+from cardflow.planner.engine.protocol import parse_json, plan_from_protocol
+
+dart = [json.loads(line) for line in Path(sys.argv[1]).read_text().splitlines()]
+stats = collections.Counter()
+mismatches = []
+for r in dart:
+    doc = parse_json(Path(r["file"]).read_bytes())["input"]
+    req = doc["request"]
+    k = req["max_cards"] if req["allow_split"] else 1
+    out = plan_from_protocol(doc, with_sensitivity=False)
+    py, bs = out["business_status"], r["outcome"]
+    stats[f"{py} -> {bs}"] += 1
+    expected = {
+        "NEEDS_DATA": "needsData",
+        "BASELINE_SHORTFALL": "baselineShortfall",
+        "INFEASIBLE": "notFound",
+        "FEASIBLE_ROBUST": "found",
+        "CONDITIONALLY_FEASIBLE": "found",
+    }.get(py)
+    if k > 3 and py in ("FEASIBLE_ROBUST", "CONDITIONALLY_FEASIBLE", "INFEASIBLE"):
+        stats["skipped: request K > 3"] += 1
+        continue
+    if expected != bs:
+        mismatches.append((r["file"], py, bs))
+        continue
+    if bs == "needsData" and [i["code"] for i in out["data_issues"]] != [
+        i["code"] for i in r["data_issues"]
+    ]:
+        mismatches.append((r["file"], "data_issues"))
+    if bs in ("found", "notFound") and not r["exhausted"]:
+        stats["search not exhausted"] += 1
+    if bs == "found":
+        pa = [(a["card_id"], a["amount_minor"]) for a in out["allocation"]]
+        da = [(a["card_id"], a["amount_minor"]) for a in r["allocation"]]
+        stats["found: same allocation as CP-SAT" if pa == da else "found: other allocation"] += 1
+        if pa != da:
+            mismatches.append((r["file"], "allocation", pa, da))
+        if out["failing_scenarios"] != r["failing_scenarios"]:
+            mismatches.append((r["file"], "failing_scenarios"))
+        for t in out["tiers"]:
+            if t["status"] != "SKIPPED_CONSTANT" and r["objectives"][t["name"]] != t["value"]:
+                mismatches.append((r["file"], "tier " + t["name"], t["value"], r["objectives"][t["name"]]))
+        if out["verification"] != r["verification"]:
+            mismatches.append((r["file"], "verification"))
+print(json.dumps(dict(sorted(stats.items())), ensure_ascii=False, indent=1))
+print("mismatches:", len(mismatches))
+for m in mismatches[:20]:
+    print(m)

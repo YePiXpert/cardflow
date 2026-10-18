@@ -1,0 +1,101 @@
+# I-0c CI 运行记录 · 2026-10-18T09:10:40Z
+# mobile.yml：dart job（App + 领域包 format/analyze/test，web build）与新增的 protocol-parity job；ios-unsigned 未触发（只在手动或 ios-v* 标签时运行）。
+
+## 运行 39113804928
+$ gh run view 39113804928
+
+✓ main mobile · 39113804928
+Triggered via push about 7 minutes ago
+
+JOBS
+✓ dart (format · analyze · test · web build) in 2m29s (ID 117635486147)
+✓ protocol-parity (Python engine vs Dart domain) in 56s (ID 117635486431)
+- ios-unsigned (IPA without codesign) (ID 117635990697)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+dart (format · analyze · test · web build): .github#1
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+protocol-parity (Python engine vs Dart domain): .github#1
+
+
+For more information about a job, try: gh run view --job=<job-id>
+View this run on GitHub: https://github.com/YePiXpert/cardflow/actions/runs/39113804928
+$ gh run view 39113804928 --json status,conclusion,event,headSha,headBranch,createdAt,updatedAt,url,jobs
+{"conclusion":"success","createdAt":"2026-10-18T09:02:57Z","event":"push","headBranch":"main","headSha":"38607568ef11d1fe5a960cf44b30335656cefbbb","jobs":[{"completedAt":"2026-10-18T09:06:19Z","conclusion":"success","databaseId":117635486147,"name":"dart (format · analyze · test · web build)","startedAt":"2026-10-18T09:03:50Z","status":"completed","steps":[{"conclusion":"success","name":"Set up job","number":1,"status":"completed"},{"conclusion":"success","name":"Run actions/checkout@v7","number":2,"status":"completed"},{"conclusion":"success","name":"Run subosito/flutter-action@v2","number":3,"status":"completed"},{"conclusion":"success","name":"flutter --version","number":4,"status":"completed"},{"conclusion":"success","name":"flutter pub get","number":5,"status":"completed"},{"conclusion":"success","name":"dart pub get (cardflow_domain)","number":6,"status":"completed"},{"conclusion":"success","name":"dart format","number":7,"status":"completed"},{"conclusion":"success","name":"dart format (cardflow_domain)","number":8,"status":"completed"},{"conclusion":"success","name":"flutter analyze","number":9,"status":"completed"},{"conclusion":"success","name":"dart analyze (cardflow_domain)","number":10,"status":"completed"},{"conclusion":"success","name":"flutter test","number":11,"status":"completed"},{"conclusion":"success","name":"dart test (cardflow_domain, incl. the no-double scan)","number":12,"status":"completed"},{"conclusion":"success","name":"flutter build web (compile smoke test)","number":13,"status":"completed"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2","number":25,"status":"completed"},{"conclusion":"success","name":"Post Run actions/checkout@v7","number":26,"status":"completed"},{"conclusion":"success","name":"Complete job","number":27,"status":"completed"}],"url":"https://github.com/YePiXpert/cardflow/actions/runs/39113804928/job/117635486147"},{"completedAt":"2026-10-18T09:04:47Z","conclusion":"success","databaseId":117635486431,"name":"protocol-parity (Python engine vs Dart domain)","startedAt":"2026-10-18T09:03:51Z","status":"completed","steps":[{"conclusion":"success","name":"Set up job","number":1,"status":"completed"},{"conclusion":"success","name":"Run actions/checkout@v7","number":2,"status":"completed"},{"conclusion":"success","name":"Run astral-sh/setup-uv@v10.3.0","number":3,"status":"completed"},{"conclusion":"success","name":"Run subosito/flutter-action@v2","number":4,"status":"completed"},{"conclusion":"success","name":"uv sync --locked (services/api)","number":5,"status":"completed"},{"conclusion":"success","name":"dart pub get (cardflow_domain)","number":6,"status":"completed"},{"conclusion":"success","name":"Golden fixtures -- Python runner --dump","number":7,"status":"completed"},{"conclusion":"success","name":"Golden fixtures -- Dart runner --dump","number":8,"status":"completed"},{"conclusion":"success","name":"Golden fixtures -- outputs byte-identical","number":9,"status":"completed"},{"conclusion":"success","name":"Random fixtures (300, seed 20261018) -- generate","number":10,"status":"completed"},{"conclusion":"success","name":"Random fixtures -- both runners --dump, outputs byte-identical","number":11,"status":"completed"},{"conclusion":"success","name":"Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)","number":12,"status":"completed"},{"conclusion":"skipped","name":"Upload parity outputs","number":13,"status":"completed"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2","number":24,"status":"completed"},{"conclusion":"success","name":"Post Run astral-sh/setup-uv@v10.3.0","number":25,"status":"completed"},{"conclusion":"success","name":"Post Run actions/checkout@v7","number":26,"status":"completed"},{"conclusion":"success","name":"Complete job","number":27,"status":"completed"}],"url":"https://github.com/YePiXpert/cardflow/actions/runs/39113804928/job/117635486431"},{"completedAt":"2026-10-18T09:06:19Z","conclusion":"skipped","databaseId":117635990697,"name":"ios-unsigned (IPA without codesign)","startedAt":"2026-10-18T09:06:20Z","status":"completed","steps":[],"url":"https://github.com/YePiXpert/cardflow/actions/runs/39113804928/job/117635990697"}],"status":"completed","updatedAt":"2026-10-18T09:06:20Z","url":"https://github.com/YePiXpert/cardflow/actions/runs/39113804928"}
+$ gh run view 39113804928 --log --job 117635486147 | grep <关键行>   # dart (format · analyze · test · web build)
+2026-10-18T09:04:29.8048692Z No issues found! (ran in 17.2s)
+2026-10-18T09:04:31.0948865Z No issues found!
+2026-10-18T09:05:11.3037223Z no-double scan: 28 files, 7619 lines in lib/, bin/, tool/; 0 violation(s)
+2026-10-18T09:05:13.6935164Z 00:02 +265: All tests passed!
+2026-10-18T09:06:17.5279897Z ✓ Built build/web
+$ gh run view 39113804928 --log --job 117635486431 | grep <关键行>   # protocol-parity (Python engine vs Dart domain)
+2026-10-18T09:04:29.0923254Z    fixture REG-2026-10-16-10000: Fixture.schema.json OK (Draft 2020-12, format checker); input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+2026-10-18T09:04:29.0946131Z      business_status CONDITIONALLY_FEASIBLE, solver OPTIMAL, allocation A=800000, C=200000, failing confirmed,stress_income_delay, input_hash ea990327f08b42d4
+2026-10-18T09:04:29.0950610Z      business_status CONDITIONALLY_FEASIBLE, solver OPTIMAL, allocation A=800000, C=200000, failing confirmed,stress_income_delay, input_hash ea990327f08b42d4
+2026-10-18T09:04:29.0954478Z summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+2026-10-18T09:04:29.4366832Z    fixture REG-2026-10-16-10000: strict fixture reader OK (Dart); input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+2026-10-18T09:04:29.4678238Z summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+2026-10-18T09:04:29.4865587Z [36;1mdiff -r build/parity/golden/python build/parity/golden/dart[0m
+2026-10-18T09:04:29.4865973Z [36;1mecho "golden fixtures: $n cycles/verify outputs byte-identical"[0m
+2026-10-18T09:04:29.5439107Z golden fixtures: 3 cycles/verify outputs byte-identical
+2026-10-18T09:04:29.9406095Z [36;1mdiff -r build/parity/random/python build/parity/random/dart[0m
+2026-10-18T09:04:29.9406463Z [36;1mecho "random fixtures: $n cycles/verify outputs byte-identical"[0m
+2026-10-18T09:04:35.9791374Z summary: 300 fixture(s): 300 passed, 0 failed, 0 invalid -> exit 0
+2026-10-18T09:04:36.9353580Z summary: 300 fixture(s): 300 passed, 0 failed, 0 invalid -> exit 0
+2026-10-18T09:04:36.9686224Z random fixtures: 1200 cycles/verify outputs byte-identical
+2026-10-18T09:04:40.3710042Z validated 1203 Dart outputs: {'cycles': 301, 'verify': 902}; 0 invalid
+
+## 运行 39114057360
+$ gh run view 39114057360
+
+✓ main mobile · 39114057360
+Triggered via push about 4 minutes ago
+
+JOBS
+✓ dart (format · analyze · test · web build) in 2m33s (ID 117636086995)
+✓ protocol-parity (Python engine vs Dart domain) in 54s (ID 117636087187)
+- ios-unsigned (IPA without codesign) in 0s (ID 117636589585)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+dart (format · analyze · test · web build): .github#1
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+protocol-parity (Python engine vs Dart domain): .github#1
+
+
+For more information about a job, try: gh run view --job=<job-id>
+View this run on GitHub: https://github.com/YePiXpert/cardflow/actions/runs/39114057360
+$ gh run view 39114057360 --json status,conclusion,event,headSha,headBranch,createdAt,updatedAt,url,jobs
+{"conclusion":"success","createdAt":"2026-10-18T09:06:49Z","event":"push","headBranch":"main","headSha":"fdd74331b54c5740f4b057e62984dd370ced9386","jobs":[{"completedAt":"2026-10-18T09:09:25Z","conclusion":"success","databaseId":117636086995,"name":"dart (format · analyze · test · web build)","startedAt":"2026-10-18T09:06:52Z","status":"completed","steps":[{"conclusion":"success","name":"Set up job","number":1,"status":"completed"},{"conclusion":"success","name":"Run actions/checkout@v7","number":2,"status":"completed"},{"conclusion":"success","name":"Run subosito/flutter-action@v2","number":3,"status":"completed"},{"conclusion":"success","name":"flutter --version","number":4,"status":"completed"},{"conclusion":"success","name":"flutter pub get","number":5,"status":"completed"},{"conclusion":"success","name":"dart pub get (cardflow_domain)","number":6,"status":"completed"},{"conclusion":"success","name":"dart format","number":7,"status":"completed"},{"conclusion":"success","name":"dart format (cardflow_domain)","number":8,"status":"completed"},{"conclusion":"success","name":"flutter analyze","number":9,"status":"completed"},{"conclusion":"success","name":"dart analyze (cardflow_domain)","number":10,"status":"completed"},{"conclusion":"success","name":"flutter test","number":11,"status":"completed"},{"conclusion":"success","name":"dart test (cardflow_domain, incl. the no-double scan)","number":12,"status":"completed"},{"conclusion":"success","name":"flutter build web (compile smoke test)","number":13,"status":"completed"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2","number":25,"status":"completed"},{"conclusion":"success","name":"Post Run actions/checkout@v7","number":26,"status":"completed"},{"conclusion":"success","name":"Complete job","number":27,"status":"completed"}],"url":"https://github.com/YePiXpert/cardflow/actions/runs/39114057360/job/117636086995"},{"completedAt":"2026-10-18T09:07:46Z","conclusion":"success","databaseId":117636087187,"name":"protocol-parity (Python engine vs Dart domain)","startedAt":"2026-10-18T09:06:52Z","status":"completed","steps":[{"conclusion":"success","name":"Set up job","number":1,"status":"completed"},{"conclusion":"success","name":"Run actions/checkout@v7","number":2,"status":"completed"},{"conclusion":"success","name":"Run astral-sh/setup-uv@v10.3.0","number":3,"status":"completed"},{"conclusion":"success","name":"Run subosito/flutter-action@v2","number":4,"status":"completed"},{"conclusion":"success","name":"uv sync --locked (services/api)","number":5,"status":"completed"},{"conclusion":"success","name":"dart pub get (cardflow_domain)","number":6,"status":"completed"},{"conclusion":"success","name":"Golden fixtures -- Python runner --dump","number":7,"status":"completed"},{"conclusion":"success","name":"Golden fixtures -- Dart runner --dump","number":8,"status":"completed"},{"conclusion":"success","name":"Golden fixtures -- outputs byte-identical","number":9,"status":"completed"},{"conclusion":"success","name":"Random fixtures (300, seed 20261018) -- generate","number":10,"status":"completed"},{"conclusion":"success","name":"Random fixtures -- both runners --dump, outputs byte-identical","number":11,"status":"completed"},{"conclusion":"success","name":"Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)","number":12,"status":"completed"},{"conclusion":"skipped","name":"Upload parity outputs","number":13,"status":"completed"},{"conclusion":"success","name":"Post Run subosito/flutter-action@v2","number":24,"status":"completed"},{"conclusion":"success","name":"Post Run astral-sh/setup-uv@v10.3.0","number":25,"status":"completed"},{"conclusion":"success","name":"Post Run actions/checkout@v7","number":26,"status":"completed"},{"conclusion":"success","name":"Complete job","number":27,"status":"completed"}],"url":"https://github.com/YePiXpert/cardflow/actions/runs/39114057360/job/117636087187"},{"completedAt":"2026-10-18T09:09:26Z","conclusion":"skipped","databaseId":117636589585,"name":"ios-unsigned (IPA without codesign)","startedAt":"2026-10-18T09:09:26Z","status":"completed","steps":[],"url":"https://github.com/YePiXpert/cardflow/actions/runs/39114057360/job/117636589585"}],"status":"completed","updatedAt":"2026-10-18T09:09:26Z","url":"https://github.com/YePiXpert/cardflow/actions/runs/39114057360"}
+$ gh run view 39114057360 --log --job 117636086995 | grep <关键行>   # dart (format · analyze · test · web build)
+2026-10-18T09:07:33.7752281Z No issues found! (ran in 17.2s)
+2026-10-18T09:07:35.0968048Z No issues found!
+2026-10-18T09:08:16.1030591Z no-double scan: 28 files, 7619 lines in lib/, bin/, tool/; 0 violation(s)
+2026-10-18T09:08:18.6752282Z 00:02 +265: All tests passed!
+2026-10-18T09:09:23.3884870Z ✓ Built build/web
+$ gh run view 39114057360 --log --job 117636087187 | grep <关键行>   # protocol-parity (Python engine vs Dart domain)
+2026-10-18T09:07:25.5660775Z    fixture REG-2026-10-16-10000: Fixture.schema.json OK (Draft 2020-12, format checker); input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+2026-10-18T09:07:25.5691695Z      business_status CONDITIONALLY_FEASIBLE, solver OPTIMAL, allocation A=800000, C=200000, failing confirmed,stress_income_delay, input_hash ea990327f08b42d4
+2026-10-18T09:07:25.5698093Z      business_status CONDITIONALLY_FEASIBLE, solver OPTIMAL, allocation A=800000, C=200000, failing confirmed,stress_income_delay, input_hash ea990327f08b42d4
+2026-10-18T09:07:25.5703177Z summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+2026-10-18T09:07:25.9861281Z    fixture REG-2026-10-16-10000: strict fixture reader OK (Dart); input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+2026-10-18T09:07:26.0253329Z summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+2026-10-18T09:07:26.0482428Z [36;1mdiff -r build/parity/golden/python build/parity/golden/dart[0m
+2026-10-18T09:07:26.0482905Z [36;1mecho "golden fixtures: $n cycles/verify outputs byte-identical"[0m
+2026-10-18T09:07:26.0696842Z golden fixtures: 3 cycles/verify outputs byte-identical
+2026-10-18T09:07:26.5732094Z [36;1mdiff -r build/parity/random/python build/parity/random/dart[0m
+2026-10-18T09:07:26.5732573Z [36;1mecho "random fixtures: $n cycles/verify outputs byte-identical"[0m
+2026-10-18T09:07:36.1119566Z summary: 300 fixture(s): 300 passed, 0 failed, 0 invalid -> exit 0
+2026-10-18T09:07:37.3890512Z summary: 300 fixture(s): 300 passed, 0 failed, 0 invalid -> exit 0
+2026-10-18T09:07:37.4258712Z random fixtures: 1200 cycles/verify outputs byte-identical
+2026-10-18T09:07:42.9675058Z validated 1203 Dart outputs: {'cycles': 301, 'verify': 902}; 0 invalid
+
+## 补充：两次运行中 App 的 flutter test 汇总行（紧凑输出，上面的 grep 未匹配）
+$ gh run view 39113804928 --log --job 117635486147 | grep "tests passed."
+2026-10-18T09:05:03.7951813Z 🎉 153 tests passed.
+$ gh run view 39114057360 --log --job 117636086995 | grep "tests passed."
+2026-10-18T09:08:08.5349210Z 🎉 154 tests passed.
+# 39113804928 = 提交 3860756（CI 改动），App 153 项；39114057360 = 提交 fdd7433（最终代码，App 多一项 minorDigits 同一性测试），App 154 项；两次领域包 265 项、protocol-parity 全过。
