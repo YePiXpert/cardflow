@@ -1,0 +1,36 @@
+# T-004 full non-DB test run (2026-10-17T02:29:59Z), cwd services/api; DB tests belong to the parallel T-005 and are deselected with -m "not db"
+$ uv run pytest -q -m "not db"
+........................................................................ [ 25%]
+........................................................................ [ 50%]
+........................................................................ [ 76%]
+...................................................................      [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+283 passed, 84 deselected, 1 warning in 5.63s
+exit=0
+
+# per-directory counts (same command restricted to the T-004 test directories)
+$ uv run pytest -q -m "not db" tests/engine tests/protocol
+237 passed, 1 warning in 5.17s
+$ uv run pytest -q tests/protocol --collect-only | tail -1
+158 tests collected in 0.07s
+
+# migrated test files untouched by T-004 (mtimes from T-003, 2026-10-16) vs files added by T-004
+2026-10-17T03:01 tests/engine/test_billing_clamp.py
+2026-10-16T16:35 tests/engine/test_billing.py
+2026-10-16T16:35 tests/engine/test_cash.py
+2026-10-16T16:35 tests/engine/test_dependency_boundary.py
+2026-10-17T03:03 tests/engine/test_determinism.py
+2026-10-17T03:03 tests/engine/test_production_fixes.py
+2026-10-16T16:35 tests/engine/test_properties.py
+2026-10-16T16:35 tests/engine/test_regression_sample.py
+2026-10-17T03:20 tests/protocol/conftest.py
+2026-10-17T03:27 tests/protocol/test_adapter.py
+2026-10-17T03:20 tests/protocol/test_fixture_v1.py
+2026-10-17T03:22 tests/protocol/test_rejections.py
+2026-10-17T03:24 tests/protocol/test_runner.py
+2026-10-17T03:20 tests/protocol/test_schemas.py

@@ -1,0 +1,136 @@
+# T-012 build snapshot - 2026-10-17T23:14:08Z
+# sources of the trial image cardflow/api:0.1.0-435423c2aed4 (built 2026-10-17T22:59:59Z)
+$ CARDFLOW_VERSION=0.1.0-435423c2aed4 docker compose -p cardflow -f deploy/compose.yaml run --rm --no-deps -T migrate tar -C /app --exclude=__pycache__ -cf - pyproject.toml uv.lock .python-version alembic.ini alembic cardflow | tar -C /tmp/t012/api-src -xf -
+ Container cardflow-migrate-run-2f2ec719465b Creating 
+ Container cardflow-migrate-run-2f2ec719465b Created 
+exit=0/0
+# check: the snapshot reproduces the trial image's version except for the two T-012 files
+#   Dockerfile/.dockerignore changed since the trial build -> the digest differs
+migrations in the snapshot (= in the image):
+  0001_initial.py
+  0002_schema_fixes.py
+  0003_rls.py
+files of the snapshot that differ from the current working tree (= in-progress work
+of T-011 / T-004c that is NOT deployed; T-012 files are identical):
+  Only in services/api/cardflow/api: deps.py
+  Only in services/api/cardflow/audit: records.py
+  Only in services/api/cardflow/db: ids.py
+  Files services/api/cardflow/db/__init__.py and /tmp/t012/api-src/cardflow/db/__init__.py differ
+  Files services/api/cardflow/db/models.py and /tmp/t012/api-src/cardflow/db/models.py differ
+  Files services/api/cardflow/db/roles.py and /tmp/t012/api-src/cardflow/db/roles.py differ
+  Files services/api/cardflow/db/tx.py and /tmp/t012/api-src/cardflow/db/tx.py differ
+  Files services/api/cardflow/identity/models.py and /tmp/t012/api-src/cardflow/identity/models.py differ
+  Only in services/api/cardflow/identity: pairing.py
+  Only in services/api/cardflow/identity: passwords.py
+  Only in services/api/cardflow/identity: service.py
+  Only in services/api/cardflow/identity: throttle.py
+  Only in services/api/cardflow/identity: tokens.py
+  Only in services/api/cardflow/identity: validation.py
+  Files services/api/cardflow/planner/engine/allocation.py and /tmp/t012/api-src/cardflow/planner/engine/allocation.py differ
+  Files services/api/cardflow/planner/engine/cash.py and /tmp/t012/api-src/cardflow/planner/engine/cash.py differ
+  Files services/api/cardflow/planner/engine/__init__.py and /tmp/t012/api-src/cardflow/planner/engine/__init__.py differ
+  Files services/api/cardflow/planner/engine/plan.py and /tmp/t012/api-src/cardflow/planner/engine/plan.py differ
+  Files services/api/cardflow/planner/engine/protocol.py and /tmp/t012/api-src/cardflow/planner/engine/protocol.py differ
+  Files services/api/cardflow/planner/engine/verifier.py and /tmp/t012/api-src/cardflow/planner/engine/verifier.py differ
+  Files services/api/cardflow/settings.py and /tmp/t012/api-src/cardflow/settings.py differ
+  Only in services/api/alembic/versions: 0004_identity.py
+(end of differences)
+T-012 files in the snapshot equal the working tree:
+  same: cardflow/api/routes/health.py
+  same: cardflow/api/app.py
+  cardflow/settings.py: T-012 field present in the snapshot: 1
+
+# T-012 image build - 2026-10-17T23:14:13Z
+$ tools/build-api-image.sh --source /tmp/t012/api-src
+build-api-image: building cardflow/api:0.1.0-3166fe6bf311 from /tmp/t012/api-src (snapshot /tmp/cardflow-api-build.I7N1LQ)
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 3.76kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.13-slim-trixie@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 535B done
+#3 DONE 0.0s
+
+#4 [builder 1/9] FROM docker.io/library/python:3.13-slim-trixie@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#4 resolve docker.io/library/python:3.13-slim-trixie@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f done
+#4 CACHED
+
+#5 [internal] load build context
+#5 transferring context: 853.92kB 0.0s done
+#5 DONE 0.0s
+
+#6 [builder 4/9] COPY pyproject.toml uv.lock .python-version ./
+#6 CACHED
+
+#7 [builder 2/9] RUN printf 'uv==%s --hash=sha256:%s\n' "0.12.23" "565c6e2874dbeae86c02f3dea97255e878fec672659a73d4930c6b93fcab2fff" > /tmp/uv-requirements.txt     && python -m pip install --no-cache-dir --disable-pip-version-check --root-user-action=ignore         --require-hashes -r /tmp/uv-requirements.txt
+#7 CACHED
+
+#8 [builder 5/9] RUN uv sync --locked --no-dev --no-install-project
+#8 CACHED
+
+#9 [builder 3/9] WORKDIR /app
+#9 CACHED
+
+#10 [builder 7/9] COPY alembic ./alembic
+#10 CACHED
+
+#11 [builder 8/9] COPY cardflow ./cardflow
+#11 CACHED
+
+#12 [builder 6/9] COPY alembic.ini ./
+#12 CACHED
+
+#13 [builder 9/9] RUN uv sync --locked --no-dev     && .venv/bin/python -m compileall -q cardflow alembic     && .venv/bin/python -c "from cardflow.db.migrations import ALEMBIC_INI, head_revisions; assert ALEMBIC_INI.is_file(), ALEMBIC_INI; print('alembic head', head_revisions())"
+#13 CACHED
+
+#14 [runtime 2/5] RUN groupadd --gid 10001 cardflow     && useradd --uid 10001 --gid 10001 --no-create-home --home-dir /nonexistent         --shell /usr/sbin/nologin cardflow     && install -d -o 10001 -g 10001 -m 0700 /data/attachments /data/backups
+#14 DONE 0.3s
+
+#15 [runtime 3/5] COPY --from=builder /app /app
+#15 DONE 0.5s
+
+#16 [runtime 4/5] RUN for tool in gcc cc c++ g++ clang make ld as; do         if command -v "$tool" >/dev/null 2>&1; then             echo "unexpected build tool in the runtime image: $tool" >&2; exit 1;         fi;     done
+#16 DONE 0.2s
+
+#17 [runtime 5/5] WORKDIR /app
+#17 DONE 0.0s
+
+#18 exporting to image
+#18 exporting layers
+#18 exporting layers 10.0s done
+#18 exporting manifest sha256:7eed35277f64f1cf922a16f59a0bb3bc483368988c207ab087c6e5b0284a9543 done
+#18 exporting config sha256:c5c3d17c128a4f2295e018a8179c41c44ce8056cbd0ad481e61faee364291b59 done
+#18 naming to docker.io/cardflow/api:0.1.0-3166fe6bf311 done
+#18 unpacking to docker.io/cardflow/api:0.1.0-3166fe6bf311
+#18 unpacking to docker.io/cardflow/api:0.1.0-3166fe6bf311 1.2s done
+#18 DONE 11.2s
+build-api-image: built cardflow/api:0.1.0-3166fe6bf311; set CARDFLOW_VERSION=0.1.0-3166fe6bf311 in deploy/.env
+0.1.0-3166fe6bf311
+exit=0
+
+$ docker image ls cardflow/api
+IMAGE                             ID             DISK USAGE   CONTENT SIZE   EXTRA
+cardflow/api:0.1.0-3166fe6bf311   7eed35277f64        682MB          165MB        
+cardflow/api:0.1.0-435423c2aed4   38b23df06fbf        682MB          165MB        
+cardflow/api:0.1.0-bfb695f1ea05   e2f230fc2252        683MB          165MB   U    
+exit=0
+
+$ docker image inspect cardflow/api:0.1.0-3166fe6bf311 (selected fields)
+id=sha256:7eed35277f64f1cf922a16f59a0bb3bc483368988c207ab087c6e5b0284a9543
+created=2026-10-18T00:14:14.330033279+01:00
+size_bytes=682487880
+user=10001:10001
+workdir=/app
+cmd=["cardflow","api","--host","0.0.0.0","--port","8000"]
+exposed={"8000/tcp":{}}
+labels={"org.opencontainers.image.description":"CardFlow API, job worker and CLI (FastAPI, Python 3.13)","org.opencontainers.image.revision":"3166fe6bf311","org.opencontainers.image.title":"cardflow-api","org.opencontainers.image.version":"0.1.0-3166fe6bf311"}
+
+# base image (pinned by digest in services/api/Dockerfile)
+$ docker image inspect python:3.13-slim-trixie --format {{json .RepoDigests}}
+["python@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f"]
+exit=0

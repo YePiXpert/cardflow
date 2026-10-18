@@ -1,0 +1,64 @@
+# T-014 dirty.log 扫描（2026-10-17T02:09:36Z），工作目录为仓库根目录；dirty.log 为人工注入的合成样本（32 个样本行 + 2 行说明），期望退出码 1、每条规则都命中、输出只有 文件:行:字段:规则名
+$ sha256sum tools/pii_samples/dirty.log
+cd39ae627c8fdb9464547f0aec403d79104ed18ceb34a9dac47f8b82bb9ae87e  tools/pii_samples/dirty.log
+$ uv run --project services/api python tools/pii_scan.py tools/pii_samples/dirty.log
+tools/pii_samples/dirty.log:3:message:amount
+tools/pii_samples/dirty.log:4:amount_minor:amount_field
+tools/pii_samples/dirty.log:5:credit_limit:amount_field
+tools/pii_samples/dirty.log:5:balance:amount_field
+tools/pii_samples/dirty.log:6:balance_minor:amount_field
+tools/pii_samples/dirty.log:6:note:amount
+tools/pii_samples/dirty.log:7:message:card_number
+tools/pii_samples/dirty.log:8:pan:sensitive_field
+tools/pii_samples/dirty.log:8:pan:card_number
+tools/pii_samples/dirty.log:9:card_last4:card_last4
+tools/pii_samples/dirty.log:10:-:card_last4
+tools/pii_samples/dirty.log:11:message:card_last4
+tools/pii_samples/dirty.log:12:message:card_last4
+tools/pii_samples/dirty.log:13:detail:jwt
+tools/pii_samples/dirty.log:14:Authorization:authorization
+tools/pii_samples/dirty.log:15:headers.authorization:authorization
+tools/pii_samples/dirty.log:16:password:credential_field
+tools/pii_samples/dirty.log:17:refresh_token:credential_field
+tools/pii_samples/dirty.log:18:merchant:sensitive_field
+tools/pii_samples/dirty.log:19:id_number:sensitive_field
+tools/pii_samples/dirty.log:19:id_number:cn_id_card
+tools/pii_samples/dirty.log:20:-:cn_id_card
+tools/pii_samples/dirty.log:21:message:cn_mobile
+tools/pii_samples/dirty.log:22:phone:sensitive_field
+tools/pii_samples/dirty.log:22:phone:cn_mobile
+tools/pii_samples/dirty.log:23:message:email
+tools/pii_samples/dirty.log:24:message:secret_string
+tools/pii_samples/dirty.log:25:value:secret_string
+tools/pii_samples/dirty.log:26:message:amount
+tools/pii_samples/dirty.log:27:counts.<key>:email
+tools/pii_samples/dirty.log:28:amount:amount_field
+tools/pii_samples/dirty.log:28:phone:sensitive_field
+tools/pii_samples/dirty.log:28:phone:cn_mobile
+tools/pii_samples/dirty.log:29:amount:amount
+tools/pii_samples/dirty.log:29:card:card_number
+tools/pii_samples/dirty.log:30:path:card_number
+tools/pii_samples/dirty.log:31:status:card_number
+tools/pii_samples/dirty.log:31:request_id:cn_mobile
+tools/pii_samples/dirty.log:32:message:amount_field
+tools/pii_samples/dirty.log:32:message:card_last4
+tools/pii_samples/dirty.log:33:amount:amount
+tools/pii_samples/dirty.log:33:card:card_number
+tools/pii_samples/dirty.log:34:message:card_number
+pii_scan: 1 file(s), 34 line(s), 43 hit(s) [amount, card_number, card_last4, jwt, authorization, cn_id_card, cn_mobile, email, secret_string, amount_field, credential_field, sensitive_field]
+exit=1
+$ python3 tools/pii_scan.py --list-rules | cut -f1,2   # 规则清单（12 个规则名；card_last4、authorization 兼有文本与字段两种形式）
+amount	text
+card_number	text
+card_last4	text
+jwt	text
+authorization	text
+cn_id_card	text
+cn_mobile	text
+email	text
+secret_string	text
+amount_field	field
+card_last4	field
+authorization	field
+credential_field	field
+sensitive_field	field

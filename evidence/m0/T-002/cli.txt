@@ -1,0 +1,40 @@
+# 未实现命令必须明确失败（退出码 2）（2026-10-16T15:11:38Z），工作目录 services/api
+$ uv run cardflow worker; echo $?
+cardflow worker: not implemented yet - owned by T-008 (PostgreSQL jobs table and worker loop).
+2
+$ uv run cardflow worker --concurrency 2; echo $?
+cardflow worker: not implemented yet - owned by T-008 (PostgreSQL jobs table and worker loop).
+2
+$ uv run cardflow migrate --lock; echo $?
+cardflow migrate: not implemented yet - owned by T-005 (initial Alembic migration).
+2
+$ uv run cardflow backup --schedule '0 3 * * *'; echo $?
+cardflow backup: not implemented yet - owned by T-013 (backup and restore drill).
+2
+$ uv run python -m cardflow worker; echo $?
+cardflow worker: not implemented yet - owned by T-008 (PostgreSQL jobs table and worker loop).
+2
+$ uv run cardflow --help
+usage: cardflow [-h] COMMAND ...
+
+CardFlow server commands.
+
+positional arguments:
+  COMMAND
+    api       run the HTTP API with uvicorn
+    worker    not implemented yet (T-008: PostgreSQL jobs table and worker
+              loop)
+    migrate   not implemented yet (T-005: initial Alembic migration)
+    backup    not implemented yet (T-013: backup and restore drill)
+
+options:
+  -h, --help  show this help message and exit
+0
+$ uv run cardflow api --help
+usage: cardflow api [-h] [--host HOST] [--port PORT]
+
+options:
+  -h, --help   show this help message and exit
+  --host HOST  bind address (default: 127.0.0.1)
+  --port PORT  bind port (default: 8000)
+0

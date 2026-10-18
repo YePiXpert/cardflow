@@ -1,0 +1,183 @@
+# T-006 full test suite - 2026-10-17T22:31:23Z, working dir services/api, dev DB 127.0.0.1:18432, schema at head 0003 (CARDFLOW_TEST_MIGRATION_TARGET unset)
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -q
+........................................................................ [  9%]
+........................................................................ [ 19%]
+........................................................................ [ 29%]
+........................................................................ [ 39%]
+........................................................................ [ 49%]
+........................................................................ [ 59%]
+........................................................................ [ 69%]
+........................................................................ [ 79%]
+........................................................................ [ 89%]
+........................................................................ [ 99%]
+..                                                                       [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+722 passed, 1 warning in 76.61s (0:01:16)
+exit=0
+
+# collected tests per directory/file (uv run pytest --co -q | aggregated):
+    222 tests/db
+    106 tests/engine
+    122 tests/jobs
+    204 tests/protocol
+     11 tests/test_api_envelope.py
+     23 tests/test_cli.py
+      9 tests/test_db.py
+      7 tests/test_logging.py
+     14 tests/test_settings.py
+      4 tests/test_smoke.py
+
+# T-006 tests, verbose:
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -v tests/db/test_rls.py tests/db/test_rls_grants.py tests/db/test_db_provision.py tests/db/test_jobs_schema.py
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- /projects/cardflow/services/api/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /projects/cardflow/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1, platformdirs-4.13.3, hypothesis-6.170.0
+collecting ... collected 85 items
+
+tests/db/test_rls.py::test_tc_db_05_bound_to_a_nothing_of_b_is_visible PASSED [  1%]
+tests/db/test_rls.py::test_tc_db_05_rows_of_b_cannot_be_changed_or_deleted PASSED [  2%]
+tests/db/test_rls.py::test_tc_db_05_rows_for_b_are_rejected_by_with_check[cash_accounts-values0] PASSED [  3%]
+tests/db/test_rls.py::test_tc_db_05_rows_for_b_are_rejected_by_with_check[scenarios-values1] PASSED [  4%]
+tests/db/test_rls.py::test_tc_db_05_rows_for_b_are_rejected_by_with_check[consents-values2] PASSED [  5%]
+tests/db/test_rls.py::test_tc_db_05_rows_for_b_are_rejected_by_with_check[jobs-values3] PASSED [  7%]
+tests/db/test_rls.py::test_tc_db_05_rows_for_b_are_rejected_by_with_check[audit_log-values4] PASSED [  8%]
+tests/db/test_rls.py::test_tc_db_05_rows_for_b_are_rejected_by_with_check[sync_changes-values5] PASSED [  9%]
+tests/db/test_rls.py::test_tc_db_05_a_row_cannot_be_moved_to_b PASSED    [ 10%]
+tests/db/test_rls.py::test_tc_db_05_unbound_sessions_see_no_tenant_row PASSED [ 11%]
+tests/db/test_rls.py::test_tc_db_04_composite_keys_still_reject_cross_workspace_links_under_rls PASSED [ 12%]
+tests/db/test_rls.py::test_r2_01_roles_cannot_create_temporary_tables[app_engine] PASSED [ 14%]
+tests/db/test_rls.py::test_r2_01_roles_cannot_create_temporary_tables[worker_engine] PASSED [ 15%]
+tests/db/test_rls.py::test_r2_01_roles_cannot_create_temporary_tables[admin_engine] PASSED [ 16%]
+tests/db/test_rls.py::test_r2_01_purge_role_cannot_create_temporary_tables PASSED [ 17%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT * FROM transactions] PASSED [ 18%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT new_balance_minor FROM statement_versions] PASSED [ 20%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT description FROM statement_lines] PASSED [ 21%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT raw_value FROM extraction_candidates] PASSED [ 22%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT * FROM repayments] PASSED [ 23%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT * FROM cash_events] PASSED [ 24%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT result FROM plan_runs] PASSED [ 25%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT storage_key FROM source_documents] PASSED [ 27%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT * FROM idempotency_keys] PASSED [ 28%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT response_body FROM idempotency_keys] PASSED [ 29%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT payload FROM jobs] PASSED [ 30%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT result FROM jobs] PASSED [ 31%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT * FROM jobs] PASSED [ 32%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT payload FROM sync_changes] PASSED [ 34%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT server_payload FROM sync_conflicts] PASSED [ 35%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT allocated_minor FROM repayment_allocation_totals] PASSED [ 36%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT email FROM users] PASSED [ 37%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT dek_wrapped FROM workspaces] PASSED [ 38%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT refresh_token_hash FROM auth_sessions] PASSED [ 40%]
+tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT * FROM devices] PASSED [ 41%]
+tests/db/test_rls.py::test_tc_db_06_admin_views_count_across_workspaces PASSED [ 42%]
+tests/db/test_rls.py::test_tc_db_06_admin_reads_job_metadata_and_audit_but_changes_nothing PASSED [ 43%]
+tests/db/test_rls.py::test_templates_app_reads_templates_and_own_rows_only PASSED [ 44%]
+tests/db/test_rls.py::test_templates_app_cannot_change_templates PASSED  [ 45%]
+tests/db/test_rls.py::test_templates_admin_maintains_templates_and_sees_no_user_rules PASSED [ 47%]
+tests/db/test_rls.py::test_protected_facts_take_only_the_tombstone[cash_balance_snapshots] PASSED [ 48%]
+tests/db/test_rls.py::test_protected_facts_take_only_the_tombstone[limit_snapshots] PASSED [ 49%]
+tests/db/test_rls.py::test_protected_facts_take_only_the_tombstone[plan_allocations] PASSED [ 50%]
+tests/db/test_rls.py::test_protected_facts_take_only_the_tombstone[plan_run_checks] PASSED [ 51%]
+tests/db/test_rls.py::test_protected_facts_take_only_the_tombstone[plan_runs] PASSED [ 52%]
+tests/db/test_rls.py::test_protected_facts_take_only_the_tombstone[statement_lines] PASSED [ 54%]
+tests/db/test_rls.py::test_protected_facts_take_only_the_tombstone[statement_versions] PASSED [ 55%]
+tests/db/test_rls.py::test_worker_claims_jobs_of_every_workspace PASSED  [ 56%]
+tests/db/test_rls.py::test_worker_bound_to_a_reads_and_writes_only_a PASSED [ 57%]
+tests/db/test_rls.py::test_worker_cannot_mint_api_access PASSED          [ 58%]
+tests/db/test_rls.py::test_worker_heartbeats_and_readyz_queries PASSED   [ 60%]
+tests/db/test_rls.py::test_purge_requires_set_role_and_the_purge_token PASSED [ 61%]
+tests/db/test_rls.py::test_purge_deletes_ordinary_rows_of_the_bound_workspace_only PASSED [ 62%]
+tests/db/test_rls.py::test_allocations_as_app_hold_the_amount_at_commit PASSED [ 63%]
+tests/db/test_rls.py::test_allocations_as_app_race_in_both_isolation_levels[READ COMMITTED-23514] PASSED [ 64%]
+tests/db/test_rls.py::test_allocations_as_app_race_in_both_isolation_levels[REPEATABLE READ-40001] PASSED [ 65%]
+tests/db/test_rls.py::test_allocation_totals_cannot_be_rewritten_or_bypassed PASSED [ 67%]
+tests/db/test_rls.py::test_allocation_check_fails_closed_when_its_owner_is_subject_to_rls PASSED [ 68%]
+tests/db/test_rls.py::test_registration_flow_under_rls PASSED            [ 69%]
+tests/db/test_rls.py::test_app_enqueues_and_reads_only_its_own_jobs PASSED [ 70%]
+tests/db/test_rls.py::test_audit_log_is_append_only_for_everyone[app_engine] PASSED [ 71%]
+tests/db/test_rls.py::test_audit_log_is_append_only_for_everyone[worker_engine] PASSED [ 72%]
+tests/db/test_rls.py::test_audit_log_is_append_only_for_everyone[admin_engine] PASSED [ 74%]
+tests/db/test_rls.py::test_api_appends_audit_rows_of_its_workspace_or_the_system PASSED [ 75%]
+tests/db/test_rls.py::test_sync_changes_are_append_and_read_per_workspace PASSED [ 76%]
+tests/db/test_rls.py::test_idempotency_keys_are_per_workspace PASSED     [ 77%]
+tests/db/test_rls_grants.py::test_every_table_is_under_rls_or_listed_as_an_exception PASSED [ 78%]
+tests/db/test_rls_grants.py::test_group_roles_are_plain_nologin_roles PASSED [ 80%]
+tests/db/test_rls_grants.py::test_privileges_match_the_declared_access PASSED [ 81%]
+tests/db/test_rls_grants.py::test_updatable_columns_respect_the_immutability_rules PASSED [ 82%]
+tests/db/test_rls_grants.py::test_no_role_holds_temp_or_create_and_public_schema_is_restricted PASSED [ 83%]
+tests/db/test_rls_grants.py::test_own_functions_are_executable_only_where_needed PASSED [ 84%]
+tests/db/test_rls_grants.py::test_policies_match_the_declared_list PASSED [ 85%]
+tests/db/test_rls_grants.py::test_admin_roles_cannot_read_content PASSED [ 87%]
+tests/db/test_rls_grants.py::test_catalog_snapshot_sees_the_rls_objects PASSED [ 88%]
+tests/db/test_db_provision.py::test_provision_creates_roles_exactly_like_the_spec PASSED [ 89%]
+tests/db/test_db_provision.py::test_provision_is_idempotent_and_rotates_the_password PASSED [ 90%]
+tests/db/test_db_provision.py::test_provision_repairs_attributes_and_memberships PASSED [ 91%]
+tests/db/test_db_provision.py::test_provision_refuses_short_passwords_and_superusers PASSED [ 92%]
+tests/db/test_db_provision.py::test_group_role_problems_reports_unsafe_memberships[GRANT cardflow_admin_views TO {role}-must not be a member of cardflow_admin_views] PASSED [ 94%]
+tests/db/test_db_provision.py::test_group_role_problems_reports_unsafe_memberships[GRANT cardflow_purge TO {role} WITH INHERIT TRUE-inherits cardflow_purge] PASSED [ 95%]
+tests/db/test_db_provision.py::test_cli_db_provision_end_to_end PASSED   [ 96%]
+tests/db/test_jobs_schema.py::test_jobs_status_admits_cancelled PASSED   [ 97%]
+tests/db/test_jobs_schema.py::test_claim_query_reads_the_queue_index_in_order PASSED [ 98%]
+tests/db/test_jobs_schema.py::test_r2_27_reclaim_query_reads_the_lease_index PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 85 passed, 1 warning in 3.96s =========================
+exit=0
+$ ... uv run pytest -v tests/db/test_migrations.py tests/db/test_r2_fixes.py tests/db/test_model_drift.py tests/db/test_db_objects.py tests/test_cli.py tests/test_settings.py tests/test_db.py -k "steps_down or round_trip or r2_23 or r2_01 or outside_the_models or golden or db_provision or login_role or user_id or workspace"
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- /projects/cardflow/services/api/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /projects/cardflow/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1, platformdirs-4.13.3, hypothesis-6.170.0
+collecting ... collected 118 items / 95 deselected / 23 selected
+
+tests/db/test_migrations.py::test_upgrade_downgrade_upgrade_round_trip PASSED [  4%]
+tests/db/test_migrations.py::test_every_revision_steps_down_and_up_exactly PASSED [  8%]
+tests/db/test_migrations.py::test_r2_23_downgrade_keeps_extensions_that_others_use PASSED [ 13%]
+tests/db/test_r2_fixes.py::test_r2_01_temp_table_cannot_fake_the_template_scope PASSED [ 17%]
+tests/db/test_r2_fixes.py::test_r2_01_temp_table_cannot_fake_the_allocation_sum PASSED [ 21%]
+tests/db/test_r2_fixes.py::test_r2_11_workspace_id_is_immutable_everywhere PASSED [ 26%]
+tests/db/test_r2_fixes.py::test_r2_12_nil_workspace_id_rejected PASSED   [ 30%]
+tests/db/test_r2_fixes.py::test_r2_23_revision_notes_name_the_rls_revision PASSED [ 34%]
+tests/db/test_r2_fixes.py::test_r2_24_template_rows_keep_their_workspace PASSED [ 39%]
+tests/db/test_model_drift.py::test_objects_outside_the_models_exist PASSED [ 43%]
+tests/db/test_db_objects.py::test_r2_24_triggers_and_functions_match_golden_at_head PASSED [ 47%]
+tests/db/test_db_objects.py::test_r2_24_revision_0001_matches_golden PASSED [ 52%]
+tests/db/test_db_objects.py::test_r2_24_golden_check_detects_a_changed_trigger PASSED [ 56%]
+tests/db/test_db_objects.py::test_r2_24_golden_check_detects_a_disabled_trigger PASSED [ 60%]
+tests/db/test_db_objects.py::test_r2_01_every_own_function_pins_its_search_path PASSED [ 65%]
+tests/db/test_db_objects.py::test_golden_file_covers_every_revision PASSED [ 69%]
+tests/test_cli.py::test_db_provision_arguments PASSED                    [ 73%]
+tests/test_cli.py::test_db_provision_without_passwords_exits_1_naming_the_variables PASSED [ 78%]
+tests/test_settings.py::test_login_role_passwords_come_from_secret_files PASSED [ 82%]
+tests/test_db.py::test_rejects_non_uuid_workspace PASSED                 [ 86%]
+tests/test_db.py::test_workspace_tx_binds_the_user_for_this_transaction_only PASSED [ 91%]
+tests/test_db.py::test_set_user_id_on_core_connection PASSED             [ 95%]
+tests/test_db.py::test_set_workspace_id_on_core_connection PASSED        [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================= 23 passed, 95 deselected, 1 warning in 6.01s =================
+exit=0
+
+# leftovers in the dev cluster after the run (temporary databases and roles must be gone):
+roles: cardflow, cardflow_admin, cardflow_admin_views, cardflow_app, cardflow_purge, cardflow_worker
+databases: cardflow, postgres, template0, template1

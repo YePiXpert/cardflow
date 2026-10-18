@@ -1,0 +1,22 @@
+# T-012 listening TCP sockets BEFORE deployment - 2026-10-17T23:07:53Z
+$ ss -tlnH
+LISTEN 0      4096   127.0.0.1:18432 0.0.0.0:*
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+exit=0
+
+# T-012 listening TCP sockets AFTER deployment - 2026-10-17T23:18:07Z
+$ ss -tlnH
+LISTEN 0      4096   127.0.0.1:18432 0.0.0.0:*
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+LISTEN 0      4096   127.0.0.1:18080 0.0.0.0:*
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+exit=0
+
+# listening addresses only before (-) / only after (+):
++ 127.0.0.1:18080
+(end of differences)
+
+# the new socket belongs to docker-proxy on loopback:
+$ ss -tlnpH sport = :18080
+LISTEN 0      4096   127.0.0.1:18080 0.0.0.0:* users:(("docker-proxy",pid=1997899,fd=8))
+exit=0

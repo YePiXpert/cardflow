@@ -1,0 +1,401 @@
+# T-004b schema changes for the Dart port (T-022): diff -u against the T-004 schemas (2026-10-17T02:57:16Z)
+$ diff -ru <T-004 schema/v1> packages/rules-protocol/schema/v1
+diff -ru T-004:schema/v1/CardOption.schema.json packages/rules-protocol/schema/v1/CardOption.schema.json
+--- T-004:schema/v1/CardOption.schema.json	2026-10-17 03:08:20.869813980 +0100
++++ packages/rules-protocol/schema/v1/CardOption.schema.json	2026-10-17 03:49:41.962086934 +0100
+@@ -64,12 +64,12 @@
+     "status_ok": { "type": "boolean" },
+     "fee_rate": {
+       "description": "Proportional fee rate (rounded UP to the minor unit).",
+-      "$ref": "common.schema.json#/$defs/DecimalString"
++      "$ref": "common.schema.json#/$defs/Rate"
+     },
+     "fee_fixed_minor": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+     "verified_benefit_rate": {
+       "description": "Verified benefit rate (enters the objective; rounded DOWN).",
+-      "$ref": "common.schema.json#/$defs/DecimalString"
++      "$ref": "common.schema.json#/$defs/Rate"
+     },
+     "verified_benefit_cap_minor": {
+       "description": "Cap of the verified benefit (absent = none).",
+@@ -77,7 +77,7 @@
+     },
+     "potential_benefit_rate": {
+       "description": "Unverified benefit rate: reported only, never in the objective.",
+-      "$ref": "common.schema.json#/$defs/DecimalString"
++      "$ref": "common.schema.json#/$defs/Rate"
+     },
+     "posting_delay_min_days": {
+       "description": "Earliest bank posting, in days after the transaction date.",
+diff -ru T-004:schema/v1/common.schema.json packages/rules-protocol/schema/v1/common.schema.json
+--- T-004:schema/v1/common.schema.json	2026-10-17 03:07:15.337282352 +0100
++++ packages/rules-protocol/schema/v1/common.schema.json	2026-10-17 03:50:34.270514950 +0100
+@@ -2,7 +2,7 @@
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+   "$id": "https://rules-protocol.cardflow.invalid/v1/common.schema.json",
+   "title": "rules-protocol v1: shared definitions",
+-  "description": "Value types shared by every v1 schema. Money is ALWAYS an integer number of minor units of the document currency (ADR-008: CNY fen, JPY yen, KWD fils) within int64; rates and scale factors are decimal strings. No money or rate field is a JSON floating-point number.",
++  "description": "Value types shared by every v1 schema. Money is ALWAYS an integer number of minor units of the document currency (ADR-008: CNY fen, JPY yen, KWD fils); rates and scale factors are decimal strings. No money or rate field is a JSON floating-point number. INPUT values are limited to the range the engine's CP-SAT model can represent (README: supported numeric range): money |v| <= 10^13 minor units, rates 0..1 with at most 5 decimals, scale factors 0..10, dates 1970-01-01..2999-12-31. RESULT money (sums such as balances) uses the full int64 range.",
+   "$defs": {
+     "ProtocolVersion": {
+       "description": "Protocol version of the document. Validators reject any other value.",
+@@ -10,19 +10,37 @@
+       "const": "1"
+     },
+     "MinorAmount": {
+-      "description": "Money: signed integer minor units of the document currency, within int64.",
++      "description": "Input money: signed integer minor units of the document currency, |v| <= 10^13 (the engine's variable bound BIG).",
++      "type": "integer",
++      "minimum": -10000000000000,
++      "maximum": 10000000000000
++    },
++    "NonNegativeMinorAmount": {
++      "description": "Input money: integer minor units, 0 <= v <= 10^13.",
++      "type": "integer",
++      "minimum": 0,
++      "maximum": 10000000000000
++    },
++    "PositiveMinorAmount": {
++      "description": "Input money: integer minor units, 1 <= v <= 10^13.",
++      "type": "integer",
++      "minimum": 1,
++      "maximum": 10000000000000
++    },
++    "ResultMinorAmount": {
++      "description": "Result money (may be a sum of input amounts, e.g. a balance): signed integer minor units within int64.",
+       "type": "integer",
+       "minimum": -9223372036854775808,
+       "maximum": 9223372036854775807
+     },
+-    "NonNegativeMinorAmount": {
+-      "description": "Money: integer minor units >= 0, within int64.",
++    "NonNegativeResultMinorAmount": {
++      "description": "Result money: integer minor units >= 0 within int64.",
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 9223372036854775807
+     },
+-    "PositiveMinorAmount": {
+-      "description": "Money: integer minor units >= 1, within int64.",
++    "PositiveResultMinorAmount": {
++      "description": "Result money: integer minor units >= 1 within int64.",
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 9223372036854775807
+@@ -51,16 +69,22 @@
+       "pattern": "^[A-Z]{3}$"
+     },
+     "Date": {
+-      "description": "Calendar date YYYY-MM-DD (business date in the account's time zone).",
++      "description": "Calendar date YYYY-MM-DD (business date in the account's time zone), years 1970..2999: the engine adds up to about two years to dates, far from the calendar's limits.",
++      "type": "string",
++      "format": "date",
++      "pattern": "^(19[7-9][0-9]|2[0-9]{3})-[0-9]{2}-[0-9]{2}$"
++    },
++    "ResultDate": {
++      "description": "Date in a result: YYYY-MM-DD without the input year limit (derived dates such as due dates may lie up to about two years after the latest input date).",
+       "type": "string",
+       "format": "date",
+       "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+     },
+     "Timestamp": {
+-      "description": "RFC 3339 timestamp with an explicit offset and at most 6 fractional digits. The pattern is normative: the 'date-time' format is not checked by every validator.",
++      "description": "RFC 3339 timestamp with an explicit offset and at most 6 fractional digits, years 1970..2999. The pattern is normative: the 'date-time' format is not checked by every validator.",
+       "type": "string",
+       "format": "date-time",
+-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?(Z|[+-][0-9]{2}:[0-9]{2})$"
++      "pattern": "^(19[7-9][0-9]|2[0-9]{3})-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?(Z|[+-][0-9]{2}:[0-9]{2})$"
+     },
+     "Id": {
+       "description": "Identifier (UUIDs and short fixture ids alike): ASCII letters, digits and . _ : - ; starts with a letter or digit; at most 128 characters.",
+@@ -74,10 +98,15 @@
+         { "not": { "pattern": "^plan_repay_" } }
+       ]
+     },
+-    "DecimalString": {
+-      "description": "Non-negative decimal written as a string (rates, scale factors): no sign, no exponent, at most 10 integer and 10 fractional digits (NUMERIC(20,10), ADR-008). Never a JSON number.",
++    "Rate": {
++      "description": "Rate as a decimal string, 0..1 with at most 5 fractional digits (e.g. '0.006'); never a JSON number. 5 digits is the most the CP-SAT fee/benefit constraints can carry next to 10^13 money (README: supported numeric range).",
++      "type": "string",
++      "pattern": "^(0(\\.[0-9]{1,5})?|1(\\.0{1,5})?)$"
++    },
++    "ScaleFactor": {
++      "description": "Scenario scale factor as a decimal string, 0..10 with at most 10 fractional digits; never a JSON number.",
+       "type": "string",
+-      "pattern": "^(0|[1-9][0-9]{0,9})(\\.[0-9]{1,10})?$"
++      "pattern": "^([0-9](\\.[0-9]{1,10})?|10(\\.0{1,10})?)$"
+     },
+     "SignedDecimalString": {
+       "description": "Decimal written as a string (derived quantities such as a weighted buffer in days).",
+diff -ru T-004:schema/v1/PlanInput.schema.json packages/rules-protocol/schema/v1/PlanInput.schema.json
+--- T-004:schema/v1/PlanInput.schema.json	2026-10-17 03:08:20.965814759 +0100
++++ packages/rules-protocol/schema/v1/PlanInput.schema.json	2026-10-17 03:49:41.962086934 +0100
+@@ -21,15 +21,18 @@
+     "protocol_version": { "$ref": "common.schema.json#/$defs/ProtocolVersion" },
+     "request": { "$ref": "PlanRequest.schema.json" },
+     "cards": {
+-      "description": "Candidate cards; order is the order of allocation lines and rejections.",
++      "description": "Candidate cards; order is the order of allocation lines and rejections. At most 200 (supported range).",
+       "type": "array",
+       "minItems": 1,
++      "maxItems": 200,
+       "items": { "$ref": "CardOption.schema.json" }
+     },
+     "pools": { "$ref": "Pools.schema.json" },
+     "cash_accounts": {
++      "description": "At most 100 (supported range).",
+       "type": "array",
+       "minItems": 1,
++      "maxItems": 100,
+       "items": { "$ref": "CashAccount.schema.json" }
+     },
+     "snapshots": {
+@@ -38,7 +41,9 @@
+       "items": { "$ref": "Snapshot.schema.json" }
+     },
+     "events": {
++      "description": "At most 10,000 (supported range).",
+       "type": "array",
++      "maxItems": 10000,
+       "items": { "$ref": "CashEvent.schema.json" }
+     },
+     "scenarios": {
+diff -ru T-004:schema/v1/PlanOutcome.schema.json packages/rules-protocol/schema/v1/PlanOutcome.schema.json
+--- T-004:schema/v1/PlanOutcome.schema.json	2026-10-17 03:09:37.254434489 +0100
++++ packages/rules-protocol/schema/v1/PlanOutcome.schema.json	2026-10-17 03:50:34.270514950 +0100
+@@ -139,7 +139,7 @@
+         "card_id": { "$ref": "common.schema.json#/$defs/Id" },
+         "pool_id": { "$ref": "common.schema.json#/$defs/Id" },
+         "scenario_id": { "$ref": "common.schema.json#/$defs/Id" },
+-        "as_of": { "$ref": "common.schema.json#/$defs/Date" },
++        "as_of": { "$ref": "common.schema.json#/$defs/ResultDate" },
+         "age_days": { "$ref": "common.schema.json#/$defs/Count" },
+         "detail": { "type": "string" }
+       }
+@@ -150,10 +150,10 @@
+       "additionalProperties": false,
+       "required": ["on", "balance", "gap_to_zero", "gap_to_reserve"],
+       "properties": {
+-        "on": { "$ref": "common.schema.json#/$defs/Date" },
+-        "balance": { "$ref": "common.schema.json#/$defs/MinorAmount" },
+-        "gap_to_zero": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+-        "gap_to_reserve": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" }
++        "on": { "$ref": "common.schema.json#/$defs/ResultDate" },
++        "balance": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
++        "gap_to_zero": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
++        "gap_to_reserve": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" }
+       }
+     },
+     "ScenarioBreach": {
+@@ -163,10 +163,10 @@
+       "required": ["cash_account_id", "on", "balance", "gap_to_zero", "gap_to_reserve", "events"],
+       "properties": {
+         "cash_account_id": { "$ref": "common.schema.json#/$defs/Id" },
+-        "on": { "$ref": "common.schema.json#/$defs/Date" },
+-        "balance": { "$ref": "common.schema.json#/$defs/MinorAmount" },
+-        "gap_to_zero": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+-        "gap_to_reserve": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
++        "on": { "$ref": "common.schema.json#/$defs/ResultDate" },
++        "balance": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
++        "gap_to_zero": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
++        "gap_to_reserve": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+         "events": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Id" } }
+       }
+     },
+@@ -175,9 +175,9 @@
+       "additionalProperties": false,
+       "required": ["on", "total", "gap"],
+       "properties": {
+-        "on": { "$ref": "common.schema.json#/$defs/Date" },
+-        "total": { "$ref": "common.schema.json#/$defs/MinorAmount" },
+-        "gap": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" }
++        "on": { "$ref": "common.schema.json#/$defs/ResultDate" },
++        "total": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
++        "gap": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" }
+       }
+     },
+     "BaselineAccount": {
+@@ -185,9 +185,9 @@
+       "additionalProperties": false,
+       "required": ["min_balance", "min_on", "end_balance", "breaches"],
+       "properties": {
+-        "min_balance": { "$ref": "common.schema.json#/$defs/MinorAmount" },
+-        "min_on": { "$ref": "common.schema.json#/$defs/Date" },
+-        "end_balance": { "$ref": "common.schema.json#/$defs/MinorAmount" },
++        "min_balance": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
++        "min_on": { "$ref": "common.schema.json#/$defs/ResultDate" },
++        "end_balance": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
+         "breaches": { "type": "array", "items": { "$ref": "#/$defs/AccountBreach" } }
+       }
+     },
+@@ -210,8 +210,8 @@
+       "additionalProperties": false,
+       "required": ["statement_date", "due_date"],
+       "properties": {
+-        "statement_date": { "$ref": "common.schema.json#/$defs/Date" },
+-        "due_date": { "$ref": "common.schema.json#/$defs/Date" }
++        "statement_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
++        "due_date": { "$ref": "common.schema.json#/$defs/ResultDate" }
+       }
+     },
+     "AllocationLine": {
+@@ -233,12 +233,12 @@
+       ],
+       "properties": {
+         "card_id": { "$ref": "common.schema.json#/$defs/Id" },
+-        "amount_minor": { "$ref": "common.schema.json#/$defs/PositiveMinorAmount" },
+-        "statement_date": { "$ref": "common.schema.json#/$defs/Date" },
+-        "due_date": { "$ref": "common.schema.json#/$defs/Date" },
++        "amount_minor": { "$ref": "common.schema.json#/$defs/PositiveResultMinorAmount" },
++        "statement_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
++        "due_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
+         "repay_on": {
+           "description": "Planned cash debit date = due_date - payment_lead_days.",
+-          "$ref": "common.schema.json#/$defs/Date"
++          "$ref": "common.schema.json#/$defs/ResultDate"
+         },
+         "repay_from_cash_account_id": { "$ref": "common.schema.json#/$defs/Id" },
+         "buffer_days": {
+@@ -247,9 +247,9 @@
+           "minimum": -2147483648,
+           "maximum": 2147483647
+         },
+-        "fee_minor": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+-        "verified_benefit_minor": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+-        "potential_benefit_minor": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
++        "fee_minor": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
++        "verified_benefit_minor": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
++        "potential_benefit_minor": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+         "cycle_assumptions": { "type": "array", "items": { "type": "string" } },
+         "alternative_cycles": {
+           "description": "Later cycles also reachable within the posting-delay window (the conservative earliest one is used).",
+@@ -281,17 +281,17 @@
+         "min_balance_by_account": {
+           "type": "object",
+           "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+-          "additionalProperties": { "$ref": "common.schema.json#/$defs/MinorAmount" }
++          "additionalProperties": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" }
+         },
+         "min_on_by_account": {
+           "type": "object",
+           "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+-          "additionalProperties": { "$ref": "common.schema.json#/$defs/Date" }
++          "additionalProperties": { "$ref": "common.schema.json#/$defs/ResultDate" }
+         },
+         "end_balance_by_account": {
+           "type": "object",
+           "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+-          "additionalProperties": { "$ref": "common.schema.json#/$defs/MinorAmount" }
++          "additionalProperties": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" }
+         },
+         "breaches": {
+           "description": "EVERY breach point, chronological (never only the first).",
+@@ -336,9 +336,9 @@
+           "description": "Amount-weighted repayment buffer in days, rounded half up to 0.1.",
+           "$ref": "common.schema.json#/$defs/SignedDecimalString"
+         },
+-        "fees": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+-        "verified_benefit": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+-        "potential_benefit": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
++        "fees": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
++        "verified_benefit": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
++        "potential_benefit": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+         "checks": {
+           "type": "object",
+           "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+@@ -361,13 +361,14 @@
+             "REPAY_ACCOUNT_MISSING",
+             "REPAY_ACCOUNT_RESTRICTED",
+             "NO_CAPACITY",
++            "REPAY_BEFORE_TXN_DATE",
+             "INSUFFICIENT_LIMIT_ALONE",
+             "CASH_BREACH_ALONE",
+             "DOMINATED"
+           ]
+         },
+-        "capacity": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+-        "amount": { "$ref": "common.schema.json#/$defs/PositiveMinorAmount" },
++        "capacity": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
++        "amount": { "$ref": "common.schema.json#/$defs/PositiveResultMinorAmount" },
+         "note": { "type": "string" },
+         "detail": { "type": "string" },
+         "first_breach": {
+@@ -377,7 +378,7 @@
+         "min_balance": {
+           "type": "object",
+           "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+-          "additionalProperties": { "$ref": "common.schema.json#/$defs/MinorAmount" }
++          "additionalProperties": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" }
+         },
+         "buffer_days": { "$ref": "common.schema.json#/$defs/SignedDecimalString" }
+       }
+@@ -385,7 +386,7 @@
+     "AllocationMap": {
+       "type": "object",
+       "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+-      "additionalProperties": { "$ref": "common.schema.json#/$defs/PositiveMinorAmount" }
++      "additionalProperties": { "$ref": "common.schema.json#/$defs/PositiveResultMinorAmount" }
+     },
+     "MinExtraConfirmedCash": {
+       "type": "object",
+@@ -396,9 +397,9 @@
+         "extra_cash_by_account": {
+           "type": "object",
+           "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+-          "additionalProperties": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" }
++          "additionalProperties": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" }
+         },
+-        "total": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
++        "total": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+         "allocation": { "$ref": "#/$defs/AllocationMap" },
+         "detail": { "type": "string" }
+       }
+@@ -409,7 +410,7 @@
+       "required": ["status"],
+       "properties": {
+         "status": { "$ref": "#/$defs/SolveStatus" },
+-        "amount": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
++        "amount": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+         "allocation": { "$ref": "#/$defs/AllocationMap" },
+         "detail": { "type": "string" }
+       }
+@@ -420,7 +421,7 @@
+       "required": ["shift_days", "txn_date", "status"],
+       "properties": {
+         "shift_days": { "type": "integer", "minimum": 1, "maximum": 366 },
+-        "txn_date": { "$ref": "common.schema.json#/$defs/Date" },
++        "txn_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
+         "status": { "enum": ["OPTIMAL", "FEASIBLE", "UNKNOWN"] }
+       }
+     },
+@@ -474,9 +475,9 @@
+         "alternative_cycles"
+       ],
+       "properties": {
+-        "statement_date": { "$ref": "common.schema.json#/$defs/Date" },
+-        "due_date": { "$ref": "common.schema.json#/$defs/Date" },
+-        "repay_on": { "$ref": "common.schema.json#/$defs/Date" },
++        "statement_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
++        "due_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
++        "repay_on": { "$ref": "common.schema.json#/$defs/ResultDate" },
+         "buffer_days": { "type": "integer", "minimum": -2147483648, "maximum": 2147483647 },
+         "cycle_assumptions": { "type": "array", "items": { "type": "string" } },
+         "alternative_cycles": { "type": "array", "items": { "$ref": "#/$defs/CycleDates" } }
+diff -ru T-004:schema/v1/Scenario.schema.json packages/rules-protocol/schema/v1/Scenario.schema.json
+--- T-004:schema/v1/Scenario.schema.json	2026-10-17 03:08:20.925814434 +0100
++++ packages/rules-protocol/schema/v1/Scenario.schema.json	2026-10-17 03:49:41.962086934 +0100
+@@ -26,11 +26,11 @@
+     },
+     "income_scale": {
+       "description": "Factor on expected inflows (rounded half up to the minor unit).",
+-      "$ref": "common.schema.json#/$defs/DecimalString"
++      "$ref": "common.schema.json#/$defs/ScaleFactor"
+     },
+     "expense_scale": {
+       "description": "Factor on outflows of category 'living' (rounded half up to the minor unit).",
+-      "$ref": "common.schema.json#/$defs/DecimalString"
++      "$ref": "common.schema.json#/$defs/ScaleFactor"
+     },
+     "event_overrides": {
+       "description": "Per-event replacement of date and/or amount, applied before delay and scaling. Each event at most once; the event must exist.",
+exit=0 (1 = differences shown above)

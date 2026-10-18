@@ -1,0 +1,17 @@
+absl-py==2.5.1
+hypothesis==6.170.0
+immutabledict==4.3.1
+iniconfig==2.3.1
+numpy==2.5.4
+ortools==9.15.6755
+packaging==26.3
+pandas==3.0.6
+pluggy==1.7.0
+protobuf==6.33.6
+pygments==2.21.0
+pypdf==6.20.1
+pytest==9.1.1
+python-dateutil==2.9.0.post0
+six==1.17.0
+sortedcontainers==2.4.0
+typing-extensions==4.16.0

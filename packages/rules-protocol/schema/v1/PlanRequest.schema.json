@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/PlanRequest.schema.json",
+  "title": "PlanRequest",
+  "description": "The planned spend (engine-spec §2 PlanRequest). The effective card limit K is max_cards if allow_split else 1. The cash repayment of a card is taken on due date minus payment_lead_days. Not yet supported by engine model 1.0.0 and therefore not accepted (rejected, never ignored): merchant, category, allow_installment, reserve_cash_override, reserve_limit_by_card.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "amount_minor",
+    "currency",
+    "txn_date",
+    "allow_split",
+    "max_cards",
+    "min_split_minor",
+    "payment_lead_days",
+    "channel"
+  ],
+  "properties": {
+    "amount_minor": { "$ref": "common.schema.json#/$defs/PositiveMinorAmount" },
+    "currency": {
+      "description": "Currency of every money field of the document.",
+      "$ref": "common.schema.json#/$defs/Currency"
+    },
+    "txn_date": { "$ref": "common.schema.json#/$defs/Date" },
+    "allow_split": { "type": "boolean" },
+    "max_cards": { "type": "integer", "minimum": 1, "maximum": 2147483647 },
+    "min_split_minor": {
+      "description": "Minimum amount on every card that is used (cards may override it).",
+      "$ref": "common.schema.json#/$defs/PositiveMinorAmount"
+    },
+    "payment_lead_days": { "$ref": "common.schema.json#/$defs/DayCount" },
+    "channel": {
+      "description": "Payment channel label (e.g. pos, online). Eligibility per card is CardOption.channel_ok.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,31}$"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# 主会话修正（2026-10-17）：全部卡在建模前被排除时，业务状态由 MODEL_INVALID 改为 INFEASIBLE（求解器 NOT_RUN，拒绝原因列出每张卡，notes 含 NO_ELIGIBLE_CARDS）
+# 改动：cardflow/planner/engine/plan.py；测试 tests/engine/test_robustness.py、tests/protocol/test_adapter.py、tests/protocol/test_limits.py
+$ uv run pytest -q tests/engine tests/protocol
+310 passed, 1 warning in 16.37s
+$ run_fixtures.py (F-18)
+summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+# golden sample: masked diff vs evidence/m0/T-004/sample_after.md is empty

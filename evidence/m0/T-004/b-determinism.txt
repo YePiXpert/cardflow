@@ -1,0 +1,43 @@
+# T-004b determinism re-run on the final code (2026-10-17T03:00:57Z); same one-off tool as determinism.txt (/tmp/t004/tools/determinism.py, full text there)
+$ cd /tmp/t004 && uv run --project /projects/cardflow/services/api python -I tools/determinism.py /projects/cardflow
+engine model 1.0.0, OR-Tools 9.15.6755, os.cpu_count()=8
+solver parameters per CP-SAT call: num_workers=8, random_seed=0 (ADR-004 defaults); no other parameter set; repetitions N=20
+
+(a) allocation.solve(inputs, scenarios['baseline'], profile, time_limit_s=10)
+  cash_safety: 20 runs -> 1 distinct result(s)
+    x20: status OPTIMAL; allocation {'A': 800000, 'C': 200000}
+           tier min_margin           max OPTIMAL          value=100000 bound=100000
+           tier fees                 min SKIPPED_CONSTANT value=0 bound=0
+           tier net_verified_benefit max SKIPPED_CONSTANT value=0 bound=0
+           tier buffer               max OPTIMAL          value=42400000 bound=42400000
+           tier cards                min OPTIMAL          value=2 bound=2
+    wall time s: min 0.0077 median 0.0108 max 0.0151
+  verified_benefit: 20 runs -> 1 distinct result(s)
+    x20: status OPTIMAL; allocation {'A': 800000, 'C': 200000}
+           tier net_verified_benefit max SKIPPED_CONSTANT value=0 bound=0
+           tier min_margin           max OPTIMAL          value=100000 bound=100000
+           tier buffer               max OPTIMAL          value=42400000 bound=42400000
+           tier cards                min OPTIMAL          value=2 bound=2
+    wall time s: min 0.0086 median 0.0122 max 0.0145
+  fewer_cards: 20 runs -> 1 distinct result(s)
+    x20: status OPTIMAL; allocation {'A': 800000, 'C': 200000}
+           tier cards                min OPTIMAL          value=2 bound=2
+           tier min_margin           max OPTIMAL          value=100000 bound=100000
+           tier net_verified_benefit max SKIPPED_CONSTANT value=0 bound=0
+           tier buffer               max OPTIMAL          value=42400000 bound=42400000
+    wall time s: min 0.0072 median 0.0096 max 0.0158
+
+(b) protocol.plan_from_protocol(F-18 v1 input with options.profile=<profile>):
+    whole PlanOutcome compared, minus run_id, created_at and wall times
+  cash_safety: 20 runs -> 1 distinct outcome(s); CONDITIONALLY_FEASIBLE/OPTIMAL {'A': 800000, 'C': 200000} tiers [('min_margin', 100000), ('fees', 0), ('net_verified_benefit', 0), ('buffer', 42400000), ('cards', 2)]
+  verified_benefit: 20 runs -> 1 distinct outcome(s); CONDITIONALLY_FEASIBLE/OPTIMAL {'A': 800000, 'C': 200000} tiers [('net_verified_benefit', 0), ('min_margin', 100000), ('buffer', 42400000), ('cards', 2)]
+  fewer_cards: 20 runs -> 1 distinct outcome(s); CONDITIONALLY_FEASIBLE/OPTIMAL {'A': 800000, 'C': 200000} tiers [('cards', 2), ('min_margin', 100000), ('net_verified_benefit', 0), ('buffer', 42400000)]
+
+RESULT: all repetitions identical
+exit=0
+
+$ uv run pytest -p no:cacheprovider -v tests/engine/test_determinism.py   (cwd services/api)
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[cash_safety] PASSED [ 33%]
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[verified_benefit] PASSED [ 66%]
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[fewer_cards] PASSED [100%]
+========================= 3 passed, 1 warning in 0.90s =========================

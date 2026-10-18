@@ -1,0 +1,582 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/PlanOutcome.schema.json",
+  "title": "PlanOutcome",
+  "description": "Result of one run (engine-spec §5/§6/§11, API-52 response body). Field names follow API-52: references are *_id, allocation-line money is *_minor; nested check, breach and sensitivity structures keep the engine's names. Every money value is integer minor units; the only non-integer JSON numbers are the timing fields time_limit_s and wall_time_s. Only FEASIBLE_ROBUST and CONDITIONALLY_FEASIBLE carry a plan: for every other business_status 'allocation' is empty and 'verification' is null (engine-spec §12.1); a solution the independent verifier rejected (MODEL_INVALID) is kept under 'diagnostics' for defect reports only and must never be shown or adopted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "run_id",
+    "created_at",
+    "input_hash",
+    "model_version",
+    "solver_version",
+    "profile",
+    "decision_scenario",
+    "time_limit_s",
+    "workers",
+    "seed",
+    "solver_status",
+    "business_status",
+    "proven_optimal",
+    "wall_time_s",
+    "checkpoints",
+    "tiers",
+    "data_issues",
+    "baseline",
+    "allocation",
+    "verification",
+    "failing_scenarios",
+    "rejections",
+    "sensitivity",
+    "assumptions",
+    "notes",
+    "diagnostics"
+  ],
+  "allOf": [
+    {
+      "description": "A plan exists exactly for the actionable statuses (engine-spec §12.1).",
+      "if": {
+        "properties": { "business_status": { "enum": ["FEASIBLE_ROBUST", "CONDITIONALLY_FEASIBLE"] } }
+      },
+      "then": {
+        "properties": {
+          "allocation": { "minItems": 1 },
+          "verification": { "$ref": "#/$defs/Verification" },
+          "diagnostics": { "type": "null" }
+        }
+      },
+      "else": {
+        "properties": {
+          "allocation": { "maxItems": 0 },
+          "verification": { "type": "null" }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "protocol_version": { "$ref": "common.schema.json#/$defs/ProtocolVersion" },
+    "run_id": { "type": "string", "format": "uuid" },
+    "created_at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+    "input_hash": {
+      "description": "Runs entering through the protocol: sha256 of the canonical JSON of the PlanInput (protocol_input_hash).",
+      "$ref": "common.schema.json#/$defs/Sha256Hex"
+    },
+    "model_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+    },
+    "solver_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "profile": { "$ref": "common.schema.json#/$defs/Profile" },
+    "decision_scenario": { "$ref": "common.schema.json#/$defs/Id" },
+    "time_limit_s": { "type": "number", "exclusiveMinimum": 0 },
+    "workers": { "type": "integer", "minimum": 1 },
+    "seed": { "type": "integer", "minimum": 0 },
+    "solver_status": {
+      "description": "Status of the main CP-SAT solve, passed through; NOT_RUN when the main solve did not run: NEEDS_DATA, BASELINE_SHORTFALL, and INFEASIBLE because no card is eligible (every card excluded before modelling, note NO_ELIGIBLE_CARDS; a date-shift sensitivity may still have been solved). MODEL_INVALID always comes from the solve (a model that could not be built or validated, or the verifier rejecting its solution).",
+      "enum": ["OPTIMAL", "FEASIBLE", "INFEASIBLE", "UNKNOWN", "MODEL_INVALID", "NOT_RUN"]
+    },
+    "business_status": {
+      "enum": [
+        "NEEDS_DATA",
+        "MODEL_INVALID",
+        "BASELINE_SHORTFALL",
+        "INFEASIBLE",
+        "UNKNOWN",
+        "FEASIBLE_ROBUST",
+        "CONDITIONALLY_FEASIBLE"
+      ]
+    },
+    "proven_optimal": { "type": "boolean" },
+    "wall_time_s": {
+      "description": "Solver wall time in seconds; null when no solver ran.",
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "checkpoints": { "$ref": "common.schema.json#/$defs/Count" },
+    "tiers": { "type": "array", "items": { "$ref": "#/$defs/Tier" } },
+    "data_issues": { "type": "array", "items": { "$ref": "#/$defs/DataIssue" } },
+    "baseline": {
+      "description": "Per scenario: the cash check WITHOUT the new spend (engine-spec §5).",
+      "type": "object",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+      "additionalProperties": { "$ref": "#/$defs/BaselineCheck" }
+    },
+    "allocation": {
+      "description": "The plan: one line per card used, in card input order. Empty unless business_status is FEASIBLE_ROBUST or CONDITIONALLY_FEASIBLE.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/AllocationLine" }
+    },
+    "verification": {
+      "description": "Independent verification of the plan; null unless business_status is FEASIBLE_ROBUST or CONDITIONALLY_FEASIBLE.",
+      "oneOf": [{ "$ref": "#/$defs/Verification" }, { "type": "null" }]
+    },
+    "diagnostics": {
+      "description": "Non-actionable outcomes only; null otherwise. Never a plan: clients and the server must not show or adopt anything in it.",
+      "oneOf": [{ "$ref": "#/$defs/Diagnostics" }, { "type": "null" }]
+    },
+    "failing_scenarios": {
+      "type": "array",
+      "items": { "$ref": "common.schema.json#/$defs/Id" }
+    },
+    "rejections": { "type": "array", "items": { "$ref": "#/$defs/Rejection" } },
+    "sensitivity": {
+      "type": "object",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+      "additionalProperties": { "$ref": "#/$defs/SensitivityEntry" }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "SolveStatus": { "enum": ["OPTIMAL", "FEASIBLE", "INFEASIBLE", "UNKNOWN", "MODEL_INVALID"] },
+    "SensitivityStatus": {
+      "description": "CP-SAT status of a sensitivity solve, or NOT_RUN: the item was not computed (no card can take part on the transaction date, or the run's time limit was used up); 'detail' says which. MODEL_INVALID marks one item that could not be modelled -- the run itself keeps its status (engine-spec §12.9).",
+      "enum": ["OPTIMAL", "FEASIBLE", "INFEASIBLE", "UNKNOWN", "MODEL_INVALID", "NOT_RUN"]
+    },
+    "Diagnostics": {
+      "description": "Why an outcome has no plan, beyond the notes. VERIFIER_REJECTED_SOLVER_SOLUTION (business_status MODEL_INVALID): the solver's allocation and the verification that rejected it -- a defect report, never a plan.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code"],
+      "properties": {
+        "code": { "enum": ["VERIFIER_REJECTED_SOLVER_SOLUTION"] },
+        "rejected_allocation": { "type": "array", "items": { "$ref": "#/$defs/AllocationLine" } },
+        "rejected_verification": { "$ref": "#/$defs/Verification" }
+      }
+    },
+    "Tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "sense", "status", "value", "bound", "wall_time_s"],
+      "properties": {
+        "name": { "enum": ["min_margin", "fees", "net_verified_benefit", "buffer", "cards"] },
+        "sense": { "enum": ["max", "min"] },
+        "status": {
+          "enum": ["OPTIMAL", "FEASIBLE", "INFEASIBLE", "UNKNOWN", "MODEL_INVALID", "SKIPPED_CONSTANT"]
+        },
+        "value": {
+          "description": "Objective value (minor units, minor-unit-days or a card count by tier).",
+          "oneOf": [{ "$ref": "common.schema.json#/$defs/Int64" }, { "type": "null" }]
+        },
+        "bound": {
+          "oneOf": [{ "$ref": "common.schema.json#/$defs/Int64" }, { "type": "null" }]
+        },
+        "wall_time_s": { "type": "number", "minimum": 0 }
+      }
+    },
+    "DataIssue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code"],
+      "properties": {
+        "code": {
+          "enum": [
+            "MISSING_SNAPSHOT",
+            "SNAPSHOT_AFTER_TXN_DATE",
+            "STALE_SNAPSHOT",
+            "BILLING_RULE_INVALID",
+            "MISSING_POOL_SNAPSHOT",
+            "UNKNOWN_DECISION_SCENARIO"
+          ]
+        },
+        "cash_account_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "card_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "pool_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "scenario_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "as_of": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "age_days": { "$ref": "common.schema.json#/$defs/Count" },
+        "detail": { "type": "string" }
+      }
+    },
+    "AccountBreach": {
+      "description": "A reserve breach point of one account in a baseline check.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["on", "balance", "gap_to_zero", "gap_to_reserve"],
+      "properties": {
+        "on": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "balance": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
+        "gap_to_zero": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "gap_to_reserve": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" }
+      }
+    },
+    "ScenarioBreach": {
+      "description": "A reserve breach point in a verification check: the intraday low after that day's outflows, with the outflow events (including the plan's repayment events 'plan_repay_<card>', each the amount plus the card's fee).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cash_account_id", "on", "balance", "gap_to_zero", "gap_to_reserve", "events"],
+      "properties": {
+        "cash_account_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "on": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "balance": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
+        "gap_to_zero": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "gap_to_reserve": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "events": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Id" } }
+      }
+    },
+    "GlobalBreach": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["on", "total", "gap"],
+      "properties": {
+        "on": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "total": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
+        "gap": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" }
+      }
+    },
+    "BaselineAccount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_balance", "min_on", "end_balance", "breaches"],
+      "properties": {
+        "min_balance": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
+        "min_on": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "end_balance": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" },
+        "breaches": { "type": "array", "items": { "$ref": "#/$defs/AccountBreach" } }
+      }
+    },
+    "BaselineCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ok", "accounts", "global_breaches", "assumptions"],
+      "properties": {
+        "ok": {
+          "description": "No account below its reserve and the sum of all accounts never below options.global_reserve_floor_minor (engine-spec §12.8).",
+          "type": "boolean"
+        },
+        "accounts": {
+          "type": "object",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+          "additionalProperties": { "$ref": "#/$defs/BaselineAccount" }
+        },
+        "global_breaches": {
+          "description": "Days on which the sum over all cash accounts is below the global floor (same rule as ScenarioCheck.global_breaches).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/GlobalBreach" }
+        },
+        "assumptions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "CycleDates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement_date", "due_date"],
+      "properties": {
+        "statement_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "due_date": { "$ref": "common.schema.json#/$defs/ResultDate" }
+      }
+    },
+    "AllocationLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "card_id",
+        "amount_minor",
+        "statement_date",
+        "due_date",
+        "repay_on",
+        "repay_from_cash_account_id",
+        "buffer_days",
+        "fee_minor",
+        "verified_benefit_minor",
+        "potential_benefit_minor",
+        "cycle_assumptions",
+        "alternative_cycles"
+      ],
+      "properties": {
+        "card_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "amount_minor": { "$ref": "common.schema.json#/$defs/PositiveResultMinorAmount" },
+        "statement_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "due_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "repay_on": {
+          "description": "Planned cash debit date = due_date - payment_lead_days; the cash leaving repay_from_cash_account_id that day is amount_minor + fee_minor (engine-spec §12.6).",
+          "$ref": "common.schema.json#/$defs/ResultDate"
+        },
+        "repay_from_cash_account_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "buffer_days": {
+          "description": "repay_on - txn_date in days.",
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        "fee_minor": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "verified_benefit_minor": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "potential_benefit_minor": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "cycle_assumptions": { "type": "array", "items": { "type": "string" } },
+        "alternative_cycles": {
+          "description": "Later cycles also reachable within the posting-delay window (the conservative earliest one is used).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/CycleDates" }
+        }
+      }
+    },
+    "ScenarioCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ok",
+        "ok_zero",
+        "min_balance_by_account",
+        "min_on_by_account",
+        "end_balance_by_account",
+        "breaches",
+        "first_breach",
+        "global_breaches",
+        "assumptions"
+      ],
+      "properties": {
+        "ok": {
+          "description": "No reserve breach on any account and the global floor holds.",
+          "type": "boolean"
+        },
+        "ok_zero": { "description": "No balance below zero.", "type": "boolean" },
+        "min_balance_by_account": {
+          "type": "object",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+          "additionalProperties": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" }
+        },
+        "min_on_by_account": {
+          "type": "object",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+          "additionalProperties": { "$ref": "common.schema.json#/$defs/ResultDate" }
+        },
+        "end_balance_by_account": {
+          "type": "object",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+          "additionalProperties": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" }
+        },
+        "breaches": {
+          "description": "EVERY breach point, chronological (never only the first).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/ScenarioBreach" }
+        },
+        "first_breach": {
+          "oneOf": [{ "$ref": "#/$defs/ScenarioBreach" }, { "type": "null" }]
+        },
+        "global_breaches": { "type": "array", "items": { "$ref": "#/$defs/GlobalBreach" } },
+        "assumptions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "Verification": {
+      "description": "Independent verifier result (no solver involved).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ok",
+        "structural_ok",
+        "violations",
+        "decision_scenario",
+        "weighted_buffer_days",
+        "fees",
+        "verified_benefit",
+        "potential_benefit",
+        "checks"
+      ],
+      "properties": {
+        "ok": {
+          "description": "Structural checks pass and the decision scenario has no breach.",
+          "type": "boolean"
+        },
+        "structural_ok": { "type": "boolean" },
+        "violations": {
+          "description": "Structural violations, e.g. 'UNKNOWN_CARD: ...', 'amount conservation violated: ...'.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "decision_scenario": { "$ref": "common.schema.json#/$defs/Id" },
+        "weighted_buffer_days": {
+          "description": "Amount-weighted repayment buffer in days, rounded half up to 0.1.",
+          "$ref": "common.schema.json#/$defs/SignedDecimalString"
+        },
+        "fees": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "verified_benefit": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "potential_benefit": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "checks": {
+          "type": "object",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+          "additionalProperties": { "$ref": "#/$defs/ScenarioCheck" }
+        }
+      }
+    },
+    "Rejection": {
+      "description": "Why a card is not in the allocation (engine-spec §6, §12). Exclusions before modelling, in this order: CARD_STATUS, CURRENCY_NOT_SUPPORTED, CHANNEL_NOT_SUPPORTED, REPAY_ACCOUNT_MISSING, REPAY_ACCOUNT_RESTRICTED, NO_CAPACITY (detail: the card, its credit account or its pool), MIN_SPLIT_ABOVE_AMOUNT (the card's minimum part exceeds the amount), REPAY_BEFORE_TXN_DATE, REPAY_AFTER_HORIZON (the repayment falls after horizon_end, which is never extended). Otherwise: INSUFFICIENT_LIMIT_ALONE (capacity = the card's limit for this plan: card, per-transaction cap, credit account, pool; detail names the binding layer), CASH_BREACH_ALONE, DOMINATED (feasible alone; the solver's plan scored higher), NOT_COMPARED (feasible alone, but the solver produced no plan to compare with: UNKNOWN or MODEL_INVALID).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "reason"],
+      "properties": {
+        "card_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "reason": {
+          "enum": [
+            "CARD_STATUS",
+            "CURRENCY_NOT_SUPPORTED",
+            "CHANNEL_NOT_SUPPORTED",
+            "REPAY_ACCOUNT_MISSING",
+            "REPAY_ACCOUNT_RESTRICTED",
+            "NO_CAPACITY",
+            "MIN_SPLIT_ABOVE_AMOUNT",
+            "REPAY_BEFORE_TXN_DATE",
+            "REPAY_AFTER_HORIZON",
+            "INSUFFICIENT_LIMIT_ALONE",
+            "CASH_BREACH_ALONE",
+            "DOMINATED",
+            "NOT_COMPARED"
+          ]
+        },
+        "capacity": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "amount": { "$ref": "common.schema.json#/$defs/PositiveResultMinorAmount" },
+        "note": { "type": "string" },
+        "detail": { "type": "string" },
+        "first_breach": {
+          "oneOf": [{ "$ref": "#/$defs/ScenarioBreach" }, { "type": "null" }]
+        },
+        "all_breaches": { "type": "array", "items": { "$ref": "#/$defs/ScenarioBreach" } },
+        "min_balance": {
+          "type": "object",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+          "additionalProperties": { "$ref": "common.schema.json#/$defs/ResultMinorAmount" }
+        },
+        "buffer_days": { "$ref": "common.schema.json#/$defs/SignedDecimalString" }
+      }
+    },
+    "AllocationMap": {
+      "type": "object",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+      "additionalProperties": { "$ref": "common.schema.json#/$defs/PositiveResultMinorAmount" }
+    },
+    "MinExtraConfirmedCash": {
+      "description": "Least additional confirmed cash per account (from the snapshot date) that makes the scenario feasible; ties: the allocation is the canonical one (each card in input order takes as much as the optimum allows), the extra cash goes to the earliest account in input order.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "$ref": "#/$defs/SensitivityStatus" },
+        "extra_cash_by_account": {
+          "type": "object",
+          "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+          "additionalProperties": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" }
+        },
+        "total": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "allocation": { "$ref": "#/$defs/AllocationMap" },
+        "detail": { "type": "string" }
+      }
+    },
+    "MaxAffordableAmount": {
+      "description": "Largest amount (at most the request's) feasible in the scenario, with the canonical allocation reaching it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "$ref": "#/$defs/SensitivityStatus" },
+        "amount": { "$ref": "common.schema.json#/$defs/NonNegativeResultMinorAmount" },
+        "allocation": { "$ref": "#/$defs/AllocationMap" },
+        "detail": { "type": "string" }
+      }
+    },
+    "FirstFeasibleDateShift": {
+      "description": "First later transaction date (1..45 days) on which the scenario is feasible; UNKNOWN = that date could not be decided within the time limit. On each date the cards are classified anew; a card whose rule gives no cycle on that date (e.g. its version ended) is unavailable that day. Second form: the item could not be computed (MODEL_INVALID, or NOT_RUN when the run's time limit was used up).",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["shift_days", "txn_date", "status"],
+          "properties": {
+            "shift_days": { "type": "integer", "minimum": 1, "maximum": 366 },
+            "txn_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
+            "status": { "enum": ["OPTIMAL", "FEASIBLE", "UNKNOWN"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "detail"],
+          "properties": {
+            "status": { "enum": ["MODEL_INVALID", "NOT_RUN"] },
+            "detail": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "SensitivityEntry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "min_extra_confirmed_cash",
+            "max_affordable_amount",
+            "first_feasible_date_shift"
+          ],
+          "properties": {
+            "min_extra_confirmed_cash": { "$ref": "#/$defs/MinExtraConfirmedCash" },
+            "max_affordable_amount": { "$ref": "#/$defs/MaxAffordableAmount" },
+            "first_feasible_date_shift": {
+              "description": "null = no feasible later date within the search range.",
+              "oneOf": [{ "$ref": "#/$defs/FirstFeasibleDateShift" }, { "type": "null" }]
+            }
+          }
+        },
+        {
+          "description": "The scenario fails already without the new spend: see baseline.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["note"],
+          "properties": { "note": { "type": "string" } }
+        }
+      ]
+    },
+    "VerificationResult": {
+      "description": "Output of verifying a GIVEN allocation without the solver (fixture 'verify' cases; the Dart client's local verifier). The data checks of a run come first: when they find an issue (the run would be NEEDS_DATA) 'data_issues' lists it, 'allocation' is empty and 'verification' is null -- a valid document never makes the verifier fail.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data_issues", "allocation", "verification"],
+      "properties": {
+        "data_issues": { "type": "array", "items": { "$ref": "#/$defs/DataIssue" } },
+        "allocation": { "type": "array", "items": { "$ref": "#/$defs/AllocationLine" } },
+        "verification": {
+          "oneOf": [{ "$ref": "#/$defs/Verification" }, { "type": "null" }]
+        }
+      },
+      "if": { "properties": { "data_issues": { "maxItems": 0 } } },
+      "then": { "properties": { "verification": { "$ref": "#/$defs/Verification" } } },
+      "else": {
+        "properties": { "allocation": { "maxItems": 0 }, "verification": { "type": "null" } }
+      }
+    },
+    "CardCycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "statement_date",
+        "due_date",
+        "repay_on",
+        "buffer_days",
+        "cycle_assumptions",
+        "alternative_cycles"
+      ],
+      "properties": {
+        "statement_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "due_date": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "repay_on": { "$ref": "common.schema.json#/$defs/ResultDate" },
+        "buffer_days": { "type": "integer", "minimum": -2147483648, "maximum": 2147483647 },
+        "cycle_assumptions": { "type": "array", "items": { "type": "string" } },
+        "alternative_cycles": { "type": "array", "items": { "$ref": "#/$defs/CycleDates" } }
+      }
+    },
+    "CardCycleError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["error"],
+      "properties": { "error": { "type": "string" } }
+    },
+    "CardCycles": {
+      "description": "Conservative billing cycle of every card for the request's transaction date (fixture 'cycles' cases), keyed by card_id.",
+      "type": "object",
+      "propertyNames": { "$ref": "common.schema.json#/$defs/Id" },
+      "additionalProperties": {
+        "oneOf": [{ "$ref": "#/$defs/CardCycle" }, { "$ref": "#/$defs/CardCycleError" }]
+      }
+    }
+  }
+}

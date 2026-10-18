@@ -1,0 +1,3075 @@
+# T-004c red run: new and modified tests against the UNMODIFIED engine/protocol (before any fix)
+# 2026-10-17T22:54:06Z; engine files identical to the pre-task snapshot:
+e2ac6d83ac381dc089c00318bf284f43b28674b78ce909ad1d471adc91cb9162  cardflow/planner/engine/allocation.py
+de26af2d5f294bdfb71325bbe533e80de294fbc0b3430edb129e28927d858d9d  cardflow/planner/engine/billing.py
+2e9c351a41e4112c3482a741fd28f092d4212efcd67e2ec9565a3f729bac460d  cardflow/planner/engine/cash.py
+0872c2f6182febe3fe125b5d624063dae92ae233f7279acd15d1e152f77266f5  cardflow/planner/engine/fixture.py
+14ba4c214493ae7d1715101c14b41fe20225875a669d13b137bcffe9eea4a02f  cardflow/planner/engine/__init__.py
+0d27d92a3f97838061d4014aed444035e465cadba6c3495ba425ed340ca30474  cardflow/planner/engine/money.py
+0a9266f04cfa2900a64cea12ada54e8d57d0ad4b2253e3c294f0894d923d7ccc  cardflow/planner/engine/plan.py
+9f63dfa342b34e668b3547e4e43c0507db5cd8a68c669f15cef4b1c781a13438  cardflow/planner/engine/protocol.py
+cb6156d9ee239b042032f62d82763d2f30965bdba7b18618b8308b0addd2634c  cardflow/planner/engine/sample.py
+d42824d6f3242494eeee99e2eb0937ca16d5366fcb6228b1c2e6c5caab43c807  cardflow/planner/engine/verifier.py
+
+$ uv run pytest -q -p no:cacheprovider -rfE -s tests/engine/test_review_wave3_fixes.py tests/engine/test_determinism.py tests/engine/test_differential.py tests/protocol/test_review_wave3_protocol.py tests/engine/test_production_fixes.py tests/engine/test_robustness.py tests/protocol/test_adapter.py tests/protocol/test_limits.py
+FFFFFFFFFFFFFFF.FFFFF.FFFFFFFFFFFF.F.......FF...F..
+differential summary: {"seeds": [20261017, 20261018], "instances_per_seed": 110, "fuzz": false, "elapsed_s": 3.4, "stats": {"C11 random allocations": 196, "C12 workers 1 vs 8": 56, "C13 sensitivity": 4, "C7 optimality + canonical tie-break": 38, "MISMATCH C10 rejections": 24, "MISMATCH C11 check": 391, "MISMATCH C11 structural/ok": 6, "MISMATCH C13 max affordable": 1, "MISMATCH C3 baseline": 78, "MISMATCH C3 shortfall": 23, "MISMATCH C4 no eligible": 46, "MISMATCH C5 model invalid": 4, "MISMATCH C5 unsound allocation": 6, "MISMATCH C6 completeness": 6, "MISMATCH C7 canonical allocation": 7, "MISMATCH C7 tier values": 13, "MISMATCH C8 status": 1, "MISMATCH C9 scenario check": 30, "actionable": 38, "evaluated": 192, "infeasible (proved)": 12, "no eligible card": 82, "solver INFEASIBLE": 49, "solver NOT_RUN": 103, "solver OPTIMAL": 68, "status BASELINE_SHORTFALL": 32, "status CONDITIONALLY_FEASIBLE": 9, "status FEASIBLE_ROBUST": 59, "status INFEASIBLE": 83, "status MODEL_INVALID": 9, "status NEEDS_DATA": 28}}
+FFF.FFFFFF..FFFF.FF.F..FFFFFFFFFFFFFFF.FFFFFFF..FFF...FFFFFF..FF..F..FF.................FFFFF..............FFFFFFFFF...........................................................F.....F............................
+=================================== FAILURES ===================================
+_________________________ test_model_version_is_1_1_0 __________________________
+
+    def test_model_version_is_1_1_0() -> None:
+        """engine-spec §12: the corrected semantics are model 1.1.0."""
+>       assert MODEL_VERSION == "1.1.0"
+E       AssertionError: assert '1.0.0' == '1.1.0'
+E         
+E         - 1.1.0
+E         + 1.0.0
+
+tests/engine/test_review_wave3_fixes.py:203: AssertionError
+________ test_rule_version_ending_soon_keeps_the_plan_r3e_01[baseline] _________
+
+f18 = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+decision = 'baseline'
+
+    @pytest.mark.parametrize("decision", ["baseline", "stress_income_delay"])
+    def test_rule_version_ending_soon_keeps_the_plan_r3e_01(f18: Doc, decision: str) -> None:
+        """R3E-01 (§12.9): card C's rule version ends 2026-10-18 (valid on the transaction date).
+        The date-shift search treats C as unavailable from 10-18 on instead of failing the run:
+        the plan and every sensitivity number stay as without the end date. Shift: 10-17 is like
+        10-16; 10-18..10-20 have no C and B still repays 11-08; on 10-21 B moves to the 11-20
+        statement (repays 12-08) and A <= 6,000 + B >= 4,000 passes the stress scenario."""
+        f18["cards"][2]["billing_rule"]["effective_to"] = "2026-10-18"
+        f18["options"]["decision_scenario"] = decision
+        out = plan_from_protocol(f18)
+>       assert not any(n.startswith("MODEL_BUILD_ERROR") for n in out["notes"]), out["notes"]
+E       AssertionError: ['MODEL_BUILD_ERROR: ValueError during sensitivity (a value is outside the range the engine supports; no plan is shown)']
+E       assert not True
+E        +  where True = any(<generator object test_rule_version_ending_soon_keeps_the_plan_r3e_01.<locals>.<genexpr> at 0x7fee66617920>)
+
+tests/engine/test_review_wave3_fixes.py:219: AssertionError
+___ test_rule_version_ending_soon_keeps_the_plan_r3e_01[stress_income_delay] ___
+
+f18 = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+decision = 'stress_income_delay'
+
+    @pytest.mark.parametrize("decision", ["baseline", "stress_income_delay"])
+    def test_rule_version_ending_soon_keeps_the_plan_r3e_01(f18: Doc, decision: str) -> None:
+        """R3E-01 (§12.9): card C's rule version ends 2026-10-18 (valid on the transaction date).
+        The date-shift search treats C as unavailable from 10-18 on instead of failing the run:
+        the plan and every sensitivity number stay as without the end date. Shift: 10-17 is like
+        10-16; 10-18..10-20 have no C and B still repays 11-08; on 10-21 B moves to the 11-20
+        statement (repays 12-08) and A <= 6,000 + B >= 4,000 passes the stress scenario."""
+        f18["cards"][2]["billing_rule"]["effective_to"] = "2026-10-18"
+        f18["options"]["decision_scenario"] = decision
+        out = plan_from_protocol(f18)
+>       assert not any(n.startswith("MODEL_BUILD_ERROR") for n in out["notes"]), out["notes"]
+E       AssertionError: ['MODEL_BUILD_ERROR: ValueError during sensitivity (a value is outside the range the engine supports; no plan is shown)']
+E       assert not True
+E        +  where True = any(<generator object test_rule_version_ending_soon_keeps_the_plan_r3e_01.<locals>.<genexpr> at 0x7fee665f9490>)
+
+tests/engine/test_review_wave3_fixes.py:219: AssertionError
+_________ test_a_failing_sensitivity_item_is_marked_unavailable_r3e_01 _________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fee6755fce0>
+
+    def test_a_failing_sensitivity_item_is_marked_unavailable_r3e_01(
+        fx: Fx, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """R3E-01 (§12.9): one sensitivity item that cannot be modelled is reported as such; the
+        run keeps its status, plan and the other items."""
+        inputs, scenarios, _ = fx
+        real = allocation.build_model
+    
+        def failing_for_extra_cash(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+            if kwargs.get("extra_cash_vars"):
+                raise OverflowError("injected")
+            return real(*args, **kwargs)
+    
+        monkeypatch.setattr(allocation, "build_model", failing_for_extra_cash)
+        out = plan(inputs, scenarios, "baseline", "cash_safety", time_limit_s=10)
+        assert out.business_status == "CONDITIONALLY_FEASIBLE"
+        assert out.allocation == {"A": 800000, "C": 200000}
+        sens = out.sensitivity["stress_income_delay"]
+>       assert sens["min_extra_confirmed_cash"] == {
+            "status": "MODEL_INVALID",
+            "detail": "MODEL_BUILD_ERROR: OverflowError while building the CP-SAT model "
+            "(no plan is shown)",
+        }
+E       AssertionError: assert {'status': 'M...an is shown)'} == {'status': 'M...an is shown)'}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'detail': 'MODEL_BUILD_ERROR: OverflowError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)'} != {'detail': 'MODEL_BUILD_ERROR: OverflowError while building the CP-SAT model (no plan is shown)'}
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:253: AssertionError
+_____________ test_a_verifier_rejected_plan_is_never_shown_r3e_02 ______________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fee666e82b0>
+
+    def test_a_verifier_rejected_plan_is_never_shown_r3e_02(
+        fx: Fx, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """R3E-02 (§12.1): MODEL_INVALID carries no allocation and no verification; the rejected
+        allocation is only in the diagnostics (and not in the solver record either)."""
+        inputs, scenarios, _ = fx
+        _rejecting_verify(monkeypatch)
+        out = plan(inputs, scenarios, "baseline", "cash_safety", time_limit_s=10)
+        assert out.business_status == "MODEL_INVALID"
+>       assert out.allocation == {}
+E       AssertionError: assert {'A': 800000, 'C': 200000} == {}
+E         
+E         Left contains 2 more items:
+E         {'A': 800000, 'C': 200000}
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:282: AssertionError
+_____________ test_actionable_outcomes_have_no_diagnostics_r3e_02 ______________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_actionable_outcomes_have_no_diagnostics_r3e_02(fx: Fx) -> None:
+        """R3E-02: an actionable outcome has its allocation and verification, no diagnostics."""
+        inputs, scenarios, _ = fx
+        out = plan(inputs, scenarios, "baseline", "cash_safety", time_limit_s=10)
+        assert out.business_status == "CONDITIONALLY_FEASIBLE"
+>       assert out.diagnostics is None
+               ^^^^^^^^^^^^^^^
+E       AttributeError: 'PlanOutcome' object has no attribute 'diagnostics'
+
+tests/engine/test_review_wave3_fixes.py:298: AttributeError
+__ test_a_reflected_inflow_is_not_counted_again_r3e_03[included-then-delayed] __
+
+includes = ('sal',), salary_on = '2026-10-16'
+stress = {'scenario_id': 'stress', 'include_expected': True, 'income_delay_days': 3, 'income_scale': '1', ...}
+
+    @pytest.mark.parametrize(
+        ("includes", "salary_on", "stress"),
+        [
+            (("sal",), "2026-10-16", scenario("stress", delay=3)),
+            ((), "2026-10-14", scenario("stress", delay=3)),
+            (("sal",), "2026-10-16", scenario("stress", overrides=({"event_id": "sal", "on": "2026-10-20"},))),
+        ],
+        ids=["included-then-delayed", "before-snapshot-then-delayed", "included-then-moved"],
+    )
+    def test_a_reflected_inflow_is_not_counted_again_r3e_03(
+        includes: tuple[str, ...], salary_on: str, stress: Doc
+    ) -> None:
+        """R3E-03 (§12.2): the 2,000.00 salary is already in the 500.00 balance (included on the
+        snapshot day, or dated before it). A scenario that delays or moves it must not count it
+        again: both scenarios end at 500 - 400 (rent) = 100.00, and the 1,000.00 repayment on
+        11-08 (card A) is infeasible (the review saw 2,100.00 and a 'feasible' stress plan)."""
+        out = plan_from_protocol(_double_count(includes, salary_on, stress))
+>       assert _balances(out) == {"baseline": (10000, 10000), "stress": (10000, 10000)}
+E       AssertionError: assert {'baseline': ...0000, 210000)} == {'baseline': ...10000, 10000)}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'stress': (50000, 210000)} != {'stress': (10000, 10000)}
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:343: AssertionError
+_ test_a_reflected_inflow_is_not_counted_again_r3e_03[before-snapshot-then-delayed] _
+
+includes = (), salary_on = '2026-10-14'
+stress = {'scenario_id': 'stress', 'include_expected': True, 'income_delay_days': 3, 'income_scale': '1', ...}
+
+    @pytest.mark.parametrize(
+        ("includes", "salary_on", "stress"),
+        [
+            (("sal",), "2026-10-16", scenario("stress", delay=3)),
+            ((), "2026-10-14", scenario("stress", delay=3)),
+            (("sal",), "2026-10-16", scenario("stress", overrides=({"event_id": "sal", "on": "2026-10-20"},))),
+        ],
+        ids=["included-then-delayed", "before-snapshot-then-delayed", "included-then-moved"],
+    )
+    def test_a_reflected_inflow_is_not_counted_again_r3e_03(
+        includes: tuple[str, ...], salary_on: str, stress: Doc
+    ) -> None:
+        """R3E-03 (§12.2): the 2,000.00 salary is already in the 500.00 balance (included on the
+        snapshot day, or dated before it). A scenario that delays or moves it must not count it
+        again: both scenarios end at 500 - 400 (rent) = 100.00, and the 1,000.00 repayment on
+        11-08 (card A) is infeasible (the review saw 2,100.00 and a 'feasible' stress plan)."""
+        out = plan_from_protocol(_double_count(includes, salary_on, stress))
+>       assert _balances(out) == {"baseline": (10000, 10000), "stress": (10000, 10000)}
+E       AssertionError: assert {'baseline': ...0000, 210000)} == {'baseline': ...10000, 10000)}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'stress': (50000, 210000)} != {'stress': (10000, 10000)}
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:343: AssertionError
+___ test_a_reflected_inflow_is_not_counted_again_r3e_03[included-then-moved] ___
+
+includes = ('sal',), salary_on = '2026-10-16'
+stress = {'scenario_id': 'stress', 'include_expected': True, 'income_delay_days': 0, 'income_scale': '1', ...}
+
+    @pytest.mark.parametrize(
+        ("includes", "salary_on", "stress"),
+        [
+            (("sal",), "2026-10-16", scenario("stress", delay=3)),
+            ((), "2026-10-14", scenario("stress", delay=3)),
+            (("sal",), "2026-10-16", scenario("stress", overrides=({"event_id": "sal", "on": "2026-10-20"},))),
+        ],
+        ids=["included-then-delayed", "before-snapshot-then-delayed", "included-then-moved"],
+    )
+    def test_a_reflected_inflow_is_not_counted_again_r3e_03(
+        includes: tuple[str, ...], salary_on: str, stress: Doc
+    ) -> None:
+        """R3E-03 (§12.2): the 2,000.00 salary is already in the 500.00 balance (included on the
+        snapshot day, or dated before it). A scenario that delays or moves it must not count it
+        again: both scenarios end at 500 - 400 (rent) = 100.00, and the 1,000.00 repayment on
+        11-08 (card A) is infeasible (the review saw 2,100.00 and a 'feasible' stress plan)."""
+        out = plan_from_protocol(_double_count(includes, salary_on, stress))
+>       assert _balances(out) == {"baseline": (10000, 10000), "stress": (10000, 10000)}
+E       AssertionError: assert {'baseline': ...0000, 210000)} == {'baseline': ...10000, 10000)}
+E         
+E         Omitting 1 identical items, use -vv to show
+E         Differing items:
+E         {'stress': (50000, 210000)} != {'stress': (10000, 10000)}
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:343: AssertionError
+__ test_an_event_moved_before_the_snapshot_counts_on_the_snapshot_day_r3e_03 ___
+
+    def test_an_event_moved_before_the_snapshot_counts_on_the_snapshot_day_r3e_03() -> None:
+        """R3E-03 (§12.2): a scenario moves the pending 400.00 bill of 11-01 to 10-10, before the
+        snapshot of 10-16. It is not in the balance, so it is paid on the snapshot day (the review
+        saw it vanish: 500.00 at the end instead of 100.00)."""
+        bill = event("bill", "2026-11-01", -40000)
+        early = scenario("early", overrides=({"event_id": "bill", "on": "2026-10-10"},))
+        doc = document(
+            [card("A")],
+            amount=1000,
+            balance=50000,
+            events=(bill,),
+            scenarios=(scenario("baseline"), early),
+            decision="early",
+        )
+        out = plan_from_protocol(doc)
+        early_base = out["baseline"]["early"]["accounts"]["cash"]
+>       assert (early_base["min_balance"], early_base["end_balance"]) == (10000, 10000)
+E       assert (50000, 50000) == (10000, 10000)
+E         
+E         At index 0 diff: 50000 != 10000
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:365: AssertionError
+_______ test_delaying_or_shrinking_income_never_raises_a_balance_r3e_03 ________
+
+    def test_delaying_or_shrinking_income_never_raises_a_balance_r3e_03() -> None:
+        """R3E-03 property (review suggestion): a scenario that only delays expected inflows or
+        scales them down never shows a higher balance than the baseline at any checkpoint. Seeded
+        random documents from the differential generator (snapshot inclusion of same-day and
+        earlier events, timestamps, events before the snapshot)."""
+        from cardflow.planner.engine.protocol import inputs_from_protocol  # noqa: PLC0415
+    
+        ref = _reference()
+        rng = random.Random(3)
+        checked = 0
+        for _ in range(300):
+            doc = ref.gen_doc(rng)
+            if len(doc["snapshots"]) != len(doc["cash_accounts"]):
+                continue
+            inputs, scenarios, _ = inputs_from_protocol(doc)
+            base = scenarios["baseline"]
+            worse = replace(
+                base,
+                id="worse",
+                income_delay_days=rng.choice([1, 3, 7]),
+                income_scale=Decimal(rng.choice(["1", "0.5", "0"])),
+            )
+            for a in inputs.accounts:
+                start = inputs.snapshots[a.id].balance
+                b, w = _timeline_values(inputs, base, a.id), _timeline_values(inputs, worse, a.id)
+                for d in sorted(set(b) | set(w)):
+>                   assert _value(w, start, d) <= _value(b, start, d), (doc, a.id, d)
+E                   AssertionError: ({'protocol_version': '1', 'request': {'amount_minor': 1, 'currency': 'CNY', 'txn_date': '2026-02-25', 'allow_split': ...unted_minor': 0, ...}], 'pools': [{'pool_id': 'p2', 'available_minor': 12}], ...}, 'cash-0', datetime.date(2026, 4, 4))
+E                   assert 43 <= 41
+E                    +  where 43 = _value({datetime.date(2026, 3, 8): 27, datetime.date(2026, 3, 29): 27, datetime.date(2026, 3, 31): 36, datetime.date(2026, 4, 3): 41, ...}, 43, datetime.date(2026, 4, 4))
+E                    +  and   41 = _value({datetime.date(2026, 3, 8): 27, datetime.date(2026, 3, 29): 27, datetime.date(2026, 3, 31): 36, datetime.date(2026, 4, 3): 41, ...}, 43, datetime.date(2026, 4, 4))
+
+tests/engine/test_review_wave3_fixes.py:408: AssertionError
+______ test_cards_of_one_credit_account_share_its_available_credit_r3e_04 ______
+
+    def test_cards_of_one_credit_account_share_its_available_credit_r3e_04() -> None:
+        """R3E-04 (§12.3): main and supplementary card of acc-1 both show the account's 6,000.00.
+        Together they can take 6,000.00, not 12,000.00: a 10,000.00 spend is infeasible (the
+        review saw FEASIBLE_ROBUST with 6,000 + 4,000), a 6,000.00 spend fits on one card."""
+        cards = [card("main", avail=600000, account="acc-1"), card("supp", avail=600000, account="acc-1")]
+        out = plan_from_protocol(document(cards, amount=1000000, balance=10**8, split=True, max_cards=3))
+>       assert out["business_status"] == "INFEASIBLE"
+E       AssertionError: assert 'FEASIBLE_ROBUST' == 'INFEASIBLE'
+E         
+E         - INFEASIBLE
+E         + FEASIBLE_ROBUST
+
+tests/engine/test_review_wave3_fixes.py:436: AssertionError
+___________ test_the_verifier_checks_the_credit_account_layer_r3e_04 ___________
+
+    def test_the_verifier_checks_the_credit_account_layer_r3e_04() -> None:
+        """R3E-04: an allocation using both cards beyond the account's capacity is a violation."""
+        cards = [card("main", avail=600000, account="acc-1"), card("supp", avail=600000, account="acc-1")]
+        doc = document(cards, amount=1000000, balance=10**8, split=True, max_cards=3)
+        items = [{"card_id": "main", "amount_minor": 600000}, {"card_id": "supp", "amount_minor": 400000}]
+        res = verify_from_protocol(doc, items, "base")
+>       assert res["verification"]["ok"] is False
+E       assert True is False
+
+tests/engine/test_review_wave3_fixes.py:454: AssertionError
+_ test_a_pool_deducts_its_members_reservations_and_holds_r3e_04[reservations] __
+
+member = 'reservations'
+
+    @pytest.mark.parametrize("member", ["reservations", "holds"])
+    def test_a_pool_deducts_its_members_reservations_and_holds_r3e_04(member: str) -> None:
+        """R3E-04 (§12.3): pool p shows 10,000.00; card A carries 8,000.00 reserved by an adopted
+        plan (or an uncounted hold). Only 2,000.00 is left for card B in the same pool: a 10,000.00
+        spend is infeasible (the review saw B = 10,000.00)."""
+        a = card("A", pool="p", **{member: 800000})
+        b = card("B", pool="p")
+        out = plan_from_protocol(
+            document([a, b], amount=1000000, balance=10**8, pools=(("p", 1000000),), split=True, max_cards=2)
+        )
+>       assert out["business_status"] == "INFEASIBLE"
+E       AssertionError: assert 'FEASIBLE_ROBUST' == 'INFEASIBLE'
+E         
+E         - INFEASIBLE
+E         + FEASIBLE_ROBUST
+
+tests/engine/test_review_wave3_fixes.py:470: AssertionError
+_____ test_a_pool_deducts_its_members_reservations_and_holds_r3e_04[holds] _____
+
+member = 'holds'
+
+    @pytest.mark.parametrize("member", ["reservations", "holds"])
+    def test_a_pool_deducts_its_members_reservations_and_holds_r3e_04(member: str) -> None:
+        """R3E-04 (§12.3): pool p shows 10,000.00; card A carries 8,000.00 reserved by an adopted
+        plan (or an uncounted hold). Only 2,000.00 is left for card B in the same pool: a 10,000.00
+        spend is infeasible (the review saw B = 10,000.00)."""
+        a = card("A", pool="p", **{member: 800000})
+        b = card("B", pool="p")
+        out = plan_from_protocol(
+            document([a, b], amount=1000000, balance=10**8, pools=(("p", 1000000),), split=True, max_cards=2)
+        )
+>       assert out["business_status"] == "INFEASIBLE"
+E       AssertionError: assert 'FEASIBLE_ROBUST' == 'INFEASIBLE'
+E         
+E         - INFEASIBLE
+E         + FEASIBLE_ROBUST
+
+tests/engine/test_review_wave3_fixes.py:470: AssertionError
+_____ test_a_candidate_repayment_day_keeps_the_timestamp_order_r3e_05[A+B] _____
+
+cards = ['A', 'B']
+
+    @pytest.mark.parametrize("cards", [["A"], ["A", "B"]], ids=["A", "A+B"])
+    def test_a_candidate_repayment_day_keeps_the_timestamp_order_r3e_05(cards: list[str]) -> None:
+        """R3E-05 (§12.4): balance 0.10; on 11-08 +0.20 at 09:00 and -0.25 at 18:00 (timestamp
+        order: low 0.05). Card A repays 11-28, card B 11-08. B's repayment day must not switch the
+        day to the conservative order in the model only: with or without B, A = 0.03 is the plan
+        (equal margins; A has the longer buffer). The review saw INFEASIBLE with B present."""
+        all_cards = {"A": card("A", stmt=10, due_day=28, offset=0, avail=1000), "B": card("B", avail=1000)}
+        doc = document(
+            [all_cards[c] for c in cards],
+            amount=3,
+            balance=10,
+            events=TIMED,
+            scenarios=(scenario("ts", order="timestamp"),),
+            decision="ts",
+        )
+        out = plan_from_protocol(doc)
+>       assert out["business_status"] == "FEASIBLE_ROBUST"
+E       AssertionError: assert 'INFEASIBLE' == 'FEASIBLE_ROBUST'
+E         
+E         - FEASIBLE_ROBUST
+E         + INFEASIBLE
+
+tests/engine/test_review_wave3_fixes.py:505: AssertionError
+____ test_a_planned_repayment_comes_first_on_a_timestamp_ordered_day_r3e_05 ____
+
+    def test_a_planned_repayment_comes_first_on_a_timestamp_ordered_day_r3e_05() -> None:
+        """R3E-05 (§12.4): on a timestamp-ordered day the plan's repayment (no timestamp) is applied
+        first, exactly as the model subtracts it from the day's low: B = 0.03 repaid on 11-08 gives
+        0.10 -> 0.07 -> 0.27 -> 0.02 (low 0.02), feasible; model and verifier agree."""
+        b = card("B", avail=1000)
+        doc = document(
+            [b],
+            amount=3,
+            balance=10,
+            events=TIMED,
+            scenarios=(scenario("ts", order="timestamp"),),
+            decision="ts",
+        )
+        res = verify_from_protocol(doc, [{"card_id": "B", "amount_minor": 3}], "ts")
+        chk = res["verification"]["checks"]["ts"]
+>       assert (chk["ok"], chk["min_balance_by_account"]) == (True, {"cash": 2})
+E       AssertionError: assert (False, {'cash': -18}) == (True, {'cash': 2})
+E         
+E         At index 0 diff: False != True
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:526: AssertionError
+_______________ test_a_delayed_income_loses_its_timestamp_r3e_05 _______________
+
+    def test_a_delayed_income_loses_its_timestamp_r3e_05() -> None:
+        """R3E-05 (§12.4): expected salary +0.20 on 11-05 at 09:00, bill -0.15 on 11-08 at 10:00,
+        balance 0.10; the stress scenario delays income by 3 days to 11-08. The re-dated salary has
+        no timestamp, so 11-08 is ordered conservatively: low 0.10 - 0.15 = -0.05, the stress
+        baseline fails (the review saw the salary sorted first: ok, FEASIBLE_ROBUST)."""
+        events = (
+            event("sal", "2026-11-05", 20, cls="expected", at="2026-11-05T09:00:00+08:00"),
+            event("bill", "2026-11-08", -15, at="2026-11-08T10:00:00+08:00"),
+        )
+        doc = document(
+            [card("A", stmt=10, due_day=28, offset=0, avail=1000)],
+            amount=3,
+            balance=10,
+            events=events,
+            scenarios=(scenario("base", order="timestamp"), scenario("stress", order="timestamp", delay=3)),
+            decision="stress",
+        )
+        out = plan_from_protocol(doc)
+>       assert out["baseline"]["stress"]["ok"] is False
+E       assert True is False
+
+tests/engine/test_review_wave3_fixes.py:550: AssertionError
+________________ test_the_fee_is_paid_with_the_repayment_r3e_07 ________________
+
+    def test_the_fee_is_paid_with_the_repayment_r3e_07() -> None:
+        """R3E-07 (§12.6): spend 100.00 on A with 0.6% + 10.00 fee = 10.60; cash 100.00. The
+        repayment on 11-08 is 110.60, so the plan is infeasible by exactly the fee (the review saw
+        FEASIBLE_ROBUST with a minimum of 0)."""
+        out = plan_from_protocol(_fee_doc(10000))
+>       assert out["business_status"] == "INFEASIBLE"
+E       AssertionError: assert 'FEASIBLE_ROBUST' == 'INFEASIBLE'
+E         
+E         - INFEASIBLE
+E         + FEASIBLE_ROBUST
+
+tests/engine/test_review_wave3_fixes.py:568: AssertionError
+________ test_an_unusable_card_does_not_change_the_horizon_r3e_08[A+B] _________
+
+cards = ['A', 'B']
+
+    @pytest.mark.parametrize("cards", [["A", "B"], ["A"]], ids=["A+B", "A"])
+    def test_an_unusable_card_does_not_change_the_horizon_r3e_08(cards: list[str]) -> None:
+        """R3E-08 (§12.7): horizon_end 11-30. B would repay 12-28, after it: B is excluded with
+        REPAY_AFTER_HORIZON and the horizon is never extended, so the 12-15 bill stays outside and
+        the answer is the same with or without B (the review saw INFEASIBLE with B present)."""
+        out = plan_from_protocol(_horizon_doc(cards))
+>       assert out["business_status"] == "FEASIBLE_ROBUST"
+E       AssertionError: assert 'INFEASIBLE' == 'FEASIBLE_ROBUST'
+E         
+E         - FEASIBLE_ROBUST
+E         + INFEASIBLE
+
+tests/engine/test_review_wave3_fixes.py:604: AssertionError
+___ test_a_repayment_after_the_horizon_is_a_violation_in_the_verifier_r3e_08 ___
+
+    def test_a_repayment_after_the_horizon_is_a_violation_in_the_verifier_r3e_08() -> None:
+        """R3E-08: the solver-free verifier uses the same rule (no extension)."""
+        res = verify_from_protocol(_horizon_doc(["A", "B"]), [{"card_id": "B", "amount_minor": 50}], "base")
+>       assert "B: ineligible (REPAY_AFTER_HORIZON)" in res["verification"]["violations"]
+E       AssertionError: assert 'B: ineligible (REPAY_AFTER_HORIZON)' in ['amount conservation violated: 50 != 100']
+
+tests/engine/test_review_wave3_fixes.py:616: AssertionError
+___ test_every_card_after_the_horizon_is_infeasible_without_extension_r3e_08 ___
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_every_card_after_the_horizon_is_infeasible_without_extension_r3e_08(fx: Fx) -> None:
+        """R3E-08: F-18 with horizon_end 11-01, before every repayment (11-08/11-25/11-28)."""
+        inputs, scenarios, _ = fx
+        out = plan(replace(inputs, horizon_end=date(2026, 11, 1)), scenarios, "baseline")
+>       assert out.business_status == "INFEASIBLE"
+E       AssertionError: assert 'CONDITIONALLY_FEASIBLE' == 'INFEASIBLE'
+E         
+E         - INFEASIBLE
+E         + CONDITIONALLY_FEASIBLE
+
+tests/engine/test_review_wave3_fixes.py:623: AssertionError
+_______________ test_the_baseline_checks_the_global_floor_r3e_09 _______________
+
+    def test_the_baseline_checks_the_global_floor_r3e_09() -> None:
+        """R3E-09 (§12.8): two accounts of 0.50 each, global floor 1.20; on 10-20 account 'cash'
+        pays 0.01. Each account is fine, the total 0.99 is below the global floor already without
+        the new spend: BASELINE_SHORTFALL (the review saw INFEASIBLE with baseline ok)."""
+        doc = document([card("A")], amount=1, balance=50, events=(event("x", "2026-10-20", -1),), global_floor=120)
+        doc["cash_accounts"].append(dict(doc["cash_accounts"][0], cash_account_id="cash-2"))
+        doc["snapshots"].append(dict(doc["snapshots"][0], cash_account_id="cash-2"))
+        out = plan_from_protocol(doc)
+>       assert out["business_status"] == "BASELINE_SHORTFALL"
+E       AssertionError: assert 'INFEASIBLE' == 'BASELINE_SHORTFALL'
+E         
+E         - BASELINE_SHORTFALL
+E         + INFEASIBLE
+
+tests/engine/test_review_wave3_fixes.py:642: AssertionError
+__________ test_insufficient_limit_considers_every_layer_r3e_10[pool] __________
+
+changes = {'pool_id': 'p'}, pools = (('p', 500000),)
+detail = 'limited by pool p'
+
+    @pytest.mark.parametrize(
+        ("changes", "pools", "detail"),
+        [
+            ({"pool_id": "p"}, (("p", 500000),), "limited by pool p"),
+            ({"per_txn_cap_minor": 500000}, (), "limited by the per-transaction cap"),
+        ],
+        ids=["pool", "per-transaction-cap"],
+    )
+    def test_insufficient_limit_considers_every_layer_r3e_10(
+        changes: Doc, pools: tuple[tuple[str, int], ...], detail: str
+    ) -> None:
+        """R3E-10: capacity 10,000.00 >= spend 8,000.00 but the pool (or the per-transaction cap)
+        allows 5,000.00: INSUFFICIENT_LIMIT_ALONE with the binding layer, never 'DOMINATED'."""
+        doc = document([card("A", **changes)], amount=800000, balance=10**8, pools=pools)
+        out = plan_from_protocol(doc)
+        assert out["business_status"] == "INFEASIBLE"
+        (r,) = out["rejections"]
+>       assert (r["reason"], r["capacity"], r["amount"], r["detail"]) == (
+                             ^^^^^^^^^^^^^
+            "INSUFFICIENT_LIMIT_ALONE",
+            500000,
+            800000,
+            detail,
+        )
+E       KeyError: 'capacity'
+
+tests/engine/test_review_wave3_fixes.py:669: KeyError
+__ test_insufficient_limit_considers_every_layer_r3e_10[per-transaction-cap] ___
+
+changes = {'per_txn_cap_minor': 500000}, pools = ()
+detail = 'limited by the per-transaction cap'
+
+    @pytest.mark.parametrize(
+        ("changes", "pools", "detail"),
+        [
+            ({"pool_id": "p"}, (("p", 500000),), "limited by pool p"),
+            ({"per_txn_cap_minor": 500000}, (), "limited by the per-transaction cap"),
+        ],
+        ids=["pool", "per-transaction-cap"],
+    )
+    def test_insufficient_limit_considers_every_layer_r3e_10(
+        changes: Doc, pools: tuple[tuple[str, int], ...], detail: str
+    ) -> None:
+        """R3E-10: capacity 10,000.00 >= spend 8,000.00 but the pool (or the per-transaction cap)
+        allows 5,000.00: INSUFFICIENT_LIMIT_ALONE with the binding layer, never 'DOMINATED'."""
+        doc = document([card("A", **changes)], amount=800000, balance=10**8, pools=pools)
+        out = plan_from_protocol(doc)
+        assert out["business_status"] == "INFEASIBLE"
+        (r,) = out["rejections"]
+>       assert (r["reason"], r["capacity"], r["amount"], r["detail"]) == (
+                             ^^^^^^^^^^^^^
+            "INSUFFICIENT_LIMIT_ALONE",
+            500000,
+            800000,
+            detail,
+        )
+E       KeyError: 'capacity'
+
+tests/engine/test_review_wave3_fixes.py:669: KeyError
+________ test_a_minimum_part_above_the_amount_is_its_own_reason_r3e_10 _________
+
+    def test_a_minimum_part_above_the_amount_is_its_own_reason_r3e_10() -> None:
+        """R3E-10: the card's minimum part 9,000.00 exceeds the 8,000.00 spend."""
+        out = plan_from_protocol(
+            document([card("A", min_split_minor=900000)], amount=800000, balance=10**8)
+        )
+        assert out["business_status"] == "INFEASIBLE"
+>       assert out["solver_status"] == "NOT_RUN"
+E       AssertionError: assert 'INFEASIBLE' == 'NOT_RUN'
+E         
+E         - NOT_RUN
+E         + INFEASIBLE
+
+tests/engine/test_review_wave3_fixes.py:683: AssertionError
+______________ test_no_capacity_names_the_exhausted_layer_r3e_10 _______________
+
+    def test_no_capacity_names_the_exhausted_layer_r3e_10() -> None:
+        """R3E-10: NO_CAPACITY says which layer is exhausted (card, credit account or pool)."""
+        cards = [
+            card("A", avail=0),
+            card("B", pool="p"),
+            card("C", account="acc-x", avail=500, reservations=300),
+            card("D", account="acc-x", avail=500, holds=200),
+            card("E"),
+        ]
+        out = plan_from_protocol(document(cards, amount=100, balance=10**6, pools=(("p", 0),)))
+        details = {r["card_id"]: (r["reason"], r.get("detail")) for r in out["rejections"]}
+>       assert details == {
+            "A": ("NO_CAPACITY", "card"),
+            "B": ("NO_CAPACITY", "pool p"),
+            "C": ("NO_CAPACITY", "credit account acc-x"),
+            "D": ("NO_CAPACITY", "credit account acc-x"),
+        }
+E       AssertionError: assert {'A': ('NO_CA...ctive tiers')} == {'A': ('NO_CA...count acc-x')}
+E         
+E         Differing items:
+E         {'B': ('NO_CAPACITY', None)} != {'B': ('NO_CAPACITY', 'pool p')}
+E         {'A': ('NO_CAPACITY', None)} != {'A': ('NO_CAPACITY', 'card')}
+E         {'D': ('DOMINATED', 'feasible alone but scored lower on the objective tiers')} != {'D': ('NO_CAPACITY', 'credit account acc-x')}
+E         Left contains 1 more item:
+E         {'E': ('DOMINATED', 'feasible alone but scored lower on the objective tiers')}...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+
+tests/engine/test_review_wave3_fixes.py:698: AssertionError
+_________________ test_unknown_does_not_claim_dominated_r3e_10 _________________
+
+f18 = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+
+    def test_unknown_does_not_claim_dominated_r3e_10(f18: Doc) -> None:
+        """R3E-10: with no solution in time (UNKNOWN), a card that is feasible alone was never
+        compared: NOT_COMPARED, not 'scored lower on the objective tiers'."""
+        f18["snapshots"][0]["balance_minor"] = 5000000
+        f18["options"]["time_limit_s"] = 1e-9
+        out = plan_from_protocol(f18)
+        assert out["business_status"] == "UNKNOWN"
+>       assert reasons(out) == {
+            "A": "INSUFFICIENT_LIMIT_ALONE",
+            "B": "NOT_COMPARED",
+            "C": "INSUFFICIENT_LIMIT_ALONE",
+        }
+E       AssertionError: assert {'A': 'INSUFF..._LIMIT_ALONE'} == {'A': 'INSUFF..._LIMIT_ALONE'}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'B': 'DOMINATED'} != {'B': 'NOT_COMPARED'}
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:713: AssertionError
+__________ test_the_default_hash_covers_scenarios_and_options_r3e_15 ___________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_the_default_hash_covers_scenarios_and_options_r3e_15(fx: Fx) -> None:
+        """R3E-15 (a): a direct plan() call hashes data, scenarios and options; another decision
+        scenario or profile is another input."""
+        inputs, scenarios, _ = fx
+        runs = [
+            plan(inputs, scenarios, "baseline", "cash_safety", with_sensitivity=False),
+            plan(inputs, scenarios, "baseline", "fewer_cards", with_sensitivity=False),
+            plan(inputs, scenarios, "stress_income_delay", "cash_safety", with_sensitivity=False),
+            plan(inputs, scenarios, "baseline", "cash_safety", time_limit_s=5, with_sensitivity=False),
+        ]
+>       assert len({r.input_hash for r in runs}) == 4
+E       AssertionError: assert 1 == 4
+E        +  where 1 = len({'50b7df309486409ba99b4a241d7d7996669b8a1f5aa1a3e9e1062aa39c8ed24c'})
+
+tests/engine/test_review_wave3_fixes.py:733: AssertionError
+____________ test_errors_outside_modelling_are_not_disguised_r3e_15 ____________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fee66513770>
+
+    def test_errors_outside_modelling_are_not_disguised_r3e_15(
+        fx: Fx, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """R3E-15 (b) (§12.10): the fallback covers model building and solving only; a defect in
+        another phase surfaces as an exception, never as MODEL_INVALID 'outside the range'."""
+        inputs, scenarios, _ = fx
+    
+        def broken(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+            raise ValueError("defect in the rejection reasons")
+    
+        monkeypatch.setattr(plan_module, "rejection_reasons", broken)
+>       with pytest.raises(ValueError, match="defect in the rejection reasons"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/engine/test_review_wave3_fixes.py:750: Failed
+________ test_every_solver_call_ends_within_the_runs_time_limit_r3e_17 _________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fee6676b020>
+
+    def test_every_solver_call_ends_within_the_runs_time_limit_r3e_17(
+        fx: Fx, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """R3E-17 (§12.9): with time_limit_s = 2 every CP-SAT call of the run (tiers, tie-break,
+        sensitivity, 45-day search) is given a limit that ends within 2 s of the run's start (the
+        review: 5 s + 5 s + 45 x 1 s per failing scenario, unbounded)."""
+        inputs, scenarios, _ = fx
+        calls: list[tuple[float, float]] = []
+        real = allocation._solver
+    
+        def spy(time_limit_s: float, workers: int, seed: int) -> Any:  # noqa: ANN401
+            calls.append((time.monotonic(), time_limit_s))
+            return real(time_limit_s, workers, seed)
+    
+        monkeypatch.setattr(allocation, "_solver", spy)
+        started = time.monotonic()
+        out = plan(inputs, scenarios, "stress_income_delay", "cash_safety", time_limit_s=2.0)
+        assert out.business_status == "INFEASIBLE"
+        assert len(calls) > 5
+>       assert all(at + limit <= started + 2.0 + 0.05 for at, limit in calls), calls
+E       AssertionError: [(116234.948684695, 0.4), (116234.949064678, 5.0), (116234.951327818, 5.0), (116234.95384928, 1.0), (116234.954217323, 1.0), (116234.954533956, 1.0), ...]
+E       assert False
+E        +  where False = all(<generator object test_every_solver_call_ends_within_the_runs_time_limit_r3e_17.<locals>.<genexpr> at 0x7fee665ce880>)
+
+tests/engine/test_review_wave3_fixes.py:776: AssertionError
+___________ test_no_eligible_card_still_searches_a_later_date_r3e_19 ___________
+
+    def test_no_eligible_card_still_searches_a_later_date_r3e_19() -> None:
+        """R3E-19 (§12.9): card B would repay 11-08 - 25 days = 10-14, before the 10-16 purchase
+        (REPAY_BEFORE_TXN_DATE). From 10-21 the purchase belongs to the 11-20 statement (due 12-08,
+        pay 11-13): the date-shift search applies and finds 5 days; the amount-based items have no
+        card to work with."""
+        out = plan_from_protocol(document([card("B")], amount=100, balance=10**6, lead=25))
+        assert (out["business_status"], out["solver_status"]) == ("INFEASIBLE", "NOT_RUN")
+        assert reasons(out) == {"B": "REPAY_BEFORE_TXN_DATE"}
+>       sens = out["sensitivity"]["base"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'base'
+
+tests/engine/test_review_wave3_fixes.py:790: KeyError
+___________ test_fee_probe_allocation_pays_the_fee_from_cash_r3e_07 ____________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_fee_probe_allocation_pays_the_fee_from_cash_r3e_07(fx: Fx) -> None:
+        """R3E-07 (§12.6) on the T-004b probe 'fee_rate = 0.006' on card A of F-18 (the old expected
+        A 5,000 + C 5,000 assumed fee-free cash). On 11-28 the cash after both repayments is
+        13,000 - 10,000 - fee(A) = 3,000 - ceil(0.006 x_A) (in fen 300000 - ceil(0.006 x_A)), and on
+        11-25 it is 8,000 - x_C. Maximising the smaller margin gives x_C in [502834, 502983] with
+        margin 97017; fees are 2983 on that whole range; the longest buffer then takes the least
+        C: x_C = 502834, x_A = 497166."""
+        inputs, scenarios, _ = fx
+        cards = list(inputs.cards)
+        cards[0] = replace(cards[0], fee_rate=Decimal("0.006"))
+        out = plan(replace(inputs, cards=cards), scenarios, "baseline", "cash_safety", 10)
+        assert out.business_status == "CONDITIONALLY_FEASIBLE"
+>       assert out.allocation == {"A": 497166, "C": 502834}
+E       AssertionError: assert {'A': 500000, 'C': 500000} == {'A': 497166, 'C': 502834}
+E         
+E         Differing items:
+E         {'A': 500000} != {'A': 497166}
+E         {'C': 500000} != {'C': 502834}
+E         Use -v to get more diff
+
+tests/engine/test_review_wave3_fixes.py:822: AssertionError
+___ test_tied_optima_give_one_allocation_for_any_workers_r3e_06[cash_safety] ___
+
+profile = 'cash_safety'
+
+    @pytest.mark.parametrize("profile", ["cash_safety", "fewer_cards"])
+    def test_tied_optima_give_one_allocation_for_any_workers_r3e_06(profile: str) -> None:
+        """R3E-06 (§12.5): on the review's 30-card instance (4 different allocations in 20 runs
+        with 8 workers before the fix) every run, with 8 or 1 worker, returns the same outcome; the
+        allocation is the canonical one: each card, in input order, takes as much as the optimum
+        allows."""
+        outcomes = set()
+        allocations = set()
+        for workers in (8, 8, 8, 8, 1, 1):
+            out = plan_from_protocol(thirty_near_identical_cards(profile, workers))
+            assert out["business_status"] == "FEASIBLE_ROBUST"
+            outcomes.add(_outcome_key(out))
+            allocations.add(tuple((a["card_id"], a["amount_minor"]) for a in out["allocation"]))
+>       assert len(outcomes) == 1
+E       assert 3 == 1
+E        +  where 3 = len({'{"allocation": [{"alternative_cycles": [], "amount_minor": 1100, "buffer_days": 70, "card_id": "c01", "cycle_assumpt...tential_benefit": 0, "structural_ok": true, "verified_benefit": 0, "violations": [], "weighted_buffer_days": "65.9"}}'})
+
+tests/engine/test_determinism.py:191: AssertionError
+___ test_tied_optima_give_one_allocation_for_any_workers_r3e_06[fewer_cards] ___
+
+profile = 'fewer_cards'
+
+    @pytest.mark.parametrize("profile", ["cash_safety", "fewer_cards"])
+    def test_tied_optima_give_one_allocation_for_any_workers_r3e_06(profile: str) -> None:
+        """R3E-06 (§12.5): on the review's 30-card instance (4 different allocations in 20 runs
+        with 8 workers before the fix) every run, with 8 or 1 worker, returns the same outcome; the
+        allocation is the canonical one: each card, in input order, takes as much as the optimum
+        allows."""
+        outcomes = set()
+        allocations = set()
+        for workers in (8, 8, 8, 8, 1, 1):
+            out = plan_from_protocol(thirty_near_identical_cards(profile, workers))
+            assert out["business_status"] == "FEASIBLE_ROBUST"
+            outcomes.add(_outcome_key(out))
+            allocations.add(tuple((a["card_id"], a["amount_minor"]) for a in out["allocation"]))
+>       assert len(outcomes) == 1
+E       assert 2 == 1
+E        +  where 2 = len({'{"allocation": [{"alternative_cycles": [], "amount_minor": 1100, "buffer_days": 70, "card_id": "c01", "cycle_assumpt...tential_benefit": 0, "structural_ok": true, "verified_benefit": 0, "violations": [], "weighted_buffer_days": "58.4"}}'})
+
+tests/engine/test_determinism.py:191: AssertionError
+_ test_identical_cards_fill_in_input_order_r3e_06[fewer_cards-2-5000-1000-expected0] _
+
+n = 2, avail = 5000, amount = 1000, expected = {'A': 1000}
+profile = 'fewer_cards'
+
+    @pytest.mark.parametrize(
+        ("n", "avail", "amount", "expected"),
+        [
+            (2, 5000, 1000, {"A": 1000}),
+            (3, 10000, 15000, {"A": 10000, "B": 5000}),
+            (4, 10000, 30000, {"A": 10000, "B": 10000, "C": 10000}),
+        ],
+    )
+    @pytest.mark.parametrize("profile", ["cash_safety", "fewer_cards"])
+    def test_identical_cards_fill_in_input_order_r3e_06(
+        n: int, avail: int, amount: int, expected: dict[str, int], profile: str
+    ) -> None:
+        """R3E-06 (§12.5): identical cards tie on every tier; the earlier card takes the most."""
+        seen = set()
+        for workers in (8, 8, 1):
+            out = plan_from_protocol(_identical_cards(n, avail, amount, profile, workers))
+            seen.add(tuple((a["card_id"], a["amount_minor"]) for a in out["allocation"]))
+>       assert seen == {tuple(expected.items())}
+E       AssertionError: assert {(('B', 1000),)} == {(('A', 1000),)}
+E         
+E         Extra items in the left set:
+E         (('B', 1000),)
+E         Extra items in the right set:
+E         (('A', 1000),)
+E         Use -v to get more diff
+
+tests/engine/test_determinism.py:224: AssertionError
+_________ test_engine_matches_the_independent_reference_r3e_06_r3e_16 __________
+
+    def test_engine_matches_the_independent_reference_r3e_06_r3e_16() -> None:
+        """R3E-06/R3E-16: verify(solve(x)) always passes, the verifier agrees with the reference on
+        random allocations, the optimum and its canonical tie-break are the reference's, and every
+        outcome is the same with 1 and with 8 workers. Seeds are fixed (see SEEDS)."""
+        bad = Mismatches()
+        started = time.monotonic()
+        for seed in SEEDS:
+            rng = random.Random(seed)
+            for i in range(PER_SEED):
+                doc = ref.gen_doc(rng)
+                try:
+                    inputs_from_protocol(doc)
+                except ProtocolError as e:  # the generator must produce valid documents
+                    bad.add("C1 generator", seed, i, doc, str(e))
+                    continue
+                _compare_instance(
+                    doc,
+                    seed,
+                    i,
+                    bad,
+                    sensitivity=i % SENSITIVITY_EVERY == 0,
+                    determinism=i % DETERMINISM_EVERY == 0,
+                )
+            for j in range(PER_SEED):
+                _compare_verifier(ref.gen_doc(rng), rng, seed, j, bad)
+        elapsed = time.monotonic() - started
+        summary = {
+            "seeds": SEEDS,
+            "instances_per_seed": PER_SEED,
+            "fuzz": FUZZ,
+            "elapsed_s": round(elapsed, 1),
+            "stats": dict(sorted(bad.stats.items())),
+        }
+        sys.stdout.write(f"\ndifferential summary: {json.dumps(summary, ensure_ascii=False)}\n")
+>       assert bad.found == [], json.dumps(bad.found[:2], ensure_ascii=False, default=str)[:6000]
+E       AssertionError: [{"check": "C4 no eligible", "seed": 20261017, "i": 0, "detail": ["FEASIBLE_ROBUST", {"B": "CURRENCY_NOT_SUPPORTED"}], "doc": {"protocol_version": "1", "request": {"amount_minor": 2, "currency": "CNY", "txn_date": "2026-05-24", "allow_split": false, "max_cards": 4, "min_split_minor": 1, "payment_lead_days": 3, "channel": "pos"}, "cards": [{"card_id": "A", "credit_account_id": "acc-A", "raw_available_minor": 21, "holds_uncounted_minor": 0, "reservations_minor": 5, "billing_rule": {"rule_id": "rA", "statement_day": 2, "statement_day_inclusive": false, "due": {"kind": "fixed_day", "day": 30, "month_offset": 2}, "holiday_rollover": "none"}, "repay_from_cash_account_id": "cash-0", "channel_ok": true, "currency_ok": true, "status_ok": true, "fee_rate": "0", "fee_fixed_minor": 0, "verified_benefit_rate": "0", "potential_benefit_rate": "0.5", "posting_delay_min_days": 0, "posting_delay_max_days": 0}, {"card_id": "B", "credit_account_id": "acc-B", "raw_available_minor": 29, "holds_uncounted_minor": 0, "reservations_minor": 2, "billing_rule": {"rule_id": "rB", "statement_day": 7, "statement_day_inclusive": true, "due": {"kind": "fixed_day", "day": 17, "month_offset": 0}, "holiday_rollover": "none"}, "repay_from_cash_account_id": "cash-0", "channel_ok": true, "currency_ok": false, "status_ok": true, "fee_rate": "0", "fee_fixed_minor": 1, "verified_benefit_rate": "0.33333", "potential_benefit_rate": "0.05", "posting_delay_min_days": 0, "posting_delay_max_days": 0, "pool_id": "p2", "min_split_minor": 18}], "pools": [{"pool_id": "p2", "available_minor": -1}], "cash_accounts": [{"cash_account_id": "cash-0", "currency": "CNY", "reserve_floor_minor": 0, "usable_for_repayment": true}], "snapshots": [{"cash_account_id": "cash-0", "balance_minor": 43, "as_of": "2026-05-22", "includes_event_ids": []}], "events": [{"event_id": "e0", "cash_account_id": "cash-0", "on": "2026-08-02", "amount_minor": -9, "cls": "confirmed", "category": "bill"}, {"event_id": "e1", "cash_account_id": "cash-0", "on": "2026-06-10", "amount_minor": -6, "cls": "expected", "category": "income"}, {"event_id": "e2", "cash_account_id": "cash-0", "on": "2026-06-05", "amount_minor": -3, "cls": "expected", "category": "bill"}, {"event_id": "e3", "cash_account_id": "cash-0", "on": "2026-07-04", "amount_minor": -6, "cls": "confirmed", "category": "fee"}, {"event_id": "e4", "cash_account_id": "cash-0", "on": "2026-06-09", "amount_minor": -6, "cls": "confirmed", "category": "living"}, {"event_id": "e5", "cash_account_id": "cash-0", "on": "2026-06-26", "amount_minor": -10, "cls": "confirmed", "category": "bill"}, {"event_id": "e6", "cash_account_id": "cash-0", "on": "2026-07-03", "amount_minor": 2, "cls": "confirmed", "category": "living"}, {"event_id": "e7", "cash_account_id": "cash-0", "on": "2026-06-08", "amount_minor": 14, "cls": "expected", "category": "fee"}, {"event_id": "e8", "cash_account_id": "cash-0", "on": "2026-05-29", "amount_minor": 1, "cls": "confirmed", "category": "income"}, {"event_id": "e9", "cash_account_id": "cash-0", "on": "2026-07-03", "amount_minor": -2, "cls": "confirmed", "category": "bill"}], "scenarios": [{"scenario_id": "confirmed", "include_expected": false, "income_delay_days": 0, "income_scale": "1", "expense_scale": "1", "event_overrides": [], "same_day_order": "conservative"}, {"scenario_id": "baseline", "include_expected": true, "income_delay_days": 0, "income_scale": "1", "expense_scale": "1", "event_overrides": [], "same_day_order": "conservative"}, {"scenario_id": "stress0", "include_expected": true, "income_delay_days": 3, "income_scale": "0.33", "expense_scale": "2", "event_overrides": [{"event_id": "e6", "on": "2026-07-05"}, {"event_id": "e0", "on": "2026-07-28"}, {"event_id": "e2", "on": "2026-05-29"}], "same_day_order": "conservative"}, {"scenario_id": "stress1", "include_expected": true, "income_delay_days": 0, "income_scale": "1", "expense_scale": "2", "event_overrides": [{"event_id": "e5", "amount_minor": 5}, {"event_id": "e7", "amount_minor": 8}, {"event_id": "e8", "on": "2026-05-29", "amount_minor": 7}], "same_day_order": "conservative"}], "horizon_end": "2026-07-24", "options": {"profile": "verified_benefit", "decision_scenario": "baseline", "time_limit_s": 10, "workers": 1, "seed": 0, "stale_after_days": 7, "global_reserve_floor_minor": 0}}}, {"check": "C9 scenario check", "seed": 20261017, "i": 1, "detail": ["confirmed", {"ok": true, "ok_zero": true, "min_balance_by_account": {"cash-0": 20, "cash-1": 25}, "min_on_by_account": {"cash-0": "2026-09-26", "cash-1": "2026-10-02"}, "end_balance_by_account": {"cash-0": 33, "cash-1": 36}, "breaches": [], "first_breach": null, "global_breaches": [], "assumptions": []}, "Check(ok=True, min_balance={'cash-0': 20, 'cash-1': 23}, breaches=[], global_breaches=[])"], "doc": {"protocol_version": "1", "request": {"amount_minor": 12, "currency": "CNY", "txn_date": "2026-09-26", "allow_split": true, "max_cards": 1, "min_split_minor": 3, "payment_lead_days": 0, "channel": "pos"}, "cards": [{"card_id": "A", "credit_account_id": "acc-A", "raw_available_minor": 27, "holds_uncounted_minor": 1, "reservations_minor": 0, "billing_rule": {"rule_id": "rA", "statement_day": 27, "statement_day_inclusive": false, "due": {"kind": "fixed_day", "day": 2, "month_offset": 1}, "holiday_rollover": "none"}, "repay_from_cash_account_id": "cash-1", "channel_ok": true, "currency_ok": true, "status_ok": true, "fee_rate": "0", "fee_fixed_minor": 2, "verified_benefit_rate": "0", "potential_benefit_rate": "0.05", "posting_delay_min_days": 0, "posting_delay_max_days": 0, "per_txn_cap_minor": 12}], "pools": [], "cash_accounts": [{"cash_account_id": "cash-0", "currency": "CNY", "reserve_floor_minor": 1, "usable_for_repayment": true}, {"cash_account_id": "cash-1", "currency": "CNY", "reserve_floor_minor": 0, "usable_for_repayment": true}], "snapshots": [{"cash_account_id": "cash-0", "balance_minor": 20, "as_of": "2026-09-26", "includes_event_ids": ["e6"]}, {"cash_account_id": "cash-1", "balance_mi
+E       assert [{'check': 'C...}], ...}, ...] == []
+E         
+E         Left contains 8 more items, first extra item: {'check': 'C4 no eligible', 'seed': 20261017, 'i': 0, 'detail': ['FEASIBLE_ROBUST', {'B': 'CURRENCY_NOT_SUPPORTED'}], ...}
+E         Use -v to get more diff
+
+tests/engine/test_differential.py:314: AssertionError
+___ test_review_nondeterministic_sensitivity_is_reproducible_r3e_06[105-10] ____
+
+seed = 105, index = 10, ts_rate = 0.25
+
+    @pytest.mark.parametrize(("seed", "index", "ts_rate"), REVIEW_INSTANCES, ids=["105-10", "203-200"])
+    def test_review_nondeterministic_sensitivity_is_reproducible_r3e_06(
+        seed: int, index: int, ts_rate: float
+    ) -> None:
+        """R3E-06: the review's nondeterministic sensitivity instances now give one outcome, with 8
+        and with 1 worker, equal to the reference's canonical sensitivity allocations."""
+        rng = random.Random(seed)
+        doc = [ref.gen_review_doc(rng, timestamp_rate=ts_rate) for _ in range(index + 1)][index]
+        outcomes = set()
+        for workers in (8, 8, 8, 8, 8, 1, 1):
+            d = copy.deepcopy(doc)
+            d["options"]["workers"] = workers
+            outcomes.add(stable(plan_from_protocol(d)))
+        assert len(outcomes) == 1
+        out = json.loads(outcomes.pop())
+        exp = ref.expected(doc)
+        assert out["business_status"] == exp.status == "INFEASIBLE"
+        decision = doc["options"]["decision_scenario"]
+        sc = next(s for s in doc["scenarios"] if s["scenario_id"] == decision)
+        sens = out["sensitivity"][decision]
+        want_extra = ref.min_extra_cash(doc, sc, exp.cards)
+        assert {k: sens["min_extra_confirmed_cash"][k] for k in want_extra} == want_extra
+        want_max = ref.max_affordable(doc, sc, exp.cards)
+>       assert {k: sens["max_affordable_amount"][k] for k in want_max} == want_max
+E       AssertionError: assert {'status': 'O...on': {'A': 4}} == {'status': 'O...on': {'D': 4}}
+E         
+E         Omitting 2 identical items, use -vv to show
+E         Differing items:
+E         {'allocation': {'A': 4}} != {'allocation': {'D': 4}}
+E         Use -v to get more diff
+
+tests/engine/test_differential.py:350: AssertionError
+___ test_review_nondeterministic_sensitivity_is_reproducible_r3e_06[203-200] ___
+
+seed = 203, index = 200, ts_rate = 1.0
+
+    @pytest.mark.parametrize(("seed", "index", "ts_rate"), REVIEW_INSTANCES, ids=["105-10", "203-200"])
+    def test_review_nondeterministic_sensitivity_is_reproducible_r3e_06(
+        seed: int, index: int, ts_rate: float
+    ) -> None:
+        """R3E-06: the review's nondeterministic sensitivity instances now give one outcome, with 8
+        and with 1 worker, equal to the reference's canonical sensitivity allocations."""
+        rng = random.Random(seed)
+        doc = [ref.gen_review_doc(rng, timestamp_rate=ts_rate) for _ in range(index + 1)][index]
+        outcomes = set()
+        for workers in (8, 8, 8, 8, 8, 1, 1):
+            d = copy.deepcopy(doc)
+            d["options"]["workers"] = workers
+            outcomes.add(stable(plan_from_protocol(d)))
+>       assert len(outcomes) == 1
+E       assert 2 == 1
+E        +  where 2 = len({'{"allocation": [], "assumptions": [], "baseline": {"baseline": {"accounts": {"cash-0": {"breaches": [], "end_balance...me": "min_margin", "sense": "max", "status": "INFEASIBLE", "value": null}], "time_limit_s": 10, "verification": null}'})
+
+tests/engine/test_differential.py:340: AssertionError
+__________ test_a_rejected_solution_is_only_in_the_diagnostics_r3e_02 __________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fee665dc7c0>
+
+    def test_a_rejected_solution_is_only_in_the_diagnostics_r3e_02(
+        runner: ModuleType, registry: Registry, plan_input: Doc, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """R3E-02 (§12.1): MODEL_INVALID (verifier rejection) -> allocation [] and verification
+        null; the rejected lines and their verification are under diagnostics."""
+        _rejecting_verify(monkeypatch)
+        out = plan_from_protocol(plan_input)
+        assert out["business_status"] == "MODEL_INVALID"
+>       assert out["allocation"] == []
+E       AssertionError: assert [{'card_id': ...-11-25', ...}] == []
+E         
+E         Left contains 2 more items, first extra item: {'card_id': 'A', 'amount_minor': 800000, 'statement_date': '2026-11-10', 'due_date': '2026-11-28', ...}
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:79: AssertionError
+___ test_the_schema_refuses_an_allocation_outside_actionable_statuses_r3e_02 ___
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+
+    def test_the_schema_refuses_an_allocation_outside_actionable_statuses_r3e_02(
+        runner: ModuleType, registry: Registry, plan_input: Doc
+    ) -> None:
+        """R3E-02: PlanOutcome.schema.json ties allocation/verification/diagnostics to the status."""
+        ok = plan_from_protocol(plan_input)
+>       assert ok["diagnostics"] is None
+               ^^^^^^^^^^^^^^^^^
+E       KeyError: 'diagnostics'
+
+tests/protocol/test_review_wave3_protocol.py:94: KeyError
+_____ test_cards_of_one_credit_account_report_one_available_credit_r3e_04 ______
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+
+    def test_cards_of_one_credit_account_report_one_available_credit_r3e_04(
+        runner: ModuleType, registry: Registry, plan_input: Doc
+    ) -> None:
+        """R3E-04 (§12.3): cards sharing credit_account_id carry the account's available credit
+        (one value) and the same pool; otherwise ProtocolError. Schema cannot express it."""
+        doc = _two_cards_of_one_account(plan_input)
+        assert _accepted(runner, registry, doc) == (True, True)
+        differs = _set(doc, ("cards", 1, "raw_available_minor"), 1)
+>       assert _accepted(runner, registry, differs) == (True, False)
+E       assert (True, True) == (True, False)
+E         
+E         At index 1 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:123: AssertionError
+_ test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored0-0.006] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+stored = Decimal('0.0060000000'), text = '0.006'
+
+    @pytest.mark.parametrize(
+        ("stored", "text"),
+        [
+            (Decimal("0.0060000000"), "0.006"),
+            (Decimal("0E-10"), "0"),
+            (Decimal("1.0000000000"), "1"),
+            (Decimal("0.12345"), "0.12345"),
+            (Decimal("6E-3"), "0.006"),
+        ],
+    )
+    def test_numeric_rates_from_the_database_enter_the_protocol_r3e_11(
+        plan_input: Doc, stored: Decimal, text: str
+    ) -> None:
+        """R3E-11: NUMERIC(20,10) values (ADR-008) are written in the canonical form (no trailing
+        zeros, '0' and '1' for the limits), so they are accepted and hash like the plain value."""
+        inputs, scenarios, options = inputs_from_protocol(plan_input)
+        cards = [replace(inputs.cards[0], fee_rate=stored), *inputs.cards[1:]]
+>       doc = inputs_to_protocol(replace(inputs, cards=cards), scenarios, options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/protocol/test_review_wave3_protocol.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/protocol.py:930: in inputs_to_protocol
+    "cards": [card(c, f"/cards/{i}") for i, c in enumerate(inputs.cards)],
+              ^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/protocol.py:852: in card
+    "fee_rate": _decimal_text(c.fee_rate, f"{path}/fee_rate"),
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = Decimal('0.0060000000'), path = '/cards/0/fee_rate'
+pattern = re.compile('0(\\.[0-9]{1,5})?|1(\\.0{1,5})?')
+
+    def _decimal_text(value: Decimal, path: str, pattern: re.Pattern[str] = _RATE) -> str:
+        text = format(value, "f")
+        if not pattern.fullmatch(text):
+>           raise ProtocolError(path, f"{value!r} is outside the v1 range for this field")
+E           cardflow.planner.engine.protocol.ProtocolError: /cards/0/fee_rate: Decimal('0.0060000000') is outside the v1 range for this field
+
+cardflow/planner/engine/protocol.py:805: ProtocolError
+__ test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored1-0] ___
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+stored = Decimal('0E-10'), text = '0'
+
+    @pytest.mark.parametrize(
+        ("stored", "text"),
+        [
+            (Decimal("0.0060000000"), "0.006"),
+            (Decimal("0E-10"), "0"),
+            (Decimal("1.0000000000"), "1"),
+            (Decimal("0.12345"), "0.12345"),
+            (Decimal("6E-3"), "0.006"),
+        ],
+    )
+    def test_numeric_rates_from_the_database_enter_the_protocol_r3e_11(
+        plan_input: Doc, stored: Decimal, text: str
+    ) -> None:
+        """R3E-11: NUMERIC(20,10) values (ADR-008) are written in the canonical form (no trailing
+        zeros, '0' and '1' for the limits), so they are accepted and hash like the plain value."""
+        inputs, scenarios, options = inputs_from_protocol(plan_input)
+        cards = [replace(inputs.cards[0], fee_rate=stored), *inputs.cards[1:]]
+>       doc = inputs_to_protocol(replace(inputs, cards=cards), scenarios, options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/protocol/test_review_wave3_protocol.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/protocol.py:930: in inputs_to_protocol
+    "cards": [card(c, f"/cards/{i}") for i, c in enumerate(inputs.cards)],
+              ^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/protocol.py:852: in card
+    "fee_rate": _decimal_text(c.fee_rate, f"{path}/fee_rate"),
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = Decimal('0E-10'), path = '/cards/0/fee_rate'
+pattern = re.compile('0(\\.[0-9]{1,5})?|1(\\.0{1,5})?')
+
+    def _decimal_text(value: Decimal, path: str, pattern: re.Pattern[str] = _RATE) -> str:
+        text = format(value, "f")
+        if not pattern.fullmatch(text):
+>           raise ProtocolError(path, f"{value!r} is outside the v1 range for this field")
+E           cardflow.planner.engine.protocol.ProtocolError: /cards/0/fee_rate: Decimal('0E-10') is outside the v1 range for this field
+
+cardflow/planner/engine/protocol.py:805: ProtocolError
+__ test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored2-1] ___
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+stored = Decimal('1.0000000000'), text = '1'
+
+    @pytest.mark.parametrize(
+        ("stored", "text"),
+        [
+            (Decimal("0.0060000000"), "0.006"),
+            (Decimal("0E-10"), "0"),
+            (Decimal("1.0000000000"), "1"),
+            (Decimal("0.12345"), "0.12345"),
+            (Decimal("6E-3"), "0.006"),
+        ],
+    )
+    def test_numeric_rates_from_the_database_enter_the_protocol_r3e_11(
+        plan_input: Doc, stored: Decimal, text: str
+    ) -> None:
+        """R3E-11: NUMERIC(20,10) values (ADR-008) are written in the canonical form (no trailing
+        zeros, '0' and '1' for the limits), so they are accepted and hash like the plain value."""
+        inputs, scenarios, options = inputs_from_protocol(plan_input)
+        cards = [replace(inputs.cards[0], fee_rate=stored), *inputs.cards[1:]]
+>       doc = inputs_to_protocol(replace(inputs, cards=cards), scenarios, options)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/protocol/test_review_wave3_protocol.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/protocol.py:930: in inputs_to_protocol
+    "cards": [card(c, f"/cards/{i}") for i, c in enumerate(inputs.cards)],
+              ^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/protocol.py:852: in card
+    "fee_rate": _decimal_text(c.fee_rate, f"{path}/fee_rate"),
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+value = Decimal('1.0000000000'), path = '/cards/0/fee_rate'
+pattern = re.compile('0(\\.[0-9]{1,5})?|1(\\.0{1,5})?')
+
+    def _decimal_text(value: Decimal, path: str, pattern: re.Pattern[str] = _RATE) -> str:
+        text = format(value, "f")
+        if not pattern.fullmatch(text):
+>           raise ProtocolError(path, f"{value!r} is outside the v1 range for this field")
+E           cardflow.planner.engine.protocol.ProtocolError: /cards/0/fee_rate: Decimal('1.0000000000') is outside the v1 range for this field
+
+cardflow/planner/engine/protocol.py:805: ProtocolError
+____ test_only_canonical_rates_and_factors_are_valid_r3e_11[path0-0.00600] _____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '0.00600'
+
+    @pytest.mark.parametrize(
+        ("path", "value"),
+        [
+            (("cards", 0, "fee_rate"), "0.00600"),
+            (("cards", 0, "fee_rate"), "0.0"),
+            (("cards", 0, "fee_rate"), "1.0"),
+            (("cards", 0, "fee_rate"), "1.00000"),
+            (("cards", 0, "fee_rate"), "0."),
+            (("scenarios", 0, "income_scale"), "1.0"),
+            (("scenarios", 0, "expense_scale"), "10.0000000000"),
+            (("scenarios", 0, "expense_scale"), "01"),
+        ],
+    )
+    def test_only_canonical_rates_and_factors_are_valid_r3e_11(
+        runner: ModuleType, registry: Registry, plan_input: Doc, path: tuple[str | int, ...], value: str
+    ) -> None:
+        """R3E-11: one value, one text: '0.006' is valid, '0.00600' is not (schema and adapter),
+        so equal rates always give equal input hashes."""
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:182: AssertionError
+______ test_only_canonical_rates_and_factors_are_valid_r3e_11[path1-0.0] _______
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '0.0'
+
+    @pytest.mark.parametrize(
+        ("path", "value"),
+        [
+            (("cards", 0, "fee_rate"), "0.00600"),
+            (("cards", 0, "fee_rate"), "0.0"),
+            (("cards", 0, "fee_rate"), "1.0"),
+            (("cards", 0, "fee_rate"), "1.00000"),
+            (("cards", 0, "fee_rate"), "0."),
+            (("scenarios", 0, "income_scale"), "1.0"),
+            (("scenarios", 0, "expense_scale"), "10.0000000000"),
+            (("scenarios", 0, "expense_scale"), "01"),
+        ],
+    )
+    def test_only_canonical_rates_and_factors_are_valid_r3e_11(
+        runner: ModuleType, registry: Registry, plan_input: Doc, path: tuple[str | int, ...], value: str
+    ) -> None:
+        """R3E-11: one value, one text: '0.006' is valid, '0.00600' is not (schema and adapter),
+        so equal rates always give equal input hashes."""
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:182: AssertionError
+______ test_only_canonical_rates_and_factors_are_valid_r3e_11[path2-1.0] _______
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '1.0'
+
+    @pytest.mark.parametrize(
+        ("path", "value"),
+        [
+            (("cards", 0, "fee_rate"), "0.00600"),
+            (("cards", 0, "fee_rate"), "0.0"),
+            (("cards", 0, "fee_rate"), "1.0"),
+            (("cards", 0, "fee_rate"), "1.00000"),
+            (("cards", 0, "fee_rate"), "0."),
+            (("scenarios", 0, "income_scale"), "1.0"),
+            (("scenarios", 0, "expense_scale"), "10.0000000000"),
+            (("scenarios", 0, "expense_scale"), "01"),
+        ],
+    )
+    def test_only_canonical_rates_and_factors_are_valid_r3e_11(
+        runner: ModuleType, registry: Registry, plan_input: Doc, path: tuple[str | int, ...], value: str
+    ) -> None:
+        """R3E-11: one value, one text: '0.006' is valid, '0.00600' is not (schema and adapter),
+        so equal rates always give equal input hashes."""
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:182: AssertionError
+____ test_only_canonical_rates_and_factors_are_valid_r3e_11[path3-1.00000] _____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '1.00000'
+
+    @pytest.mark.parametrize(
+        ("path", "value"),
+        [
+            (("cards", 0, "fee_rate"), "0.00600"),
+            (("cards", 0, "fee_rate"), "0.0"),
+            (("cards", 0, "fee_rate"), "1.0"),
+            (("cards", 0, "fee_rate"), "1.00000"),
+            (("cards", 0, "fee_rate"), "0."),
+            (("scenarios", 0, "income_scale"), "1.0"),
+            (("scenarios", 0, "expense_scale"), "10.0000000000"),
+            (("scenarios", 0, "expense_scale"), "01"),
+        ],
+    )
+    def test_only_canonical_rates_and_factors_are_valid_r3e_11(
+        runner: ModuleType, registry: Registry, plan_input: Doc, path: tuple[str | int, ...], value: str
+    ) -> None:
+        """R3E-11: one value, one text: '0.006' is valid, '0.00600' is not (schema and adapter),
+        so equal rates always give equal input hashes."""
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:182: AssertionError
+______ test_only_canonical_rates_and_factors_are_valid_r3e_11[path5-1.0] _______
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('scenarios', 0, 'income_scale'), value = '1.0'
+
+    @pytest.mark.parametrize(
+        ("path", "value"),
+        [
+            (("cards", 0, "fee_rate"), "0.00600"),
+            (("cards", 0, "fee_rate"), "0.0"),
+            (("cards", 0, "fee_rate"), "1.0"),
+            (("cards", 0, "fee_rate"), "1.00000"),
+            (("cards", 0, "fee_rate"), "0."),
+            (("scenarios", 0, "income_scale"), "1.0"),
+            (("scenarios", 0, "expense_scale"), "10.0000000000"),
+            (("scenarios", 0, "expense_scale"), "01"),
+        ],
+    )
+    def test_only_canonical_rates_and_factors_are_valid_r3e_11(
+        runner: ModuleType, registry: Registry, plan_input: Doc, path: tuple[str | int, ...], value: str
+    ) -> None:
+        """R3E-11: one value, one text: '0.006' is valid, '0.00600' is not (schema and adapter),
+        so equal rates always give equal input hashes."""
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:182: AssertionError
+_ test_only_canonical_rates_and_factors_are_valid_r3e_11[path6-10.0000000000] __
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('scenarios', 0, 'expense_scale'), value = '10.0000000000'
+
+    @pytest.mark.parametrize(
+        ("path", "value"),
+        [
+            (("cards", 0, "fee_rate"), "0.00600"),
+            (("cards", 0, "fee_rate"), "0.0"),
+            (("cards", 0, "fee_rate"), "1.0"),
+            (("cards", 0, "fee_rate"), "1.00000"),
+            (("cards", 0, "fee_rate"), "0."),
+            (("scenarios", 0, "income_scale"), "1.0"),
+            (("scenarios", 0, "expense_scale"), "10.0000000000"),
+            (("scenarios", 0, "expense_scale"), "01"),
+        ],
+    )
+    def test_only_canonical_rates_and_factors_are_valid_r3e_11(
+        runner: ModuleType, registry: Registry, plan_input: Doc, path: tuple[str | int, ...], value: str
+    ) -> None:
+        """R3E-11: one value, one text: '0.006' is valid, '0.00600' is not (schema and adapter),
+        so equal rates always give equal input hashes."""
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:182: AssertionError
+_____________ test_the_engine_hash_of_equal_rates_is_equal_r3e_11 ______________
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+
+    def test_the_engine_hash_of_equal_rates_is_equal_r3e_11(plan_input: Doc) -> None:
+        """R3E-11: the engine-internal hashes do not depend on the Decimal's exponent either."""
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_review_wave3_protocol.py:187: ImportError
+_ test_protocol_errors_never_echo_the_value_r3e_12[path2-123456789-123456789] __
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('events', 0, 'cls'), value = 123456789, secret = '123456789'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /events/0/cls: 123456789 is not one of ['confirmed', 'expected', 'planned']
+E       assert '123456789' not in "/events/0/c..., 'planned']"
+E         
+E         '123456789' is contained here:
+E           /events/0/cls: 123456789 is not one of ['confirmed', 'expected', 'planned']
+E         ?                +++++++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+___ test_protocol_errors_never_echo_the_value_r3e_12[path3-value3-98765432] ____
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('options', 'profile'), value = {'balance_minor': 98765432}
+secret = '98765432'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /options/profile: {'balance_minor': 98765432} is not one of ['cash_safety', 'verified_benefit', 'fewer_cards']
+E       assert '98765432' not in "/options/pr...ewer_cards']"
+E         
+E         '98765432' is contained here:
+E           /options/profile: {'balance_minor': 98765432} is not one of ['cash_safety', 'verified_benefit', 'fewer_cards']
+E         ?                                     ++++++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+__ test_protocol_errors_never_echo_the_value_r3e_12[path4-31415926-31415926] ___
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('protocol_version',), value = 31415926, secret = '31415926'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /protocol_version: unsupported protocol_version 31415926 (expected '1')
+E       assert '31415926' not in "/protocol_v...xpected '1')"
+E         
+E         '31415926' is contained here:
+E           l_version 31415926 (expected '1')
+E         ?           ++++++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+___ test_protocol_errors_never_echo_the_value_r3e_12[path5-98765.4321-98765] ___
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('options', 'time_limit_s'), value = 98765.4321, secret = '98765'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /options/time_limit_s: 98765.4321 is outside (0, 3600]
+E       assert '98765' not in '/options/ti...de (0, 3600]'
+E         
+E         '98765' is contained here:
+E           /options/time_limit_s: 98765.4321 is outside (0, 3600]
+E         ?                        +++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+_ test_protocol_errors_never_echo_the_value_r3e_12[path6-6222 0212 3456 7890-6222] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'card_id'), value = '6222 0212 3456 7890', secret = '6222'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /cards/0/card_id: '6222 0212 3456 7890' is not a valid id
+E       assert '6222' not in '/cards/0/ca...t a valid id'
+E         
+E         '6222' is contained here:
+E           /cards/0/card_id: '6222 0212 3456 7890' is not a valid id
+E         ?                    ++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+___ test_protocol_errors_never_echo_the_value_r3e_12[path7-RMB-12345-12345] ____
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('request', 'currency'), value = 'RMB-12345', secret = '12345'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /request/currency: 'RMB-12345' is not a valid ISO 4217 currency code
+E       assert '12345' not in '/request/cu...urrency code'
+E         
+E         '12345' is contained here:
+E           /request/currency: 'RMB-12345' is not a valid ISO 4217 currency code
+E         ?                         +++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+___ test_protocol_errors_never_echo_the_value_r3e_12[path8-0.123456-123456] ____
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '0.123456', secret = '123456'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /cards/0/fee_rate: '0.123456' is not a rate (decimal string 0..1, at most 5 decimals)
+E       assert '123456' not in '/cards/0/fe... 5 decimals)'
+E         
+E         '123456' is contained here:
+E           /cards/0/fee_rate: '0.123456' is not a rate (decimal string 0..1, at most 5 decimals)
+E         ?                       ++++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+_ test_protocol_errors_never_echo_the_value_r3e_12[path9-2026-02-30-2026-02-30] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('request', 'txn_date'), value = '2026-02-30', secret = '2026-02-30'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /request/txn_date: '2026-02-30' is not a valid date: day is out of range for month
+E       assert '2026-02-30' not in '/request/tx...ge for month'
+E         
+E         '2026-02-30' is contained here:
+E           /request/txn_date: '2026-02-30' is not a valid date: day is out of range for month
+E         ?                     ++++++++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+__ test_protocol_errors_never_echo_the_value_r3e_12[path10-1999-99-99-99-99] ___
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('request', 'txn_date'), value = '1999-99-99', secret = '99-99'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /request/txn_date: '1999-99-99' is not a valid date: month must be in 1..12
+E       assert '99-99' not in '/request/tx... be in 1..12'
+E         
+E         '99-99' is contained here:
+E           /request/txn_date: '1999-99-99' is not a valid date: month must be in 1..12
+E         ?                      +++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+_ test_protocol_errors_never_echo_the_value_r3e_12[path11-2026-10-16T09:00:00+99:00-99:00] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('snapshots', 0, 'observed_at'), value = '2026-10-16T09:00:00+99:00'
+secret = '99:00'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /snapshots/0/observed_at: '2026-10-16T09:00:00+99:00' is not a valid timestamp: offset must be a timedelta strictly between -timedelta(hours=24) and timedelta(hours=24), not datetime.timedelta(days=4, seconds=10800).
+E       assert '99:00' not in '/snapshots/...onds=10800).'
+E         
+E         '99:00' is contained here:
+E           T09:00:00+99:00' is not a valid timestamp: offset must be a timedelta strictly between -timedelta(hours=24) and timedelta(hours=24), not datetime.timedelta(days=4, seconds=10800).
+E         ?           +++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+_ test_protocol_errors_never_echo_the_value_r3e_12[path12-acct-998877-998877] __
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'repay_from_cash_account_id'), value = 'acct-998877'
+secret = '998877'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /cards/0/repay_from_cash_account_id: unknown cash account 'acct-998877'
+E       assert '998877' not in "/cards/0/re...acct-998877'"
+E         
+E         '998877' is contained here:
+E           unt 'acct-998877'
+E         ?           ++++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+__ test_protocol_errors_never_echo_the_value_r3e_12[path13-value13-77665544] ___
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('snapshots', 0, 'includes_event_ids'), value = ['e77665544']
+secret = '77665544'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /snapshots/0/includes_event_ids/0: 'e77665544' is not an event of cash account 'cash-main'
+E       assert '77665544' not in "/snapshots/... 'cash-main'"
+E         
+E         '77665544' is contained here:
+E           /snapshots/0/includes_event_ids/0: 'e77665544' is not an event of cash account 'cash-main'
+E         ?                                      ++++++++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+_ test_protocol_errors_never_echo_the_value_r3e_12[path14-e55443322-55443322] __
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('scenarios', 2, 'event_overrides', 0, 'event_id'), value = 'e55443322'
+secret = '55443322'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /scenarios/2/event_overrides/0/event_id: unknown event 'e55443322'
+E       assert '55443322' not in "/scenarios/... 'e55443322'"
+E         
+E         '55443322' is contained here:
+E           n event 'e55443322'
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+_______ test_protocol_errors_never_echo_the_value_r3e_12[path15-USD-USD] _______
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cash_accounts', 0, 'currency'), value = 'USD', secret = 'USD'
+
+    @pytest.mark.parametrize(("path", "value", "secret"), ECHO)
+    def test_protocol_errors_never_echo_the_value_r3e_12(
+        plan_input: Doc, path: tuple[str | int, ...], value: object, secret: str
+    ) -> None:
+        """R3E-12: a ProtocolError names the JSON Pointer and the rule broken, no part of the value
+        (a full card number in card_id, an amount in an enum field, dates, ids)."""
+        with pytest.raises(ProtocolError) as caught:
+            inputs_from_protocol(_set(plan_input, path, value))
+>       assert secret not in str(caught.value), str(caught.value)
+E       AssertionError: /cash_accounts/0/currency: USD differs from the request currency CNY (protocol v1 plans are single-currency)
+E       assert 'USD' not in '/cash_accou...le-currency)'
+E         
+E         'USD' is contained here:
+E           /cash_accounts/0/currency: USD differs from the request currency CNY (protocol v1 plans are single-currency)
+E         ?                            +++
+
+tests/protocol/test_review_wave3_protocol.py:232: AssertionError
+______ test_strict_json_errors_never_echo_the_value_r3e_12[duplicate-key] ______
+
+text = b'{"6222021234567890": 1, "6222021234567890": 2}'
+secret = '6222021234567890'
+
+    @pytest.mark.parametrize(
+        ("text", "secret"),
+        [
+            (b'{"6222021234567890": 1, "6222021234567890": 2}', "6222021234567890"),
+            (b'{"a": "\xff\xfe9876"}', "9876"),
+            (b'{"a": 1e999999}', "999999"),
+        ],
+        ids=["duplicate-key", "not-utf8", "overflow"],
+    )
+    def test_strict_json_errors_never_echo_the_value_r3e_12(text: bytes, secret: str) -> None:
+        """R3E-12: the strict reader's errors do not quote keys, bytes or numbers either."""
+        with pytest.raises(ProtocolError) as caught:
+            parse_json(text)
+>       assert secret not in str(caught.value)
+E       assert '6222021234567890' not in "<document>:...21234567890'"
+E         
+E         '6222021234567890' is contained here:
+E           <document>: duplicate object key '6222021234567890'
+E         ?                                   ++++++++++++++++
+
+tests/protocol/test_review_wave3_protocol.py:249: AssertionError
+________ test_strict_json_errors_never_echo_the_value_r3e_12[overflow] _________
+
+text = b'{"a": 1e999999}', secret = '999999'
+
+    @pytest.mark.parametrize(
+        ("text", "secret"),
+        [
+            (b'{"6222021234567890": 1, "6222021234567890": 2}', "6222021234567890"),
+            (b'{"a": "\xff\xfe9876"}', "9876"),
+            (b'{"a": 1e999999}', "999999"),
+        ],
+        ids=["duplicate-key", "not-utf8", "overflow"],
+    )
+    def test_strict_json_errors_never_echo_the_value_r3e_12(text: bytes, secret: str) -> None:
+        """R3E-12: the strict reader's errors do not quote keys, bytes or numbers either."""
+        with pytest.raises(ProtocolError) as caught:
+            parse_json(text)
+>       assert secret not in str(caught.value)
+E       AssertionError: assert '999999' not in '<document>:...out of range'
+E         
+E         '999999' is contained here:
+E           <document>: number 1e999999 is out of range
+E         ?                      ++++++
+
+tests/protocol/test_review_wave3_protocol.py:249: AssertionError
+__ test_verify_reports_needs_data_instead_of_raising_r3e_13[missing-snapshot] __
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+mutate = <function <lambda> at 0x7fee66603920>, code = 'MISSING_SNAPSHOT'
+
+    @pytest.mark.parametrize(
+        ("mutate", "code"),
+        [
+            (lambda d: d.update(snapshots=[]), "MISSING_SNAPSHOT"),
+            (
+                lambda d: d["cards"][0]["billing_rule"].update(holiday_rollover="next_business_day"),
+                "BILLING_RULE_INVALID",
+            ),
+            (lambda d: d["cards"][0].update(pool_id="p1"), "MISSING_POOL_SNAPSHOT"),
+            (lambda d: d["request"].update(txn_date="2026-10-30"), "STALE_SNAPSHOT"),
+        ],
+        ids=["missing-snapshot", "needs-calendar", "missing-pool", "stale"],
+    )
+    def test_verify_reports_needs_data_instead_of_raising_r3e_13(
+        runner: ModuleType, registry: Registry, plan_input: Doc, mutate: Any, code: str  # noqa: ANN401
+    ) -> None:
+        """R3E-13: documents the protocol accepts but plan() answers with NEEDS_DATA give a
+        structured result on the verifier path too (the review saw LookupError / ValueError)."""
+        mutate(plan_input)
+        alloc = [{"card_id": "A", "amount_minor": 800000}, {"card_id": "C", "amount_minor": 200000}]
+>       result = verify_from_protocol(plan_input, alloc, "baseline")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/protocol/test_review_wave3_protocol.py:275: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/protocol.py:1257: in verify_from_protocol
+    return verification_result_to_protocol(verify(inputs, alloc, scenarios, scenario_id))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/verifier.py:192: in verify
+    checks = {sid: check_scenario(inputs, infos, known, sc) for sid, sc in scenarios.items()}
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/verifier.py:89: in check_scenario
+    reports = evaluate_accounts(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+accounts = [CashAccount(id='cash-main', name='主现金账户', currency='CNY', reserve_floor=200000, usable_for_repayment=True)]
+snapshots = {}
+events = [CashEvent(id='e1', account='cash-main', on=datetime.date(2026, 10, 27), amount=-100000, cls=<EventClass.CONFIRMED: 'c...te(2026, 11, 20), amount=700000, cls=<EventClass.EXPECTED: 'expected'>, category='income', label='预计收入', at=None), ...]
+scenario = Scenario(id='confirmed', include_expected=False, income_delay_days=0, income_scale=Decimal('1'), expense_scale=Decimal('1'), event_overrides={}, same_day_order='conservative', description='已确认口径：不计任何预计收入')
+horizon_end = datetime.date(2027, 1, 14)
+
+    def evaluate_accounts(
+        accounts: list[CashAccount],
+        snapshots: dict[str, Snapshot],
+        events: Iterable[CashEvent],
+        scenario: Scenario,
+        horizon_end: date,
+    ) -> dict[str, CashReport]:
+        events = list(events)
+        out = {}
+        for a in accounts:
+            if a.id not in snapshots:
+>               raise LookupError(f"NEEDS_DATA: no balance snapshot for cash account {a.id}")
+E               LookupError: NEEDS_DATA: no balance snapshot for cash account cash-main
+
+cardflow/planner/engine/cash.py:241: LookupError
+___ test_verify_reports_needs_data_instead_of_raising_r3e_13[needs-calendar] ___
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'next_bus... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+mutate = <function <lambda> at 0x7fee666039c0>, code = 'BILLING_RULE_INVALID'
+
+    @pytest.mark.parametrize(
+        ("mutate", "code"),
+        [
+            (lambda d: d.update(snapshots=[]), "MISSING_SNAPSHOT"),
+            (
+                lambda d: d["cards"][0]["billing_rule"].update(holiday_rollover="next_business_day"),
+                "BILLING_RULE_INVALID",
+            ),
+            (lambda d: d["cards"][0].update(pool_id="p1"), "MISSING_POOL_SNAPSHOT"),
+            (lambda d: d["request"].update(txn_date="2026-10-30"), "STALE_SNAPSHOT"),
+        ],
+        ids=["missing-snapshot", "needs-calendar", "missing-pool", "stale"],
+    )
+    def test_verify_reports_needs_data_instead_of_raising_r3e_13(
+        runner: ModuleType, registry: Registry, plan_input: Doc, mutate: Any, code: str  # noqa: ANN401
+    ) -> None:
+        """R3E-13: documents the protocol accepts but plan() answers with NEEDS_DATA give a
+        structured result on the verifier path too (the review saw LookupError / ValueError)."""
+        mutate(plan_input)
+        alloc = [{"card_id": "A", "amount_minor": 800000}, {"card_id": "C", "amount_minor": 200000}]
+>       result = verify_from_protocol(plan_input, alloc, "baseline")
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/protocol/test_review_wave3_protocol.py:275: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/protocol.py:1257: in verify_from_protocol
+    return verification_result_to_protocol(verify(inputs, alloc, scenarios, scenario_id))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/verifier.py:153: in verify
+    r = ineligible_reason(cards[cid], req, accounts, inputs.pools)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/allocation.py:147: in ineligible_reason
+    if derive_card_info(card, request).repay_on < request.txn_date:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/allocation.py:114: in derive_card_info
+    cycles = cycles_for_transaction(
+cardflow/planner/engine/billing.py:135: in cycles_for_transaction
+    c = cycle_for_posting(rule, txn_date + timedelta(days=delay), is_business_day)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/billing.py:120: in cycle_for_posting
+    return Cycle(stmt, due_date_for_statement(rule, stmt, is_business_day), rule.rule_id)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+rule = BillingRule(rule_id='rule-A', statement_day=10, due=DueRule(kind='fixed_day', day=28, month_offset=0, days=None, day_k...next_business_day', effective_from=None, effective_to=None, source='fixture', verified_on=None, status='user_declared')
+stmt = datetime.date(2026, 11, 10), is_business_day = None
+
+    def due_date_for_statement(
+        rule: BillingRule, stmt: date, is_business_day: BusinessDayFn | None = None
+    ) -> date:
+        r = rule.due
+        if r.kind == "fixed_day":
+            if r.day is None:
+                raise ValueError("fixed_day rule needs day")
+            y, m = add_months(stmt, r.month_offset)
+            due = clamp_day(y, m, r.day)
+            if due <= stmt:
+                raise ValueError(
+                    f"rule {rule.rule_id}: due {due} is not after statement {stmt} "
+                    "(month_offset/day misconfigured)"
+                )
+        elif r.kind == "days_after_statement":
+            if r.days is None:
+                raise ValueError("days_after_statement rule needs days")
+            if r.day_kind == "calendar":
+                due = stmt + timedelta(days=r.days)
+            else:
+                if is_business_day is None:
+                    raise ValueError("business-day counting requires a verified calendar")
+                due, n = stmt, 0
+                while n < r.days:
+                    due += timedelta(days=1)
+                    if is_business_day(due):
+                        n += 1
+        else:
+            raise ValueError(f"unknown due rule kind {r.kind}")
+        if rule.holiday_rollover == "next_business_day":
+            if is_business_day is None:
+>               raise ValueError("holiday_rollover requires a verified business-day calendar")
+E               ValueError: holiday_rollover requires a verified business-day calendar
+
+cardflow/planner/engine/billing.py:108: ValueError
+____ test_verify_reports_needs_data_instead_of_raising_r3e_13[missing-pool] ____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+mutate = <function <lambda> at 0x7fee66603a60>, code = 'MISSING_POOL_SNAPSHOT'
+
+    @pytest.mark.parametrize(
+        ("mutate", "code"),
+        [
+            (lambda d: d.update(snapshots=[]), "MISSING_SNAPSHOT"),
+            (
+                lambda d: d["cards"][0]["billing_rule"].update(holiday_rollover="next_business_day"),
+                "BILLING_RULE_INVALID",
+            ),
+            (lambda d: d["cards"][0].update(pool_id="p1"), "MISSING_POOL_SNAPSHOT"),
+            (lambda d: d["request"].update(txn_date="2026-10-30"), "STALE_SNAPSHOT"),
+        ],
+        ids=["missing-snapshot", "needs-calendar", "missing-pool", "stale"],
+    )
+    def test_verify_reports_needs_data_instead_of_raising_r3e_13(
+        runner: ModuleType, registry: Registry, plan_input: Doc, mutate: Any, code: str  # noqa: ANN401
+    ) -> None:
+        """R3E-13: documents the protocol accepts but plan() answers with NEEDS_DATA give a
+        structured result on the verifier path too (the review saw LookupError / ValueError)."""
+        mutate(plan_input)
+        alloc = [{"card_id": "A", "amount_minor": 800000}, {"card_id": "C", "amount_minor": 200000}]
+        result = verify_from_protocol(plan_input, alloc, "baseline")
+>       assert code in [i["code"] for i in result["data_issues"]]
+                                           ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'data_issues'
+
+tests/protocol/test_review_wave3_protocol.py:276: KeyError
+_______ test_verify_reports_needs_data_instead_of_raising_r3e_13[stale] ________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+mutate = <function <lambda> at 0x7fee66603b00>, code = 'STALE_SNAPSHOT'
+
+    @pytest.mark.parametrize(
+        ("mutate", "code"),
+        [
+            (lambda d: d.update(snapshots=[]), "MISSING_SNAPSHOT"),
+            (
+                lambda d: d["cards"][0]["billing_rule"].update(holiday_rollover="next_business_day"),
+                "BILLING_RULE_INVALID",
+            ),
+            (lambda d: d["cards"][0].update(pool_id="p1"), "MISSING_POOL_SNAPSHOT"),
+            (lambda d: d["request"].update(txn_date="2026-10-30"), "STALE_SNAPSHOT"),
+        ],
+        ids=["missing-snapshot", "needs-calendar", "missing-pool", "stale"],
+    )
+    def test_verify_reports_needs_data_instead_of_raising_r3e_13(
+        runner: ModuleType, registry: Registry, plan_input: Doc, mutate: Any, code: str  # noqa: ANN401
+    ) -> None:
+        """R3E-13: documents the protocol accepts but plan() answers with NEEDS_DATA give a
+        structured result on the verifier path too (the review saw LookupError / ValueError)."""
+        mutate(plan_input)
+        alloc = [{"card_id": "A", "amount_minor": 800000}, {"card_id": "C", "amount_minor": 200000}]
+        result = verify_from_protocol(plan_input, alloc, "baseline")
+>       assert code in [i["code"] for i in result["data_issues"]]
+                                           ^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'data_issues'
+
+tests/protocol/test_review_wave3_protocol.py:276: KeyError
+___ test_a_verify_case_on_such_a_document_runs_in_the_fixture_runner_r3e_13 ____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+v1_fixture_doc = {'description': '任务书第10节回归样本：2026-10-16 消费 10,000 元，三张独立授信卡，商户允许最多3张卡拆分，交易当天入账，无活动/手续费/利息，还款在到期日扣现金（提前量0）。纯合成数据。', 'ex..._account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}, ...}
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-163/test_a_verify_case_on_such_a_d0')
+
+    def test_a_verify_case_on_such_a_document_runs_in_the_fixture_runner_r3e_13(
+        runner: ModuleType, v1_fixture_doc: Doc, tmp_path: Any  # noqa: ANN401
+    ) -> None:
+        """R3E-13: the runner evaluates the case instead of exiting with a traceback."""
+        doc = copy.deepcopy(v1_fixture_doc)
+        doc["input"]["cards"][0]["billing_rule"]["holiday_rollover"] = "next_business_day"
+        doc["expected"] = [
+            {
+                "name": "verify_needs_data",
+                "kind": "verify",
+                "allocation": [{"card_id": "A", "amount_minor": 1000000}],
+                "decision_scenario": "baseline",
+                "assertions": [
+                    {"path": "/data_issues/0/code", "equals": "BILLING_RULE_INVALID"},
+                    {"path": "/verification", "equals": None},
+                ],
+            }
+        ]
+        path = tmp_path / "needs_data.v1.json"
+        path.write_text(json.dumps(doc), encoding="utf-8")
+        lines: list[str] = []
+>       assert runner.main([str(path)], emit=lines.append) == runner.PASSED, "\n".join(lines)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/protocol/test_review_wave3_protocol.py:305: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../packages/rules-protocol/runner_py/run_fixtures.py:342: in main
+    results = [run_fixture(path, registry, write) for path in targets]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../packages/rules-protocol/runner_py/run_fixtures.py:275: in run_fixture
+    output = verify_from_protocol(
+cardflow/planner/engine/protocol.py:1257: in verify_from_protocol
+    return verification_result_to_protocol(verify(inputs, alloc, scenarios, scenario_id))
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/verifier.py:153: in verify
+    r = ineligible_reason(cards[cid], req, accounts, inputs.pools)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/allocation.py:147: in ineligible_reason
+    if derive_card_info(card, request).repay_on < request.txn_date:
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/allocation.py:114: in derive_card_info
+    cycles = cycles_for_transaction(
+cardflow/planner/engine/billing.py:135: in cycles_for_transaction
+    c = cycle_for_posting(rule, txn_date + timedelta(days=delay), is_business_day)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/billing.py:120: in cycle_for_posting
+    return Cycle(stmt, due_date_for_statement(rule, stmt, is_business_day), rule.rule_id)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+rule = BillingRule(rule_id='rule-A', statement_day=10, due=DueRule(kind='fixed_day', day=28, month_offset=0, days=None, day_k...next_business_day', effective_from=None, effective_to=None, source='fixture', verified_on=None, status='user_declared')
+stmt = datetime.date(2026, 11, 10), is_business_day = None
+
+    def due_date_for_statement(
+        rule: BillingRule, stmt: date, is_business_day: BusinessDayFn | None = None
+    ) -> date:
+        r = rule.due
+        if r.kind == "fixed_day":
+            if r.day is None:
+                raise ValueError("fixed_day rule needs day")
+            y, m = add_months(stmt, r.month_offset)
+            due = clamp_day(y, m, r.day)
+            if due <= stmt:
+                raise ValueError(
+                    f"rule {rule.rule_id}: due {due} is not after statement {stmt} "
+                    "(month_offset/day misconfigured)"
+                )
+        elif r.kind == "days_after_statement":
+            if r.days is None:
+                raise ValueError("days_after_statement rule needs days")
+            if r.day_kind == "calendar":
+                due = stmt + timedelta(days=r.days)
+            else:
+                if is_business_day is None:
+                    raise ValueError("business-day counting requires a verified calendar")
+                due, n = stmt, 0
+                while n < r.days:
+                    due += timedelta(days=1)
+                    if is_business_day(due):
+                        n += 1
+        else:
+            raise ValueError(f"unknown due rule kind {r.kind}")
+        if rule.holiday_rollover == "next_business_day":
+            if is_business_day is None:
+>               raise ValueError("holiday_rollover requires a verified business-day calendar")
+E               ValueError: holiday_rollover requires a verified business-day calendar
+
+cardflow/planner/engine/billing.py:108: ValueError
+_______ test_includes_may_only_list_events_up_to_the_snapshot_day_r3e_14 _______
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+
+    def test_includes_may_only_list_events_up_to_the_snapshot_day_r3e_14(
+        runner: ModuleType, registry: Registry, plan_input: Doc
+    ) -> None:
+        """R3E-14 (§12.2): a balance cannot already contain an event dated after as_of."""
+        later = _set(plan_input, ("snapshots", 0, "includes_event_ids"), ["e1"])  # e1: 10-27
+>       assert _accepted(runner, registry, later) == (True, False)
+E       assert (True, True) == (True, False)
+E         
+E         At index 1 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:316: AssertionError
+_ test_a_timestamp_lies_on_the_events_date_r3e_14[2026-10-26T23:30:00Z-False] __
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+at = '2026-10-26T23:30:00Z', accepted = False
+
+    @pytest.mark.parametrize(
+        ("at", "accepted"),
+        [
+            ("2026-10-27T09:00:00+08:00", True),
+            ("2026-10-27T23:30:00-05:00", True),  # 10-28 in UTC: the event's own offset counts
+            ("2026-10-26T23:30:00Z", False),
+            ("2026-10-28T00:00:00+08:00", False),
+        ],
+    )
+    def test_a_timestamp_lies_on_the_events_date_r3e_14(
+        runner: ModuleType, registry: Registry, plan_input: Doc, at: str, accepted: bool
+    ) -> None:
+        """R3E-14: 'at' (in its own offset) must fall on 'on' (event e1 is dated 2026-10-27)."""
+        doc = _set(plan_input, ("events", 0, "at"), at)
+>       assert _accepted(runner, registry, doc) == (True, accepted)
+E       assert (True, True) == (True, False)
+E         
+E         At index 1 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:340: AssertionError
+_ test_a_timestamp_lies_on_the_events_date_r3e_14[2026-10-28T00:00:00+08:00-False] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+at = '2026-10-28T00:00:00+08:00', accepted = False
+
+    @pytest.mark.parametrize(
+        ("at", "accepted"),
+        [
+            ("2026-10-27T09:00:00+08:00", True),
+            ("2026-10-27T23:30:00-05:00", True),  # 10-28 in UTC: the event's own offset counts
+            ("2026-10-26T23:30:00Z", False),
+            ("2026-10-28T00:00:00+08:00", False),
+        ],
+    )
+    def test_a_timestamp_lies_on_the_events_date_r3e_14(
+        runner: ModuleType, registry: Registry, plan_input: Doc, at: str, accepted: bool
+    ) -> None:
+        """R3E-14: 'at' (in its own offset) must fall on 'on' (event e1 is dated 2026-10-27)."""
+        doc = _set(plan_input, ("events", 0, "at"), at)
+>       assert _accepted(runner, registry, doc) == (True, accepted)
+E       assert (True, True) == (True, False)
+E         
+E         At index 1 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:340: AssertionError
+_________ test_outcome_schema_documents_the_corrected_semantics_r3e_18 _________
+
+paths = ProtocolPaths(repo_root=PosixPath('/projects/cardflow'), protocol_root=PosixPath('/projects/cardflow/packages/rules-pr....v1.json'), poc_fixture=PosixPath('/projects/cardflow/poc/engine_reference/fixtures/regression_2026-10-16_10000.json'))
+
+    def test_outcome_schema_documents_the_corrected_semantics_r3e_18(paths: Any) -> None:  # noqa: ANN401
+        """R3E-18: solver_status NOT_RUN covers INFEASIBLE without an eligible card; the new
+        rejection reasons and the diagnostics member are in the schema."""
+        schema = json.loads((paths.schema_dir / OUTCOME).read_text(encoding="utf-8"))
+        description = schema["properties"]["solver_status"]["description"]
+>       assert "INFEASIBLE" in description and "eligible" in description
+E       AssertionError: assert ('INFEASIBLE' in 'CP-SAT status passed through; NOT_RUN when no solver ran (NEEDS_DATA, BASELINE_SHORTFALL).')
+
+tests/protocol/test_review_wave3_protocol.py:355: AssertionError
+_ test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T23:59:60Z-False] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+value = '2026-10-16T23:59:60Z', accepted = False
+
+    @pytest.mark.parametrize(
+        ("value", "accepted"),
+        [
+            ("2026-10-16T09:00:00+08:00", True),
+            ("2026-10-16T23:59:59.999999Z", True),
+            ("2026-10-16T09:00:00+23:59", True),
+            ("2026-10-16T23:59:60Z", False),
+            ("2026-10-16T24:00:00Z", False),
+            ("2026-10-16T99:99:99+99:99", False),
+            ("2026-02-30T09:00:00Z", False),
+            ("2026-10-16T09:00:00+24:00", False),
+            ("2026-10-16T09:60:00Z", False),
+            ("2026-10-16T09:00:00.1234567Z", False),
+            ("2026-10-16t09:00:00z", False),
+            ("2026-13-01T09:00:00Z", False),
+        ],
+    )
+    def test_schema_and_adapter_agree_on_timestamps_r3e_20(
+        runner: ModuleType, registry: Registry, plan_input: Doc, value: str, accepted: bool
+    ) -> None:
+        """R3E-20: the Timestamp pattern is tight (hours 00-23, minutes/seconds 00-59, offsets up
+        to 23:59) and the runner checks the 'date-time' format with the standard library, so the
+        schema accepts exactly what the adapter accepts."""
+        doc = _set(plan_input, ("snapshots", 0, "observed_at"), value)
+>       assert _accepted(runner, registry, doc) == (accepted, accepted)
+E       assert (True, False) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:390: AssertionError
+_ test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T24:00:00Z-False] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+value = '2026-10-16T24:00:00Z', accepted = False
+
+    @pytest.mark.parametrize(
+        ("value", "accepted"),
+        [
+            ("2026-10-16T09:00:00+08:00", True),
+            ("2026-10-16T23:59:59.999999Z", True),
+            ("2026-10-16T09:00:00+23:59", True),
+            ("2026-10-16T23:59:60Z", False),
+            ("2026-10-16T24:00:00Z", False),
+            ("2026-10-16T99:99:99+99:99", False),
+            ("2026-02-30T09:00:00Z", False),
+            ("2026-10-16T09:00:00+24:00", False),
+            ("2026-10-16T09:60:00Z", False),
+            ("2026-10-16T09:00:00.1234567Z", False),
+            ("2026-10-16t09:00:00z", False),
+            ("2026-13-01T09:00:00Z", False),
+        ],
+    )
+    def test_schema_and_adapter_agree_on_timestamps_r3e_20(
+        runner: ModuleType, registry: Registry, plan_input: Doc, value: str, accepted: bool
+    ) -> None:
+        """R3E-20: the Timestamp pattern is tight (hours 00-23, minutes/seconds 00-59, offsets up
+        to 23:59) and the runner checks the 'date-time' format with the standard library, so the
+        schema accepts exactly what the adapter accepts."""
+        doc = _set(plan_input, ("snapshots", 0, "observed_at"), value)
+>       assert _accepted(runner, registry, doc) == (accepted, accepted)
+E       assert (True, False) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:390: AssertionError
+_ test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T99:99:99+99:99-False] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+value = '2026-10-16T99:99:99+99:99', accepted = False
+
+    @pytest.mark.parametrize(
+        ("value", "accepted"),
+        [
+            ("2026-10-16T09:00:00+08:00", True),
+            ("2026-10-16T23:59:59.999999Z", True),
+            ("2026-10-16T09:00:00+23:59", True),
+            ("2026-10-16T23:59:60Z", False),
+            ("2026-10-16T24:00:00Z", False),
+            ("2026-10-16T99:99:99+99:99", False),
+            ("2026-02-30T09:00:00Z", False),
+            ("2026-10-16T09:00:00+24:00", False),
+            ("2026-10-16T09:60:00Z", False),
+            ("2026-10-16T09:00:00.1234567Z", False),
+            ("2026-10-16t09:00:00z", False),
+            ("2026-13-01T09:00:00Z", False),
+        ],
+    )
+    def test_schema_and_adapter_agree_on_timestamps_r3e_20(
+        runner: ModuleType, registry: Registry, plan_input: Doc, value: str, accepted: bool
+    ) -> None:
+        """R3E-20: the Timestamp pattern is tight (hours 00-23, minutes/seconds 00-59, offsets up
+        to 23:59) and the runner checks the 'date-time' format with the standard library, so the
+        schema accepts exactly what the adapter accepts."""
+        doc = _set(plan_input, ("snapshots", 0, "observed_at"), value)
+>       assert _accepted(runner, registry, doc) == (accepted, accepted)
+E       assert (True, False) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:390: AssertionError
+_ test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-02-30T09:00:00Z-False] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+value = '2026-02-30T09:00:00Z', accepted = False
+
+    @pytest.mark.parametrize(
+        ("value", "accepted"),
+        [
+            ("2026-10-16T09:00:00+08:00", True),
+            ("2026-10-16T23:59:59.999999Z", True),
+            ("2026-10-16T09:00:00+23:59", True),
+            ("2026-10-16T23:59:60Z", False),
+            ("2026-10-16T24:00:00Z", False),
+            ("2026-10-16T99:99:99+99:99", False),
+            ("2026-02-30T09:00:00Z", False),
+            ("2026-10-16T09:00:00+24:00", False),
+            ("2026-10-16T09:60:00Z", False),
+            ("2026-10-16T09:00:00.1234567Z", False),
+            ("2026-10-16t09:00:00z", False),
+            ("2026-13-01T09:00:00Z", False),
+        ],
+    )
+    def test_schema_and_adapter_agree_on_timestamps_r3e_20(
+        runner: ModuleType, registry: Registry, plan_input: Doc, value: str, accepted: bool
+    ) -> None:
+        """R3E-20: the Timestamp pattern is tight (hours 00-23, minutes/seconds 00-59, offsets up
+        to 23:59) and the runner checks the 'date-time' format with the standard library, so the
+        schema accepts exactly what the adapter accepts."""
+        doc = _set(plan_input, ("snapshots", 0, "observed_at"), value)
+>       assert _accepted(runner, registry, doc) == (accepted, accepted)
+E       assert (True, False) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:390: AssertionError
+_ test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:00:00+24:00-False] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+value = '2026-10-16T09:00:00+24:00', accepted = False
+
+    @pytest.mark.parametrize(
+        ("value", "accepted"),
+        [
+            ("2026-10-16T09:00:00+08:00", True),
+            ("2026-10-16T23:59:59.999999Z", True),
+            ("2026-10-16T09:00:00+23:59", True),
+            ("2026-10-16T23:59:60Z", False),
+            ("2026-10-16T24:00:00Z", False),
+            ("2026-10-16T99:99:99+99:99", False),
+            ("2026-02-30T09:00:00Z", False),
+            ("2026-10-16T09:00:00+24:00", False),
+            ("2026-10-16T09:60:00Z", False),
+            ("2026-10-16T09:00:00.1234567Z", False),
+            ("2026-10-16t09:00:00z", False),
+            ("2026-13-01T09:00:00Z", False),
+        ],
+    )
+    def test_schema_and_adapter_agree_on_timestamps_r3e_20(
+        runner: ModuleType, registry: Registry, plan_input: Doc, value: str, accepted: bool
+    ) -> None:
+        """R3E-20: the Timestamp pattern is tight (hours 00-23, minutes/seconds 00-59, offsets up
+        to 23:59) and the runner checks the 'date-time' format with the standard library, so the
+        schema accepts exactly what the adapter accepts."""
+        doc = _set(plan_input, ("snapshots", 0, "observed_at"), value)
+>       assert _accepted(runner, registry, doc) == (accepted, accepted)
+E       assert (True, False) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:390: AssertionError
+_ test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:60:00Z-False] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+value = '2026-10-16T09:60:00Z', accepted = False
+
+    @pytest.mark.parametrize(
+        ("value", "accepted"),
+        [
+            ("2026-10-16T09:00:00+08:00", True),
+            ("2026-10-16T23:59:59.999999Z", True),
+            ("2026-10-16T09:00:00+23:59", True),
+            ("2026-10-16T23:59:60Z", False),
+            ("2026-10-16T24:00:00Z", False),
+            ("2026-10-16T99:99:99+99:99", False),
+            ("2026-02-30T09:00:00Z", False),
+            ("2026-10-16T09:00:00+24:00", False),
+            ("2026-10-16T09:60:00Z", False),
+            ("2026-10-16T09:00:00.1234567Z", False),
+            ("2026-10-16t09:00:00z", False),
+            ("2026-13-01T09:00:00Z", False),
+        ],
+    )
+    def test_schema_and_adapter_agree_on_timestamps_r3e_20(
+        runner: ModuleType, registry: Registry, plan_input: Doc, value: str, accepted: bool
+    ) -> None:
+        """R3E-20: the Timestamp pattern is tight (hours 00-23, minutes/seconds 00-59, offsets up
+        to 23:59) and the runner checks the 'date-time' format with the standard library, so the
+        schema accepts exactly what the adapter accepts."""
+        doc = _set(plan_input, ("snapshots", 0, "observed_at"), value)
+>       assert _accepted(runner, registry, doc) == (accepted, accepted)
+E       assert (True, False) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:390: AssertionError
+_ test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-13-01T09:00:00Z-False] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+value = '2026-13-01T09:00:00Z', accepted = False
+
+    @pytest.mark.parametrize(
+        ("value", "accepted"),
+        [
+            ("2026-10-16T09:00:00+08:00", True),
+            ("2026-10-16T23:59:59.999999Z", True),
+            ("2026-10-16T09:00:00+23:59", True),
+            ("2026-10-16T23:59:60Z", False),
+            ("2026-10-16T24:00:00Z", False),
+            ("2026-10-16T99:99:99+99:99", False),
+            ("2026-02-30T09:00:00Z", False),
+            ("2026-10-16T09:00:00+24:00", False),
+            ("2026-10-16T09:60:00Z", False),
+            ("2026-10-16T09:00:00.1234567Z", False),
+            ("2026-10-16t09:00:00z", False),
+            ("2026-13-01T09:00:00Z", False),
+        ],
+    )
+    def test_schema_and_adapter_agree_on_timestamps_r3e_20(
+        runner: ModuleType, registry: Registry, plan_input: Doc, value: str, accepted: bool
+    ) -> None:
+        """R3E-20: the Timestamp pattern is tight (hours 00-23, minutes/seconds 00-59, offsets up
+        to 23:59) and the runner checks the 'date-time' format with the standard library, so the
+        schema accepts exactly what the adapter accepts."""
+        doc = _set(plan_input, ("snapshots", 0, "observed_at"), value)
+>       assert _accepted(runner, registry, doc) == (accepted, accepted)
+E       assert (True, False) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_review_wave3_protocol.py:390: AssertionError
+______________ test_the_runner_checks_the_date_time_format_r3e_20 ______________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+
+    def test_the_runner_checks_the_date_time_format_r3e_20(runner: ModuleType) -> None:
+        """R3E-20: 'date-time' is checked even without the optional rfc3339-validator package."""
+>       assert "date-time" in runner.FORMAT_CHECKER.checkers
+                              ^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'rules_protocol_run_fixtures' has no attribute 'FORMAT_CHECKER'
+
+tests/protocol/test_review_wave3_protocol.py:395: AttributeError
+_______________ test_readme_states_the_dart_rules_r3e_21_r3e_22 ________________
+
+paths = ProtocolPaths(repo_root=PosixPath('/projects/cardflow'), protocol_root=PosixPath('/projects/cardflow/packages/rules-pr....v1.json'), poc_fixture=PosixPath('/projects/cardflow/poc/engine_reference/fixtures/regression_2026-10-16_10000.json'))
+
+    def test_readme_states_the_dart_rules_r3e_21_r3e_22(paths: Any) -> None:  # noqa: ANN401
+        """R3E-21/R3E-22: the README tells the Dart port how to count text and that an integral
+        float such as 1000000.0 is not an integer."""
+        readme = (paths.protocol_root / "README.md").read_text(encoding="utf-8")
+>       assert "runes.length" in readme
+E       assert 'runes.length' in '# packages/rules-protocol — 规则协议 v1\n\n规则协议 v1（JSON Schema：BillingRule、Snapshot、CashEvent、Scenario、PlanRequest、CardOp... 语义（适配层/引擎） | 见"字段约定"中的不可用判定、验证器违规与 `MODEL_BUILD_ERROR`；`fixtures/regression_2026-10-16_10000.v1.json` 内容不变（逐字节相同） |\n'
+
+tests/protocol/test_review_wave3_protocol.py:417: AssertionError
+____________ test_plan_records_the_hash_of_the_callers_input_r3e_15 ____________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_plan_records_the_hash_of_the_callers_input_r3e_15(fx: Fx) -> None:
+        """R3E-15 / R3E-08: the default hash is that of the caller's input (data, scenarios,
+        options); a horizon before every repayment is no longer extended (the cards are excluded
+        with REPAY_AFTER_HORIZON), and the hash is recorded on that outcome as well."""
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/engine/test_production_fixes.py:101: ImportError
+_____________ test_plan_uses_a_caller_supplied_input_hash_verbatim _____________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_plan_uses_a_caller_supplied_input_hash_verbatim(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+        supplied = "0123456789abcdef" * 4
+        out = plan(
+            inputs,
+            scenarios,
+            "baseline",
+            "cash_safety",
+            time_limit_s=10,
+            with_sensitivity=False,
+            input_hash=supplied,
+        )
+        assert out.solve is not None
+        assert out.input_hash == supplied
+        assert out.solve.input_hash == supplied
+        # outcomes without a solver run carry it too
+        late = replace(inputs, request=replace(inputs.request, txn_date=date(2026, 10, 30)))
+        needs_data = plan(late, scenarios, "baseline", "cash_safety", input_hash=supplied)
+        assert needs_data.business_status == "NEEDS_DATA"
+        assert needs_data.solve is None
+        assert needs_data.input_hash == supplied
+        default = plan(late, scenarios, "baseline", "cash_safety")
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/engine/test_production_fixes.py:138: ImportError
+________ test_fee_rate_case_of_the_probe_pays_the_fee_from_cash_r3e_07 _________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_fee_rate_case_of_the_probe_pays_the_fee_from_cash_r3e_07(fx: Fx) -> None:
+        """R3E-07 (engine-spec §12.6): the fee is paid with the repayment. Before model 1.1.0 this
+        probe expected A 5,000 + C 5,000, which assumed fee-free cash; the derivation of the new
+        optimum is in ``test_review_wave3_fixes.py`` (``test_fee_probe_allocation_pays_the_fee_from_
+        cash_r3e_07``)."""
+        inputs, scenarios, _ = fx
+        out = plan(
+            _card(0, fee_rate=Decimal("0.006"))(inputs), scenarios, "baseline", "cash_safety", 10
+        )
+>       assert out.allocation == {"A": 497166, "C": 502834}
+E       AssertionError: assert {'A': 500000, 'C': 500000} == {'A': 497166, 'C': 502834}
+E         
+E         Differing items:
+E         {'A': 500000} != {'A': 497166}
+E         {'C': 500000} != {'C': 502834}
+E         Use -v to get more diff
+
+tests/engine/test_robustness.py:143: AssertionError
+_ test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[amount] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _request.<locals>.<lambda> at 0x7fee66602700>
+
+    @pytest.mark.parametrize(
+        "mutate",
+        [_request(amount=I63), _balance(I63), _event0(I63)],
+        ids=["amount", "balance", "event"],
+    )
+    def test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising(
+        fx: Fx, mutate: Mutation
+    ) -> None:
+        inputs, scenarios, _ = fx
+        broken = mutate(inputs)
+        stress = scenarios["stress_income_delay"]
+        res = solve(broken, scenarios["baseline"], "cash_safety", time_limit_s=10)
+        assert res.status == "MODEL_INVALID"
+        assert any(n.startswith("MODEL_BUILD_ERROR") for n in res.notes), res.notes
+        infos = [derive_card_info(c, broken.request) for c in broken.cards]
+        for result in (
+            min_extra_cash(broken, stress, infos),
+            max_affordable_amount(broken, stress, infos),
+        ):
+            # R3E-16: the detail is always there (no default that lets the check pass vacuously):
+            # either OR-Tools refused a coefficient while the model was built, or CP-SAT's own
+            # validation rejected the built model (the review's case: max_affordable_amount with
+            # amount = 2^63-1 used to return a bare {"status": "MODEL_INVALID"}).
+            assert result["status"] == "MODEL_INVALID"
+>           assert result["detail"] in (
+                "MODEL_VALIDATION_FAILED: CP-SAT rejected the model (no plan is shown)",
+                *(
+                    f"MODEL_BUILD_ERROR: {cls} while building the CP-SAT model (no plan is shown)"
+                    for cls in ("ValueError", "TypeError", "OverflowError")
+                ),
+            ), result
+E           AssertionError: {'status': 'MODEL_INVALID', 'detail': 'MODEL_BUILD_ERROR: ValueError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)'}
+E           assert 'MODEL_BUILD_ERROR: ValueError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)' in ('MODEL_VALIDATION_FAILED: CP-SAT rejected the model (no plan is shown)', 'MODEL_BUILD_ERROR: ValueError while buildin...P-SAT model (no plan is shown)', 'MODEL_BUILD_ERROR: OverflowError while building the CP-SAT model (no plan is shown)')
+
+tests/engine/test_robustness.py:170: AssertionError
+_ test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[balance] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _balance.<locals>.mutate at 0x7fee666027a0>
+
+    @pytest.mark.parametrize(
+        "mutate",
+        [_request(amount=I63), _balance(I63), _event0(I63)],
+        ids=["amount", "balance", "event"],
+    )
+    def test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising(
+        fx: Fx, mutate: Mutation
+    ) -> None:
+        inputs, scenarios, _ = fx
+        broken = mutate(inputs)
+        stress = scenarios["stress_income_delay"]
+        res = solve(broken, scenarios["baseline"], "cash_safety", time_limit_s=10)
+        assert res.status == "MODEL_INVALID"
+        assert any(n.startswith("MODEL_BUILD_ERROR") for n in res.notes), res.notes
+        infos = [derive_card_info(c, broken.request) for c in broken.cards]
+        for result in (
+            min_extra_cash(broken, stress, infos),
+            max_affordable_amount(broken, stress, infos),
+        ):
+            # R3E-16: the detail is always there (no default that lets the check pass vacuously):
+            # either OR-Tools refused a coefficient while the model was built, or CP-SAT's own
+            # validation rejected the built model (the review's case: max_affordable_amount with
+            # amount = 2^63-1 used to return a bare {"status": "MODEL_INVALID"}).
+            assert result["status"] == "MODEL_INVALID"
+>           assert result["detail"] in (
+                "MODEL_VALIDATION_FAILED: CP-SAT rejected the model (no plan is shown)",
+                *(
+                    f"MODEL_BUILD_ERROR: {cls} while building the CP-SAT model (no plan is shown)"
+                    for cls in ("ValueError", "TypeError", "OverflowError")
+                ),
+            ), result
+E           AssertionError: {'status': 'MODEL_INVALID', 'detail': 'MODEL_BUILD_ERROR: TypeError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)'}
+E           assert 'MODEL_BUILD_ERROR: TypeError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)' in ('MODEL_VALIDATION_FAILED: CP-SAT rejected the model (no plan is shown)', 'MODEL_BUILD_ERROR: ValueError while buildin...P-SAT model (no plan is shown)', 'MODEL_BUILD_ERROR: OverflowError while building the CP-SAT model (no plan is shown)')
+
+tests/engine/test_robustness.py:170: AssertionError
+_ test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[event] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _event0.<locals>.mutate at 0x7fee66602660>
+
+    @pytest.mark.parametrize(
+        "mutate",
+        [_request(amount=I63), _balance(I63), _event0(I63)],
+        ids=["amount", "balance", "event"],
+    )
+    def test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising(
+        fx: Fx, mutate: Mutation
+    ) -> None:
+        inputs, scenarios, _ = fx
+        broken = mutate(inputs)
+        stress = scenarios["stress_income_delay"]
+        res = solve(broken, scenarios["baseline"], "cash_safety", time_limit_s=10)
+        assert res.status == "MODEL_INVALID"
+        assert any(n.startswith("MODEL_BUILD_ERROR") for n in res.notes), res.notes
+        infos = [derive_card_info(c, broken.request) for c in broken.cards]
+        for result in (
+            min_extra_cash(broken, stress, infos),
+            max_affordable_amount(broken, stress, infos),
+        ):
+            # R3E-16: the detail is always there (no default that lets the check pass vacuously):
+            # either OR-Tools refused a coefficient while the model was built, or CP-SAT's own
+            # validation rejected the built model (the review's case: max_affordable_amount with
+            # amount = 2^63-1 used to return a bare {"status": "MODEL_INVALID"}).
+            assert result["status"] == "MODEL_INVALID"
+>           assert result["detail"] in (
+                "MODEL_VALIDATION_FAILED: CP-SAT rejected the model (no plan is shown)",
+                *(
+                    f"MODEL_BUILD_ERROR: {cls} while building the CP-SAT model (no plan is shown)"
+                    for cls in ("ValueError", "TypeError", "OverflowError")
+                ),
+            ), result
+E           AssertionError: {'status': 'MODEL_INVALID', 'detail': 'MODEL_BUILD_ERROR: TypeError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)'}
+E           assert 'MODEL_BUILD_ERROR: TypeError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)' in ('MODEL_VALIDATION_FAILED: CP-SAT rejected the model (no plan is shown)', 'MODEL_BUILD_ERROR: ValueError while buildin...P-SAT model (no plan is shown)', 'MODEL_BUILD_ERROR: OverflowError while building the CP-SAT model (no plan is shown)')
+
+tests/engine/test_robustness.py:170: AssertionError
+________ test_a_date_beyond_the_supported_range_is_not_disguised_r3e_15 ________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_a_date_beyond_the_supported_range_is_not_disguised_r3e_15(fx: Fx) -> None:
+        """R3E-15 (engine-spec §12.10): the data checks are not model building. A date past the
+        calendar (outside the engine's documented range 1970..2999, which the protocol enforces)
+        surfaces as the exception it is instead of 'MODEL_INVALID: outside the supported range'
+        (T-004b reported it as MODEL_INVALID during data checks)."""
+        inputs, scenarios, _ = fx
+        last = date(9999, 12, 31)
+        # statement on 9999-12-31 itself, due 20 days later: the date arithmetic overflows
+        rule = BillingRule("r31", 31, DueRule("days_after_statement", days=20))
+        late = replace(
+            inputs,
+            request=replace(inputs.request, txn_date=last),
+            snapshots={"cash-main": replace(inputs.snapshots["cash-main"], as_of=last)},
+            cards=[replace(inputs.cards[0], billing_rule=rule), *inputs.cards[1:]],
+            horizon_end=last,
+        )
+>       with pytest.raises(OverflowError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE OverflowError
+
+tests/engine/test_robustness.py:196: Failed
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-baseline] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'cash_safety', decision = 'baseline'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-confirmed] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'cash_safety', decision = 'confirmed'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-stress_income_delay] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'cash_safety', decision = 'stress_income_delay'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-baseline] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'verified_benefit', decision = 'baseline'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-confirmed] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'verified_benefit', decision = 'confirmed'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-stress_income_delay] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'verified_benefit', decision = 'stress_income_delay'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-baseline] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'fewer_cards', decision = 'baseline'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-confirmed] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'fewer_cards', decision = 'confirmed'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+_ test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-stress_income_delay] _
+
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+legacy = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+profile = 'fewer_cards', decision = 'stress_income_delay'
+
+    @pytest.mark.parametrize("decision", DECISIONS)
+    @pytest.mark.parametrize("profile", PROFILES)
+    def test_adapter_and_t003_loader_runs_agree_field_by_field(
+        plan_input: Doc,
+        legacy: tuple[Any, Any, Any],
+        profile: str,
+        decision: str,
+    ) -> None:
+        doc = _with_options(plan_input, profile, decision)
+        via_protocol = plan_from_protocol(doc)
+        legacy_inputs, legacy_scenarios, _ = legacy
+        via_loader = outcome_to_protocol(
+            plan(legacy_inputs, legacy_scenarios, decision, profile, 10, 7, workers=8, seed=0)
+        )
+        assert _stable(via_protocol) == _stable(via_loader)
+        # the two hashes differ by design: language-neutral document hash vs engine hash; since
+        # model 1.1.0 the engine's default covers scenarios and options too (T-004c, R3E-15)
+>       from cardflow.planner.engine.plan import run_input_hash  # noqa: PLC0415 -- new in 1.1.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ImportError: cannot import name 'run_input_hash' from 'cardflow.planner.engine.plan' (/projects/cardflow/services/api/cardflow/planner/engine/plan.py)
+
+tests/protocol/test_adapter.py:129: ImportError
+____ test_schema_and_adapter_agree_on_the_supported_range[rate-one-padded] _____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '1.00000', accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:116: AssertionError
+____ test_schema_and_adapter_agree_on_the_supported_range[scale-ten-padded] ____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('scenarios', 0, 'expense_scale'), value = '10.0000000000'
+accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:116: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/engine/test_review_wave3_fixes.py::test_model_version_is_1_1_0
+FAILED tests/engine/test_review_wave3_fixes.py::test_rule_version_ending_soon_keeps_the_plan_r3e_01[baseline]
+FAILED tests/engine/test_review_wave3_fixes.py::test_rule_version_ending_soon_keeps_the_plan_r3e_01[stress_income_delay]
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_failing_sensitivity_item_is_marked_unavailable_r3e_01
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_verifier_rejected_plan_is_never_shown_r3e_02
+FAILED tests/engine/test_review_wave3_fixes.py::test_actionable_outcomes_have_no_diagnostics_r3e_02
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_reflected_inflow_is_not_counted_again_r3e_03[included-then-delayed]
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_reflected_inflow_is_not_counted_again_r3e_03[before-snapshot-then-delayed]
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_reflected_inflow_is_not_counted_again_r3e_03[included-then-moved]
+FAILED tests/engine/test_review_wave3_fixes.py::test_an_event_moved_before_the_snapshot_counts_on_the_snapshot_day_r3e_03
+FAILED tests/engine/test_review_wave3_fixes.py::test_delaying_or_shrinking_income_never_raises_a_balance_r3e_03
+FAILED tests/engine/test_review_wave3_fixes.py::test_cards_of_one_credit_account_share_its_available_credit_r3e_04
+FAILED tests/engine/test_review_wave3_fixes.py::test_the_verifier_checks_the_credit_account_layer_r3e_04
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_pool_deducts_its_members_reservations_and_holds_r3e_04[reservations]
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_pool_deducts_its_members_reservations_and_holds_r3e_04[holds]
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_candidate_repayment_day_keeps_the_timestamp_order_r3e_05[A+B]
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_planned_repayment_comes_first_on_a_timestamp_ordered_day_r3e_05
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_delayed_income_loses_its_timestamp_r3e_05
+FAILED tests/engine/test_review_wave3_fixes.py::test_the_fee_is_paid_with_the_repayment_r3e_07
+FAILED tests/engine/test_review_wave3_fixes.py::test_an_unusable_card_does_not_change_the_horizon_r3e_08[A+B]
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_repayment_after_the_horizon_is_a_violation_in_the_verifier_r3e_08
+FAILED tests/engine/test_review_wave3_fixes.py::test_every_card_after_the_horizon_is_infeasible_without_extension_r3e_08
+FAILED tests/engine/test_review_wave3_fixes.py::test_the_baseline_checks_the_global_floor_r3e_09
+FAILED tests/engine/test_review_wave3_fixes.py::test_insufficient_limit_considers_every_layer_r3e_10[pool]
+FAILED tests/engine/test_review_wave3_fixes.py::test_insufficient_limit_considers_every_layer_r3e_10[per-transaction-cap]
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_minimum_part_above_the_amount_is_its_own_reason_r3e_10
+FAILED tests/engine/test_review_wave3_fixes.py::test_no_capacity_names_the_exhausted_layer_r3e_10
+FAILED tests/engine/test_review_wave3_fixes.py::test_unknown_does_not_claim_dominated_r3e_10
+FAILED tests/engine/test_review_wave3_fixes.py::test_the_default_hash_covers_scenarios_and_options_r3e_15
+FAILED tests/engine/test_review_wave3_fixes.py::test_errors_outside_modelling_are_not_disguised_r3e_15
+FAILED tests/engine/test_review_wave3_fixes.py::test_every_solver_call_ends_within_the_runs_time_limit_r3e_17
+FAILED tests/engine/test_review_wave3_fixes.py::test_no_eligible_card_still_searches_a_later_date_r3e_19
+FAILED tests/engine/test_review_wave3_fixes.py::test_fee_probe_allocation_pays_the_fee_from_cash_r3e_07
+FAILED tests/engine/test_determinism.py::test_tied_optima_give_one_allocation_for_any_workers_r3e_06[cash_safety]
+FAILED tests/engine/test_determinism.py::test_tied_optima_give_one_allocation_for_any_workers_r3e_06[fewer_cards]
+FAILED tests/engine/test_determinism.py::test_identical_cards_fill_in_input_order_r3e_06[fewer_cards-2-5000-1000-expected0]
+FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+FAILED tests/engine/test_differential.py::test_review_nondeterministic_sensitivity_is_reproducible_r3e_06[105-10]
+FAILED tests/engine/test_differential.py::test_review_nondeterministic_sensitivity_is_reproducible_r3e_06[203-200]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_a_rejected_solution_is_only_in_the_diagnostics_r3e_02
+FAILED tests/protocol/test_review_wave3_protocol.py::test_the_schema_refuses_an_allocation_outside_actionable_statuses_r3e_02
+FAILED tests/protocol/test_review_wave3_protocol.py::test_cards_of_one_credit_account_report_one_available_credit_r3e_04
+FAILED tests/protocol/test_review_wave3_protocol.py::test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored0-0.006]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored1-0]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored2-1]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path0-0.00600]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path1-0.0]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path2-1.0]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path3-1.00000]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path5-1.0]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path6-10.0000000000]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_the_engine_hash_of_equal_rates_is_equal_r3e_11
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path2-123456789-123456789]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path3-value3-98765432]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path4-31415926-31415926]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path5-98765.4321-98765]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path6-6222 0212 3456 7890-6222]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path7-RMB-12345-12345]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path8-0.123456-123456]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path9-2026-02-30-2026-02-30]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path10-1999-99-99-99-99]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path11-2026-10-16T09:00:00+99:00-99:00]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path12-acct-998877-998877]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path13-value13-77665544]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path14-e55443322-55443322]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path15-USD-USD]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_strict_json_errors_never_echo_the_value_r3e_12[duplicate-key]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_strict_json_errors_never_echo_the_value_r3e_12[overflow]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_verify_reports_needs_data_instead_of_raising_r3e_13[missing-snapshot]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_verify_reports_needs_data_instead_of_raising_r3e_13[needs-calendar]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_verify_reports_needs_data_instead_of_raising_r3e_13[missing-pool]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_verify_reports_needs_data_instead_of_raising_r3e_13[stale]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_a_verify_case_on_such_a_document_runs_in_the_fixture_runner_r3e_13
+FAILED tests/protocol/test_review_wave3_protocol.py::test_includes_may_only_list_events_up_to_the_snapshot_day_r3e_14
+FAILED tests/protocol/test_review_wave3_protocol.py::test_a_timestamp_lies_on_the_events_date_r3e_14[2026-10-26T23:30:00Z-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_a_timestamp_lies_on_the_events_date_r3e_14[2026-10-28T00:00:00+08:00-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_outcome_schema_documents_the_corrected_semantics_r3e_18
+FAILED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T23:59:60Z-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T24:00:00Z-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T99:99:99+99:99-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-02-30T09:00:00Z-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:00:00+24:00-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:60:00Z-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-13-01T09:00:00Z-False]
+FAILED tests/protocol/test_review_wave3_protocol.py::test_the_runner_checks_the_date_time_format_r3e_20
+FAILED tests/protocol/test_review_wave3_protocol.py::test_readme_states_the_dart_rules_r3e_21_r3e_22
+FAILED tests/engine/test_production_fixes.py::test_plan_records_the_hash_of_the_callers_input_r3e_15
+FAILED tests/engine/test_production_fixes.py::test_plan_uses_a_caller_supplied_input_hash_verbatim
+FAILED tests/engine/test_robustness.py::test_fee_rate_case_of_the_probe_pays_the_fee_from_cash_r3e_07
+FAILED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[amount]
+FAILED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[balance]
+FAILED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[event]
+FAILED tests/engine/test_robustness.py::test_a_date_beyond_the_supported_range_is_not_disguised_r3e_15
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-baseline]
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-confirmed]
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-stress_income_delay]
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-baseline]
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-confirmed]
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-stress_income_delay]
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-baseline]
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-confirmed]
+FAILED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-stress_income_delay]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-one-padded]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[scale-ten-padded]
+104 failed, 157 passed, 1 warning in 19.19s
+exit=1
+
+# ---------------------------------------------------------------------------------------
+# ADDENDUM (written after the first red run, before any fix was relied upon): three tests were
+# refined after the run above -- the R3E-03 property test's checkpoint helper (it compared the
+# carried LOW instead of the carried END balance), the final NO_CAPACITY detail texts (R3E-10),
+# and the expected status of the review instance 203#200 (R3E-06; BASELINE_SHORTFALL under §12.8).
+# They are re-run here against an isolated copy of the repository whose engine and
+# packages/rules-protocol are the PRE-TASK snapshot (sha256 below = the hashes at the top):
+e2ac6d83ac381dc089c00318bf284f43b28674b78ce909ad1d471adc91cb9162  cardflow/planner/engine/allocation.py
+de26af2d5f294bdfb71325bbe533e80de294fbc0b3430edb129e28927d858d9d  cardflow/planner/engine/billing.py
+2e9c351a41e4112c3482a741fd28f092d4212efcd67e2ec9565a3f729bac460d  cardflow/planner/engine/cash.py
+0872c2f6182febe3fe125b5d624063dae92ae233f7279acd15d1e152f77266f5  cardflow/planner/engine/fixture.py
+14ba4c214493ae7d1715101c14b41fe20225875a669d13b137bcffe9eea4a02f  cardflow/planner/engine/__init__.py
+0d27d92a3f97838061d4014aed444035e465cadba6c3495ba425ed340ca30474  cardflow/planner/engine/money.py
+0a9266f04cfa2900a64cea12ada54e8d57d0ad4b2253e3c294f0894d923d7ccc  cardflow/planner/engine/plan.py
+9f63dfa342b34e668b3547e4e43c0507db5cd8a68c669f15cef4b1c781a13438  cardflow/planner/engine/protocol.py
+cb6156d9ee239b042032f62d82763d2f30965bdba7b18618b8308b0addd2634c  cardflow/planner/engine/sample.py
+d42824d6f3242494eeee99e2eb0937ca16d5366fcb6228b1c2e6c5caab43c807  cardflow/planner/engine/verifier.py
+$ PYTHONPATH=<copy>/services/api python -m pytest -q -p no:cacheprovider -rf <the three tests>
+E                   AssertionError: ({'protocol_version': '1', 'request': {'amount_minor': 8, 'currency': 'CNY', 'txn_date': '2026-04-08', 'allow_split': ... 'raw_available_minor': 21, 'holds_uncounted_minor': 0, ...}], 'pools': [], ...}, 'cash-1', datetime.date(2026, 4, 17))
+E                   assert 55 <= 48
+E       AssertionError: assert {'A': ('NO_CA...ctive tiers')} == {'A': ('NO_CA...pacity left')}
+E         
+E         Differing items:
+E         {'A': ('NO_CAPACITY', None)} != {'A': ('NO_CAPACITY', 'the card has no capacity left')}
+E         {'B': ('NO_CAPACITY', None)} != {'B': ('NO_CAPACITY', 'pool p has no capacity left')}
+E         {'D': ('DOMINATED', 'feasible alone but scored lower on the objective tiers')} != {'D': ('NO_CAPACITY', 'credit account acc-x has no capacity left')}
+E         Left contains 1 more item:
+E         {'E': ('DOMINATED', 'feasible alone but scored lower on the objective tiers')}...
+E         
+E         ...Full output truncated (3 lines hidden), use '-vv' to show
+E       assert 2 == 1
+E        +  where 2 = len({'{"allocation": [], "assumptions": ["cash-0: 2026-03-28: 同日收支顺序未知，按保守顺序（先支出后收入）校验", "cash-0: 2026-05-03: 同日收支顺序未知，按保守..., "name": "cards", "sense": "min", "status": "INFEASIBLE", "value": null}], "time
+E       assert 3 == 1
+E        +  where 3 = len({'{"allocation": [], "assumptions": [], "baseline": {"baseline": {"accounts": {"cash-0": {"breaches": [], "end_balance...me": "min_margin", "sense": "max", "status": "INFEASIBLE", "value": null}], "time_limit_s": 10, "verification": null}'})
+FAILED tests/engine/test_review_wave3_fixes.py::test_delaying_or_shrinking_income_never_raises_a_balance_r3e_03
+FAILED tests/engine/test_review_wave3_fixes.py::test_no_capacity_names_the_exhausted_layer_r3e_10
+FAILED tests/engine/test_differential.py::test_review_nondeterministic_sensitivity_is_reproducible_r3e_06[105-10]
+FAILED tests/engine/test_differential.py::test_review_nondeterministic_sensitivity_is_reproducible_r3e_06[203-200]
+4 failed, 1 warning in 0.88s
+exit=1
+
+# ---------------------------------------------------------------------------------------
+# ADDENDUM 2: tests added after the first red run, run against the same pre-task engine copy.
+# * R3E-09: the starting total below the global floor (written when the differential test found
+#   that a global-floor check without any event day had no checkpoint) -- must FAIL on 1.0.0;
+# * R3E-16: tests/engine/test_review_wave3_mutants.py closes TEST GAPS: the behaviour it pins was
+#   already right in 1.0.0 (except M14's cash part, which is §12.6), so these PASS on 1.0.0 and
+#   their evidence is the mutation run, c2-mutants.txt.
+$ PYTHONPATH=<copy>/services/api python -m pytest -q -p no:cacheprovider -rfp <tests>
+E       AssertionError: assert 'INFEASIBLE' == 'BASELINE_SHORTFALL'
+E         
+E         - BASELINE_SHORTFALL
+E         + INFEASIBLE
+E       assert (98748999 - 98748999) == 7
+FAILED tests/engine/test_review_wave3_fixes.py::test_a_starting_total_below_the_global_floor_is_a_baseline_shortfall_r3e_09
+FAILED tests/engine/test_review_wave3_mutants.py::test_the_verifier_rounds_a_fee_up_m14_r3e_16
+PASSED tests/engine/test_review_wave3_mutants.py::test_a_repayment_on_the_transaction_date_is_allowed_m05_r3e_16[5-True]
+PASSED tests/engine/test_review_wave3_mutants.py::test_a_repayment_on_the_transaction_date_is_allowed_m05_r3e_16[6-False]
+PASSED tests/engine/test_review_wave3_mutants.py::test_the_verifier_rounds_a_verified_benefit_down_m15_r3e_16
+PASSED tests/engine/test_review_wave3_mutants.py::test_the_model_caps_the_verified_benefit_m17_r3e_16
+PASSED tests/engine/test_review_wave3_mutants.py::test_a_snapshot_exactly_stale_after_days_old_is_not_stale_m20_r3e_16[2026-10-23-False]
+PASSED tests/engine/test_review_wave3_mutants.py::test_a_snapshot_exactly_stale_after_days_old_is_not_stale_m20_r3e_16[2026-10-24-True]
+PASSED tests/engine/test_review_wave3_mutants.py::test_the_weighted_buffer_rounds_half_up_m26_r3e_16
+2 failed, 7 passed, 1 warning in 0.38s
+exit=1

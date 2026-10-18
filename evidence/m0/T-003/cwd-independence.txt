@@ -1,0 +1,17 @@
+# T-003 工作目录无关性检查（2026-10-16T15:38:27Z）：从无关目录 /tmp/t003/cwdcheck 启动
+$ cd /tmp/t003/cwdcheck && uv run --project /projects/cardflow/services/api pytest -p no:cacheprovider -q /projects/cardflow/services/api/tests/engine/test_properties.py /projects/cardflow/services/api/tests/engine/test_regression_sample.py
+.......................                                                  [100%]
+
+23 passed, 1 warning in 1.31s
+exit=0
+$ cd /tmp/t003/cwdcheck && uv run --project /projects/cardflow/services/api python -m cardflow.planner.engine.sample | head -9
+# 回归样本证据：REG-2026-10-16-10000
+模型版本 poc-0.1.0；输入哈希 `50b7df309486409b…`；生成日期 2026-10-16
+
+## 1. 账期归属（交易日 2026-10-16，当天入账）
+
+| 卡 | 账单日规则 | 到期规则 | 本次出账 | 到期还款 | 缓冲天数 |
+|---|---|---|---|---|---|
+| A | 每月10日 | 当月28日 | 2026-11-10 | 2026-11-28 | 43 |
+| B | 每月20日 | 次月8日 | 2026-10-20 | 2026-11-08 | 23 |
+exit=0

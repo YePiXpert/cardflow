@@ -1,0 +1,467 @@
+{
+  "description": "任务书第10节回归样本：2026-10-16 消费 10,000 元，三张独立授信卡，商户允许最多3张卡拆分，交易当天入账，无活动/手续费/利息，还款在到期日扣现金（提前量0）。纯合成数据。",
+  "expected": [
+    {
+      "assertions": [
+        {
+          "equals": "2026-11-10",
+          "from": "cycles.A[0]",
+          "path": "/A/statement_date"
+        },
+        {
+          "equals": "2026-11-28",
+          "from": "cycles.A[1]",
+          "path": "/A/due_date"
+        },
+        {
+          "equals": "2026-10-20",
+          "from": "cycles.B[0]",
+          "path": "/B/statement_date"
+        },
+        {
+          "equals": "2026-11-08",
+          "from": "cycles.B[1]",
+          "path": "/B/due_date"
+        },
+        {
+          "equals": "2026-11-05",
+          "from": "cycles.C[0]",
+          "path": "/C/statement_date"
+        },
+        {
+          "equals": "2026-11-25",
+          "from": "cycles.C[1]",
+          "path": "/C/due_date"
+        }
+      ],
+      "kind": "cycles",
+      "name": "cycles"
+    },
+    {
+      "allocation": [
+        {
+          "amount_minor": 800000,
+          "card_id": "A"
+        },
+        {
+          "amount_minor": 200000,
+          "card_id": "C"
+        }
+      ],
+      "assertions": [
+        {
+          "equals": 300000,
+          "from": "plan_A8000_C2000.baseline_min_cash",
+          "path": "/verification/checks/baseline/min_balance_by_account/cash-main"
+        },
+        {
+          "equals": "42.4",
+          "from": "plan_A8000_C2000.weighted_buffer_days",
+          "path": "/verification/weighted_buffer_days"
+        },
+        {
+          "equals": -200000,
+          "from": "plan_A8000_C2000.stress_balance_2026-11-28",
+          "path": "/verification/checks/stress_income_delay/breaches",
+          "then": "/balance",
+          "where": {
+            "cash_account_id": "cash-main",
+            "on": "2026-11-28"
+          }
+        },
+        {
+          "equals": 200000,
+          "from": "plan_A8000_C2000.stress_gap_to_zero",
+          "path": "/verification/checks/stress_income_delay/breaches",
+          "then": "/gap_to_zero",
+          "where": {
+            "cash_account_id": "cash-main",
+            "on": "2026-11-28"
+          }
+        },
+        {
+          "equals": 400000,
+          "from": "plan_A8000_C2000.stress_gap_to_reserve",
+          "path": "/verification/checks/stress_income_delay/breaches",
+          "then": "/gap_to_reserve",
+          "where": {
+            "cash_account_id": "cash-main",
+            "on": "2026-11-28"
+          }
+        }
+      ],
+      "decision_scenario": "baseline",
+      "kind": "verify",
+      "name": "plan_A8000_C2000"
+    },
+    {
+      "allocation": [
+        {
+          "amount_minor": 1000000,
+          "card_id": "B"
+        }
+      ],
+      "assertions": [
+        {
+          "equals": -350000,
+          "from": "plan_B10000.balance_2026-11-08",
+          "path": "/verification/checks/baseline/breaches",
+          "then": "/balance",
+          "where": {
+            "cash_account_id": "cash-main",
+            "on": "2026-11-08"
+          }
+        },
+        {
+          "equals": -700000,
+          "from": "plan_B10000.balance_2026-11-16",
+          "path": "/verification/checks/baseline/breaches",
+          "then": "/balance",
+          "where": {
+            "cash_account_id": "cash-main",
+            "on": "2026-11-16"
+          }
+        },
+        {
+          "equals": -700000,
+          "from": "plan_B10000.min_cash",
+          "path": "/verification/checks/baseline/min_balance_by_account/cash-main"
+        }
+      ],
+      "decision_scenario": "baseline",
+      "kind": "verify",
+      "name": "plan_B10000"
+    },
+    {
+      "assertions": [
+        {
+          "equals": "BASELINE_SHORTFALL",
+          "from": "confirmed_scenario.baseline_shortfall_on (implies the status)",
+          "path": "/business_status"
+        },
+        {
+          "equals": "2026-11-08",
+          "from": "confirmed_scenario.baseline_shortfall_on",
+          "path": "/baseline/confirmed/accounts/cash-main/breaches/0/on"
+        },
+        {
+          "equals": -200000,
+          "from": "confirmed_scenario.balance",
+          "path": "/baseline/confirmed/accounts/cash-main/breaches/0/balance"
+        }
+      ],
+      "decision_scenario": "confirmed",
+      "kind": "plan",
+      "name": "confirmed_scenario",
+      "profile": "cash_safety"
+    },
+    {
+      "assertions": [
+        {
+          "equals": "OPTIMAL",
+          "from": "cash_safety_optimum (implies proven optimality)",
+          "path": "/solver_status"
+        },
+        {
+          "from": "cash_safety_optimum (the cards listed, no others)",
+          "length": 2,
+          "path": "/allocation"
+        },
+        {
+          "equals": 800000,
+          "from": "cash_safety_optimum.A",
+          "path": "/allocation",
+          "then": "/amount_minor",
+          "where": {
+            "card_id": "A"
+          }
+        },
+        {
+          "equals": 200000,
+          "from": "cash_safety_optimum.C",
+          "path": "/allocation",
+          "then": "/amount_minor",
+          "where": {
+            "card_id": "C"
+          }
+        }
+      ],
+      "decision_scenario": "baseline",
+      "kind": "plan",
+      "name": "cash_safety_optimum",
+      "profile": "cash_safety"
+    },
+    {
+      "assertions": [
+        {
+          "equals": 400000,
+          "from": "stress_sensitivity.min_extra_confirmed_cash",
+          "path": "/sensitivity/stress_income_delay/min_extra_confirmed_cash/total"
+        },
+        {
+          "equals": 600000,
+          "from": "stress_sensitivity.max_affordable_amount",
+          "path": "/sensitivity/stress_income_delay/max_affordable_amount/amount"
+        }
+      ],
+      "decision_scenario": "baseline",
+      "kind": "plan",
+      "name": "stress_sensitivity",
+      "profile": "cash_safety"
+    }
+  ],
+  "fixture_id": "REG-2026-10-16-10000",
+  "input": {
+    "cards": [
+      {
+        "billing_rule": {
+          "due": {
+            "day": 28,
+            "kind": "fixed_day",
+            "month_offset": 0
+          },
+          "holiday_rollover": "none",
+          "rule_id": "rule-A",
+          "source": "fixture",
+          "statement_day": 10,
+          "statement_day_inclusive": true,
+          "status": "user_declared"
+        },
+        "card_id": "A",
+        "channel_ok": true,
+        "credit_account_id": "acc-A",
+        "currency_ok": true,
+        "fee_fixed_minor": 0,
+        "fee_rate": "0",
+        "holds_uncounted_minor": 0,
+        "name": "卡A",
+        "posting_delay_max_days": 0,
+        "posting_delay_min_days": 0,
+        "potential_benefit_rate": "0",
+        "raw_available_minor": 800000,
+        "repay_from_cash_account_id": "cash-main",
+        "reservations_minor": 0,
+        "status_ok": true,
+        "verified_benefit_rate": "0"
+      },
+      {
+        "billing_rule": {
+          "due": {
+            "day": 8,
+            "kind": "fixed_day",
+            "month_offset": 1
+          },
+          "holiday_rollover": "none",
+          "rule_id": "rule-B",
+          "source": "fixture",
+          "statement_day": 20,
+          "statement_day_inclusive": true,
+          "status": "user_declared"
+        },
+        "card_id": "B",
+        "channel_ok": true,
+        "credit_account_id": "acc-B",
+        "currency_ok": true,
+        "fee_fixed_minor": 0,
+        "fee_rate": "0",
+        "holds_uncounted_minor": 0,
+        "name": "卡B",
+        "posting_delay_max_days": 0,
+        "posting_delay_min_days": 0,
+        "potential_benefit_rate": "0",
+        "raw_available_minor": 1500000,
+        "repay_from_cash_account_id": "cash-main",
+        "reservations_minor": 0,
+        "status_ok": true,
+        "verified_benefit_rate": "0"
+      },
+      {
+        "billing_rule": {
+          "due": {
+            "day": 25,
+            "kind": "fixed_day",
+            "month_offset": 0
+          },
+          "holiday_rollover": "none",
+          "rule_id": "rule-C",
+          "source": "fixture",
+          "statement_day": 5,
+          "statement_day_inclusive": true,
+          "status": "user_declared"
+        },
+        "card_id": "C",
+        "channel_ok": true,
+        "credit_account_id": "acc-C",
+        "currency_ok": true,
+        "fee_fixed_minor": 0,
+        "fee_rate": "0",
+        "holds_uncounted_minor": 0,
+        "name": "卡C",
+        "posting_delay_max_days": 0,
+        "posting_delay_min_days": 0,
+        "potential_benefit_rate": "0",
+        "raw_available_minor": 600000,
+        "repay_from_cash_account_id": "cash-main",
+        "reservations_minor": 0,
+        "status_ok": true,
+        "verified_benefit_rate": "0"
+      }
+    ],
+    "cash_accounts": [
+      {
+        "cash_account_id": "cash-main",
+        "currency": "CNY",
+        "name": "主现金账户",
+        "reserve_floor_minor": 200000,
+        "usable_for_repayment": true
+      }
+    ],
+    "events": [
+      {
+        "amount_minor": -100000,
+        "cash_account_id": "cash-main",
+        "category": "living",
+        "cls": "confirmed",
+        "event_id": "e1",
+        "label": "生活支出",
+        "on": "2026-10-27"
+      },
+      {
+        "amount_minor": -100000,
+        "cash_account_id": "cash-main",
+        "category": "bill",
+        "cls": "confirmed",
+        "event_id": "e2",
+        "label": "已有账单",
+        "on": "2026-10-28"
+      },
+      {
+        "amount_minor": 850000,
+        "cash_account_id": "cash-main",
+        "category": "income",
+        "cls": "expected",
+        "event_id": "e3",
+        "label": "预计收入",
+        "on": "2026-11-06"
+      },
+      {
+        "amount_minor": -500000,
+        "cash_account_id": "cash-main",
+        "category": "bill",
+        "cls": "confirmed",
+        "event_id": "e4",
+        "label": "已有账单",
+        "on": "2026-11-08"
+      },
+      {
+        "amount_minor": -350000,
+        "cash_account_id": "cash-main",
+        "category": "bill",
+        "cls": "confirmed",
+        "event_id": "e5",
+        "label": "已有账单",
+        "on": "2026-11-16"
+      },
+      {
+        "amount_minor": 700000,
+        "cash_account_id": "cash-main",
+        "category": "income",
+        "cls": "expected",
+        "event_id": "e6",
+        "label": "预计收入",
+        "on": "2026-11-20"
+      },
+      {
+        "amount_minor": -200000,
+        "cash_account_id": "cash-main",
+        "category": "living",
+        "cls": "confirmed",
+        "event_id": "e7",
+        "label": "生活支出",
+        "on": "2026-11-22"
+      },
+      {
+        "amount_minor": 500000,
+        "cash_account_id": "cash-main",
+        "category": "income",
+        "cls": "expected",
+        "event_id": "e8",
+        "label": "预计收入",
+        "on": "2026-11-26"
+      }
+    ],
+    "horizon_end": "2027-01-14",
+    "options": {
+      "decision_scenario": "baseline",
+      "global_reserve_floor_minor": 0,
+      "profile": "cash_safety",
+      "seed": 0,
+      "stale_after_days": 7,
+      "time_limit_s": 10,
+      "workers": 8
+    },
+    "pools": [],
+    "protocol_version": "1",
+    "request": {
+      "allow_split": true,
+      "amount_minor": 1000000,
+      "channel": "pos",
+      "currency": "CNY",
+      "max_cards": 3,
+      "min_split_minor": 1,
+      "payment_lead_days": 0,
+      "txn_date": "2026-10-16"
+    },
+    "scenarios": [
+      {
+        "description": "已确认口径：不计任何预计收入",
+        "event_overrides": [],
+        "expense_scale": "1",
+        "include_expected": false,
+        "income_delay_days": 0,
+        "income_scale": "1",
+        "same_day_order": "conservative",
+        "scenario_id": "confirmed"
+      },
+      {
+        "description": "基准预期口径：预计收入按期发生",
+        "event_overrides": [],
+        "expense_scale": "1",
+        "include_expected": true,
+        "income_delay_days": 0,
+        "income_scale": "1",
+        "same_day_order": "conservative",
+        "scenario_id": "baseline"
+      },
+      {
+        "description": "压力情景：2026-11-26 的 5,000 收入延迟至 2026-11-29",
+        "event_overrides": [
+          {
+            "event_id": "e8",
+            "on": "2026-11-29"
+          }
+        ],
+        "expense_scale": "1",
+        "include_expected": true,
+        "income_delay_days": 0,
+        "income_scale": "1",
+        "same_day_order": "conservative",
+        "scenario_id": "stress_income_delay"
+      }
+    ],
+    "snapshots": [
+      {
+        "as_of": "2026-10-16",
+        "balance_minor": 500000,
+        "cash_account_id": "cash-main",
+        "includes_event_ids": []
+      }
+    ]
+  },
+  "protocol_version": "1",
+  "source": {
+    "converter": "runner_py/convert_legacy_fixture.py",
+    "path": "fixtures/regression_2026-10-16_10000.json",
+    "sha256": "d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e"
+  }
+}

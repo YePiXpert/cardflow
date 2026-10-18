@@ -1,0 +1,7 @@
+# T-005 0002-ruff.txt - 2026-10-17T08:13:51Z, working dir services/api
+$ uv run ruff check .
+All checks passed!
+exit=0
+$ uv run ruff format --check .
+110 files already formatted
+exit=0

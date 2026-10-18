@@ -1,0 +1,84 @@
+# T-014 校验 scan_dirty.txt 不含原文（2026-10-17T02:09:51Z），工作目录为仓库根目录
+# 方法：从 dirty.log 本身收集每个文本规则匹配到的子串（含 URL 解码形式）和每个被字段规则标记的值，检查它们是否出现在 scan_dirty.txt 中；只打印数量
+$ cat no_echo_check.py
+"""Check that a pii_scan output file repeats none of the sensitive text of the scanned log.
+
+Usage: python3 no_echo_check.py <scanned log> <scan output file>
+Collects, from the scanned log itself, every substring a text rule matched (also in the
+URL-decoded form) and every value a field rule flagged; prints counts only.
+"""
+
+import json
+import re
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path("tools").resolve()))
+import pii_scan  # noqa: E402
+
+log_path, output_path = Path(sys.argv[1]), Path(sys.argv[2])
+output = output_path.read_text(encoding="utf-8")
+secrets: set[str] = set()
+
+
+def collect_text(text: str) -> None:
+    for variant in pii_scan._variants(text):
+        for _, (start, end) in pii_scan.find_text(variant):
+            secrets.add(variant[start:end])
+
+
+def collect_value(value: object, keys: tuple[str, ...]) -> None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            collect_value(child, (*keys, key))
+    elif isinstance(value, list):
+        for child in value:
+            collect_value(child, keys)
+    elif pii_scan._field_rule_names(value, keys):
+        secrets.add(str(value))
+
+
+sample_lines = 0
+for line in log_path.read_text(encoding="utf-8").splitlines():
+    if not line.strip() or line.startswith("#"):
+        continue
+    sample_lines += 1
+    collect_text(line)
+    brace = line.find("{")
+    if brace >= 0:
+        try:
+            collect_value(json.loads(line[brace:]), ())
+        except ValueError:
+            pass
+    for match in pii_scan._KEY_VALUE.finditer(line):
+        located = pii_scan._value_at(line, match.end()) if match.end() < len(line) else None
+        if located is not None:
+            collect_value(located[0], (match.group("key"),))
+            if isinstance(located[0], str):
+                collect_text(located[0])
+
+secrets = {secret.strip() for secret in secrets if secret.strip()}
+leaked = sorted(secret for secret in secrets if secret in output)
+pattern = re.compile(r"[^:]+:\d+:(?:-|[A-Za-z0-9_.<>\[\]-]+):[a-z0-9_]+")
+hit_lines = [line for line in output.splitlines() if line.startswith(str(log_path))]
+malformed = [line for line in hit_lines if not pattern.fullmatch(line)]
+print(f"sample lines in {log_path}: {sample_lines}")
+print(f"distinct sensitive substrings/values collected from them: {len(secrets)}")
+print(f"of those, found anywhere in {output_path}: {len(leaked)}")
+print(f"hit lines in {output_path}: {len(hit_lines)}; not of the form FILE:LINE:FIELD:RULE: {len(malformed)}")
+sys.exit(1 if leaked or malformed or not hit_lines else 0)
+
+$ python3 no_echo_check.py tools/pii_samples/dirty.log evidence/m0/T-014/scan_dirty.txt
+sample lines in tools/pii_samples/dirty.log: 32
+distinct sensitive substrings/values collected from them: 38
+of those, found anywhere in evidence/m0/T-014/scan_dirty.txt: 0
+hit lines in evidence/m0/T-014/scan_dirty.txt: 43; not of the form FILE:LINE:FIELD:RULE: 0
+exit=0
+
+# 对照：把 dirty.log 本身当作"输出"检查，必须全部被发现（证明校验有效）
+$ python3 no_echo_check.py tools/pii_samples/dirty.log tools/pii_samples/dirty.log
+sample lines in tools/pii_samples/dirty.log: 32
+distinct sensitive substrings/values collected from them: 38
+of those, found anywhere in tools/pii_samples/dirty.log: 38
+hit lines in tools/pii_samples/dirty.log: 0; not of the form FILE:LINE:FIELD:RULE: 0
+exit=1

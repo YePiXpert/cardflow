@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/PlanInput.schema.json",
+  "title": "PlanInput",
+  "description": "The complete input of one solve: data, scenarios and options. Its input_hash is sha256 over the canonical JSON of this document (see README). Rules JSON Schema cannot express, enforced by every v1 adapter: ids unique within cards, cash_accounts, events, scenarios and pools; at most one snapshot per cash account; every cash account in the request currency; every cash_account_id / repay_from_cash_account_id names a cash account; includes_event_ids name events of the snapshot's own account dated on or before its as_of; an event's 'at' falls on its 'on' (in the timestamp's own offset); cards sharing a credit_account_id report the same raw_available_minor and the same pool_id; event_overrides name existing events, each at most once per scenario; posting_delay_min_days <= posting_delay_max_days.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "request",
+    "cards",
+    "pools",
+    "cash_accounts",
+    "snapshots",
+    "events",
+    "scenarios",
+    "horizon_end",
+    "options"
+  ],
+  "properties": {
+    "protocol_version": { "$ref": "common.schema.json#/$defs/ProtocolVersion" },
+    "request": { "$ref": "PlanRequest.schema.json" },
+    "cards": {
+      "description": "Candidate cards; order is the order of allocation lines and rejections. At most 200 (supported range).",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 200,
+      "items": { "$ref": "CardOption.schema.json" }
+    },
+    "pools": { "$ref": "Pools.schema.json" },
+    "cash_accounts": {
+      "description": "At most 100 (supported range).",
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": { "$ref": "CashAccount.schema.json" }
+    },
+    "snapshots": {
+      "description": "A cash account without a snapshot makes the run NEEDS_DATA (MISSING_SNAPSHOT).",
+      "type": "array",
+      "items": { "$ref": "Snapshot.schema.json" }
+    },
+    "events": {
+      "description": "At most 10,000 (supported range).",
+      "type": "array",
+      "maxItems": 10000,
+      "items": { "$ref": "CashEvent.schema.json" }
+    },
+    "scenarios": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "Scenario.schema.json" }
+    },
+    "horizon_end": {
+      "description": "Last date of the cash timeline, never extended (engine-spec §12.7): only the input decides what is checked. A card whose repayment would fall after it is excluded (REPAY_AFTER_HORIZON); the API sets it to at least txn_date + 180 days.",
+      "$ref": "common.schema.json#/$defs/Date"
+    },
+    "options": { "$ref": "Options.schema.json" }
+  }
+}

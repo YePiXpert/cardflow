@@ -1,0 +1,47 @@
+# T-012 containers BEFORE deployment - 2026-10-17T23:07:53Z
+$ docker ps --format table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}
+NAMES                 IMAGE                                          STATUS                  PORTS
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+workbuddy2api         workbuddy2api-wb2api                           Up 8 hours (healthy)    127.0.0.1:7863->7863/tcp
+cardflow-dev-db-1     postgres:18.6-trixie                           Up 32 hours (healthy)   127.0.0.1:18432->5432/tcp
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+exit=0
+
+$ docker compose ls
+NAME                STATUS              CONFIG FILES
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+cardflow-dev        running(1)          /projects/cardflow/deploy/compose.dev.yaml
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+workbuddy2api       running(1)          /opt/workbuddy2api/docker-compose.yml
+exit=0
+
+# T-012 containers AFTER deployment - 2026-10-17T23:18:07Z
+$ docker ps --format table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}
+NAMES                 IMAGE                                          STATUS                   PORTS
+cardflow-api-1        cardflow/api:0.1.0-3166fe6bf311                Up 3 minutes (healthy)   127.0.0.1:18080->8000/tcp
+cardflow-worker-1     cardflow/api:0.1.0-3166fe6bf311                Up 3 minutes             8000/tcp
+cardflow-db-1         postgres:18.6-trixie                           Up 9 minutes (healthy)   5432/tcp
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+workbuddy2api         workbuddy2api-wb2api                           Up 8 hours (healthy)     127.0.0.1:7863->7863/tcp
+cardflow-dev-db-1     postgres:18.6-trixie                           Up 32 hours (healthy)    127.0.0.1:18432->5432/tcp
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+exit=0
+
+$ docker compose ls
+NAME                STATUS              CONFIG FILES
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+cardflow            running(3)          /projects/cardflow/deploy/compose.yaml
+cardflow-dev        running(1)          /projects/cardflow/deploy/compose.dev.yaml
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+workbuddy2api       running(1)          /opt/workbuddy2api/docker-compose.yml
+exit=0
+
+# comparison (name image ports): lines only before (-) / only after (+)
++ cardflow-api-1 cardflow/api:0.1.0-3166fe6bf311 127.0.0.1:18080->8000/tcp
++ cardflow-db-1 postgres:18.6-trixie 5432/tcp
++ cardflow-worker-1 cardflow/api:0.1.0-3166fe6bf311 8000/tcp
+# every container running before is still running:
+  yes (none missing)
+# containers that are not running at all (any project), docker ps -a --filter status=exited:
+cardflow-provision-1 Exited (0) 3 minutes ago
+cardflow-migrate-1 Exited (0) 3 minutes ago

@@ -1,0 +1,37 @@
+# T-004b addendum (2026-10-17T02:58:42Z): test added after b-red.txt, run against a /tmp copy of cardflow/ whose
+# card_cycles_to_protocol still has the pre-fix 'except ValueError' (the repository is not modified); PYTHONPATH puts the copy first
+$ diff /tmp/t004b/redcheck/cardflow/planner/engine/protocol.py cardflow/planner/engine/protocol.py
+1207c1207
+<         except ValueError as e:
+---
+>         except (ValueError, OverflowError) as e:  # invalid rule, or a date past the calendar
+$ PYTHONPATH=/tmp/t004b/redcheck uv run pytest -p no:cacheprovider -q tests/protocol/test_limits.py -k unrepresentable
+paths = ProtocolPaths(repo_root=PosixPath('/projects/cardflow'), protocol_root=PosixPath('/projects/cardflow/packages/rules-pr....v1.json'), poc_fixture=PosixPath('/projects/cardflow/poc/engine_reference/fixtures/regression_2026-10-16_10000.json'))
+/tmp/t004b/redcheck/cardflow/planner/engine/protocol.py:1206: in card_cycles_to_protocol
+/tmp/t004b/redcheck/cardflow/planner/engine/allocation.py:114: in derive_card_info
+/tmp/t004b/redcheck/cardflow/planner/engine/billing.py:135: in cycles_for_transaction
+/tmp/t004b/redcheck/cardflow/planner/engine/billing.py:120: in cycle_for_posting
+E               OverflowError: date value out of range
+/tmp/t004b/redcheck/cardflow/planner/engine/billing.py:95: OverflowError
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+1 failed, 45 deselected, 1 warning in 0.09s
+$ uv run pytest -p no:cacheprovider -q tests/protocol/test_limits.py -k unrepresentable   # repository code
+1 passed, 45 deselected, 1 warning in 0.06s
+
+# second addendum test (amount not echoed in range errors), same method: the /tmp copy has the T-004 message
+$ diff /tmp/t004b/redcheck/cardflow/planner/engine/protocol.py cardflow/planner/engine/protocol.py
+275,276c275,276
+<         if not lo <= value <= hi:
+<             raise ProtocolError(path, f"{value} is outside [{lo}, {hi}]")
+---
+>         if not lo <= value <= hi:  # the value itself is not echoed (may be an amount)
+>             raise ProtocolError(path, f"must be an integer in [{lo}, {hi}]")
+$ PYTHONPATH=/tmp/t004b/redcheck uv run pytest -p no:cacheprovider -q tests/protocol/test_limits.py -k echo
+E           AssertionError: assert '4611686018427387904' not in '/snapshots/...00000000000]'
+E             
+E             '4611686018427387904' is contained here:
+E               /snapshots/0/balance_minor: 4611686018427387904 is outside [-10000000000000, 10000000000000]
+E             ?                             +++++++++++++++++++
+1 failed, 45 deselected, 1 warning in 0.08s
+$ uv run pytest -p no:cacheprovider -q tests/protocol/test_limits.py -k echo   # repository code
+1 passed, 45 deselected, 1 warning in 0.06s

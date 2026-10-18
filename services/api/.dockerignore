@@ -1,0 +1,25 @@
+# Build context of services/api/Dockerfile (T-012). Allow-list: the image needs only these
+# files; everything else (virtualenv, caches, tests, secrets, evidence, local .env) stays out.
+**
+!pyproject.toml
+!uv.lock
+!.python-version
+!alembic.ini
+!alembic
+!cardflow
+
+# Never sent, even from inside the allowed directories.
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/.pytest_cache
+**/.ruff_cache
+**/.hypothesis
+**/.mypy_cache
+**/secrets
+**/secrets.dev
+**/evidence
+**/.env
+**/.env.*
+**/*.pem
+**/*.key

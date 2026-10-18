@@ -1,0 +1,26 @@
+# CARDFLOW_TEST_MIGRATION_TARGET (coordinator add-on) - 2026-10-17T02:16:47Z, working dir services/api
+# head is 0001 today, so target=head and target=0001 run the same schema; the third run (base)
+# only demonstrates the skip path of head-bound tests (require_head_schema).
+
+$ CARDFLOW_TEST_MIGRATION_TARGET=head CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -q -rs -p no:warnings tests/db
+........................................................................ [ 93%]
+.....                                                                    [100%]
+77 passed in 3.77s
+exit=0
+
+$ CARDFLOW_TEST_MIGRATION_TARGET=0001 CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -q -rs -p no:warnings tests/db
+........................................................................ [ 93%]
+.....                                                                    [100%]
+77 passed in 3.84s
+exit=0
+
+$ CARDFLOW_TEST_MIGRATION_TARGET=base CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -q -rs -p no:warnings tests/db/test_model_drift.py tests/db/test_migrations.py
+sssss........                                                            [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/db/test_model_drift.py:97: CARDFLOW_TEST_MIGRATION_TARGET=base pins the schema to revision base, but this test checks the head schema 0001; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:156: CARDFLOW_TEST_MIGRATION_TARGET=base pins the schema to revision base, but this test checks the head schema 0001; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:183: CARDFLOW_TEST_MIGRATION_TARGET=base pins the schema to revision base, but this test checks the head schema 0001; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:197: CARDFLOW_TEST_MIGRATION_TARGET=base pins the schema to revision base, but this test checks the head schema 0001; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:218: CARDFLOW_TEST_MIGRATION_TARGET=base pins the schema to revision base, but this test checks the head schema 0001; unset the variable to run it
+8 passed, 5 skipped in 3.20s
+exit=0

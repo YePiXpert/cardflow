@@ -1,0 +1,10 @@
+# golden fixture 复制核对（T-003，2026-10-16T15:35:18Z），工作目录为仓库根
+$ sha256sum poc/engine_reference/fixtures/regression_2026-10-16_10000.json packages/rules-protocol/fixtures/regression_2026-10-16_10000.json
+d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e  poc/engine_reference/fixtures/regression_2026-10-16_10000.json
+d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e  packages/rules-protocol/fixtures/regression_2026-10-16_10000.json
+$ cmp poc/engine_reference/fixtures/regression_2026-10-16_10000.json packages/rules-protocol/fixtures/regression_2026-10-16_10000.json && echo "byte-identical"
+byte-identical
+$ stat -c "%s bytes  %n" <both files>
+3445 bytes  poc/engine_reference/fixtures/regression_2026-10-16_10000.json
+3445 bytes  packages/rules-protocol/fixtures/regression_2026-10-16_10000.json
+RESULT: sha256 match

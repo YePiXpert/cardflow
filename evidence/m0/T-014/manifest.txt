@@ -1,0 +1,28 @@
+# T-014 交付物与证据清单（2026-10-17T02:11:10Z），工作目录为仓库根目录
+$ sha256sum tools/pii_scan.py tools/pii_log_probe.py tools/tests/test_pii_scan.py tools/pii_samples/clean.log tools/pii_samples/dirty.log tools/README.md tools/pytest.ini tools/ruff.toml
+920a3e50b0f516a7f989fa35ad68a9642d1cf336861c7cb92d25ff96ab38a670  tools/pii_scan.py
+14841e77d725450c31dd1180b7678d7b1780c30bc5c84b688cb435c488ad8a08  tools/pii_log_probe.py
+ff13a8e80ec00e5c8be0ea40f5e07ecff02af74be590b1ce1c6f3f4ce7922ab5  tools/tests/test_pii_scan.py
+0a290b924bd9f19d0ac27afdc235c3e7bf70766c6ed09b0ff247490138be84ba  tools/pii_samples/clean.log
+cd39ae627c8fdb9464547f0aec403d79104ed18ceb34a9dac47f8b82bb9ae87e  tools/pii_samples/dirty.log
+5bc986fb6b9f8be7cec71d95d39f9c16bc836f1077c20b4b224d3020c1275bd3  tools/README.md
+b91d90121d786bc09b7d0ef725703977544230ad73b3520109ca40bbb7e972dd  tools/pytest.ini
+39d308b63bb6f88ab93e42613b2269a6df62734863c2e52b895a16c215673953  tools/ruff.toml
+$ wc -l tools/pii_scan.py tools/pii_log_probe.py tools/tests/test_pii_scan.py tools/pii_samples/clean.log tools/pii_samples/dirty.log tools/README.md
+   945 tools/pii_scan.py
+   327 tools/pii_log_probe.py
+   768 tools/tests/test_pii_scan.py
+    26 tools/pii_samples/clean.log
+    34 tools/pii_samples/dirty.log
+   150 tools/README.md
+  2250 total
+$ ls evidence/m0/T-014/
+ci-dry-run.txt
+clean-log-generation.txt
+latent-warning-leak.txt
+manifest.txt
+pytest.txt
+ruff.txt
+scan_clean.txt
+scan_dirty_no_echo.txt
+scan_dirty.txt

@@ -1,0 +1,93 @@
+# T-008 worker run on the development PostgreSQL - 2026-10-17T07:44:14Z, working dir services/api
+# real cardflow.cli.main (tests/jobs/worker_launcher.py registers the demo.* kinds in its own process only)
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run python tests/jobs/demo_worker_run.py
+[07:44:14.836] development server 127.0.0.1:18432; demo database cardflow_t008_demo
+[07:44:15.154] migrated cardflow_t008_demo to head 0001
+[07:44:15.173] enqueued 10 demo jobs (one made to look abandoned by a dead worker)
+[07:44:15.173] starting: python tests/jobs/worker_launcher.py worker --concurrency 2 --shutdown-timeout 15
+[07:44:15.174] worker process pid=757255
+[07:44:20.174] t+5s
+[07:44:20.179]   heartbeat worker_id=YePiXpert:757255:3ff8c8 pid=757255 version=t008-demo running_jobs=0 last_seen_at=07:44:15Z (age 4.8 s)
+[07:44:20.179]   jobs by status: dead=1, failed=1, queued=4, succeeded=4
+[07:44:25.179] t+10s
+[07:44:25.183]   heartbeat worker_id=YePiXpert:757255:3ff8c8 pid=757255 version=t008-demo running_jobs=0 last_seen_at=07:44:15Z (age 9.8 s)
+[07:44:25.183]   jobs by status: dead=1, failed=1, queued=4, succeeded=4
+[07:44:30.183] t+15s
+[07:44:30.186]   heartbeat worker_id=YePiXpert:757255:3ff8c8 pid=757255 version=t008-demo running_jobs=0 last_seen_at=07:44:25Z (age 4.8 s)
+[07:44:30.186]   jobs by status: dead=2, failed=1, queued=1, succeeded=6
+[07:44:35.187] t+20s
+[07:44:35.190]   heartbeat worker_id=YePiXpert:757255:3ff8c8 pid=757255 version=t008-demo running_jobs=0 last_seen_at=07:44:25Z (age 9.8 s)
+[07:44:35.190]   jobs by status: dead=3, failed=1, succeeded=6
+[07:44:35.194] t+20s enqueued a 16 s subprocess job
+[07:44:45.743] t+31s a heartbeat reports the running job:
+[07:44:45.744]   heartbeat worker_id=YePiXpert:757255:3ff8c8 pid=757255 version=t008-demo running_jobs=1 last_seen_at=07:44:45Z (age 0.3 s)
+[07:44:45.744]   jobs by status: dead=3, failed=1, running=1, succeeded=6
+[07:44:45.745] t+31s
+[07:44:45.745]   heartbeat worker_id=YePiXpert:757255:3ff8c8 pid=757255 version=t008-demo running_jobs=1 last_seen_at=07:44:45Z (age 0.3 s)
+[07:44:45.745]   jobs by status: dead=3, failed=1, running=1, succeeded=6
+[07:44:45.745] sending SIGTERM to pid 757255
+[07:44:52.124] worker exited with code 0 6.4 s after SIGTERM (total run 37.0 s)
+[07:44:52.128] processes of this run still alive (worker, job children): none
+[07:44:52.128] after shutdown:
+[07:44:52.130]   heartbeat: no worker_heartbeats row
+[07:44:52.130]   jobs by status: dead=3, failed=1, succeeded=7
+[07:44:52.130] final job table:
+[07:44:52.131]   job                              kind                     status     att   last_error                 result
+[07:44:52.131]   inline noop #1                   demo.noop                succeeded  1/3   -                          {'ok': True, 'attempt': 1}
+[07:44:52.131]   inline noop #2                   demo.noop                succeeded  1/3   -                          {'ok': True, 'attempt': 1}
+[07:44:52.131]   subprocess sum 1..10             demo.sum                 succeeded  1/3   -                          {'pid': 757268, 'sum': 55}
+[07:44:52.131]   subprocess crash (os._exit)      demo.crash               dead       1/1   CRASHED                    
+[07:44:52.131]   permanent JobError               demo.child_job_error     failed     1/3   FILE_REJECTED              
+[07:44:52.131]   subprocess sleep 4 s             demo.sleep               succeeded  1/3   -                          {'slept_ms': 4000}
+[07:44:52.131]   left by a crashed worker         demo.noop                succeeded  2/3   LEASE_EXPIRED              {'ok': True, 'attempt': 2}
+[07:44:52.131]   inline error with PII message    demo.fail_pii            dead       2/2   HANDLER_ERROR:ValueError   
+[07:44:52.131]   fails once then succeeds         demo.fail_then_succeed   succeeded  2/3   HANDLER_ERROR:RuntimeError {'attempt': 2}
+[07:44:52.131]   subprocess 60 s, timeout 2 s     demo.sleep               dead       2/2   TIMEOUT                    
+[07:44:52.131]   in flight at SIGTERM (16 s)      demo.sleep               succeeded  1/3   -                          {'slept_ms': 16000}
+[07:44:52.131] worker log (39 lines, JSON, stderr+stdout of the worker):
+{"ts":"2026-10-17T07:44:15.413+00:00","level":"info","logger":"cardflow.jobs.worker","message":"worker started worker_id=YePiXpert:757255:3ff8c8 concurrency=2 kinds=demo.child_fail_pii,demo.child_job_error,demo.crash,demo.fail_pii,demo.fail_then_succeed,demo.float_result,demo.fraction,demo.fraction_persisted,demo.ignore_term,demo.job_error,demo.limited,demo.noop,demo.not_json,demo.persist_effect,demo.persist_fail,demo.sleep,demo.sleep_cooperative,demo.sleep_stuck,demo.sum,demo.sum_prepared,demo.track,demo.wait_gate,demo.write_effect lease_s=60 heartbeat_s=10 version=t008-demo"}
+{"ts":"2026-10-17T07:44:15.414+00:00","level":"info","logger":"cardflow.jobs.periodic","message":"periodic tasks scheduled system.reclaim_leases=30s system.purge_heartbeats=600s"}
+{"ts":"2026-10-17T07:44:15.419+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d3f-7363-8f55-69801f8607a8 kind=demo.noop attempt=1/3 mode=inline timeout_s=30"}
+{"ts":"2026-10-17T07:44:15.419+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d40-7350-b0d3-c3bf50a2d4ee kind=demo.noop attempt=1/3 mode=inline timeout_s=30"}
+{"ts":"2026-10-17T07:44:15.423+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job succeeded job_id=01a148d1-8d3f-7363-8f55-69801f8607a8 kind=demo.noop attempt=1 duration_ms=3"}
+{"ts":"2026-10-17T07:44:15.424+00:00","level":"warning","logger":"cardflow.jobs.periodic","message":"reclaimed expired lease job_id=01a148d1-8d43-78cc-9c83-fcd3c5332402 kind=demo.noop attempts=1 error=LEASE_EXPIRED next=queued"}
+{"ts":"2026-10-17T07:44:15.425+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d40-79fc-8e31-c37dec9d46bb kind=demo.sum attempt=1/3 mode=subprocess timeout_s=30"}
+{"ts":"2026-10-17T07:44:15.428+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job succeeded job_id=01a148d1-8d40-7350-b0d3-c3bf50a2d4ee kind=demo.noop attempt=1 duration_ms=9"}
+{"ts":"2026-10-17T07:44:15.431+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d40-7eed-b376-64debf39e0b2 kind=demo.sleep attempt=1/3 mode=subprocess timeout_s=30"}
+{"ts":"2026-10-17T07:44:15.679+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job succeeded job_id=01a148d1-8d40-79fc-8e31-c37dec9d46bb kind=demo.sum attempt=1 duration_ms=253"}
+{"ts":"2026-10-17T07:44:15.682+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d41-7991-9023-1f3d1be90c0a kind=demo.sleep attempt=1/2 mode=subprocess timeout_s=2"}
+{"ts":"2026-10-17T07:44:17.687+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job subprocess stopped job_id=01a148d1-8d41-7991-9023-1f3d1be90c0a kind=demo.sleep pid=757350 signal=SIGTERM status=timeout"}
+{"ts":"2026-10-17T07:44:17.693+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job failed job_id=01a148d1-8d41-7991-9023-1f3d1be90c0a kind=demo.sleep attempt=1/2 error=TIMEOUT next=queued delay_s=13.8"}
+{"ts":"2026-10-17T07:44:17.696+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d42-704e-b711-984286767b4a kind=demo.fail_pii attempt=1/2 mode=inline timeout_s=30"}
+{"ts":"2026-10-17T07:44:17.697+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job handler raised job_id=01a148d1-8d42-704e-b711-984286767b4a kind=demo.fail_pii","exc_type":"ValueError","exc_frames":["jobs/worker.py:609:_run_inline","jobs/jobs_testkit.py:111:fail_pii"]}
+{"ts":"2026-10-17T07:44:17.700+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job failed job_id=01a148d1-8d42-704e-b711-984286767b4a kind=demo.fail_pii attempt=1/2 error=HANDLER_ERROR:ValueError next=queued delay_s=10.1"}
+{"ts":"2026-10-17T07:44:17.704+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d42-770f-9335-b082953cc574 kind=demo.fail_then_succeed attempt=1/3 mode=inline timeout_s=30"}
+{"ts":"2026-10-17T07:44:17.705+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job handler raised job_id=01a148d1-8d42-770f-9335-b082953cc574 kind=demo.fail_then_succeed","exc_type":"RuntimeError","exc_frames":["jobs/worker.py:609:_run_inline","jobs/jobs_testkit.py:119:fail_then_succeed"]}
+{"ts":"2026-10-17T07:44:17.708+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job failed job_id=01a148d1-8d42-770f-9335-b082953cc574 kind=demo.fail_then_succeed attempt=1/3 error=HANDLER_ERROR:RuntimeError next=queued delay_s=10.2"}
+{"ts":"2026-10-17T07:44:17.710+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d42-7e69-b9fa-dc51b6f877f8 kind=demo.crash attempt=1/1 mode=subprocess timeout_s=30"}
+{"ts":"2026-10-17T07:44:17.957+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job subprocess exited without a result job_id=01a148d1-8d42-7e69-b9fa-dc51b6f877f8 kind=demo.crash exitcode=3"}
+{"ts":"2026-10-17T07:44:17.962+00:00","level":"error","logger":"cardflow.jobs.worker","message":"job failed job_id=01a148d1-8d42-7e69-b9fa-dc51b6f877f8 kind=demo.crash attempt=1/1 error=CRASHED next=dead"}
+{"ts":"2026-10-17T07:44:17.965+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d43-72c5-9d30-613e73589fdf kind=demo.child_job_error attempt=1/3 mode=subprocess timeout_s=30"}
+{"ts":"2026-10-17T07:44:18.220+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job failed job_id=01a148d1-8d43-72c5-9d30-613e73589fdf kind=demo.child_job_error attempt=1/3 error=FILE_REJECTED next=failed"}
+{"ts":"2026-10-17T07:44:19.682+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job succeeded job_id=01a148d1-8d40-7eed-b376-64debf39e0b2 kind=demo.sleep attempt=1 duration_ms=4250"}
+{"ts":"2026-10-17T07:44:25.704+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d43-78cc-9c83-fcd3c5332402 kind=demo.noop attempt=2/3 mode=inline timeout_s=30"}
+{"ts":"2026-10-17T07:44:25.710+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job succeeded job_id=01a148d1-8d43-78cc-9c83-fcd3c5332402 kind=demo.noop attempt=2 duration_ms=5"}
+{"ts":"2026-10-17T07:44:28.725+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d42-704e-b711-984286767b4a kind=demo.fail_pii attempt=2/2 mode=inline timeout_s=30"}
+{"ts":"2026-10-17T07:44:28.725+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d42-770f-9335-b082953cc574 kind=demo.fail_then_succeed attempt=2/3 mode=inline timeout_s=30"}
+{"ts":"2026-10-17T07:44:28.726+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job handler raised job_id=01a148d1-8d42-704e-b711-984286767b4a kind=demo.fail_pii","exc_type":"ValueError","exc_frames":["jobs/worker.py:609:_run_inline","jobs/jobs_testkit.py:111:fail_pii"]}
+{"ts":"2026-10-17T07:44:28.730+00:00","level":"error","logger":"cardflow.jobs.worker","message":"job failed job_id=01a148d1-8d42-704e-b711-984286767b4a kind=demo.fail_pii attempt=2/2 error=HANDLER_ERROR:ValueError next=dead"}
+{"ts":"2026-10-17T07:44:28.731+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job succeeded job_id=01a148d1-8d42-770f-9335-b082953cc574 kind=demo.fail_then_succeed attempt=2 duration_ms=5"}
+{"ts":"2026-10-17T07:44:31.747+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-8d41-7991-9023-1f3d1be90c0a kind=demo.sleep attempt=2/2 mode=subprocess timeout_s=2"}
+{"ts":"2026-10-17T07:44:33.753+00:00","level":"warning","logger":"cardflow.jobs.worker","message":"job subprocess stopped job_id=01a148d1-8d41-7991-9023-1f3d1be90c0a kind=demo.sleep pid=757479 signal=SIGTERM status=timeout"}
+{"ts":"2026-10-17T07:44:33.758+00:00","level":"error","logger":"cardflow.jobs.worker","message":"job failed job_id=01a148d1-8d41-7991-9023-1f3d1be90c0a kind=demo.sleep attempt=2/2 error=TIMEOUT next=dead"}
+{"ts":"2026-10-17T07:44:35.768+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job claimed job_id=01a148d1-db78-7ba8-a6f6-e6d4a3e66263 kind=demo.sleep attempt=1/3 mode=subprocess timeout_s=30"}
+{"ts":"2026-10-17T07:44:45.794+00:00","level":"info","logger":"cardflow.jobs.worker","message":"worker stopping reason=SIGTERM running=1 shutdown_timeout_s=15"}
+{"ts":"2026-10-17T07:44:52.031+00:00","level":"info","logger":"cardflow.jobs.worker","message":"job succeeded job_id=01a148d1-db78-7ba8-a6f6-e6d4a3e66263 kind=demo.sleep attempt=1 duration_ms=16262"}
+{"ts":"2026-10-17T07:44:52.033+00:00","level":"info","logger":"cardflow.jobs.worker","message":"worker stopped worker_id=YePiXpert:757255:3ff8c8 claimed=14 succeeded=7 retried=3 failed=1 dead=3 timed_out=2 released=0 abandoned=0"}
+[07:44:52.131] PII scan: python3 -I tools/pii_scan.py /tmp/cardflow_t008_demo.worker.log
+pii_scan: 1 file(s), 39 line(s), 0 hit(s)
+[07:44:52.173] pii_scan exit code 0 (0 = no hits)
+[07:44:52.173] synthetic PII markers found in the log: none
+[07:44:52.190] dropped database cardflow_t008_demo
+[07:44:52.190] RESULT: OK
+exit=0

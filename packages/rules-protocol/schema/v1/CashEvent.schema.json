@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/CashEvent.schema.json",
+  "title": "CashEvent",
+  "description": "An existing cash flow of one account, without the plan under evaluation (engine-spec §2 CashEvent). Negative amount = outflow. 'expected' events are dropped in scenarios with include_expected=false; expected inflows are delayed/scaled by the scenario; outflows of category 'living' are scaled by expense_scale. Same-day events: outflows before inflows unless the scenario orders by timestamp and every event of that day has 'at' (the plan's repayments do not count for that decision and come first on a timestamp-ordered day). An event whose date a scenario changes loses its 'at' (engine-spec §12.4).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "cash_account_id", "on", "amount_minor", "cls", "category"],
+  "properties": {
+    "event_id": { "$ref": "common.schema.json#/$defs/EventId" },
+    "cash_account_id": { "$ref": "common.schema.json#/$defs/Id" },
+    "on": { "$ref": "common.schema.json#/$defs/Date" },
+    "at": {
+      "description": "Exact time if known (used only for same_day_order 'timestamp'). Its date, in its own offset, must be 'on' (adapter rule). Equal instants keep the order of the events array.",
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "amount_minor": { "$ref": "common.schema.json#/$defs/MinorAmount" },
+    "cls": { "enum": ["confirmed", "expected", "planned"] },
+    "category": {
+      "enum": ["income", "bill", "living", "repayment", "transfer_in", "transfer_out", "fee", "other"]
+    },
+    "label": {
+      "description": "Display label. Absent = empty.",
+      "$ref": "common.schema.json#/$defs/Text"
+    }
+  }
+}

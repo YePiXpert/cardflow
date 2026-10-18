@@ -1,0 +1,108 @@
+# T-008 soak: tests/jobs run repeatedly (pytest -q -x -o faulthandler_timeout=25), 2026-10-17T07:45:34Z
+# Loop script /tmp/t008_hunt.sh; development continued during the soak, so later iterations ran newer code
+# (116 -> 120 tests). Iteration 25 stopped on a Hypothesis counterexample in the backoff property test:
+# factor == 1 + jitter with jitter = 2.2e-16 let float rounding reorder two delays by one ulp. Fixed by
+# requiring factor >= (1 + jitter) * (1 + 1e-9) (or the constant policy factor=1, jitter=0); regression test
+# test_backoff_boundary_policies_are_rejected. No hang (faulthandler timeout) occurred in any iteration.
+
+iteration 1 rc=0 116 passed, 1 warning in 38.94s
+iteration 2 rc=0 116 passed, 1 warning in 43.30s
+iteration 3 rc=0 116 passed, 1 warning in 38.38s
+iteration 4 rc=0 116 passed, 1 warning in 38.84s
+iteration 5 rc=0 117 passed, 1 warning in 39.33s
+iteration 6 rc=0 117 passed, 1 warning in 39.01s
+iteration 7 rc=0 117 passed, 1 warning in 39.19s
+iteration 8 rc=0 118 passed, 1 warning in 39.46s
+iteration 9 rc=0 118 passed, 1 warning in 39.06s
+iteration 10 rc=0 118 passed, 1 warning in 39.14s
+iteration 11 rc=0 118 passed, 1 warning in 39.03s
+iteration 12 rc=0 118 passed, 1 warning in 43.47s
+iteration 13 rc=0 118 passed, 1 warning in 38.96s
+iteration 14 rc=0 118 passed, 1 warning in 38.97s
+iteration 15 rc=0 118 passed, 1 warning in 38.78s
+iteration 16 rc=0 118 passed, 1 warning in 39.90s
+iteration 17 rc=0 118 passed, 1 warning in 40.62s
+iteration 18 rc=0 120 passed, 1 warning in 41.99s
+iteration 19 rc=0 120 passed, 1 warning in 42.06s
+iteration 20 rc=0 120 passed, 1 warning in 41.51s
+iteration 21 rc=0 120 passed, 1 warning in 41.86s
+iteration 22 rc=0 120 passed, 1 warning in 46.58s
+iteration 23 rc=0 120 passed, 1 warning in 41.54s
+iteration 24 rc=0 120 passed, 1 warning in 41.99s
+iteration 25 rc=1 1 failed, 51 passed, 1 warning in 10.86s
+STOP at iteration 25
+DONE
+
+# output of the stopping iteration:
+...................................................F
+=================================== FAILURES ===================================
+____________ test_backoff_never_decreases_and_never_exceeds_the_cap ____________
+
+    @settings(max_examples=500)
+>   @given(
+            
+        failures=st.integers(min_value=1, max_value=200),
+        draw_now=st.floats(min_value=0, max_value=1, exclude_max=True),
+        draw_next=st.floats(min_value=0, max_value=1, exclude_max=True),
+        base=st.floats(min_value=0.01, max_value=100),
+        jitter=st.floats(min_value=0, max_value=0.9),
+        extra_factor=st.floats(min_value=0, max_value=3),
+    )
+
+tests/jobs/test_units.py:147: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+failures = 33, draw_now = 0.75, draw_next = 0.0, base = 12.375
+jitter = 2.220446049250313e-16, extra_factor = 0.0
+
+    @settings(max_examples=500)
+    @given(
+        failures=st.integers(min_value=1, max_value=200),
+        draw_now=st.floats(min_value=0, max_value=1, exclude_max=True),
+        draw_next=st.floats(min_value=0, max_value=1, exclude_max=True),
+        base=st.floats(min_value=0.01, max_value=100),
+        jitter=st.floats(min_value=0, max_value=0.9),
+        extra_factor=st.floats(min_value=0, max_value=3),
+    )
+    def test_backoff_never_decreases_and_never_exceeds_the_cap(
+        failures: int,
+        draw_now: float,
+        draw_next: float,
+        base: float,
+        jitter: float,
+        extra_factor: float,
+    ) -> None:
+        backoff = Backoff(base_s=base, factor=1 + jitter + extra_factor, cap_s=base * 50, jitter=jitter)
+    
+        now = backoff.delay_s(failures, draw=draw_now)
+        following = backoff.delay_s(failures + 1, draw=draw_next)
+    
+>       assert base <= now <= following <= backoff.cap_s
+E       assert 12.375000000000092 <= 12.37500000000009
+E       Failing test case: test_backoff_never_decreases_and_never_exceeds_the_cap(
+E           failures=33,
+E           draw_now=0.75,
+E           draw_next=0.0,
+E           base=12.375,
+E           jitter=2.220446049250313e-16,
+E           extra_factor=0.0,
+E       )
+
+tests/jobs/test_units.py:168: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/jobs/test_units.py::test_backoff_never_decreases_and_never_exceeds_the_cap
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 51 passed, 1 warning in 10.86s
+
+# post-fix soak on the final code - 2026-10-17T07:45:40Z: 5 consecutive runs of tests/jobs (-q -o faulthandler_timeout=25)
+final iteration 1 rc=0 122 passed, 1 warning in 41.70s
+final iteration 2 rc=0 122 passed, 1 warning in 41.76s
+final iteration 3 rc=0 122 passed, 1 warning in 41.82s
+final iteration 4 rc=0 122 passed, 1 warning in 41.69s
+final iteration 5 rc=0 122 passed, 1 warning in 41.12s

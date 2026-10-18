@@ -1,0 +1,49 @@
+# T-004c differential / property test (tests/engine/test_differential.py + tests/engine/diff_reference.py) -- 2026-10-17T23:32:28Z
+# Reference: tests/engine/diff_reference.py -- written from engine-spec §3/§5/§12, bank-rules-spec §3/§5
+# and the protocol README; imports nothing from cardflow; brute force over every allocation of small
+# instances (<= 4 cards, amounts <= 16 minor units, <= 16 events, 1-3 cash accounts, 2-4 scenarios).
+# Generators: gen_doc (seeded; shared credit accounts, pools with holds/reservations, inclusion of
+# same-day and earlier events, timestamps in +00/+08/-05 offsets, re-dated events, overrides moving events
+# before the snapshot, rule versions ending soon after the purchase, short and 150-200-day horizons,
+# near-identical "twin" cards, global floors) and gen_review_doc (the wave-3 review's generator, call for
+# call, used to replay its two nondeterministic instances).
+# Checks per instance: C1 outcome schema / no float; C2 NEEDS_DATA codes; C3 baseline incl. global floor;
+# C4 no eligible card; C5 verify(solve(x)) sound, never MODEL_INVALID; C6 completeness (INFEASIBLE <=> no
+# feasible allocation); C7 tier values = reference optimum AND allocation = reference canonical tie-break;
+# C8 status / failing scenarios; C9 every scenario check + allocation lines; C10 rejection reasons;
+# C11 random allocations through verify_from_protocol (ok, structural_ok, every check); C12 workers 1 vs 8
+# give the same outcome (sensitivity included); C13 sensitivity (min extra cash with canonical allocation and
+# per-account extra, max affordable with canonical allocation, first feasible date shift).
+# Default (in every pytest run): seeds 20261017, 20261018, 20261019 x 400 instances (+400 verifier cases
+# each), C13 on every instance with sensitivity, C12 on every 2nd instance; bounded to ~25 s.
+# Larger: CARDFLOW_ENGINE_FUZZ=1 (seeds 20261017..20261022 x 2000; CARDFLOW_ENGINE_FUZZ_N overrides 2000).
+
+## 1. default run (final code)
+$ uv run pytest -q -p no:cacheprovider -s tests/engine/test_differential.py
+differential summary: {"seeds": [20261017, 20261018, 20261019], "instances_per_seed": 400, "fuzz": false, "elapsed_s": 21.7, "stats": {"C11 random allocations": 1097, "C12 workers 1 vs 8": 600, "C13 sensitivity": 177, "C7 optimality + canonical tie-break": 429, "actionable": 429, "evaluated": 1091, "infeasible (proved)": 156, "no eligible card": 292, "solver INFEASIBLE": 156, "solver NOT_RUN": 615, "solver OPTIMAL": 429, "status BASELINE_SHORTFALL": 214, "status CONDITIONALLY_FEASIBLE": 51, "status FEASIBLE_ROBUST": 378, "status INFEASIBLE": 448, "status NEEDS_DATA": 109}}
+...
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3 passed, 1 warning in 22.31s
+exit=0
+
+## 2. fuzz run (final code)
+$ CARDFLOW_ENGINE_FUZZ=1 uv run pytest -q -p no:cacheprovider -s tests/engine/test_differential.py
+differential summary: {"seeds": [20261017, 20261018, 20261019, 20261020, 20261021, 20261022], "instances_per_seed": 2000, "fuzz": true, "elapsed_s": 212.1, "stats": {"C11 random allocations": 10909, "C12 workers 1 vs 8": 6000, "C13 sensitivity": 1731, "C7 optimality + canonical tie-break": 4276, "actionable": 4276, "evaluated": 10945, "infeasible (proved)": 1480, "no eligible card": 2967, "solver INFEASIBLE": 1480, "solver NOT_RUN": 6244, "solver OPTIMAL": 4276, "status BASELINE_SHORTFALL": 2222, "status CONDITIONALLY_FEASIBLE": 562, "status FEASIBLE_ROBUST": 3714, "status INFEASIBLE": 4447, "status NEEDS_DATA": 1055}}
+...
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3 passed, 1 warning in 212.79s (0:03:32)
+exit=0
+
+## 3. for contrast: the differential test against the PRE-TASK engine (copied from c2-red.txt: 2 seeds x 110,
+##    with the generator as it was at the red run -- it was re-weighted afterwards for more solver coverage;
+##    the checks are the same). The MISMATCH counts are where 1.0.0 differs from the §12 semantics the
+##    reference implements (not analysed one by one; the final engine has none in sections 1 and 2).
+differential summary: {"seeds": [20261017, 20261018], "instances_per_seed": 110, "fuzz": false, "elapsed_s": 3.4, "stats": {"C11 random allocations": 196, "C12 workers 1 vs 8": 56, "C13 sensitivity": 4, "C7 optimality + canonical tie-break": 38, "MISMATCH C10 rejections": 24, "MISMATCH C11 check": 391, "MISMATCH C11 structural/ok": 6, "MISMATCH C13 max affordable": 1, "MISMATCH C3 baseline": 78, "MISMATCH C3 shortfall": 23, "MISMATCH C4 no eligible": 46, "MISMATCH C5 model invalid": 4, "MISMATCH C5 unsound allocation": 6, "MISMATCH C6 completeness": 6, "MISMATCH C7 canonical allocation": 7, "MISMATCH C7 tier values": 13, "MISMATCH C8 status": 1, "MISMATCH C9 scenario check": 30, "actionable": 38, "evaluated": 192, "infeasible (proved)": 12, "no eligible card": 82, "solver INFEASIBLE": 49, "solver NOT_RUN": 103, "solver OPTIMAL": 68, "status BASELINE_SHORTFALL": 32, "status CONDITIONALLY_FEASIBLE": 9, "status FEASIBLE_ROBUST": 59, "status INFEASIBLE": 83, "status MODEL_INVALID": 9, "status NEEDS_DATA": 28}}

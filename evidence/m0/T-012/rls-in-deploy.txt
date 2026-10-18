@@ -1,0 +1,186 @@
+# T-012 RLS in the deployed database - 2026-10-17T23:15:10Z
+# 1) superuser (local socket inside the db container) creates synthetic tenant rows
+#    (demo workspace, no names, no e-mail; removed again in step 3)
+BEGIN;
+BEGIN
+INSERT INTO users (id) VALUES ('2433dc62-4ef1-4399-bc31-120ff73b2f66');
+INSERT 0 1
+INSERT INTO workspaces (id, owner_user_id, kind) VALUES ('8c3f1bf6-68d1-4952-b902-d19a4b6c8eb6', '2433dc62-4ef1-4399-bc31-120ff73b2f66', 'demo');
+INSERT 0 1
+INSERT INTO workspace_members (workspace_id, user_id, role) VALUES ('8c3f1bf6-68d1-4952-b902-d19a4b6c8eb6', '2433dc62-4ef1-4399-bc31-120ff73b2f66', 'owner');
+INSERT 0 1
+COMMIT;
+COMMIT
+SELECT current_user AS who, (SELECT count(*) FROM workspaces) AS workspaces,
+       (SELECT count(*) FROM workspace_members) AS members, (SELECT count(*) FROM users) AS users;
+   who    | workspaces | members | users 
+----------+------------+---------+-------
+ cardflow |          1 |       1 |     1
+(1 row)
+
+exit=0
+
+# 2) business role cardflow_api over TCP (host db, SCRAM password read from the secret
+#    file on stdin, never on a command line):
+$ { cat deploy/secrets/db_api_password; echo; cat <<SQL ... SQL; } | docker compose -p cardflow -f deploy/compose.yaml exec -T db sh -c 'IFS= read -r PGPASSWORD; export PGPASSWORD; exec psql -X -a -h db -U cardflow_api -d cardflow'
+SELECT current_user, session_user, inet_server_addr() IS NOT NULL AS over_tcp;
+ current_user | session_user | over_tcp 
+--------------+--------------+----------
+ cardflow_api | cardflow_api | t
+(1 row)
+
+SELECT rolname, rolsuper, rolbypassrls, rolinherit FROM pg_roles WHERE rolname = current_user;
+   rolname    | rolsuper | rolbypassrls | rolinherit 
+--------------+----------+--------------+------------
+ cardflow_api | f        | f            | t
+(1 row)
+
+SELECT pg_has_role(current_user, 'cardflow_app', 'MEMBER') AS member_of_cardflow_app;
+ member_of_cardflow_app 
+------------------------
+ t
+(1 row)
+
+-- a) no workspace bound: no tenant row is visible
+SELECT count(*) AS workspaces_visible FROM workspaces;
+ workspaces_visible 
+--------------------
+                  0
+(1 row)
+
+SELECT count(*) AS members_visible FROM workspace_members;
+ members_visible 
+-----------------
+               0
+(1 row)
+
+SELECT count(*) AS users_visible FROM users;
+ users_visible 
+---------------
+             0
+(1 row)
+
+-- b) bound to some other workspace id: still nothing
+BEGIN;
+BEGIN
+SELECT set_config('app.workspace_id', 'c49e2e4e-2456-4c7b-a115-bd8027aa299a', true) IS NOT NULL AS bound_other;
+ bound_other 
+-------------
+ t
+(1 row)
+
+SELECT count(*) AS workspaces_visible FROM workspaces;
+ workspaces_visible 
+--------------------
+                  0
+(1 row)
+
+SELECT count(*) AS members_visible FROM workspace_members;
+ members_visible 
+-----------------
+               0
+(1 row)
+
+COMMIT;
+COMMIT
+-- c) bound to the demo workspace (what the API does after checking membership): RLS is the filter
+BEGIN;
+BEGIN
+SELECT set_config('app.workspace_id', '8c3f1bf6-68d1-4952-b902-d19a4b6c8eb6', true) IS NOT NULL AS bound_demo;
+ bound_demo 
+------------
+ t
+(1 row)
+
+SELECT count(*) AS workspaces_visible FROM workspaces;
+ workspaces_visible 
+--------------------
+                  1
+(1 row)
+
+SELECT count(*) AS members_visible FROM workspace_members;
+ members_visible 
+-----------------
+               1
+(1 row)
+
+COMMIT;
+COMMIT
+-- d) writing a row outside the bound workspace is refused by the policy
+INSERT INTO workspaces (owner_user_id, kind) VALUES ('2433dc62-4ef1-4399-bc31-120ff73b2f66', 'demo');
+ERROR:  new row violates row-level security policy for table "workspaces"
+-- e) no TEMP privilege, no CREATE in schema public
+SELECT has_database_privilege(current_user, current_database(), 'TEMPORARY') AS can_create_temp;
+ can_create_temp 
+-----------------
+ f
+(1 row)
+
+CREATE TEMP TABLE t012_probe (x int);
+CREATE TABLE public.t012_probe (x int);
+ERROR:  permission denied to create temporary tables in database "cardflow"
+LINE 1: CREATE TEMP TABLE t012_probe (x int);
+                          ^
+ERROR:  permission denied for schema public
+LINE 1: CREATE TABLE public.t012_probe (x int);
+                     ^
+exit=0 (psql continues after the expected errors)
+
+# 3) superuser removes the synthetic rows again
+BEGIN;
+BEGIN
+DELETE FROM workspace_members WHERE workspace_id = '8c3f1bf6-68d1-4952-b902-d19a4b6c8eb6';
+DELETE 1
+DELETE FROM workspaces WHERE id = '8c3f1bf6-68d1-4952-b902-d19a4b6c8eb6';
+DELETE 1
+DELETE FROM users WHERE id = '2433dc62-4ef1-4399-bc31-120ff73b2f66';
+DELETE 1
+COMMIT;
+COMMIT
+SELECT (SELECT count(*) FROM workspaces) AS workspaces, (SELECT count(*) FROM workspace_members) AS members,
+       (SELECT count(*) FROM users) AS users;
+ workspaces | members | users 
+------------+---------+-------
+          0 |       0 |     0
+(1 row)
+
+exit=0
+
+# 4) login roles in the deployed cluster: none is superuser or has BYPASSRLS
+SELECT rolname, rolcanlogin, rolsuper, rolbypassrls, rolcreaterole, rolcreatedb
+  FROM pg_roles WHERE rolname LIKE 'cardflow%' ORDER BY rolname;
+        rolname        | rolcanlogin | rolsuper | rolbypassrls | rolcreaterole | rolcreatedb 
+-----------------------+-------------+----------+--------------+---------------+-------------
+ cardflow              | t           | t        | t            | t             | t
+ cardflow_admin        | f           | f        | f            | f             | f
+ cardflow_admin_login  | t           | f        | f            | f             | f
+ cardflow_admin_views  | f           | f        | f            | f             | f
+ cardflow_api          | t           | f        | f            | f             | f
+ cardflow_app          | f           | f        | f            | f             | f
+ cardflow_purge        | f           | f        | f            | f             | f
+ cardflow_worker       | f           | f        | f            | f             | f
+ cardflow_worker_login | t           | f        | f            | f             | f
+(9 rows)
+
+SELECT r.rolname AS login, g.rolname AS member_of, m.inherit_option, m.set_option
+  FROM pg_auth_members m JOIN pg_roles r ON r.oid = m.member JOIN pg_roles g ON g.oid = m.roleid
+ WHERE r.rolname IN ('cardflow_api', 'cardflow_worker_login', 'cardflow_admin_login')
+ ORDER BY 1, 2;
+         login         |    member_of    | inherit_option | set_option 
+-----------------------+-----------------+----------------+------------
+ cardflow_admin_login  | cardflow_admin  | t              | f
+ cardflow_api          | cardflow_app    | t              | f
+ cardflow_worker_login | cardflow_purge  | f              | t
+ cardflow_worker_login | cardflow_worker | t              | f
+(4 rows)
+
+SELECT usename, application_name, client_addr IS NOT NULL AS tcp, count(*)
+  FROM pg_stat_activity WHERE datname = 'cardflow' AND usename IS NOT NULL
+ GROUP BY 1, 2, 3 ORDER BY 1, 2;
+        usename        | application_name | tcp | count 
+-----------------------+------------------+-----+-------
+ cardflow              | psql             | f   |     1
+ cardflow_worker_login | cardflow-worker  | t   |     2
+(2 rows)
+
+exit=0

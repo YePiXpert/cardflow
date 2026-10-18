@@ -1,0 +1,79 @@
+# T-007 constraint tests (TC-DB-01/02/03/04/07/08/09 + brief §4d) - 2026-10-17T02:16:34Z, working dir services/api
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -v tests/db/test_constraints.py
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- /projects/cardflow/services/api/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /projects/cardflow/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1, platformdirs-4.13.3, hypothesis-6.170.0
+collecting ... collected 59 items
+
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[previous_balance_minor-1] PASSED [  1%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[new_balance_minor-1] PASSED [  3%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[min_due_minor-1] PASSED [  5%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[payments_minor-1] PASSED [  6%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[credits_minor-1] PASSED [  8%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[fees_minor-1] PASSED [ 10%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[interest_minor-1] PASSED [ 11%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[installment_due_minor-1] PASSED [ 13%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[credit_balance_minor-1] PASSED [ 15%]
+tests/db/test_constraints.py::test_tc_db_01_statement_version_amount_update_rejected[due_date-value9] PASSED [ 16%]
+tests/db/test_constraints.py::test_tc_db_01_unchanged_amount_in_update_is_still_rejected PASSED [ 18%]
+tests/db/test_constraints.py::test_tc_db_01_non_amount_columns_stay_updatable PASSED [ 20%]
+tests/db/test_constraints.py::test_tc_db_01_correction_is_a_new_version PASSED [ 22%]
+tests/db/test_constraints.py::test_tc_db_01_delete_rejected_without_purge_flag PASSED [ 23%]
+tests/db/test_constraints.py::test_tc_db_01_truncate_rejected_without_purge_flag PASSED [ 25%]
+tests/db/test_constraints.py::test_tc_db_01_purge_flag_allows_delete_for_one_transaction_only PASSED [ 27%]
+tests/db/test_constraints.py::test_tc_db_02_card_last4_must_be_four_digits[123-23514] PASSED [ 28%]
+tests/db/test_constraints.py::test_tc_db_02_card_last4_must_be_four_digits[12a4-23514] PASSED [ 30%]
+tests/db/test_constraints.py::test_tc_db_02_card_last4_must_be_four_digits[abcd-23514] PASSED [ 32%]
+tests/db/test_constraints.py::test_tc_db_02_card_last4_must_be_four_digits[-23514] PASSED [ 33%]
+tests/db/test_constraints.py::test_tc_db_02_card_last4_must_be_four_digits[12 4-23514] PASSED [ 35%]
+tests/db/test_constraints.py::test_tc_db_02_card_last4_must_be_four_digits[12345-22001] PASSED [ 37%]
+tests/db/test_constraints.py::test_tc_db_02_card_last4_must_be_four_digits[6222021234567890123-22001] PASSED [ 38%]
+tests/db/test_constraints.py::test_tc_db_02_card_last4_accepts_four_digits PASSED [ 40%]
+tests/db/test_constraints.py::test_tc_db_03_same_scope_overlap_rejected PASSED [ 42%]
+tests/db/test_constraints.py::test_tc_db_03_two_published_templates_overlap_rejected PASSED [ 44%]
+tests/db/test_constraints.py::test_tc_db_03_template_and_user_declared_do_not_conflict PASSED [ 45%]
+tests/db/test_constraints.py::test_tc_db_03_two_workspaces_do_not_conflict PASSED [ 47%]
+tests/db/test_constraints.py::test_tc_db_03_adjacent_periods_drafts_and_tombstones_do_not_conflict PASSED [ 49%]
+tests/db/test_constraints.py::test_tc_db_04_currency_account_cannot_join_other_workspace_account PASSED [ 50%]
+tests/db/test_constraints.py::test_tc_db_04_transaction_cannot_use_other_workspace_card PASSED [ 52%]
+tests/db/test_constraints.py::test_tc_db_04_allocation_cannot_link_other_workspace_statement PASSED [ 54%]
+tests/db/test_constraints.py::test_tc_db_04_current_version_must_belong_to_the_statement PASSED [ 55%]
+tests/db/test_constraints.py::test_tc_db_04_template_references_accept_templates_and_own_rows PASSED [ 57%]
+tests/db/test_constraints.py::test_tc_db_04_template_references_reject_other_workspaces PASSED [ 59%]
+tests/db/test_constraints.py::test_tc_db_04_rule_binding_and_subject_stay_in_scope PASSED [ 61%]
+tests/db/test_constraints.py::test_tc_db_04_template_rows_cannot_change_workspace PASSED [ 62%]
+tests/db/test_constraints.py::test_tc_db_04_templates_must_be_product_rules PASSED [ 64%]
+tests/db/test_constraints.py::test_tc_db_07_duplicate_idempotency_key_rejected PASSED [ 66%]
+tests/db/test_constraints.py::test_tc_db_07_request_hash_must_be_sha256_hex PASSED [ 67%]
+tests/db/test_constraints.py::test_tc_db_08_negative_available_raw_is_kept PASSED [ 69%]
+tests/db/test_constraints.py::test_tc_db_09_over_allocation_rejected_at_commit PASSED [ 71%]
+tests/db/test_constraints.py::test_tc_db_09_full_allocation_across_two_statements_commits PASSED [ 72%]
+tests/db/test_constraints.py::test_tc_db_09_temporary_overage_fixed_before_commit_succeeds PASSED [ 74%]
+tests/db/test_constraints.py::test_tc_db_09_set_constraints_immediate_reports_at_once PASSED [ 76%]
+tests/db/test_constraints.py::test_tc_db_09_lowering_repayment_below_allocations_rejected PASSED [ 77%]
+tests/db/test_constraints.py::test_tc_db_09_tombstoned_allocations_do_not_count PASSED [ 79%]
+tests/db/test_constraints.py::test_tc_db_09_statement_of_other_currency_account_rejected PASSED [ 81%]
+tests/db/test_constraints.py::test_tc_db_09_moving_an_allocated_statement_rejected PASSED [ 83%]
+tests/db/test_constraints.py::test_tc_db_09_concurrent_allocations_are_serialised PASSED [ 84%]
+tests/db/test_constraints.py::test_statement_due_date_must_follow_statement_date PASSED [ 86%]
+tests/db/test_constraints.py::test_one_statement_per_currency_account_and_date PASSED [ 88%]
+tests/db/test_constraints.py::test_bank_confirmed_repayment_needs_bank_confirmed_at PASSED [ 89%]
+tests/db/test_constraints.py::test_source_document_fingerprint_unique_per_workspace PASSED [ 91%]
+tests/db/test_constraints.py::test_dedupe_key_primary_key PASSED         [ 93%]
+tests/db/test_constraints.py::test_currencies_seed_matches_engine_minor_units PASSED [ 94%]
+tests/db/test_constraints.py::test_primary_keys_default_to_uuidv7 PASSED [ 96%]
+tests/db/test_constraints.py::test_one_live_primary_currency_account PASSED [ 98%]
+tests/db/test_constraints.py::test_running_job_needs_a_lease_and_heartbeat_counts_are_non_negative PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 59 passed, 1 warning in 1.13s =========================
+exit=0

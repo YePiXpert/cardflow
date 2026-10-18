@@ -1,0 +1,30 @@
+# T-004c ruff (rules of services/api/pyproject.toml; packages/rules-protocol/ruff.toml extends them) -- 2026-10-17T23:32:10Z
+$ uv run --project services/api ruff check services/api/cardflow/planner/engine
+All checks passed!
+exit=0
+$ uv run --project services/api ruff format --check services/api/cardflow/planner/engine
+10 files already formatted
+exit=0
+$ uv run --project services/api ruff check services/api/tests/engine
+All checks passed!
+exit=0
+$ uv run --project services/api ruff format --check services/api/tests/engine
+13 files already formatted
+exit=0
+$ uv run --project services/api ruff check services/api/tests/protocol
+All checks passed!
+exit=0
+$ uv run --project services/api ruff format --check services/api/tests/protocol
+8 files already formatted
+exit=0
+$ uv run --project services/api ruff check packages/rules-protocol
+All checks passed!
+exit=0
+$ uv run --project services/api ruff format --check packages/rules-protocol
+3 files already formatted
+exit=0
+$ (cd services/api && uv run ruff check . && uv run ruff format --check .)   # whole server project
+All checks passed!
+exit=0
+135 files already formatted
+exit=0

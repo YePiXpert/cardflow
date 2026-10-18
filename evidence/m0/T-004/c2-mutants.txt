@@ -1,0 +1,172 @@
+# T-004c / R3E-16: the six mutants that survived the wave-3 review, re-applied to the model 1.1.0 engine
+# 2026-10-17T23:20:19Z. Each mutant is one textual replacement in an isolated copy of the repository
+# (services/api without .venv, packages, poc); the suite is tests/engine + tests/protocol, run with
+# services/api/.venv/bin/python (Python 3.13.5, OR-Tools 9.15.6755). The unmutated copy is the control.
+# The script lives outside the repository (scratch); its full source is reproduced at the end.
+
+## run 1: pytest -x (stops at the first failing test)
+$ python -I run_mutants.py
+CONTROL-unmutated: PASSES (control) (pytest exit 0)
+   435 passed, 1 warning in 31.46s
+   (no failing test)
+M05-repay-before-txn-off-by-one: KILLED (pytest exit 1)
+   allocation.py: 'if info.repay_on < req.txn_date:'
+        -> 'if info.repay_on <= req.txn_date:'
+   1 failed, 57 passed, 1 warning in 22.19s
+   FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+M14-verifier-fee-rounds-down: KILLED (pytest exit 1)
+   verifier.py: 'apply_rate(amount, card.fee_rate, "UP")'
+        -> 'apply_rate(amount, card.fee_rate, "DOWN")'
+   1 failed, 57 passed, 1 warning in 22.17s
+   FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+M15-verifier-benefit-rounds-up: KILLED (pytest exit 1)
+   verifier.py: 'apply_rate(amt, c.verified_benefit_rate, "DOWN")'
+        -> 'apply_rate(amt, c.verified_benefit_rate, "UP")'
+   1 failed, 57 passed, 1 warning in 22.27s
+   FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+M17-model-benefit-ignores-cap: KILLED (pytest exit 1)
+   allocation.py: 'cap = c.verified_benefit_cap if c.verified_benefit_cap is not None else BIG'
+        -> 'cap = BIG'
+   1 failed, 57 passed, 1 warning in 22.70s
+   FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+M20-stale-boundary: KILLED (pytest exit 1)
+   plan.py: 'elif (req.txn_date - s.as_of).days > stale_after_days:'
+        -> 'elif (req.txn_date - s.as_of).days >= stale_after_days:'
+   1 failed, 136 passed, 1 warning in 24.41s
+   FAILED tests/engine/test_review_wave3_mutants.py::test_a_snapshot_exactly_stale_after_days_old_is_not_stale_m20_r3e_16[2026-10-23-False]
+M26-weighted-buffer-half-even: KILLED (pytest exit 1)
+   verifier.py: 'quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)'
+        -> 'quantize(Decimal("0.1"), rounding="ROUND_HALF_EVEN")'
+   1 failed, 138 passed, 1 warning in 24.45s
+   FAILED tests/engine/test_review_wave3_mutants.py::test_the_weighted_buffer_rounds_half_up_m26_r3e_16
+
+killed 6/6; control passes: True
+exit=0
+
+## run 2: pytest without -x (every failing test listed: each mutant is killed by its dedicated test in tests/engine/test_review_wave3_mutants.py)
+$ python -I run_mutants_all.py
+CONTROL-unmutated: PASSES (control) (pytest exit 0)
+   435 passed, 1 warning in 31.40s
+   (no failing test)
+M05-repay-before-txn-off-by-one: KILLED (pytest exit 1)
+   allocation.py: 'if info.repay_on < req.txn_date:'
+        -> 'if info.repay_on <= req.txn_date:'
+   2 failed, 433 passed, 1 warning in 31.38s
+   FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+   FAILED tests/engine/test_review_wave3_mutants.py::test_a_repayment_on_the_transaction_date_is_allowed_m05_r3e_16[5-True]
+M14-verifier-fee-rounds-down: KILLED (pytest exit 1)
+   verifier.py: 'apply_rate(amount, card.fee_rate, "UP")'
+        -> 'apply_rate(amount, card.fee_rate, "DOWN")'
+   3 failed, 432 passed, 1 warning in 31.46s
+   FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+   FAILED tests/engine/test_review_wave3_fixes.py::test_fee_probe_allocation_pays_the_fee_from_cash_r3e_07
+   FAILED tests/engine/test_review_wave3_mutants.py::test_the_verifier_rounds_a_fee_up_m14_r3e_16
+M15-verifier-benefit-rounds-up: KILLED (pytest exit 1)
+   verifier.py: 'apply_rate(amt, c.verified_benefit_rate, "DOWN")'
+        -> 'apply_rate(amt, c.verified_benefit_rate, "UP")'
+   2 failed, 433 passed, 1 warning in 31.41s
+   FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+   FAILED tests/engine/test_review_wave3_mutants.py::test_the_verifier_rounds_a_verified_benefit_down_m15_r3e_16
+M17-model-benefit-ignores-cap: KILLED (pytest exit 1)
+   allocation.py: 'cap = c.verified_benefit_cap if c.verified_benefit_cap is not None else BIG'
+        -> 'cap = BIG'
+   2 failed, 433 passed, 1 warning in 31.90s
+   FAILED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+   FAILED tests/engine/test_review_wave3_mutants.py::test_the_model_caps_the_verified_benefit_m17_r3e_16
+M20-stale-boundary: KILLED (pytest exit 1)
+   plan.py: 'elif (req.txn_date - s.as_of).days > stale_after_days:'
+        -> 'elif (req.txn_date - s.as_of).days >= stale_after_days:'
+   1 failed, 434 passed, 1 warning in 31.56s
+   FAILED tests/engine/test_review_wave3_mutants.py::test_a_snapshot_exactly_stale_after_days_old_is_not_stale_m20_r3e_16[2026-10-23-False]
+M26-weighted-buffer-half-even: KILLED (pytest exit 1)
+   verifier.py: 'quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)'
+        -> 'quantize(Decimal("0.1"), rounding="ROUND_HALF_EVEN")'
+   1 failed, 434 passed, 1 warning in 31.93s
+   FAILED tests/engine/test_review_wave3_mutants.py::test_the_weighted_buffer_rounds_half_up_m26_r3e_16
+
+killed 6/6; control passes: True
+exit=0
+
+## source of run_mutants.py (run 2 differs only in: no -x, every FAILED line printed, work dir mut_all)
+```python
+"""R3E-16 mutation check (T-004c): the six mutants that survived the wave-3 review, re-applied to
+the model 1.1.0 engine. Each mutant = one textual replacement in one engine file, applied to an
+isolated copy of the repository (services/api without .venv, packages, poc); then
+`pytest -x -q -p no:cacheprovider tests/engine tests/protocol` runs in the copy with the
+project's interpreter. A mutant is KILLED when the suite fails. The unmutated copy is the
+control and must pass."""
+import shutil
+import subprocess
+import sys
+import tarfile
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+REPO = Path("/projects/cardflow")
+WORK = Path("/tmp/t004c/mut")
+PY = REPO / "services/api/.venv/bin/python"
+MUTANTS = [
+    ("CONTROL-unmutated", None, None, None),
+    ("M05-repay-before-txn-off-by-one", "allocation.py",
+     "    if info.repay_on < req.txn_date:\n",
+     "    if info.repay_on <= req.txn_date:\n"),
+    ("M14-verifier-fee-rounds-down", "verifier.py",
+     'apply_rate(amount, card.fee_rate, "UP")',
+     'apply_rate(amount, card.fee_rate, "DOWN")'),
+    ("M15-verifier-benefit-rounds-up", "verifier.py",
+     'apply_rate(amt, c.verified_benefit_rate, "DOWN")',
+     'apply_rate(amt, c.verified_benefit_rate, "UP")'),
+    ("M17-model-benefit-ignores-cap", "allocation.py",
+     "            cap = c.verified_benefit_cap if c.verified_benefit_cap is not None else BIG\n",
+     "            cap = BIG\n"),
+    ("M20-stale-boundary", "plan.py",
+     "        elif (req.txn_date - s.as_of).days > stale_after_days:\n",
+     "        elif (req.txn_date - s.as_of).days >= stale_after_days:\n"),
+    ("M26-weighted-buffer-half-even", "verifier.py",
+     'quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)',
+     'quantize(Decimal("0.1"), rounding="ROUND_HALF_EVEN")'),
+]
+
+
+def copy_repo(dest: Path) -> None:
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    skip = {".venv", "__pycache__", ".pytest_cache", ".ruff_cache", ".hypothesis"}
+    for part in ("services/api", "packages", "poc"):
+        src = REPO / part
+        shutil.copytree(src, dest / part, ignore=lambda d, names: [n for n in names if n in skip])
+
+
+def run(m: tuple) -> str:
+    name, file, old, new = m
+    root = WORK / name
+    copy_repo(root)
+    if file is not None:
+        target = root / "services/api/cardflow/planner/engine" / file
+        text = target.read_text()
+        assert text.count(old) == 1, (name, "mutation site not found exactly once")
+        target.write_text(text.replace(old, new))
+    api = root / "services/api"
+    proc = subprocess.run(
+        [str(PY), "-m", "pytest", "-x", "-q", "-p", "no:cacheprovider", "tests/engine", "tests/protocol"],
+        cwd=api, capture_output=True, text=True, env={"PYTHONPATH": str(api), "PATH": "/usr/bin:/bin"},
+    )
+    lines = proc.stdout.splitlines()
+    failed = [l for l in lines if l.startswith("FAILED")]
+    summary = lines[-1] if lines else proc.stderr[-300:]
+    verdict = "PASSES (control)" if file is None and proc.returncode == 0 else (
+        "KILLED" if proc.returncode != 0 else "SURVIVED")
+    site = "" if file is None else f"\n   {file}: {old.strip()!r}\n        -> {new.strip()!r}"
+    return f"{name}: {verdict} (pytest exit {proc.returncode}){site}\n   {summary}\n   " + (
+        failed[0] if failed else "(no failing test)")
+
+
+with ThreadPoolExecutor(max_workers=4) as pool:
+    results = list(pool.map(run, MUTANTS))
+print("\n".join(results))
+killed = sum(r.split(": ")[1].startswith("KILLED") for r in results[1:])
+control = results[0].split(": ")[1].startswith("PASSES")
+print(f"\nkilled {killed}/{len(MUTANTS) - 1}; control passes: {control}")
+sys.exit(0 if killed == len(MUTANTS) - 1 and control else 1)
+```

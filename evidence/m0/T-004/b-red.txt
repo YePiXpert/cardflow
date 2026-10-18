@@ -1,0 +1,1789 @@
+# T-004b: new tests against the engine/protocol BEFORE the T-004b fixes (2026-10-17T02:45:53Z), cwd services/api
+# sources = T-004 state (sha256 below); only tests/engine/test_robustness.py and tests/protocol/test_limits.py are new
+  6825918a2d9728410cd2e41197a45e456e5641d020b77fe41f839cbd7094c374  cardflow/planner/engine/allocation.py
+  de26af2d5f294bdfb71325bbe533e80de294fbc0b3430edb129e28927d858d9d  cardflow/planner/engine/billing.py
+  2e9c351a41e4112c3482a741fd28f092d4212efcd67e2ec9565a3f729bac460d  cardflow/planner/engine/cash.py
+  0872c2f6182febe3fe125b5d624063dae92ae233f7279acd15d1e152f77266f5  cardflow/planner/engine/fixture.py
+  14ba4c214493ae7d1715101c14b41fe20225875a669d13b137bcffe9eea4a02f  cardflow/planner/engine/__init__.py
+  0d27d92a3f97838061d4014aed444035e465cadba6c3495ba425ed340ca30474  cardflow/planner/engine/money.py
+  a52c3fd86e78e1f9f55a9dc0752cce4936541eecb97e8a50636daa554e999820  cardflow/planner/engine/plan.py
+  e0b068ec35eb53aabb0fb5f69cb0599f32e828134f992c65a9f353ced0ccd78e  cardflow/planner/engine/protocol.py
+  cb6156d9ee239b042032f62d82763d2f30965bdba7b18618b8308b0addd2634c  cardflow/planner/engine/sample.py
+  a478b4efea7fab663e39420e8430dfeb4710e17e43bec67b1404d58e1ec2d332  cardflow/planner/engine/verifier.py
+  d70d36c062a3b618a1863358279ea06b9e0087d581ac77f0b4ecb785fbd54097  ../../packages/rules-protocol/schema/v1/BillingRule.schema.json
+  f402e84bc8db6cc37c3f6a0da3539619dc01c63e7e508857c66dafed4408b166  ../../packages/rules-protocol/schema/v1/CardOption.schema.json
+  a5cb3982d9a3586690b8334f09201759997d10a2fe57a7261adce2cb2b2e11f1  ../../packages/rules-protocol/schema/v1/CashAccount.schema.json
+  bd71f5954081bd77dffe732869c91958f2f4c633473d5364b645400d171b6fb7  ../../packages/rules-protocol/schema/v1/CashEvent.schema.json
+  0942693f5fec39a33dc8bcc516e723f9e1bab7a8db8f31a333ae8a49b18a9652  ../../packages/rules-protocol/schema/v1/common.schema.json
+  c04120ff3bd4bfe7947c9abcb2986cd75d4337cd23319ea9a768960588c252f7  ../../packages/rules-protocol/schema/v1/Fixture.schema.json
+  77b0c62417a81babfe9b9dad51583732fac2a7c1acff376c8210bd24b4bbd3e2  ../../packages/rules-protocol/schema/v1/Options.schema.json
+  9a2abcd06e64a606a464078459535d153347da2fde751f78ea411ac18489c412  ../../packages/rules-protocol/schema/v1/PlanInput.schema.json
+  572f399436ecfbd8e961f1de49245a2118d6af6bfa8f597ff3be5a1e4b5017a7  ../../packages/rules-protocol/schema/v1/PlanOutcome.schema.json
+  99cb4f6f67667984a5bc58b9cf7b0c24d9b2cf97e32e362ab4240bb2aac1bb47  ../../packages/rules-protocol/schema/v1/PlanRequest.schema.json
+  80bd225f18b7b05546da778a17064781decebcef1e9683a0954c48e07ea74cb5  ../../packages/rules-protocol/schema/v1/Pools.schema.json
+  94f412914cce30301016dd1479d72f00e07c19a0595967e92b2ec3b8bf180484  ../../packages/rules-protocol/schema/v1/Scenario.schema.json
+  f8c8f64761a1c3306502e60a951c9ecbae30486ed35625f0f2db657ffa164392  ../../packages/rules-protocol/schema/v1/Snapshot.schema.json
+  bfb3d988a94aa91d3094645f7c4bba199892decd206fc523081f566e6cc1521c  ../../packages/rules-protocol/runner_py/convert_legacy_fixture.py
+  11acc98f00b32af563c1b23a0f3e8e7a8f3ecb1e54338ad76ae90a350ef78722  ../../packages/rules-protocol/runner_py/run_fixtures.py
+$ uv run pytest -p no:cacheprovider -q tests/engine/test_robustness.py tests/protocol/test_limits.py -rfE
+..F.FF...FF.FFFFFFFFFFFFFFFF.F.F.FFFF...FFF...F.F.F.FFFFFFFFFF..FFF....  [100%]
+=================================== FAILURES ===================================
+__ test_probe_cases_never_raise_and_end_in_a_business_status[amount = 2^63-1] __
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _request.<locals>.<lambda> at 0x7f6cbc5bfec0>
+status = 'MODEL_INVALID', build_error = True
+
+    @pytest.mark.parametrize(
+        ("mutate", "status", "build_error"),
+        [case[1:] for case in PROBE],
+        ids=[case[0] for case in PROBE],
+    )
+    def test_probe_cases_never_raise_and_end_in_a_business_status(
+        fx: Fx, mutate: Mutation, status: str, build_error: bool
+    ) -> None:
+        inputs, scenarios, _ = fx
+>       out = plan(mutate(inputs), scenarios, "baseline", "cash_safety", time_limit_s=10)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_robustness.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/plan.py:279: in plan
+    res = solve(
+cardflow/planner/engine/allocation.py:454: in solve
+    built = build_model(inputs, hard, infos, bounds)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = ModelInputs(request=PlanRequest(amount=9223372036854775807, currency='CNY', txn_date=datetime.date(2026, 10, 16), allo...expected'>, category='income', label='预计收入', at=None)], horizon_end=datetime.date(2027, 1, 14), global_reserve_floor=0)
+hard_scenarios = [Scenario(id='baseline', include_expected=True, income_delay_days=0, income_scale=Decimal('1'), expense_scale=Decimal('1'), event_overrides={}, same_day_order='conservative', description='基准预期口径：预计收入按期发生')]
+infos = [CardPlanInfo(card=CardOption(id='A', account_id='acc-A', name='卡A', raw_available=800000, billing_rule=BillingRule(ru...-C', assumptions=('posting delay 0d -> posting 2026-10-16',)),), repay_on=datetime.date(2026, 11, 25), buffer_days=40)]
+prior_bounds = [], amount_var = False, extra_cash_vars = False
+
+    def build_model(
+        inputs: ModelInputs,
+        hard_scenarios: list[Scenario],
+        infos: list[CardPlanInfo],
+        prior_bounds: Sequence[tuple[str, str, int]] = (),
+        amount_var: bool = False,
+        extra_cash_vars: bool = False,
+    ) -> BuiltModel:
+        req = inputs.request
+        accounts = inputs.accounts_by_id()  # noqa: F841
+        if req.amount <= 0:
+            raise ModelInvalid("amount must be positive")
+        if req.k < 1:
+            raise ModelInvalid("max_cards must be >= 1")
+        m = cp_model.CpModel()
+        x, y = {}, {}
+        for info in infos:
+            c = info.card
+            cap = c.capacity
+            if c.per_txn_cap is not None:
+                cap = min(cap, c.per_txn_cap)
+            x[c.id] = m.new_int_var(0, max(cap, 0), f"x_{c.id}")
+            y[c.id] = m.new_bool_var(f"y_{c.id}")
+            m.add(x[c.id] <= cap * y[c.id])
+            ms = c.min_split if c.min_split is not None else req.min_split
+            if ms > 0:
+                m.add(x[c.id] >= ms * y[c.id])
+        if not infos:
+            raise ModelInvalid("no eligible cards")
+        total = sum(x.values())
+        if amount_var:
+            mprime = m.new_int_var(0, req.amount, "amount_affordable")
+            m.add(total == mprime)
+        else:
+            mprime = None
+>           m.add(total == req.amount)
+                  ^^^^^^^^^^^^^^^^^^^
+E           ValueError: == INT_MIN or INT_MAX is not supported
+
+cardflow/planner/engine/allocation.py:253: ValueError
+_ test_probe_cases_never_raise_and_end_in_a_business_status[balance = 2^63-1] __
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _balance.<locals>.mutate at 0x7f6cbbf28040>
+status = 'MODEL_INVALID', build_error = True
+
+    @pytest.mark.parametrize(
+        ("mutate", "status", "build_error"),
+        [case[1:] for case in PROBE],
+        ids=[case[0] for case in PROBE],
+    )
+    def test_probe_cases_never_raise_and_end_in_a_business_status(
+        fx: Fx, mutate: Mutation, status: str, build_error: bool
+    ) -> None:
+        inputs, scenarios, _ = fx
+>       out = plan(mutate(inputs), scenarios, "baseline", "cash_safety", time_limit_s=10)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_robustness.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/plan.py:279: in plan
+    res = solve(
+cardflow/planner/engine/allocation.py:454: in solve
+    built = build_model(inputs, hard, infos, bounds)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=True...expected'>, category='income', label='预计收入', at=None)], horizon_end=datetime.date(2027, 1, 14), global_reserve_floor=0)
+hard_scenarios = [Scenario(id='baseline', include_expected=True, income_delay_days=0, income_scale=Decimal('1'), expense_scale=Decimal('1'), event_overrides={}, same_day_order='conservative', description='基准预期口径：预计收入按期发生')]
+infos = [CardPlanInfo(card=CardOption(id='A', account_id='acc-A', name='卡A', raw_available=800000, billing_rule=BillingRule(ru...-C', assumptions=('posting delay 0d -> posting 2026-10-16',)),), repay_on=datetime.date(2026, 11, 25), buffer_days=40)]
+prior_bounds = [], amount_var = False, extra_cash_vars = False
+
+    def build_model(
+        inputs: ModelInputs,
+        hard_scenarios: list[Scenario],
+        infos: list[CardPlanInfo],
+        prior_bounds: Sequence[tuple[str, str, int]] = (),
+        amount_var: bool = False,
+        extra_cash_vars: bool = False,
+    ) -> BuiltModel:
+        req = inputs.request
+        accounts = inputs.accounts_by_id()  # noqa: F841
+        if req.amount <= 0:
+            raise ModelInvalid("amount must be positive")
+        if req.k < 1:
+            raise ModelInvalid("max_cards must be >= 1")
+        m = cp_model.CpModel()
+        x, y = {}, {}
+        for info in infos:
+            c = info.card
+            cap = c.capacity
+            if c.per_txn_cap is not None:
+                cap = min(cap, c.per_txn_cap)
+            x[c.id] = m.new_int_var(0, max(cap, 0), f"x_{c.id}")
+            y[c.id] = m.new_bool_var(f"y_{c.id}")
+            m.add(x[c.id] <= cap * y[c.id])
+            ms = c.min_split if c.min_split is not None else req.min_split
+            if ms > 0:
+                m.add(x[c.id] >= ms * y[c.id])
+        if not infos:
+            raise ModelInvalid("no eligible cards")
+        total = sum(x.values())
+        if amount_var:
+            mprime = m.new_int_var(0, req.amount, "amount_affordable")
+            m.add(total == mprime)
+        else:
+            mprime = None
+            m.add(total == req.amount)
+        m.add(sum(y.values()) <= req.k)
+        # shared credit pools (multi-layer: a card may belong to one pool here; production supports
+        # nested pools)
+        pools: dict[str, list] = {}
+        for info in infos:
+            if info.card.pool_id:
+                pools.setdefault(info.card.pool_id, []).append(x[info.card.id])
+        for pid, members in pools.items():
+            if pid not in inputs.pools:
+                raise ModelInvalid(f"pool {pid} has no capacity snapshot")
+            m.add(sum(members) <= inputs.pools[pid])
+        # cash floors at every checkpoint of every hard scenario
+        margin = m.new_int_var(-BIG, BIG, "min_margin")
+        extra = {}
+        if extra_cash_vars:
+            for a in inputs.accounts:
+                extra[a.id] = m.new_int_var(0, BIG, f"extra_cash_{a.id}")
+        markers = [
+            CashEvent(
+                f"__marker_{i.card.id}", i.card.repay_from, i.repay_on, 0, EventClass.PLANNED, "marker"
+            )
+            for i in infos
+        ]
+        horizon = max([inputs.horizon_end] + [i.repay_on for i in infos])
+        n_checkpoints = 0
+        baseline_infeasible = False
+        for sc in hard_scenarios:
+            timelines = {}
+            for a in inputs.accounts:
+                timelines[a.id] = build_timeline(
+                    a, inputs.snapshots[a.id], inputs.events + markers, sc, horizon
+                )
+            all_dates = sorted(
+                {p.on for tl in timelines.values() for p in tl.points if p.phase == "low"}
+            )
+            series = {aid: _low_series(tl, all_dates) for aid, tl in timelines.items()}
+            for a in inputs.accounts:
+                for d, base in zip(all_dates, series[a.id]):  # noqa: B905
+                    terms = [
+                        x[i.card.id] for i in infos if i.card.repay_from == a.id and i.repay_on <= d
+                    ]
+                    lhs = base + (extra[a.id] if extra else 0) - sum(terms)
+                    n_checkpoints += 1
+                    if not terms and not extra:
+                        if base < a.reserve_floor:
+                            baseline_infeasible = True
+                        m.add(margin <= base - a.reserve_floor)
+                        continue
+>                   m.add(lhs >= a.reserve_floor)
+                          ^^^^^^^^^^^^^^^^^^^^^^
+E                   TypeError: Linear constraints only accept integer values and coefficients: FloatAffine(expr=x_B(0..1500000), coeff=-1, offset=9.22337e+18)
+
+cardflow/planner/engine/allocation.py:302: TypeError
+_ test_probe_cases_never_raise_and_end_in_a_business_status[event amount = 2^63-1] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _event0.<locals>.mutate at 0x7f6cbbf280e0>
+status = 'MODEL_INVALID', build_error = True
+
+    @pytest.mark.parametrize(
+        ("mutate", "status", "build_error"),
+        [case[1:] for case in PROBE],
+        ids=[case[0] for case in PROBE],
+    )
+    def test_probe_cases_never_raise_and_end_in_a_business_status(
+        fx: Fx, mutate: Mutation, status: str, build_error: bool
+    ) -> None:
+        inputs, scenarios, _ = fx
+>       out = plan(mutate(inputs), scenarios, "baseline", "cash_safety", time_limit_s=10)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_robustness.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/plan.py:279: in plan
+    res = solve(
+cardflow/planner/engine/allocation.py:454: in solve
+    built = build_model(inputs, hard, infos, bounds)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=True...expected'>, category='income', label='预计收入', at=None)], horizon_end=datetime.date(2027, 1, 14), global_reserve_floor=0)
+hard_scenarios = [Scenario(id='baseline', include_expected=True, income_delay_days=0, income_scale=Decimal('1'), expense_scale=Decimal('1'), event_overrides={}, same_day_order='conservative', description='基准预期口径：预计收入按期发生')]
+infos = [CardPlanInfo(card=CardOption(id='A', account_id='acc-A', name='卡A', raw_available=800000, billing_rule=BillingRule(ru...-C', assumptions=('posting delay 0d -> posting 2026-10-16',)),), repay_on=datetime.date(2026, 11, 25), buffer_days=40)]
+prior_bounds = [], amount_var = False, extra_cash_vars = False
+
+    def build_model(
+        inputs: ModelInputs,
+        hard_scenarios: list[Scenario],
+        infos: list[CardPlanInfo],
+        prior_bounds: Sequence[tuple[str, str, int]] = (),
+        amount_var: bool = False,
+        extra_cash_vars: bool = False,
+    ) -> BuiltModel:
+        req = inputs.request
+        accounts = inputs.accounts_by_id()  # noqa: F841
+        if req.amount <= 0:
+            raise ModelInvalid("amount must be positive")
+        if req.k < 1:
+            raise ModelInvalid("max_cards must be >= 1")
+        m = cp_model.CpModel()
+        x, y = {}, {}
+        for info in infos:
+            c = info.card
+            cap = c.capacity
+            if c.per_txn_cap is not None:
+                cap = min(cap, c.per_txn_cap)
+            x[c.id] = m.new_int_var(0, max(cap, 0), f"x_{c.id}")
+            y[c.id] = m.new_bool_var(f"y_{c.id}")
+            m.add(x[c.id] <= cap * y[c.id])
+            ms = c.min_split if c.min_split is not None else req.min_split
+            if ms > 0:
+                m.add(x[c.id] >= ms * y[c.id])
+        if not infos:
+            raise ModelInvalid("no eligible cards")
+        total = sum(x.values())
+        if amount_var:
+            mprime = m.new_int_var(0, req.amount, "amount_affordable")
+            m.add(total == mprime)
+        else:
+            mprime = None
+            m.add(total == req.amount)
+        m.add(sum(y.values()) <= req.k)
+        # shared credit pools (multi-layer: a card may belong to one pool here; production supports
+        # nested pools)
+        pools: dict[str, list] = {}
+        for info in infos:
+            if info.card.pool_id:
+                pools.setdefault(info.card.pool_id, []).append(x[info.card.id])
+        for pid, members in pools.items():
+            if pid not in inputs.pools:
+                raise ModelInvalid(f"pool {pid} has no capacity snapshot")
+            m.add(sum(members) <= inputs.pools[pid])
+        # cash floors at every checkpoint of every hard scenario
+        margin = m.new_int_var(-BIG, BIG, "min_margin")
+        extra = {}
+        if extra_cash_vars:
+            for a in inputs.accounts:
+                extra[a.id] = m.new_int_var(0, BIG, f"extra_cash_{a.id}")
+        markers = [
+            CashEvent(
+                f"__marker_{i.card.id}", i.card.repay_from, i.repay_on, 0, EventClass.PLANNED, "marker"
+            )
+            for i in infos
+        ]
+        horizon = max([inputs.horizon_end] + [i.repay_on for i in infos])
+        n_checkpoints = 0
+        baseline_infeasible = False
+        for sc in hard_scenarios:
+            timelines = {}
+            for a in inputs.accounts:
+                timelines[a.id] = build_timeline(
+                    a, inputs.snapshots[a.id], inputs.events + markers, sc, horizon
+                )
+            all_dates = sorted(
+                {p.on for tl in timelines.values() for p in tl.points if p.phase == "low"}
+            )
+            series = {aid: _low_series(tl, all_dates) for aid, tl in timelines.items()}
+            for a in inputs.accounts:
+                for d, base in zip(all_dates, series[a.id]):  # noqa: B905
+                    terms = [
+                        x[i.card.id] for i in infos if i.card.repay_from == a.id and i.repay_on <= d
+                    ]
+                    lhs = base + (extra[a.id] if extra else 0) - sum(terms)
+                    n_checkpoints += 1
+                    if not terms and not extra:
+                        if base < a.reserve_floor:
+                            baseline_infeasible = True
+>                       m.add(margin <= base - a.reserve_floor)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                       TypeError: __le__(): incompatible function arguments. The following argument types are supported:
+E                           1. (self: ortools.sat.python.cp_model_helper.LinearExpr, arg0: ortools.sat.python.cp_model_helper.LinearExpr) -> operations_research::sat::python::BoundedLinearExpression
+E                           2. (self: ortools.sat.python.cp_model_helper.LinearExpr, arg0: int) -> operations_research::sat::python::BoundedLinearExpression
+E                       
+E                       Invoked with: min_margin(-10000000000000..10000000000000), 9223372036854975807
+
+cardflow/planner/engine/allocation.py:300: TypeError
+_ test_probe_cases_never_raise_and_end_in_a_business_status[fee_rate = 9999999999.9999999999] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _card.<locals>.mutate at 0x7f6cbbf28360>
+status = 'MODEL_INVALID', build_error = True
+
+    @pytest.mark.parametrize(
+        ("mutate", "status", "build_error"),
+        [case[1:] for case in PROBE],
+        ids=[case[0] for case in PROBE],
+    )
+    def test_probe_cases_never_raise_and_end_in_a_business_status(
+        fx: Fx, mutate: Mutation, status: str, build_error: bool
+    ) -> None:
+        inputs, scenarios, _ = fx
+>       out = plan(mutate(inputs), scenarios, "baseline", "cash_safety", time_limit_s=10)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_robustness.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/plan.py:279: in plan
+    res = solve(
+cardflow/planner/engine/allocation.py:454: in solve
+    built = build_model(inputs, hard, infos, bounds)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=True...expected'>, category='income', label='预计收入', at=None)], horizon_end=datetime.date(2027, 1, 14), global_reserve_floor=0)
+hard_scenarios = [Scenario(id='baseline', include_expected=True, income_delay_days=0, income_scale=Decimal('1'), expense_scale=Decimal('1'), event_overrides={}, same_day_order='conservative', description='基准预期口径：预计收入按期发生')]
+infos = [CardPlanInfo(card=CardOption(id='A', account_id='acc-A', name='卡A', raw_available=800000, billing_rule=BillingRule(ru...-C', assumptions=('posting delay 0d -> posting 2026-10-16',)),), repay_on=datetime.date(2026, 11, 25), buffer_days=40)]
+prior_bounds = [], amount_var = False, extra_cash_vars = False
+
+    def build_model(
+        inputs: ModelInputs,
+        hard_scenarios: list[Scenario],
+        infos: list[CardPlanInfo],
+        prior_bounds: Sequence[tuple[str, str, int]] = (),
+        amount_var: bool = False,
+        extra_cash_vars: bool = False,
+    ) -> BuiltModel:
+        req = inputs.request
+        accounts = inputs.accounts_by_id()  # noqa: F841
+        if req.amount <= 0:
+            raise ModelInvalid("amount must be positive")
+        if req.k < 1:
+            raise ModelInvalid("max_cards must be >= 1")
+        m = cp_model.CpModel()
+        x, y = {}, {}
+        for info in infos:
+            c = info.card
+            cap = c.capacity
+            if c.per_txn_cap is not None:
+                cap = min(cap, c.per_txn_cap)
+            x[c.id] = m.new_int_var(0, max(cap, 0), f"x_{c.id}")
+            y[c.id] = m.new_bool_var(f"y_{c.id}")
+            m.add(x[c.id] <= cap * y[c.id])
+            ms = c.min_split if c.min_split is not None else req.min_split
+            if ms > 0:
+                m.add(x[c.id] >= ms * y[c.id])
+        if not infos:
+            raise ModelInvalid("no eligible cards")
+        total = sum(x.values())
+        if amount_var:
+            mprime = m.new_int_var(0, req.amount, "amount_affordable")
+            m.add(total == mprime)
+        else:
+            mprime = None
+            m.add(total == req.amount)
+        m.add(sum(y.values()) <= req.k)
+        # shared credit pools (multi-layer: a card may belong to one pool here; production supports
+        # nested pools)
+        pools: dict[str, list] = {}
+        for info in infos:
+            if info.card.pool_id:
+                pools.setdefault(info.card.pool_id, []).append(x[info.card.id])
+        for pid, members in pools.items():
+            if pid not in inputs.pools:
+                raise ModelInvalid(f"pool {pid} has no capacity snapshot")
+            m.add(sum(members) <= inputs.pools[pid])
+        # cash floors at every checkpoint of every hard scenario
+        margin = m.new_int_var(-BIG, BIG, "min_margin")
+        extra = {}
+        if extra_cash_vars:
+            for a in inputs.accounts:
+                extra[a.id] = m.new_int_var(0, BIG, f"extra_cash_{a.id}")
+        markers = [
+            CashEvent(
+                f"__marker_{i.card.id}", i.card.repay_from, i.repay_on, 0, EventClass.PLANNED, "marker"
+            )
+            for i in infos
+        ]
+        horizon = max([inputs.horizon_end] + [i.repay_on for i in infos])
+        n_checkpoints = 0
+        baseline_infeasible = False
+        for sc in hard_scenarios:
+            timelines = {}
+            for a in inputs.accounts:
+                timelines[a.id] = build_timeline(
+                    a, inputs.snapshots[a.id], inputs.events + markers, sc, horizon
+                )
+            all_dates = sorted(
+                {p.on for tl in timelines.values() for p in tl.points if p.phase == "low"}
+            )
+            series = {aid: _low_series(tl, all_dates) for aid, tl in timelines.items()}
+            for a in inputs.accounts:
+                for d, base in zip(all_dates, series[a.id]):  # noqa: B905
+                    terms = [
+                        x[i.card.id] for i in infos if i.card.repay_from == a.id and i.repay_on <= d
+                    ]
+                    lhs = base + (extra[a.id] if extra else 0) - sum(terms)
+                    n_checkpoints += 1
+                    if not terms and not extra:
+                        if base < a.reserve_floor:
+                            baseline_infeasible = True
+                        m.add(margin <= base - a.reserve_floor)
+                        continue
+                    m.add(lhs >= a.reserve_floor)
+                    m.add(margin <= lhs - a.reserve_floor)
+            if inputs.global_reserve_floor > 0:
+                for idx, d in enumerate(all_dates):
+                    terms = [x[i.card.id] for i in infos if i.repay_on <= d]
+                    base_total = sum(series[a.id][idx] for a in inputs.accounts)
+                    lhs = base_total + (sum(extra.values()) if extra else 0) - sum(terms)
+                    if not terms and not extra:
+                        if base_total < inputs.global_reserve_floor:
+                            baseline_infeasible = True
+                        continue
+                    m.add(lhs >= inputs.global_reserve_floor)
+        if baseline_infeasible:
+            m.add(total <= -1)  # provably infeasible: the baseline already breaches the floor
+        # fees (rounded UP) and verified benefits (rounded DOWN, capped)
+        fee_terms, ben_terms = [], []
+        for info in infos:
+            c = info.card
+            if c.fee_rate or c.fee_fixed:
+                f = m.new_int_var(0, BIG, f"fee_{c.id}")
+                if c.fee_rate:
+                    fr = Fraction(Decimal(str(c.fee_rate)))
+                    m.add(
+>                       f * fr.denominator
+                        >= x[c.id] * fr.numerator + c.fee_fixed * fr.denominator * y[c.id]
+                    )
+E                   TypeError: Linear constraints only accept integer values and coefficients: IntAffine(expr=fee_A(0..10000000000000), coeff=10000000000, offset=0) and SumArray(FloatAffine(expr=x_A(0..800000), coeff=1e+20, offset=0), IntConstant(0))
+
+cardflow/planner/engine/allocation.py:325: TypeError
+_ test_probe_cases_never_raise_and_end_in_a_business_status[payment_lead_days = 60] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _request.<locals>.<lambda> at 0x7f6cbbf28400>
+status = 'MODEL_INVALID', build_error = False
+
+    @pytest.mark.parametrize(
+        ("mutate", "status", "build_error"),
+        [case[1:] for case in PROBE],
+        ids=[case[0] for case in PROBE],
+    )
+    def test_probe_cases_never_raise_and_end_in_a_business_status(
+        fx: Fx, mutate: Mutation, status: str, build_error: bool
+    ) -> None:
+        inputs, scenarios, _ = fx
+        out = plan(mutate(inputs), scenarios, "baseline", "cash_safety", time_limit_s=10)
+>       assert out.business_status == status
+E       AssertionError: assert 'INFEASIBLE' == 'MODEL_INVALID'
+E         
+E         - MODEL_INVALID
+E         + INFEASIBLE
+
+tests/engine/test_robustness.py:125: AssertionError
+_ test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[amount] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _request.<locals>.<lambda> at 0x7f6cbbf285e0>
+
+    @pytest.mark.parametrize(
+        "mutate",
+        [_request(amount=I63), _balance(I63), _event0(I63)],
+        ids=["amount", "balance", "event"],
+    )
+    def test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising(
+        fx: Fx, mutate: Mutation
+    ) -> None:
+        inputs, scenarios, _ = fx
+        broken = mutate(inputs)
+        stress = scenarios["stress_income_delay"]
+>       res = solve(broken, scenarios["baseline"], "cash_safety", time_limit_s=10)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_robustness.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/allocation.py:454: in solve
+    built = build_model(inputs, hard, infos, bounds)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = ModelInputs(request=PlanRequest(amount=9223372036854775807, currency='CNY', txn_date=datetime.date(2026, 10, 16), allo...expected'>, category='income', label='预计收入', at=None)], horizon_end=datetime.date(2027, 1, 14), global_reserve_floor=0)
+hard_scenarios = [Scenario(id='baseline', include_expected=True, income_delay_days=0, income_scale=Decimal('1'), expense_scale=Decimal('1'), event_overrides={}, same_day_order='conservative', description='基准预期口径：预计收入按期发生')]
+infos = [CardPlanInfo(card=CardOption(id='A', account_id='acc-A', name='卡A', raw_available=800000, billing_rule=BillingRule(ru...-C', assumptions=('posting delay 0d -> posting 2026-10-16',)),), repay_on=datetime.date(2026, 11, 25), buffer_days=40)]
+prior_bounds = [], amount_var = False, extra_cash_vars = False
+
+    def build_model(
+        inputs: ModelInputs,
+        hard_scenarios: list[Scenario],
+        infos: list[CardPlanInfo],
+        prior_bounds: Sequence[tuple[str, str, int]] = (),
+        amount_var: bool = False,
+        extra_cash_vars: bool = False,
+    ) -> BuiltModel:
+        req = inputs.request
+        accounts = inputs.accounts_by_id()  # noqa: F841
+        if req.amount <= 0:
+            raise ModelInvalid("amount must be positive")
+        if req.k < 1:
+            raise ModelInvalid("max_cards must be >= 1")
+        m = cp_model.CpModel()
+        x, y = {}, {}
+        for info in infos:
+            c = info.card
+            cap = c.capacity
+            if c.per_txn_cap is not None:
+                cap = min(cap, c.per_txn_cap)
+            x[c.id] = m.new_int_var(0, max(cap, 0), f"x_{c.id}")
+            y[c.id] = m.new_bool_var(f"y_{c.id}")
+            m.add(x[c.id] <= cap * y[c.id])
+            ms = c.min_split if c.min_split is not None else req.min_split
+            if ms > 0:
+                m.add(x[c.id] >= ms * y[c.id])
+        if not infos:
+            raise ModelInvalid("no eligible cards")
+        total = sum(x.values())
+        if amount_var:
+            mprime = m.new_int_var(0, req.amount, "amount_affordable")
+            m.add(total == mprime)
+        else:
+            mprime = None
+>           m.add(total == req.amount)
+                  ^^^^^^^^^^^^^^^^^^^
+E           ValueError: == INT_MIN or INT_MAX is not supported
+
+cardflow/planner/engine/allocation.py:253: ValueError
+_ test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[balance] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _balance.<locals>.mutate at 0x7f6cbbf28680>
+
+    @pytest.mark.parametrize(
+        "mutate",
+        [_request(amount=I63), _balance(I63), _event0(I63)],
+        ids=["amount", "balance", "event"],
+    )
+    def test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising(
+        fx: Fx, mutate: Mutation
+    ) -> None:
+        inputs, scenarios, _ = fx
+        broken = mutate(inputs)
+        stress = scenarios["stress_income_delay"]
+>       res = solve(broken, scenarios["baseline"], "cash_safety", time_limit_s=10)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_robustness.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/allocation.py:454: in solve
+    built = build_model(inputs, hard, infos, bounds)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=True...expected'>, category='income', label='预计收入', at=None)], horizon_end=datetime.date(2027, 1, 14), global_reserve_floor=0)
+hard_scenarios = [Scenario(id='baseline', include_expected=True, income_delay_days=0, income_scale=Decimal('1'), expense_scale=Decimal('1'), event_overrides={}, same_day_order='conservative', description='基准预期口径：预计收入按期发生')]
+infos = [CardPlanInfo(card=CardOption(id='A', account_id='acc-A', name='卡A', raw_available=800000, billing_rule=BillingRule(ru...-C', assumptions=('posting delay 0d -> posting 2026-10-16',)),), repay_on=datetime.date(2026, 11, 25), buffer_days=40)]
+prior_bounds = [], amount_var = False, extra_cash_vars = False
+
+    def build_model(
+        inputs: ModelInputs,
+        hard_scenarios: list[Scenario],
+        infos: list[CardPlanInfo],
+        prior_bounds: Sequence[tuple[str, str, int]] = (),
+        amount_var: bool = False,
+        extra_cash_vars: bool = False,
+    ) -> BuiltModel:
+        req = inputs.request
+        accounts = inputs.accounts_by_id()  # noqa: F841
+        if req.amount <= 0:
+            raise ModelInvalid("amount must be positive")
+        if req.k < 1:
+            raise ModelInvalid("max_cards must be >= 1")
+        m = cp_model.CpModel()
+        x, y = {}, {}
+        for info in infos:
+            c = info.card
+            cap = c.capacity
+            if c.per_txn_cap is not None:
+                cap = min(cap, c.per_txn_cap)
+            x[c.id] = m.new_int_var(0, max(cap, 0), f"x_{c.id}")
+            y[c.id] = m.new_bool_var(f"y_{c.id}")
+            m.add(x[c.id] <= cap * y[c.id])
+            ms = c.min_split if c.min_split is not None else req.min_split
+            if ms > 0:
+                m.add(x[c.id] >= ms * y[c.id])
+        if not infos:
+            raise ModelInvalid("no eligible cards")
+        total = sum(x.values())
+        if amount_var:
+            mprime = m.new_int_var(0, req.amount, "amount_affordable")
+            m.add(total == mprime)
+        else:
+            mprime = None
+            m.add(total == req.amount)
+        m.add(sum(y.values()) <= req.k)
+        # shared credit pools (multi-layer: a card may belong to one pool here; production supports
+        # nested pools)
+        pools: dict[str, list] = {}
+        for info in infos:
+            if info.card.pool_id:
+                pools.setdefault(info.card.pool_id, []).append(x[info.card.id])
+        for pid, members in pools.items():
+            if pid not in inputs.pools:
+                raise ModelInvalid(f"pool {pid} has no capacity snapshot")
+            m.add(sum(members) <= inputs.pools[pid])
+        # cash floors at every checkpoint of every hard scenario
+        margin = m.new_int_var(-BIG, BIG, "min_margin")
+        extra = {}
+        if extra_cash_vars:
+            for a in inputs.accounts:
+                extra[a.id] = m.new_int_var(0, BIG, f"extra_cash_{a.id}")
+        markers = [
+            CashEvent(
+                f"__marker_{i.card.id}", i.card.repay_from, i.repay_on, 0, EventClass.PLANNED, "marker"
+            )
+            for i in infos
+        ]
+        horizon = max([inputs.horizon_end] + [i.repay_on for i in infos])
+        n_checkpoints = 0
+        baseline_infeasible = False
+        for sc in hard_scenarios:
+            timelines = {}
+            for a in inputs.accounts:
+                timelines[a.id] = build_timeline(
+                    a, inputs.snapshots[a.id], inputs.events + markers, sc, horizon
+                )
+            all_dates = sorted(
+                {p.on for tl in timelines.values() for p in tl.points if p.phase == "low"}
+            )
+            series = {aid: _low_series(tl, all_dates) for aid, tl in timelines.items()}
+            for a in inputs.accounts:
+                for d, base in zip(all_dates, series[a.id]):  # noqa: B905
+                    terms = [
+                        x[i.card.id] for i in infos if i.card.repay_from == a.id and i.repay_on <= d
+                    ]
+                    lhs = base + (extra[a.id] if extra else 0) - sum(terms)
+                    n_checkpoints += 1
+                    if not terms and not extra:
+                        if base < a.reserve_floor:
+                            baseline_infeasible = True
+                        m.add(margin <= base - a.reserve_floor)
+                        continue
+>                   m.add(lhs >= a.reserve_floor)
+                          ^^^^^^^^^^^^^^^^^^^^^^
+E                   TypeError: Linear constraints only accept integer values and coefficients: FloatAffine(expr=x_B(0..1500000), coeff=-1, offset=9.22337e+18)
+
+cardflow/planner/engine/allocation.py:302: TypeError
+_ test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[event] _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+mutate = <function _event0.<locals>.mutate at 0x7f6cbbf28720>
+
+    @pytest.mark.parametrize(
+        "mutate",
+        [_request(amount=I63), _balance(I63), _event0(I63)],
+        ids=["amount", "balance", "event"],
+    )
+    def test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising(
+        fx: Fx, mutate: Mutation
+    ) -> None:
+        inputs, scenarios, _ = fx
+        broken = mutate(inputs)
+        stress = scenarios["stress_income_delay"]
+>       res = solve(broken, scenarios["baseline"], "cash_safety", time_limit_s=10)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_robustness.py:151: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/allocation.py:454: in solve
+    built = build_model(inputs, hard, infos, bounds)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+inputs = ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=True...expected'>, category='income', label='预计收入', at=None)], horizon_end=datetime.date(2027, 1, 14), global_reserve_floor=0)
+hard_scenarios = [Scenario(id='baseline', include_expected=True, income_delay_days=0, income_scale=Decimal('1'), expense_scale=Decimal('1'), event_overrides={}, same_day_order='conservative', description='基准预期口径：预计收入按期发生')]
+infos = [CardPlanInfo(card=CardOption(id='A', account_id='acc-A', name='卡A', raw_available=800000, billing_rule=BillingRule(ru...-C', assumptions=('posting delay 0d -> posting 2026-10-16',)),), repay_on=datetime.date(2026, 11, 25), buffer_days=40)]
+prior_bounds = [], amount_var = False, extra_cash_vars = False
+
+    def build_model(
+        inputs: ModelInputs,
+        hard_scenarios: list[Scenario],
+        infos: list[CardPlanInfo],
+        prior_bounds: Sequence[tuple[str, str, int]] = (),
+        amount_var: bool = False,
+        extra_cash_vars: bool = False,
+    ) -> BuiltModel:
+        req = inputs.request
+        accounts = inputs.accounts_by_id()  # noqa: F841
+        if req.amount <= 0:
+            raise ModelInvalid("amount must be positive")
+        if req.k < 1:
+            raise ModelInvalid("max_cards must be >= 1")
+        m = cp_model.CpModel()
+        x, y = {}, {}
+        for info in infos:
+            c = info.card
+            cap = c.capacity
+            if c.per_txn_cap is not None:
+                cap = min(cap, c.per_txn_cap)
+            x[c.id] = m.new_int_var(0, max(cap, 0), f"x_{c.id}")
+            y[c.id] = m.new_bool_var(f"y_{c.id}")
+            m.add(x[c.id] <= cap * y[c.id])
+            ms = c.min_split if c.min_split is not None else req.min_split
+            if ms > 0:
+                m.add(x[c.id] >= ms * y[c.id])
+        if not infos:
+            raise ModelInvalid("no eligible cards")
+        total = sum(x.values())
+        if amount_var:
+            mprime = m.new_int_var(0, req.amount, "amount_affordable")
+            m.add(total == mprime)
+        else:
+            mprime = None
+            m.add(total == req.amount)
+        m.add(sum(y.values()) <= req.k)
+        # shared credit pools (multi-layer: a card may belong to one pool here; production supports
+        # nested pools)
+        pools: dict[str, list] = {}
+        for info in infos:
+            if info.card.pool_id:
+                pools.setdefault(info.card.pool_id, []).append(x[info.card.id])
+        for pid, members in pools.items():
+            if pid not in inputs.pools:
+                raise ModelInvalid(f"pool {pid} has no capacity snapshot")
+            m.add(sum(members) <= inputs.pools[pid])
+        # cash floors at every checkpoint of every hard scenario
+        margin = m.new_int_var(-BIG, BIG, "min_margin")
+        extra = {}
+        if extra_cash_vars:
+            for a in inputs.accounts:
+                extra[a.id] = m.new_int_var(0, BIG, f"extra_cash_{a.id}")
+        markers = [
+            CashEvent(
+                f"__marker_{i.card.id}", i.card.repay_from, i.repay_on, 0, EventClass.PLANNED, "marker"
+            )
+            for i in infos
+        ]
+        horizon = max([inputs.horizon_end] + [i.repay_on for i in infos])
+        n_checkpoints = 0
+        baseline_infeasible = False
+        for sc in hard_scenarios:
+            timelines = {}
+            for a in inputs.accounts:
+                timelines[a.id] = build_timeline(
+                    a, inputs.snapshots[a.id], inputs.events + markers, sc, horizon
+                )
+            all_dates = sorted(
+                {p.on for tl in timelines.values() for p in tl.points if p.phase == "low"}
+            )
+            series = {aid: _low_series(tl, all_dates) for aid, tl in timelines.items()}
+            for a in inputs.accounts:
+                for d, base in zip(all_dates, series[a.id]):  # noqa: B905
+                    terms = [
+                        x[i.card.id] for i in infos if i.card.repay_from == a.id and i.repay_on <= d
+                    ]
+                    lhs = base + (extra[a.id] if extra else 0) - sum(terms)
+                    n_checkpoints += 1
+                    if not terms and not extra:
+                        if base < a.reserve_floor:
+                            baseline_infeasible = True
+>                       m.add(margin <= base - a.reserve_floor)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                       TypeError: __le__(): incompatible function arguments. The following argument types are supported:
+E                           1. (self: ortools.sat.python.cp_model_helper.LinearExpr, arg0: ortools.sat.python.cp_model_helper.LinearExpr) -> operations_research::sat::python::BoundedLinearExpression
+E                           2. (self: ortools.sat.python.cp_model_helper.LinearExpr, arg0: int) -> operations_research::sat::python::BoundedLinearExpression
+E                       
+E                       Invoked with: min_margin(-10000000000000..10000000000000), 9223372036854975807
+
+cardflow/planner/engine/allocation.py:300: TypeError
+__________________ test_a_date_overflow_becomes_model_invalid __________________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_a_date_overflow_becomes_model_invalid(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+        last = date(9999, 12, 31)
+        # statement on 9999-12-31 itself, due 20 days later: the date arithmetic overflows
+        rule = BillingRule("r31", 31, DueRule("days_after_statement", days=20))
+        late = replace(
+            inputs,
+            request=replace(inputs.request, txn_date=last),
+            snapshots={"cash-main": replace(inputs.snapshots["cash-main"], as_of=last)},
+            cards=[replace(inputs.cards[0], billing_rule=rule), *inputs.cards[1:]],
+            horizon_end=last,
+        )
+>       out = plan(late, scenarios, "baseline", "cash_safety", time_limit_s=10)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_robustness.py:176: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/plan.py:221: in plan
+    issues = data_issues(inputs, stale_after_days)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/plan.py:123: in data_issues
+    derive_card_info(c, req)
+cardflow/planner/engine/allocation.py:101: in derive_card_info
+    cycles = cycles_for_transaction(
+cardflow/planner/engine/billing.py:135: in cycles_for_transaction
+    c = cycle_for_posting(rule, txn_date + timedelta(days=delay), is_business_day)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/billing.py:120: in cycle_for_posting
+    return Cycle(stmt, due_date_for_statement(rule, stmt, is_business_day), rule.rule_id)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+rule = BillingRule(rule_id='r31', statement_day=31, due=DueRule(kind='days_after_statement', day=None, month_offset=0, days=2..., holiday_rollover='none', effective_from=None, effective_to=None, source='', verified_on=None, status='user_declared')
+stmt = datetime.date(9999, 12, 31), is_business_day = None
+
+    def due_date_for_statement(
+        rule: BillingRule, stmt: date, is_business_day: BusinessDayFn | None = None
+    ) -> date:
+        r = rule.due
+        if r.kind == "fixed_day":
+            if r.day is None:
+                raise ValueError("fixed_day rule needs day")
+            y, m = add_months(stmt, r.month_offset)
+            due = clamp_day(y, m, r.day)
+            if due <= stmt:
+                raise ValueError(
+                    f"rule {rule.rule_id}: due {due} is not after statement {stmt} "
+                    "(month_offset/day misconfigured)"
+                )
+        elif r.kind == "days_after_statement":
+            if r.days is None:
+                raise ValueError("days_after_statement rule needs days")
+            if r.day_kind == "calendar":
+>               due = stmt + timedelta(days=r.days)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               OverflowError: date value out of range
+
+cardflow/planner/engine/billing.py:95: OverflowError
+____ test_a_card_whose_repayment_would_precede_the_transaction_is_rejected _____
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_a_card_whose_repayment_would_precede_the_transaction_is_rejected(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+        # 30 days early: A pays 10-29, C pays 10-26, but B (due 11-08) would pay 10-09 < 10-16
+        early = _request(payment_lead_days=30)(inputs)
+        out = plan(early, scenarios, "baseline", "cash_safety", time_limit_s=10)
+        reasons = {r["card"]: r["reason"] for r in out.rejections}
+>       assert reasons["B"] == "REPAY_BEFORE_TXN_DATE"
+E       AssertionError: assert 'DOMINATED' == 'REPAY_BEFORE_TXN_DATE'
+E         
+E         - REPAY_BEFORE_TXN_DATE
+E         + DOMINATED
+
+tests/engine/test_robustness.py:193: AssertionError
+________ test_no_card_left_after_the_repayment_date_check_is_explained _________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_no_card_left_after_the_repayment_date_check_is_explained(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+        out = plan(_request(payment_lead_days=60)(inputs), scenarios, "baseline", "cash_safety", 10)
+>       assert out.business_status == "MODEL_INVALID"  # "no eligible cards", as for any reason
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert 'INFEASIBLE' == 'MODEL_INVALID'
+E         
+E         - MODEL_INVALID
+E         + INFEASIBLE
+
+tests/engine/test_robustness.py:201: AssertionError
+_ test_verifier_applies_and_flags_a_planned_repayment_dated_before_the_snapshot _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_verifier_applies_and_flags_a_planned_repayment_dated_before_the_snapshot(
+        fx: Fx,
+    ) -> None:
+        inputs, scenarios, _ = fx
+        early = _request(payment_lead_days=60)(inputs)  # A pays 09-29, C pays 09-26 < 10-16
+        v = verify(early, {"A": 800000, "C": 200000}, scenarios, "baseline")
+>       assert not v.ok
+E       AssertionError: assert not True
+E        +  where True = Verification(ok=True, structural_ok=True, violations=[], decision_scenario='baseline', checks={'confirmed': ScenarioCh...0, 'potential_benefit': 0, 'cycle_assumptions': ['posting delay 0d -> posting 2026-10-16'], 'alternative_cycles': []}]).ok
+
+tests/engine/test_robustness.py:215: AssertionError
+___ test_an_exhausted_pool_is_clamped_to_zero_and_other_cards_stay_usable[0] ___
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+available = 0
+
+    @pytest.mark.parametrize("available", [0, -100])
+    def test_an_exhausted_pool_is_clamped_to_zero_and_other_cards_stay_usable(
+        fx: Fx, available: int
+    ) -> None:
+        inputs, scenarios, _ = fx
+        pooled = replace(
+            _card(1, pool_id="pool-B")(inputs), pools={"pool-B": available}
+        )  # card B alone in a pool with nothing left
+        out = plan(pooled, scenarios, "baseline", "cash_safety", time_limit_s=10)
+        assert out.business_status == "CONDITIONALLY_FEASIBLE"
+        assert out.allocation == {"A": 800000, "C": 200000}
+>       assert {r["card"]: r["reason"] for r in out.rejections} == {"B": "NO_CAPACITY"}
+E       AssertionError: assert {'B': 'CASH_BREACH_ALONE'} == {'B': 'NO_CAPACITY'}
+E         
+E         Differing items:
+E         {'B': 'CASH_BREACH_ALONE'} != {'B': 'NO_CAPACITY'}
+E         Use -v to get more diff
+
+tests/engine/test_robustness.py:243: AssertionError
+_ test_an_exhausted_pool_is_clamped_to_zero_and_other_cards_stay_usable[-100] __
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+available = -100
+
+    @pytest.mark.parametrize("available", [0, -100])
+    def test_an_exhausted_pool_is_clamped_to_zero_and_other_cards_stay_usable(
+        fx: Fx, available: int
+    ) -> None:
+        inputs, scenarios, _ = fx
+        pooled = replace(
+            _card(1, pool_id="pool-B")(inputs), pools={"pool-B": available}
+        )  # card B alone in a pool with nothing left
+        out = plan(pooled, scenarios, "baseline", "cash_safety", time_limit_s=10)
+>       assert out.business_status == "CONDITIONALLY_FEASIBLE"
+E       AssertionError: assert 'INFEASIBLE' == 'CONDITIONALLY_FEASIBLE'
+E         
+E         - CONDITIONALLY_FEASIBLE
+E         + INFEASIBLE
+
+tests/engine/test_robustness.py:241: AssertionError
+________ test_any_amount_on_a_card_of_an_exhausted_pool_is_a_violation _________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_any_amount_on_a_card_of_an_exhausted_pool_is_a_violation(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+        pooled = replace(_card(1, pool_id="pool-B")(inputs), pools={"pool-B": -100})
+        v = verify(pooled, {"A": 800000, "B": 200000}, scenarios, "baseline")
+        assert not v.structural_ok
+>       assert "pool pool-B: 200000 exceeds shared capacity 0" in v.violations
+E       AssertionError: assert 'pool pool-B: 200000 exceeds shared capacity 0' in ['pool pool-B: 200000 exceeds shared capacity -100']
+E        +  where ['pool pool-B: 200000 exceeds shared capacity -100'] = Verification(ok=False, structural_ok=False, violations=['pool pool-B: 200000 exceeds shared capacity -100'], decision_...0, 'potential_benefit': 0, 'cycle_assumptions': ['posting delay 0d -> posting 2026-10-16'], 'alternative_cycles': []}]).violations
+
+tests/engine/test_robustness.py:254: AssertionError
+__________ test_verifier_refuses_non_integer_amounts[integral-float] ___________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+amount = 800000.0
+
+    @pytest.mark.parametrize(
+        "amount",
+        [800000.0, 800000.5, True, Decimal("800000"), "800000"],
+        ids=["integral-float", "float", "bool", "decimal", "string"],
+    )
+    def test_verifier_refuses_non_integer_amounts(fx: Fx, amount: object) -> None:
+        inputs, scenarios, _ = fx
+>       with pytest.raises(TypeError, match="must be an int"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+tests/engine/test_robustness.py:268: Failed
+_______________ test_verifier_refuses_non_integer_amounts[float] _______________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+amount = 800000.5
+
+    @pytest.mark.parametrize(
+        "amount",
+        [800000.0, 800000.5, True, Decimal("800000"), "800000"],
+        ids=["integral-float", "float", "bool", "decimal", "string"],
+    )
+    def test_verifier_refuses_non_integer_amounts(fx: Fx, amount: object) -> None:
+        inputs, scenarios, _ = fx
+>       with pytest.raises(TypeError, match="must be an int"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+tests/engine/test_robustness.py:268: Failed
+_______________ test_verifier_refuses_non_integer_amounts[bool] ________________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+amount = True
+
+    @pytest.mark.parametrize(
+        "amount",
+        [800000.0, 800000.5, True, Decimal("800000"), "800000"],
+        ids=["integral-float", "float", "bool", "decimal", "string"],
+    )
+    def test_verifier_refuses_non_integer_amounts(fx: Fx, amount: object) -> None:
+        inputs, scenarios, _ = fx
+>       with pytest.raises(TypeError, match="must be an int"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+tests/engine/test_robustness.py:268: Failed
+______________ test_verifier_refuses_non_integer_amounts[decimal] ______________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+amount = Decimal('800000')
+
+    @pytest.mark.parametrize(
+        "amount",
+        [800000.0, 800000.5, True, Decimal("800000"), "800000"],
+        ids=["integral-float", "float", "bool", "decimal", "string"],
+    )
+    def test_verifier_refuses_non_integer_amounts(fx: Fx, amount: object) -> None:
+        inputs, scenarios, _ = fx
+>       with pytest.raises(TypeError, match="must be an int"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+tests/engine/test_robustness.py:268: Failed
+______________ test_verifier_refuses_non_integer_amounts[string] _______________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+amount = '800000'
+
+    @pytest.mark.parametrize(
+        "amount",
+        [800000.0, 800000.5, True, Decimal("800000"), "800000"],
+        ids=["integral-float", "float", "bool", "decimal", "string"],
+    )
+    def test_verifier_refuses_non_integer_amounts(fx: Fx, amount: object) -> None:
+        inputs, scenarios, _ = fx
+>       with pytest.raises(TypeError, match="must be an int"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE TypeError
+
+tests/engine/test_robustness.py:268: Failed
+____________________ test_the_limits_are_the_engine_bounds _____________________
+
+    def test_the_limits_are_the_engine_bounds() -> None:
+>       assert getattr(protocol, "MONEY_LIMIT", None) == allocation.BIG == LIMIT
+E       AssertionError: assert None == 10000000000000
+E        +  where None = getattr(protocol, 'MONEY_LIMIT', None)
+E        +  and   10000000000000 = allocation.BIG
+
+tests/protocol/test_limits.py:66: AssertionError
+___ test_schema_and_adapter_agree_on_the_supported_range[amount-over-limit] ____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('request', 'amount_minor'), value = 10000000000001, accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+_ test_schema_and_adapter_agree_on_the_supported_range[balance-under-negative-limit] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('snapshots', 0, 'balance_minor'), value = -10000000000001
+accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+__ test_schema_and_adapter_agree_on_the_supported_range[available-over-limit] __
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'raw_available_minor'), value = 10000000000001
+accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+_ test_schema_and_adapter_agree_on_the_supported_range[event-under-negative-limit] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('events', 0, 'amount_minor'), value = -10000000000001, accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+____ test_schema_and_adapter_agree_on_the_supported_range[floor-over-limit] ____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cash_accounts', 0, 'reserve_floor_minor'), value = 10000000000001
+accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+_ test_schema_and_adapter_agree_on_the_supported_range[global-floor-over-limit] _
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('options', 'global_reserve_floor_minor'), value = 10000000000001
+accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+___ test_schema_and_adapter_agree_on_the_supported_range[rate-six-decimals] ____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '0.000001', accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+_____ test_schema_and_adapter_agree_on_the_supported_range[rate-above-one] _____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '1.00001', accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+________ test_schema_and_adapter_agree_on_the_supported_range[rate-two] ________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'verified_benefit_rate'), value = '2', accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+____ test_schema_and_adapter_agree_on_the_supported_range[scale-above-ten] _____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('scenarios', 0, 'income_scale'), value = '10.1', accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+___ test_schema_and_adapter_agree_on_the_supported_range[date-before-first] ____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('horizon_end',), value = '1969-12-31', accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+____ test_schema_and_adapter_agree_on_the_supported_range[date-after-last] _____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('horizon_end',), value = '3000-01-01', accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+__ test_schema_and_adapter_agree_on_the_supported_range[timestamp-after-last] __
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('snapshots', 0, 'observed_at'), value = '3000-01-01T00:00:00Z'
+accepted = False
+
+    @pytest.mark.parametrize(
+        ("path", "value", "accepted"), [c[1:] for c in BOUNDARY], ids=[c[0] for c in BOUNDARY]
+    )
+    def test_schema_and_adapter_agree_on_the_supported_range(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        accepted: bool,
+    ) -> None:
+>       assert _accepted(runner, registry, _set(plan_input, path, value)) == (accepted, accepted)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:112: AssertionError
+___________________ test_array_sizes_are_limited[cards-200] ____________________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+member = 'cards', limit = 200
+
+    @pytest.mark.parametrize(
+        ("member", "limit"), [("cards", 200), ("cash_accounts", 100), ("events", 10000)]
+    )
+    def test_array_sizes_are_limited(
+        runner: ModuleType, registry: Registry, plan_input: Doc, member: str, limit: int
+    ) -> None:
+        assert _accepted(runner, registry, _grow(plan_input, member, limit)) == (True, True)
+        over = _grow(plan_input, member, limit + 1)
+>       assert _accepted(runner, registry, over) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:132: AssertionError
+_______________ test_array_sizes_are_limited[cash_accounts-100] ________________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+member = 'cash_accounts', limit = 100
+
+    @pytest.mark.parametrize(
+        ("member", "limit"), [("cards", 200), ("cash_accounts", 100), ("events", 10000)]
+    )
+    def test_array_sizes_are_limited(
+        runner: ModuleType, registry: Registry, plan_input: Doc, member: str, limit: int
+    ) -> None:
+        assert _accepted(runner, registry, _grow(plan_input, member, limit)) == (True, True)
+        over = _grow(plan_input, member, limit + 1)
+>       assert _accepted(runner, registry, over) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:132: AssertionError
+__________________ test_array_sizes_are_limited[events-10000] __________________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+member = 'events', limit = 10000
+
+    @pytest.mark.parametrize(
+        ("member", "limit"), [("cards", 200), ("cash_accounts", 100), ("events", 10000)]
+    )
+    def test_array_sizes_are_limited(
+        runner: ModuleType, registry: Registry, plan_input: Doc, member: str, limit: int
+    ) -> None:
+        assert _accepted(runner, registry, _grow(plan_input, member, limit)) == (True, True)
+        over = _grow(plan_input, member, limit + 1)
+>       assert _accepted(runner, registry, over) == (False, False)
+E       assert (True, True) == (False, False)
+E         
+E         At index 0 diff: True != False
+E         Use -v to get more diff
+
+tests/protocol/test_limits.py:132: AssertionError
+________ test_probe_cases_through_the_protocol[raw_available = 2^63-1] _________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'raw_available_minor'), value = 9223372036854775807
+expected = '/cards/0/raw_available_minor'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+>           assert runner.schema_errors(registry, SCHEMA, doc) != []
+E           AssertionError: assert [] != []
+E            +  where [] = <function schema_errors at 0x7f6cbbfbdee0>(<Registry (13 uncrawled resources)>, 'PlanInput.schema.json', {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...})
+E            +    where <function schema_errors at 0x7f6cbbfbdee0> = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>.schema_errors
+
+tests/protocol/test_limits.py:178: AssertionError
+_____________ test_probe_cases_through_the_protocol[amount = 2^62] _____________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('request', 'amount_minor'), value = 4611686018427387904
+expected = '/request/amount_minor'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+>           assert runner.schema_errors(registry, SCHEMA, doc) != []
+E           AssertionError: assert [] != []
+E            +  where [] = <function schema_errors at 0x7f6cbbfbdee0>(<Registry (13 uncrawled resources)>, 'PlanInput.schema.json', {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...})
+E            +    where <function schema_errors at 0x7f6cbbfbdee0> = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>.schema_errors
+
+tests/protocol/test_limits.py:178: AssertionError
+____________ test_probe_cases_through_the_protocol[amount = 2^63-1] ____________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('request', 'amount_minor'), value = 9223372036854775807
+expected = '/request/amount_minor'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+>           assert runner.schema_errors(registry, SCHEMA, doc) != []
+E           AssertionError: assert [] != []
+E            +  where [] = <function schema_errors at 0x7f6cbbfbdee0>(<Registry (13 uncrawled resources)>, 'PlanInput.schema.json', {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...})
+E            +    where <function schema_errors at 0x7f6cbbfbdee0> = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>.schema_errors
+
+tests/protocol/test_limits.py:178: AssertionError
+____________ test_probe_cases_through_the_protocol[balance = -2^63] ____________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('snapshots', 0, 'balance_minor'), value = -9223372036854775808
+expected = '/snapshots/0/balance_minor'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+>           assert runner.schema_errors(registry, SCHEMA, doc) != []
+E           AssertionError: assert [] != []
+E            +  where [] = <function schema_errors at 0x7f6cbbfbdee0>(<Registry (13 uncrawled resources)>, 'PlanInput.schema.json', {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...})
+E            +    where <function schema_errors at 0x7f6cbbfbdee0> = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>.schema_errors
+
+tests/protocol/test_limits.py:178: AssertionError
+___________ test_probe_cases_through_the_protocol[balance = 2^63-1] ____________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('snapshots', 0, 'balance_minor'), value = 9223372036854775807
+expected = '/snapshots/0/balance_minor'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+>           assert runner.schema_errors(registry, SCHEMA, doc) != []
+E           AssertionError: assert [] != []
+E            +  where [] = <function schema_errors at 0x7f6cbbfbdee0>(<Registry (13 uncrawled resources)>, 'PlanInput.schema.json', {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...})
+E            +    where <function schema_errors at 0x7f6cbbfbdee0> = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>.schema_errors
+
+tests/protocol/test_limits.py:178: AssertionError
+_________ test_probe_cases_through_the_protocol[event amount = 2^63-1] _________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('events', 0, 'amount_minor'), value = 9223372036854775807
+expected = '/events/0/amount_minor'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+>           assert runner.schema_errors(registry, SCHEMA, doc) != []
+E           AssertionError: assert [] != []
+E            +  where [] = <function schema_errors at 0x7f6cbbfbdee0>(<Registry (13 uncrawled resources)>, 'PlanInput.schema.json', {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...})
+E            +    where <function schema_errors at 0x7f6cbbfbdee0> = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>.schema_errors
+
+tests/protocol/test_limits.py:178: AssertionError
+________ test_probe_cases_through_the_protocol[fee_rate = 0.1234567891] ________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '0.1234567891'
+expected = '/cards/0/fee_rate'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+>           assert runner.schema_errors(registry, SCHEMA, doc) != []
+E           AssertionError: assert [] != []
+E            +  where [] = <function schema_errors at 0x7f6cbbfbdee0>(<Registry (13 uncrawled resources)>, 'PlanInput.schema.json', {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...})
+E            +    where <function schema_errors at 0x7f6cbbfbdee0> = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>.schema_errors
+
+tests/protocol/test_limits.py:178: AssertionError
+___ test_probe_cases_through_the_protocol[fee_rate = 9999999999.9999999999] ____
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('cards', 0, 'fee_rate'), value = '9999999999.9999999999'
+expected = '/cards/0/fee_rate'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+>           assert runner.schema_errors(registry, SCHEMA, doc) != []
+E           AssertionError: assert [] != []
+E            +  where [] = <function schema_errors at 0x7f6cbbfbdee0>(<Registry (13 uncrawled resources)>, 'PlanInput.schema.json', {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...})
+E            +    where <function schema_errors at 0x7f6cbbfbdee0> = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>.schema_errors
+
+tests/protocol/test_limits.py:178: AssertionError
+________ test_probe_cases_through_the_protocol[payment_lead_days = 60] _________
+
+runner = <module 'rules_protocol_run_fixtures' from '/projects/cardflow/packages/rules-protocol/runner_py/run_fixtures.py'>
+registry = <Registry (13 uncrawled resources)>
+plan_input = {'cards': [{'billing_rule': {'due': {'day': 28, 'kind': 'fixed_day', 'month_offset': 0}, 'holiday_rollover': 'none', '... 'cash_account_id': 'cash-main', 'category': 'income', 'cls': 'expected', ...}, ...], 'horizon_end': '2027-01-14', ...}
+path = ('request', 'payment_lead_days'), value = 60, expected = 'MODEL_INVALID'
+
+    @pytest.mark.parametrize(
+        ("path", "value", "expected"), [c[1:] for c in PROBE], ids=[c[0] for c in PROBE]
+    )
+    def test_probe_cases_through_the_protocol(
+        runner: ModuleType,
+        registry: Registry,
+        plan_input: Doc,
+        path: tuple[str | int, ...],
+        value: object,
+        expected: str,
+    ) -> None:
+        doc = _set(plan_input, path, value)
+        if expected.startswith("/"):
+            assert runner.schema_errors(registry, SCHEMA, doc) != []
+            with pytest.raises(ProtocolError) as caught:
+                inputs_from_protocol(doc)
+            assert caught.value.path == expected
+            return
+        outcome = plan_from_protocol(doc)
+>       assert outcome["business_status"] == expected
+E       AssertionError: assert 'INFEASIBLE' == 'MODEL_INVALID'
+E         
+E         - MODEL_INVALID
+E         + INFEASIBLE
+
+tests/protocol/test_limits.py:184: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[amount = 2^63-1]
+FAILED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[balance = 2^63-1]
+FAILED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[event amount = 2^63-1]
+FAILED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[fee_rate = 9999999999.9999999999]
+FAILED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[payment_lead_days = 60]
+FAILED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[amount]
+FAILED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[balance]
+FAILED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[event]
+FAILED tests/engine/test_robustness.py::test_a_date_overflow_becomes_model_invalid
+FAILED tests/engine/test_robustness.py::test_a_card_whose_repayment_would_precede_the_transaction_is_rejected
+FAILED tests/engine/test_robustness.py::test_no_card_left_after_the_repayment_date_check_is_explained
+FAILED tests/engine/test_robustness.py::test_verifier_applies_and_flags_a_planned_repayment_dated_before_the_snapshot
+FAILED tests/engine/test_robustness.py::test_an_exhausted_pool_is_clamped_to_zero_and_other_cards_stay_usable[0]
+FAILED tests/engine/test_robustness.py::test_an_exhausted_pool_is_clamped_to_zero_and_other_cards_stay_usable[-100]
+FAILED tests/engine/test_robustness.py::test_any_amount_on_a_card_of_an_exhausted_pool_is_a_violation
+FAILED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[integral-float]
+FAILED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[float]
+FAILED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[bool]
+FAILED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[decimal]
+FAILED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[string]
+FAILED tests/protocol/test_limits.py::test_the_limits_are_the_engine_bounds
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[amount-over-limit]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[balance-under-negative-limit]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[available-over-limit]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[event-under-negative-limit]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[floor-over-limit]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[global-floor-over-limit]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-six-decimals]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-above-one]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-two]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[scale-above-ten]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[date-before-first]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[date-after-last]
+FAILED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[timestamp-after-last]
+FAILED tests/protocol/test_limits.py::test_array_sizes_are_limited[cards-200]
+FAILED tests/protocol/test_limits.py::test_array_sizes_are_limited[cash_accounts-100]
+FAILED tests/protocol/test_limits.py::test_array_sizes_are_limited[events-10000]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[raw_available = 2^63-1]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[amount = 2^62]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[amount = 2^63-1]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[balance = -2^63]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[balance = 2^63-1]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[event amount = 2^63-1]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[fee_rate = 0.1234567891]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[fee_rate = 9999999999.9999999999]
+FAILED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[payment_lead_days = 60]
+46 failed, 25 passed, 1 warning in 11.15s
+exit=1

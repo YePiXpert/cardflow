@@ -1,0 +1,97 @@
+# T-004b schema guards (2026-10-17T02:57:23Z); inventory tool = /tmp/t004/tools/schema_inventory.py (text in schema-guard.txt)
+$ uv run pytest -p no:cacheprovider -v tests/protocol/test_schemas.py   (cwd services/api)
+tests/protocol/test_schemas.py::test_the_schema_set_is_complete PASSED   [ 14%]
+tests/protocol/test_schemas.py::test_every_schema_is_valid_draft_2020_12_with_a_matching_id PASSED [ 28%]
+tests/protocol/test_schemas.py::test_every_ref_resolves_inside_the_set PASSED [ 42%]
+tests/protocol/test_schemas.py::test_object_schemas_are_closed PASSED    [ 57%]
+tests/protocol/test_schemas.py::test_no_number_type_outside_the_timing_whitelist PASSED [ 71%]
+tests/protocol/test_schemas.py::test_money_is_minor_units_in_range_and_rates_are_decimal_strings PASSED [ 85%]
+tests/protocol/test_schemas.py::test_guards_catch_a_float_money_field_and_an_open_object PASSED [100%]
+========================= 7 passed, 1 warning in 0.13s =========================
+
+$ grep -n "\"number\"" packages/rules-protocol/schema/v1/*.json
+packages/rules-protocol/schema/v1/Options.schema.json:25:      "type": "number",
+packages/rules-protocol/schema/v1/PlanOutcome.schema.json:51:    "time_limit_s": { "type": "number", "exclusiveMinimum": 0 },
+packages/rules-protocol/schema/v1/PlanOutcome.schema.json:72:      "type": ["number", "null"],
+packages/rules-protocol/schema/v1/PlanOutcome.schema.json:120:        "wall_time_s": { "type": "number", "minimum": 0 }
+
+$ uv run --project services/api python -I /tmp/t004/tools/schema_inventory.py /projects/cardflow
+## meta-schema (Draft 2020-12) check per file
+  OK  BillingRule.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/BillingRule.schema.json
+  OK  CardOption.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/CardOption.schema.json
+  OK  CashAccount.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/CashAccount.schema.json
+  OK  CashEvent.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/CashEvent.schema.json
+  OK  Fixture.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/Fixture.schema.json
+  OK  Options.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/Options.schema.json
+  OK  PlanInput.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/PlanInput.schema.json
+  OK  PlanOutcome.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/PlanOutcome.schema.json
+  OK  PlanRequest.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/PlanRequest.schema.json
+  OK  Pools.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/Pools.schema.json
+  OK  Scenario.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/Scenario.schema.json
+  OK  Snapshot.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/Snapshot.schema.json
+  OK  common.schema.json  $id=https://rules-protocol.cardflow.invalid/v1/common.schema.json
+
+## 'number' type occurrences (whitelist: Options.schema.json:time_limit_s, PlanOutcome.schema.json:time_limit_s, PlanOutcome.schema.json:wall_time_s)
+  Options.schema.json#/properties/time_limit_s
+  PlanOutcome.schema.json#/properties/time_limit_s
+  PlanOutcome.schema.json#/properties/wall_time_s
+  PlanOutcome.schema.json#/$defs/Tier/properties/wall_time_s
+  violations: []
+
+## money members (property -> referenced definition)
+  CardOption.schema.json#/properties/raw_available_minor -> MinorAmount
+  CardOption.schema.json#/properties/holds_uncounted_minor -> NonNegativeMinorAmount
+  CardOption.schema.json#/properties/reservations_minor -> NonNegativeMinorAmount
+  CardOption.schema.json#/properties/per_txn_cap_minor -> NonNegativeMinorAmount
+  CardOption.schema.json#/properties/min_split_minor -> PositiveMinorAmount
+  (rate) CardOption.schema.json#/properties/fee_rate -> Rate
+  CardOption.schema.json#/properties/fee_fixed_minor -> NonNegativeMinorAmount
+  (rate) CardOption.schema.json#/properties/verified_benefit_rate -> Rate
+  CardOption.schema.json#/properties/verified_benefit_cap_minor -> NonNegativeMinorAmount
+  (rate) CardOption.schema.json#/properties/potential_benefit_rate -> Rate
+  CashAccount.schema.json#/properties/reserve_floor_minor -> NonNegativeMinorAmount
+  CashEvent.schema.json#/properties/amount_minor -> MinorAmount
+  Fixture.schema.json#/$defs/AllocationItem/properties/amount_minor -> PositiveMinorAmount
+  Options.schema.json#/properties/global_reserve_floor_minor -> NonNegativeMinorAmount
+  PlanOutcome.schema.json#/$defs/AccountBreach/properties/balance -> ResultMinorAmount
+  PlanOutcome.schema.json#/$defs/AccountBreach/properties/gap_to_zero -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/AccountBreach/properties/gap_to_reserve -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/ScenarioBreach/properties/balance -> ResultMinorAmount
+  PlanOutcome.schema.json#/$defs/ScenarioBreach/properties/gap_to_zero -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/ScenarioBreach/properties/gap_to_reserve -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/GlobalBreach/properties/total -> ResultMinorAmount
+  PlanOutcome.schema.json#/$defs/GlobalBreach/properties/gap -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/BaselineAccount/properties/min_balance -> ResultMinorAmount
+  PlanOutcome.schema.json#/$defs/BaselineAccount/properties/end_balance -> ResultMinorAmount
+  PlanOutcome.schema.json#/$defs/AllocationLine/properties/amount_minor -> PositiveResultMinorAmount
+  PlanOutcome.schema.json#/$defs/AllocationLine/properties/fee_minor -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/AllocationLine/properties/verified_benefit_minor -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/AllocationLine/properties/potential_benefit_minor -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/ScenarioCheck/properties/min_balance_by_account -> map of ResultMinorAmount
+  PlanOutcome.schema.json#/$defs/ScenarioCheck/properties/end_balance_by_account -> map of ResultMinorAmount
+  PlanOutcome.schema.json#/$defs/Verification/properties/fees -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/Verification/properties/verified_benefit -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/Verification/properties/potential_benefit -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/Rejection/properties/capacity -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/Rejection/properties/amount -> PositiveResultMinorAmount
+  PlanOutcome.schema.json#/$defs/Rejection/properties/min_balance -> map of ResultMinorAmount
+  PlanOutcome.schema.json#/$defs/MinExtraConfirmedCash/properties/extra_cash_by_account -> map of NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/MinExtraConfirmedCash/properties/total -> NonNegativeResultMinorAmount
+  PlanOutcome.schema.json#/$defs/MaxAffordableAmount/properties/amount -> NonNegativeResultMinorAmount
+  PlanRequest.schema.json#/properties/amount_minor -> PositiveMinorAmount
+  PlanRequest.schema.json#/properties/min_split_minor -> PositiveMinorAmount
+  Pools.schema.json#/$defs/Pool/properties/available_minor -> MinorAmount
+  (rate) Scenario.schema.json#/properties/income_scale -> ScaleFactor
+  (rate) Scenario.schema.json#/properties/expense_scale -> ScaleFactor
+  Scenario.schema.json#/$defs/EventOverride/properties/amount_minor -> MinorAmount
+  Snapshot.schema.json#/properties/balance_minor -> MinorAmount
+  money members: 41; rate/factor members: 5; violations: []
+  common $defs/MinorAmount: {"type": "integer", "minimum": -10000000000000, "maximum": 10000000000000}
+  common $defs/NonNegativeMinorAmount: {"type": "integer", "minimum": 0, "maximum": 10000000000000}
+  common $defs/NonNegativeResultMinorAmount: {"type": "integer", "minimum": 0, "maximum": 9223372036854775807}
+  common $defs/PositiveMinorAmount: {"type": "integer", "minimum": 1, "maximum": 10000000000000}
+  common $defs/PositiveResultMinorAmount: {"type": "integer", "minimum": 1, "maximum": 9223372036854775807}
+  common $defs/ResultMinorAmount: {"type": "integer", "minimum": -9223372036854775808, "maximum": 9223372036854775807}
+
+## object schemas: 42 closed (additionalProperties: false), 12 id-keyed maps; violations: []
+exit=0

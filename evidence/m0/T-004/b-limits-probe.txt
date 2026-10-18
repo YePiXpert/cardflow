@@ -1,0 +1,114 @@
+# T-004b: the cases of engine-limits-probe.txt after the fixes, on both paths (2026-10-17T02:54:58Z)
+# before (evidence/m0/T-004/engine-limits-probe.txt): 4 cases raised ValueError/TypeError out of the engine
+```python
+"""T-004b: the cases of engine-limits-probe.txt again, on both paths (one-off probe).
+
+protocol path: F-18 v1 input mutated -> inputs_from_protocol / plan_from_protocol
+engine path:   F-18 engine inputs mutated directly (no protocol checks) -> plan()
+Nothing may raise on the engine path; out-of-range values are ProtocolErrors on the protocol path.
+usage: python limits_probe_b.py REPO_ROOT
+"""
+
+import json
+import sys
+from dataclasses import replace
+from decimal import Decimal
+from pathlib import Path
+
+from cardflow.planner.engine.fixture import load_fixture
+from cardflow.planner.engine.plan import plan
+from cardflow.planner.engine.protocol import ProtocolError, parse_json, plan_from_protocol
+
+I63 = 2**63 - 1
+repo = Path(sys.argv[1])
+fixtures = repo / "packages/rules-protocol/fixtures"
+doc0 = parse_json((fixtures / "regression_2026-10-16_10000.v1.json").read_bytes())["input"]
+inputs0, scenarios, _ = load_fixture(fixtures / "regression_2026-10-16_10000.json")
+
+
+def card(i, **ch):
+    return lambda x: replace(x, cards=[replace(c, **ch) if k == i else c for k, c in enumerate(x.cards)])
+
+
+def snap(**ch):
+    return lambda x: replace(x, snapshots={"cash-main": replace(x.snapshots["cash-main"], **ch)})
+
+
+def req(**ch):
+    return lambda x: replace(x, request=replace(x.request, **ch))
+
+
+def ev0(amount):
+    return lambda x: replace(x, events=[replace(x.events[0], amount=amount), *x.events[1:]])
+
+
+CASES = [
+    ("cards[0].raw_available_minor = 2^63-1", ("cards", 0, "raw_available_minor"), I63, card(0, raw_available=I63)),
+    ("request.amount_minor = 2^62", ("request", "amount_minor"), 2**62, req(amount=2**62)),
+    ("request.amount_minor = 2^63-1", ("request", "amount_minor"), I63, req(amount=I63)),
+    ("snapshots[0].balance_minor = -2^63", ("snapshots", 0, "balance_minor"), -(2**63), snap(balance=-(2**63))),
+    ("snapshots[0].balance_minor = 2^63-1", ("snapshots", 0, "balance_minor"), I63, snap(balance=I63)),
+    ("events[0].amount_minor = 2^63-1", ("events", 0, "amount_minor"), I63, ev0(I63)),
+    ("snapshots[0].balance_minor = 10^13", ("snapshots", 0, "balance_minor"), 10**13, snap(balance=10**13)),
+    ("cards[0].fee_rate = '0.006'", ("cards", 0, "fee_rate"), "0.006", card(0, fee_rate=Decimal("0.006"))),
+    ("cards[0].fee_rate = '0.1234567891'", ("cards", 0, "fee_rate"), "0.1234567891", card(0, fee_rate=Decimal("0.1234567891"))),
+    ("cards[0].fee_rate = '9999999999.9999999999'", ("cards", 0, "fee_rate"), "9999999999.9999999999", card(0, fee_rate=Decimal("9999999999.9999999999"))),
+    ("request.payment_lead_days = 60", ("request", "payment_lead_days"), 60, req(payment_lead_days=60)),
+]
+w = sys.stdout.write
+for name, path, value, mutate in CASES:
+    doc = json.loads(json.dumps(doc0))
+    node = doc
+    for key in path[:-1]:
+        node = node[key]
+    node[path[-1]] = value
+    try:
+        out = plan_from_protocol(doc)
+        alloc = {a["card_id"]: a["amount_minor"] for a in out["allocation"]}
+        rej = {r["card_id"]: r["reason"] for r in out["rejections"]}
+        proto = f"{out['business_status']} / {out['solver_status']} {alloc} rejections {rej}"
+    except ProtocolError as e:
+        proto = f"ProtocolError at {e.path}: {e.message}"
+    try:
+        o = plan(mutate(inputs0), scenarios, "baseline", "cash_safety", time_limit_s=10)
+        build = [n for n in o.notes if n.startswith("MODEL_BUILD_ERROR")]
+        engine = f"{o.business_status}" + (f" {build}" if build else "")
+    except Exception as e:  # noqa: BLE001 -- must never happen; reported if it does
+        engine = f"EXCEPTION {type(e).__name__}"
+    w(f"{name}\n    protocol path: {proto}\n    engine path:   {engine}\n")
+```
+$ uv run --project /projects/cardflow/services/api python -I tools/limits_probe_b.py /projects/cardflow
+cards[0].raw_available_minor = 2^63-1
+    protocol path: ProtocolError at /cards/0/raw_available_minor: must be an integer in [-10000000000000, 10000000000000]
+    engine path:   MODEL_INVALID
+request.amount_minor = 2^62
+    protocol path: ProtocolError at /request/amount_minor: must be an integer in [1, 10000000000000]
+    engine path:   INFEASIBLE
+request.amount_minor = 2^63-1
+    protocol path: ProtocolError at /request/amount_minor: must be an integer in [1, 10000000000000]
+    engine path:   MODEL_INVALID ['MODEL_BUILD_ERROR: ValueError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)']
+snapshots[0].balance_minor = -2^63
+    protocol path: ProtocolError at /snapshots/0/balance_minor: must be an integer in [-10000000000000, 10000000000000]
+    engine path:   BASELINE_SHORTFALL
+snapshots[0].balance_minor = 2^63-1
+    protocol path: ProtocolError at /snapshots/0/balance_minor: must be an integer in [-10000000000000, 10000000000000]
+    engine path:   MODEL_INVALID ['MODEL_BUILD_ERROR: TypeError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)']
+events[0].amount_minor = 2^63-1
+    protocol path: ProtocolError at /events/0/amount_minor: must be an integer in [-10000000000000, 10000000000000]
+    engine path:   MODEL_INVALID ['MODEL_BUILD_ERROR: TypeError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)']
+snapshots[0].balance_minor = 10^13
+    protocol path: FEASIBLE_ROBUST / OPTIMAL {'A': 800000, 'C': 200000} rejections {'B': 'DOMINATED'}
+    engine path:   FEASIBLE_ROBUST
+cards[0].fee_rate = '0.006'
+    protocol path: CONDITIONALLY_FEASIBLE / OPTIMAL {'A': 500000, 'C': 500000} rejections {'B': 'CASH_BREACH_ALONE'}
+    engine path:   CONDITIONALLY_FEASIBLE
+cards[0].fee_rate = '0.1234567891'
+    protocol path: ProtocolError at /cards/0/fee_rate: '0.1234567891' is not a rate (decimal string 0..1, at most 5 decimals)
+    engine path:   MODEL_INVALID
+cards[0].fee_rate = '9999999999.9999999999'
+    protocol path: ProtocolError at /cards/0/fee_rate: '9999999999.9999999999' is not a rate (decimal string 0..1, at most 5 decimals)
+    engine path:   MODEL_INVALID ['MODEL_BUILD_ERROR: TypeError while building the CP-SAT model (a value is outside the range the engine supports; no plan is shown)']
+request.payment_lead_days = 60
+    protocol path: MODEL_INVALID / MODEL_INVALID {} rejections {'A': 'REPAY_BEFORE_TXN_DATE', 'B': 'REPAY_BEFORE_TXN_DATE', 'C': 'REPAY_BEFORE_TXN_DATE'}
+    engine path:   MODEL_INVALID
+exit=0

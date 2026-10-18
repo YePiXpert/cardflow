@@ -1,0 +1,221 @@
+# CardFlow production stack (T-012; deployment-ops §1-§4, security-privacy §4/§4.1).
+#
+# Always run with the explicit project name and file, from the repository root:
+#   docker compose -p cardflow -f deploy/compose.yaml up -d
+#   docker compose -p cardflow -f deploy/compose.yaml ps
+#   docker compose -p cardflow -f deploy/compose.yaml down        # keeps the volumes (no -v)
+#
+# Isolation on a shared host: own project, own networks and volumes, no host networking, the
+# only published port is 127.0.0.1:${CARDFLOW_API_PORT:-18080}. The database is never
+# published and never the host's PostgreSQL.
+# Secrets come only from files in deploy/secrets/ (tools/gen-secrets.sh, deploy/secrets/README.md)
+# and reach the containers as Compose secrets under /run/secrets/; the environment holds only
+# file paths. Non-secret settings: deploy/.env (copy of deploy/.env.example).
+#
+# Start order: db (healthy) -> migrate (superuser, `cardflow migrate --lock`) -> provision
+# (superuser, `cardflow db-provision`) -> api (LOGIN role cardflow_api) and worker (LOGIN role
+# cardflow_worker_login). Superuser credentials are used only by the two one-shot services
+# (and by the T-013 backup); long-running processes never connect as superuser
+# (evidence/m0/T-006/rls-design.md §1, §8).
+name: cardflow
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+# Common settings of every service built from the cardflow/api image.
+x-app: &app
+  image: cardflow/api:${CARDFLOW_VERSION:?set CARDFLOW_VERSION in deploy/.env (printed by tools/build-api-image.sh)}
+  pull_policy: never # built locally; never resolve cardflow/api from a registry
+  env_file: .env
+  user: "10001:10001"
+  read_only: true
+  tmpfs:
+    - /tmp:size=64m,mode=1777,noexec,nosuid,nodev
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  networks: [backend]
+  logging: *logging
+
+services:
+  db:
+    image: postgres:18.6-trixie
+    environment:
+      POSTGRES_DB: cardflow
+      POSTGRES_USER: cardflow
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets: [db_password]
+    volumes:
+      # PostgreSQL 18 images keep PGDATA under /var/lib/postgresql/18/docker.
+      - pgdata:/var/lib/postgresql
+    networks: [backend] # no ports: reachable only from the cardflow containers
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cardflow -d cardflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+      start_interval: 2s
+    shm_size: 256m
+    security_opt: ["no-new-privileges:true"]
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    stop_grace_period: 30s
+    restart: unless-stopped
+    logging: *logging
+
+  migrate:
+    <<: *app
+    command: ["cardflow", "migrate", "--lock"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://cardflow@db:5432/cardflow
+      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+    secrets: [db_password]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  provision:
+    <<: *app
+    command: ["cardflow", "db-provision"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://cardflow@db:5432/cardflow
+      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+      DATABASE_API_PASSWORD_FILE: /run/secrets/db_api_password
+      DATABASE_WORKER_PASSWORD_FILE: /run/secrets/db_worker_password
+      DATABASE_ADMIN_PASSWORD_FILE: /run/secrets/db_admin_password
+    secrets: [db_password, db_api_password, db_worker_password, db_admin_password]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
+  api:
+    <<: *app
+    command: ["cardflow", "api", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://cardflow_api@db:5432/cardflow
+      DATABASE_PASSWORD_FILE: /run/secrets/db_api_password
+      JWT_KEY_FILE: /run/secrets/jwt_key
+      KEK_FILE: /run/secrets/kek
+    secrets: [db_api_password, jwt_key, kek]
+    volumes:
+      - attachments:/data/attachments
+    ports:
+      - "127.0.0.1:${CARDFLOW_API_PORT:-18080}:8000" # loopback only; TLS/proxy is the user's
+    networks: [backend, edge]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      provision:
+        condition: service_completed_successfully
+    healthcheck:
+      # /readyz: database as cardflow_api, migration head, worker heartbeat, attachment volume.
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import sys, urllib.request as request
+          opener = request.build_opener(request.ProxyHandler({}))
+          try:
+              status = opener.open("http://127.0.0.1:8000/readyz", timeout=5).status
+          except Exception as exc:
+              sys.exit(f"readyz: {type(exc).__name__} {getattr(exc, 'code', '')}")
+          sys.exit(0 if status == 200 else 1)
+      interval: 30s
+      timeout: 8s
+      retries: 3
+      start_period: 60s
+      start_interval: 2s
+    init: true
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "2"
+          pids: 512
+    restart: unless-stopped
+
+  worker:
+    <<: *app
+    # --shutdown-timeout 20 (the default, spelled out): running jobs get 20 s after SIGTERM,
+    # then they are released to the queue; stop_grace_period 30 s leaves time for that.
+    command: ["cardflow", "worker", "--concurrency", "2", "--shutdown-timeout", "20"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://cardflow_worker_login@db:5432/cardflow
+      DATABASE_PASSWORD_FILE: /run/secrets/db_worker_password
+      KEK_FILE: /run/secrets/kek
+    secrets: [db_worker_password, kek]
+    volumes:
+      - attachments:/data/attachments
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      provision:
+        condition: service_completed_successfully
+    stop_grace_period: 30s
+    init: true
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: "4"
+          pids: 1024
+    restart: unless-stopped
+
+  # T-013 placeholder (profile "backup": never started by a plain `up`). `cardflow backup` is
+  # not implemented yet (exit code 2). pg_dump under FORCE RLS needs the superuser or a
+  # dedicated BYPASSRLS read-only role (rls-design §1.5); this image has no pg_dump yet.
+  backup:
+    <<: *app
+    profiles: ["backup"]
+    command: ["cardflow", "backup", "--schedule", "${BACKUP_CRON:-0 3 * * *}"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://cardflow@db:5432/cardflow
+      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+      KEK_FILE: /run/secrets/kek
+      BACKUP_PASSPHRASE_FILE: /run/secrets/backup_passphrase
+    secrets: [db_password, kek, backup_passphrase]
+    volumes:
+      - attachments:/data/attachments:ro
+      - backups:/data/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no" # T-013: unless-stopped once the scheduler exists
+
+secrets:
+  db_password:
+    file: ./secrets/db_password
+  db_api_password:
+    file: ./secrets/db_api_password
+  db_worker_password:
+    file: ./secrets/db_worker_password
+  db_admin_password:
+    file: ./secrets/db_admin_password
+  jwt_key:
+    file: ./secrets/jwt_key
+  kek:
+    file: ./secrets/kek
+  backup_passphrase:
+    file: ./secrets/backup_passphrase
+
+volumes:
+  pgdata: {}
+  attachments: {}
+  backups: {}
+
+networks:
+  # Database traffic only; internal = no route to or from the outside world.
+  backend:
+    internal: true
+  # Carries only the api's published loopback port.
+  edge: {}

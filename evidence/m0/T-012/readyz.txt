@@ -1,0 +1,47 @@
+# T-012 readiness and liveness on the published loopback port - 2026-10-17T23:14:54Z
+$ curl -sS -i 127.0.0.1:18080/readyz
+HTTP/1.1 200 OK
+date: Sat, 17 Oct 2026 23:14:53 GMT
+cache-control: no-store
+content-length: 124
+content-type: application/json
+x-request-id: 4c10d75d86e342399ba48aa94fd4ae4b
+
+{"checks":{"database":true,"migrations":true,"worker":true,"attachments":true},"version":"0.1.0-3166fe6bf311","head":"0003"}exit=0
+
+
+$ curl -sS -i 127.0.0.1:18080/healthz
+HTTP/1.1 200 OK
+date: Sat, 17 Oct 2026 23:14:54 GMT
+content-length: 15
+content-type: application/json
+x-request-id: 4938b8e8857f42f0992b2529e5fda65d
+
+{"status":"ok"}exit=0
+
+
+# interactive docs and the schema endpoint are off in production (API_DOCS_ENABLED=false)
+$ curl -sS -o /dev/null -w "%{http_code}" 127.0.0.1:18080/docs
+404
+$ curl -sS -o /dev/null -w "%{http_code}" 127.0.0.1:18080/redoc
+404
+$ curl -sS -o /dev/null -w "%{http_code}" 127.0.0.1:18080/openapi.json
+404
+
+# timing of /readyz (5 sequential requests)
+  status=200 time_total=0.012485s
+  status=200 time_total=0.012396s
+  status=200 time_total=0.012970s
+  status=200 time_total=0.014598s
+  status=200 time_total=0.014158s
+
+$ docker compose -p cardflow -f deploy/compose.yaml ps
+NAME                IMAGE                             COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+cardflow-api-1      cardflow/api:0.1.0-3166fe6bf311   "cardflow api --host…"   api       20 seconds ago   Up 17 seconds (healthy)   127.0.0.1:18080->8000/tcp
+cardflow-db-1       postgres:18.6-trixie              "docker-entrypoint.s…"   db        6 minutes ago    Up 6 minutes (healthy)    5432/tcp
+cardflow-worker-1   cardflow/api:0.1.0-3166fe6bf311   "cardflow worker --c…"   worker    20 seconds ago   Up 16 seconds             8000/tcp
+exit=0
+
+# api container health log (last probes)
+  00:14:39 exit=0 
+

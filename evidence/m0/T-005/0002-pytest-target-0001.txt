@@ -1,0 +1,113 @@
+# T-005 0002-pytest-target-0001.txt - 2026-10-17T08:15:13Z, working dir services/api: development switch CARDFLOW_TEST_MIGRATION_TARGET=0001
+# (session schema at 0001; tests bound to head are SKIPPED with their reason, -rs)
+$ CARDFLOW_TEST_MIGRATION_TARGET=0001 CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -q -rs -p no:cacheprovider
+sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss...s.sss... [ 11%]
+.........sssss.....sssssssssss.ssssssssssssssssssssssssss.ssssssss...... [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+........................................................................ [ 56%]
+........................................................................ [ 68%]
+........................................................................ [ 79%]
+........................................................................ [ 90%]
+.........................................................                [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [10] tests/db/test_constraints.py:91: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:110: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:125: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:154: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:181: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:196: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:211: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [7] tests/db/test_constraints.py:255: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:287: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:299: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:326: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:350: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:359: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:367: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:391: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:408: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:438: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:460: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:481: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:492: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:536: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:586: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:599: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:647: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:665: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:681: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:757: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:770: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:783: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:803: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:818: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:835: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:855: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:885: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:909: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:969: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:986: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:1004: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:1026: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:1047: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:1062: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:1071: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:1083: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:1089: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_constraints.py:1109: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_db_objects.py:73: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_db_objects.py:156: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_jobs_schema.py:44: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_jobs_schema.py:65: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_jobs_schema.py:80: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:106: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:166: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:199: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:213: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_model_drift.py:242: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:175: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:216: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:343: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:357: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:400: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:413: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:471: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:537: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:583: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:685: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:704: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:888: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:928: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [9] tests/db/test_r2_fixes.py:972: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:994: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1020: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1047: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1098: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1123: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1138: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1158: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1183: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1217: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1262: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1274: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1363: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1404: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1448: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1490: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1541: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1617: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1674: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1684: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1693: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1720: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1766: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+SKIPPED [1] tests/db/test_r2_fixes.py:1775: CARDFLOW_TEST_MIGRATION_TARGET=0001 pins the schema to revision 0001, but this test checks the head schema 0002; unset the variable to run it
+518 passed, 115 skipped, 1 warning in 64.23s (0:01:04)
+exit=0

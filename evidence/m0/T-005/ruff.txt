@@ -1,0 +1,10 @@
+# ruff (T-005/T-007) - 2026-10-17T02:17:00Z, working dir services/api, ruff 0.17.1
+$ uv run ruff check .
+All checks passed!
+exit=0
+$ uv run ruff format --check .
+78 files already formatted
+exit=0
+$ uv run ruff check alembic cardflow/db cardflow/*/models.py cardflow/cli.py tests/conftest.py tests/test_cli.py tests/db   # T-005/T-007 files only
+All checks passed!
+exit=0

@@ -1,0 +1,70 @@
+# T-006 migration round trips - 2026-10-17T22:31:11Z, working dir services/api, dev DB 127.0.0.1:18432
+# scratch database cardflow_test_t006_evidence (dropped at the end); catalog = the same
+# normalised snapshot the tests compare (tests/db/conftest.py: catalog()), incl. RLS flags,
+# policies, ACLs of relations/columns/functions/schemas/database (NULL ACL == default), views.
+$ upgrade 0002
+--- at 0002
+revision: 0002
+extensions: btree_gist,pg_trgm,plpgsql
+cardflow group roles (cluster): cardflow_admin(login=False,super=False,bypassrls=False), cardflow_admin_views(login=False,super=False,bypassrls=False), cardflow_app(login=False,super=False,bypassrls=False), cardflow_purge(login=False,super=False,bypassrls=False), cardflow_worker(login=False,super=False,bypassrls=False)
+tables with RLS enabled+forced: 0
+policies: 0
+schema admin views: -
+PUBLIC TEMP on database: True
+PUBLIC USAGE on schema public: True
+ck_jobs_status: CHECK ((status = ANY (ARRAY['queued'::text, 'running'::text, 'succeeded'::text, 'failed'::text, 'dead'::text, 'canceled'::text])))
+jobs rows by status: {'canceled': 1}
+catalog sections: constraints=971, indexes=240, columns=782, triggers=139, functions=19, row_security=59, policies=0, relation_privileges=60, column_privileges=0, function_privileges=19, schemas=1, database_privileges=1, views=0
+$ upgrade 0003 (head)
+--- at 0003
+revision: 0003
+extensions: btree_gist,pg_trgm,plpgsql
+cardflow group roles (cluster): cardflow_admin(login=False,super=False,bypassrls=False), cardflow_admin_views(login=False,super=False,bypassrls=False), cardflow_app(login=False,super=False,bypassrls=False), cardflow_purge(login=False,super=False,bypassrls=False), cardflow_worker(login=False,super=False,bypassrls=False)
+tables with RLS enabled+forced: 57
+policies: 78
+schema admin views: deletion_requests,device_overview,job_summary,system_status,user_overview,workspace_overview
+PUBLIC TEMP on database: False
+PUBLIC USAGE on schema public: False
+ck_jobs_status: CHECK ((status = ANY (ARRAY['queued'::text, 'running'::text, 'succeeded'::text, 'failed'::text, 'dead'::text, 'cancelled'::text])))
+jobs rows by status: {'cancelled': 1}
+catalog sections: constraints=971, indexes=240, columns=782, triggers=139, functions=19, row_security=59, policies=78, relation_privileges=66, column_privileges=370, function_privileges=19, schemas=2, database_privileges=1, views=6
+$ downgrade 0002 (round 1)
+  differences vs the 0002 catalog: none
+$ upgrade 0003 (round 1)
+  differences vs the first 0003 catalog: none
+$ downgrade 0002 (round 2)
+  differences vs the 0002 catalog: none
+$ upgrade 0003 (round 2)
+  differences vs the first 0003 catalog: none
+--- after 0002<->0003 x2
+revision: 0003
+extensions: btree_gist,pg_trgm,plpgsql
+cardflow group roles (cluster): cardflow_admin(login=False,super=False,bypassrls=False), cardflow_admin_views(login=False,super=False,bypassrls=False), cardflow_app(login=False,super=False,bypassrls=False), cardflow_purge(login=False,super=False,bypassrls=False), cardflow_worker(login=False,super=False,bypassrls=False)
+tables with RLS enabled+forced: 57
+policies: 78
+schema admin views: deletion_requests,device_overview,job_summary,system_status,user_overview,workspace_overview
+PUBLIC TEMP on database: False
+PUBLIC USAGE on schema public: False
+ck_jobs_status: CHECK ((status = ANY (ARRAY['queued'::text, 'running'::text, 'succeeded'::text, 'failed'::text, 'dead'::text, 'cancelled'::text])))
+jobs rows by status: {'cancelled': 1}
+$ downgrade base
+--- at base (extensions are an environment prerequisite, R2-23)
+revision: 
+extensions: btree_gist,pg_trgm,plpgsql
+cardflow group roles (cluster): cardflow_admin(login=False,super=False,bypassrls=False), cardflow_admin_views(login=False,super=False,bypassrls=False), cardflow_app(login=False,super=False,bypassrls=False), cardflow_purge(login=False,super=False,bypassrls=False), cardflow_worker(login=False,super=False,bypassrls=False)
+tables with RLS enabled+forced: 0
+policies: 0
+schema admin views: -
+PUBLIC TEMP on database: True
+PUBLIC USAGE on schema public: True
+public tables at base: ['alembic_version']
+$ upgrade head
+  differences vs the first 0003 catalog (jobs row gone with the table): none
+$ downgrade base / upgrade head (repeat)
+  differences vs the first 0003 catalog: none
+exit=0
+
+$ DATABASE_URL=<superuser, no password>/cardflow_test_t006_evidence DATABASE_PASSWORD_FILE=<secret> uv run cardflow migrate --check
+database revision 0003; code head 0003: up to date
+exit=0
+scratch database dropped; remaining: ['cardflow', 'postgres', 'template0', 'template1']

@@ -1,0 +1,16 @@
+# lint / format / lock（2026-10-16T15:11:38Z），工作目录 services/api
+$ uv run ruff --version
+ruff 0.17.1
+$ uv run ruff check .
+All checks passed!
+exit=0
+$ uv run ruff format --check .
+41 files already formatted
+exit=0
+$ uv lock --check
+Resolved 86 packages in 1ms
+exit=0
+$ sha256sum pyproject.toml uv.lock .python-version
+cf736de388f527a119ca1bfba9cb01e42cded6a35e1d983dae59c632283bb7fc  pyproject.toml
+51ef0eb15283eaddaa22b2ec2c6e366bdf38f48f09896de69ff116b532f12553  uv.lock
+02e735b3dfe1c32833eb550b7ff8ffa17f5f2bc3fa1e7bae61a8f5a3883ce398  .python-version

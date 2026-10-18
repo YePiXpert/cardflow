@@ -1,0 +1,148 @@
+# T-005 alembic.txt - generated 2026-10-17T02:16:08Z on cardflow-dev (127.0.0.1:18432), working dir services/api
+# Fresh database cardflow_test_t005_evidence (password masked as *** in echoed commands)
+$ tools/dev-db.sh psql -c 'CREATE DATABASE cardflow_test_t005_evidence TEMPLATE template0'
+CREATE DATABASE
+## empty database:
+  tables:     0
+  functions:  0
+  triggers:   0
+  extensions: plpgsql
+  alembic_version: ERROR:  relation "alembic_version" does not exist
+LINE 1: ...sce(string_agg(version_num, ','), '(empty)') FROM alembic_ve...
+                                                             ^
+  currencies: ERROR:  relation "currencies" does not exist
+
+$ uv run alembic heads
+0001 (head)
+$ uv run alembic history --verbose
+Rev: 0001 (head)
+Parent: <base>
+Path: /projects/cardflow/services/api/alembic/versions/0001_initial.py
+
+    Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+    
+    Revision ID: 0001
+    Revises: (none)
+    Create Date: 2026-10-16
+    
+    Covers data-model §1 groups 1-7 plus sync_changes, sync_conflicts, audit_log,
+    deletion_tasks, jobs and worker_heartbeats (group 10). Promotions, benefits, points,
+    annual fees and notifications are NOT part of this revision. Row-level security, roles
+    and grants are revision 0002 (T-006).
+    
+    Conventions (see cardflow/db/base.py):
+    * every name is explicit and equals what the SQLAlchemy naming convention produces
+      (pk_<table>, uq_<table>_<cols>, ck_<table>_<name>, fk_<table>_<cols without
+      workspace_id>, ix_<table>_<cols>); tests/db/test_model_drift.py checks this;
+    * primary keys default to uuidv7() (PostgreSQL 18);
+    * money: *_minor BIGINT + currency; rates NUMERIC(20,10); never float/double/real/money;
+    * tenant tables: workspace_id NOT NULL + UNIQUE (workspace_id, id) + composite foreign
+      keys (workspace_id, parent_id) so the database itself rejects cross-workspace links;
+    * banks, card_products and billing_rule_versions: workspace_id NULL = official template;
+      references to them are plain foreign keys on id plus a scope trigger
+      (check_template_scope) that only accepts templates or rows of the same workspace;
+    * soft references without a foreign key, by design: source_document_id /
+      evidence_document_id (attachments are purged by retention while financial facts stay,
+      data-model §9), origin_device_id / uploaded_by_device_id (provenance), polymorphic
+      references (billing_rule_versions.subject_id is checked by a trigger;
+      sync_changes.row_id, sync_conflicts.row_id, audit_log.target_id,
+      dedupe_keys.entity_id, import_batch_items.*_id, plan_invalidations.caused_by_id),
+      jobs references (parse_jobs.job_id, plan_runs.job_id) and the workspace_id of
+      audit_log, deletion_tasks and jobs (they must outlive a purged workspace).
+    
+    Constraint triggers (T-007):
+    * statement_versions: amount columns and due_date are append-only (UPDATE rejected,
+      data-model §4); DELETE/TRUNCATE are rejected unless the current transaction ran
+      SELECT set_config('app.purge', 'on', true) -- reserved for the future
+      workspace-deletion task (deletion_tasks, 30-day grace, data-model §9);
+    * repayment_allocations: DEFERRABLE INITIALLY DEFERRED constraint triggers check at
+      commit that the active allocations of a repayment sum to at most repayments.amount_minor,
+      also when the repayment amount is lowered, and that every allocated statement belongs
+      to the repayment's currency account;
+    * billing_rule_versions: exclusion constraint per scope (COALESCE(workspace_id, nil uuid)),
+      subject and effective period, for in-effect rows (published / user_declared, not
+      tombstoned).
+    
+    This revision never UPDATEs money values; its only data change is the currencies seed.
+
+
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_evidence upgrade head
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+exit=0
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_evidence current
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+0001 (head)
+exit=0
+## after upgrade head:
+  tables:     59
+  functions:  9
+  triggers:   15
+  extensions: btree_gist,pg_trgm,plpgsql
+  alembic_version: 0001
+  currencies: 13
+
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_evidence downgrade base
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0001 -> , Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+exit=0
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_evidence current
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+exit=0
+## after downgrade base:
+  tables:     1
+  functions:  0
+  triggers:   0
+  extensions: plpgsql
+  alembic_version: (empty)
+  currencies: ERROR:  relation "currencies" does not exist
+
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_evidence upgrade head
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+exit=0
+## after second upgrade head:
+  tables:     59
+  functions:  9
+  triggers:   15
+  extensions: btree_gist,pg_trgm,plpgsql
+  alembic_version: 0001
+  currencies: 13
+
+# cardflow migrate --check (settings from env: DATABASE_URL without password + DATABASE_PASSWORD_FILE)
+$ DATABASE_URL=postgresql+psycopg://cardflow@127.0.0.1:18432/cardflow_test_t005_evidence DATABASE_PASSWORD_FILE=../../deploy/secrets.dev/db_password LOG_FORMAT=text
+$ uv run cardflow migrate --check        # database at head
+database revision 0001; code head 0001: up to date
+exit=0
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_evidence downgrade base
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0001 -> , Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+exit=0
+$ uv run cardflow migrate --check        # database NOT at head (base)
+database revision (none); code head 0001: NOT at head
+exit=1
+$ uv run cardflow migrate --lock         # upgrade under the advisory lock
+2026-10-17T02:16:15.802+00:00 INFO     cardflow.db.migrations: waiting for the migration advisory lock
+2026-10-17T02:16:15.804+00:00 INFO     cardflow.db.migrations: migration advisory lock acquired
+2026-10-17T02:16:15.886+00:00 INFO     alembic.runtime.migration: Context impl PostgresqlImpl.
+2026-10-17T02:16:15.886+00:00 INFO     alembic.runtime.migration: Will assume transactional DDL.
+2026-10-17T02:16:15.891+00:00 INFO     alembic.runtime.migration: Running upgrade  -> 0001, Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+2026-10-17T02:16:16.056+00:00 INFO     cardflow.db.migrations: migration advisory lock released
+database revision 0001; code head 0001: up to date
+exit=0
+$ uv run cardflow migrate --check        # back at head
+database revision 0001; code head 0001: up to date
+exit=0
+## final state (kept at head for schema.sql):
+  tables:     59
+  functions:  9
+  triggers:   15
+  extensions: btree_gist,pg_trgm,plpgsql
+  alembic_version: 0001
+  currencies: 13

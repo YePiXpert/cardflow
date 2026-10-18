@@ -1,0 +1,90 @@
+# 同一套测试的逐项列表（-v），以及被标记为 db 的测试清单（2026-10-16T15:11:32Z）
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -v -p no:cacheprovider
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- /projects/cardflow/services/api/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /projects/cardflow/services/api
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.15.1, platformdirs-4.13.3, hypothesis-6.170.0
+collecting ... collected 46 items
+
+tests/test_api_envelope.py::test_method_not_allowed PASSED               [  2%]
+tests/test_api_envelope.py::test_validation_error_does_not_echo_input PASSED [  4%]
+tests/test_api_envelope.py::test_unexpected_exception_is_internal_error_without_details PASSED [  6%]
+tests/test_api_envelope.py::test_failure_after_response_start_is_logged_once_with_request_id PASSED [  8%]
+tests/test_api_envelope.py::test_api_error_carries_contract_code_and_details PASSED [ 10%]
+tests/test_api_envelope.py::test_http_exception_status_maps_to_contract_code PASSED [ 13%]
+tests/test_api_envelope.py::test_request_ids_are_unique PASSED           [ 15%]
+tests/test_api_envelope.py::test_access_log_has_route_template_and_whitelisted_fields_only PASSED [ 17%]
+tests/test_api_envelope.py::test_access_log_includes_router_prefix PASSED [ 19%]
+tests/test_api_envelope.py::test_access_log_for_unmatched_route_hides_raw_path PASSED [ 21%]
+tests/test_api_envelope.py::test_access_log_for_wrong_method_uses_template PASSED [ 23%]
+tests/test_cli.py::test_unimplemented_commands_exit_2_and_name_owner[argv0-T-008] PASSED [ 26%]
+tests/test_cli.py::test_unimplemented_commands_exit_2_and_name_owner[argv1-T-008] PASSED [ 28%]
+tests/test_cli.py::test_unimplemented_commands_exit_2_and_name_owner[argv2-T-005] PASSED [ 30%]
+tests/test_cli.py::test_unimplemented_commands_exit_2_and_name_owner[argv3-T-013] PASSED [ 32%]
+tests/test_cli.py::test_console_script_worker_exits_2 PASSED             [ 34%]
+tests/test_cli.py::test_api_rejects_unknown_arguments PASSED             [ 36%]
+tests/test_cli.py::test_api_with_invalid_configuration_exits_1_without_echoing_secret PASSED [ 39%]
+tests/test_db.py::test_commits_on_success PASSED                         [ 41%]
+tests/test_db.py::test_rolls_back_on_exception PASSED                    [ 43%]
+tests/test_db.py::test_no_statement_runs_after_an_early_commit PASSED    [ 45%]
+tests/test_db.py::test_rejects_non_uuid_workspace PASSED                 [ 47%]
+tests/test_db.py::test_set_workspace_id_on_core_connection PASSED        [ 50%]
+tests/test_db.py::test_engine_from_settings_connects_with_secret_password PASSED [ 52%]
+tests/test_logging.py::test_json_formatter_drops_fields_outside_whitelist PASSED [ 54%]
+tests/test_logging.py::test_exception_message_is_never_logged PASSED     [ 56%]
+tests/test_logging.py::test_exception_chain_lists_types_only PASSED      [ 58%]
+tests/test_logging.py::test_text_formatter_keeps_one_line_per_record PASSED [ 60%]
+tests/test_logging.py::test_configure_logging_emits_json_with_request_id_and_mutes_uvicorn_access PASSED [ 63%]
+tests/test_settings.py::test_defaults_follow_deployment_ops PASSED       [ 65%]
+tests/test_settings.py::test_environment_overrides_and_parsing PASSED    [ 67%]
+tests/test_settings.py::test_direct_value_and_file_are_mutually_exclusive PASSED [ 69%]
+tests/test_settings.py::test_unreadable_secret_file_names_variable_and_path PASSED [ 71%]
+tests/test_settings.py::test_invalid_kek_is_rejected_without_echo[not base64 !!] PASSED [ 73%]
+tests/test_settings.py::test_invalid_kek_is_rejected_without_echo[MDEyMzQ1Njc4OWFiY2RlZg==] PASSED [ 76%]
+tests/test_settings.py::test_valid_kek_is_accepted PASSED                [ 78%]
+tests/test_settings.py::test_password_inside_database_url_is_rejected_without_echo PASSED [ 80%]
+tests/test_settings.py::test_non_psycopg_database_urls_are_rejected[sqlite:///cardflow.db] PASSED [ 82%]
+tests/test_settings.py::test_non_psycopg_database_urls_are_rejected[postgresql+psycopg2://cardflow@db/cardflow] PASSED [ 84%]
+tests/test_settings.py::test_non_psycopg_database_urls_are_rejected[::nonsense] PASSED [ 86%]
+tests/test_settings.py::test_engine_url_gets_driver_and_secret_password PASSED [ 89%]
+tests/test_settings.py::test_settings_are_immutable PASSED               [ 91%]
+tests/test_smoke.py::test_healthz_returns_ok PASSED                      [ 93%]
+tests/test_smoke.py::test_unknown_route_returns_error_envelope_with_request_id PASSED [ 95%]
+tests/test_smoke.py::test_settings_read_secret_files_without_leaking PASSED [ 97%]
+tests/test_smoke.py::test_workspace_tx_binds_workspace_for_one_transaction_only PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 46 passed, 1 warning in 0.34s =========================
+exit=0
+
+$ uv run pytest --collect-only -q -m db -p no:cacheprovider
+tests/test_db.py::test_commits_on_success
+tests/test_db.py::test_rolls_back_on_exception
+tests/test_db.py::test_no_statement_runs_after_an_early_commit
+tests/test_db.py::test_rejects_non_uuid_workspace
+tests/test_db.py::test_set_workspace_id_on_core_connection
+tests/test_db.py::test_engine_from_settings_connects_with_secret_password
+tests/test_smoke.py::test_workspace_tx_binds_workspace_for_one_transaction_only
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+7/46 tests collected (39 deselected) in 0.06s
+exit=0
+
+$ ../../tools/dev-db.sh psql -Atc 'select datname from pg_database order by 1'   # no cardflow_test_* left behind
+cardflow
+postgres
+template0
+template1

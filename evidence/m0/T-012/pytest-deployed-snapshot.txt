@@ -1,0 +1,21 @@
+# T-012 tests against the DEPLOYED sources (snapshot /tmp/t012/api-src = image cardflow/api:0.1.0-3166fe6bf311, head 0003) - 2026-10-17T23:17:26Z
+# working dir services/api (tests and pytest config from the working tree; tests/db is left out: T-011 has
+# already changed it for 0004, and the 0001-0003 schema was verified by T-005/T-006)
+$ PYTHONPATH=/tmp/t012/api-src uv run python -c "import cardflow, cardflow.db.migrations as m; print(cardflow.__file__, m.head_revisions())"
+/projects/cardflow/services/api/cardflow/__init__.py ('0004',)
+$ PYTHONPATH=/tmp/t012/api-src CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest tests/test_*.py tests/jobs -q -p no:cacheprovider
+ImportError while loading conftest '/projects/cardflow/services/api/tests/conftest.py'.
+tests/conftest.py:110: in <module>
+    from cardflow.api.deps import dispose_database
+E   ModuleNotFoundError: No module named 'cardflow.api.deps'
+exit=4
+
+# NOTE (T-012, 2026-10-17T23:18Z): this supplementary run is not possible and is NOT counted
+# as a test result. (1) With the working dir services/api, `python -c` puts the cwd before
+# PYTHONPATH, so the first line shows the working-tree package, not the snapshot. (2) More
+# importantly, T-011 has meanwhile changed tests/conftest.py to import its new module
+# cardflow.api.deps, which the deployed (pre-T-011) sources do not contain, so the current
+# test tree cannot run against them. The T-012 files of the deployed snapshot are byte-identical
+# to the working tree (see build.txt: "same: cardflow/api/routes/health.py",
+# "same: cardflow/api/app.py"), their tests pass in the full run (pytest.txt), and the deployed
+# image is verified live (readyz.txt, rls-in-deploy.txt).

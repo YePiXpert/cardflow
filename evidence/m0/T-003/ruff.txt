@@ -1,0 +1,17 @@
+# T-003 lint / format（2026-10-16T15:38:45Z），工作目录 services/api
+$ uv run ruff --version
+ruff 0.17.1
+$ uv run ruff check .
+All checks passed!
+exit=0
+$ uv run ruff format --check .
+54 files already formatted
+exit=0
+# 仅 T-003 交付的路径（排除并行任务文件的影响）
+$ uv run ruff check cardflow/planner/engine tests/engine && uv run ruff format --check cardflow/planner/engine tests/engine
+All checks passed!
+14 files already formatted
+exit=0
+$ sha256sum pyproject.toml uv.lock   # 与 evidence/m0/T-002/ruff-and-lock.txt 相同 = 未修改
+cf736de388f527a119ca1bfba9cb01e42cded6a35e1d983dae59c632283bb7fc  pyproject.toml
+51ef0eb15283eaddaa22b2ec2c6e366bdf38f48f09896de69ff116b532f12553  uv.lock

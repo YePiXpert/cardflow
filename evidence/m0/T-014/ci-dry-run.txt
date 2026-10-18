@@ -1,0 +1,17 @@
+# T-014 CI 接入命令试运行（2026-10-17T02:10:26Z），工作目录为仓库根目录；RUNNER_TEMP 用本地临时目录代替（tools/README.md「CI 接入」第 2、3 步）
+$ python3 tools/pii_scan.py tools/pii_samples/clean.log                        # 必须 0
+pii_scan: 1 file(s), 26 line(s), 0 hit(s)
+exit=0
+$ python3 tools/pii_scan.py tools/pii_samples/dirty.log >/dev/null; test $? -eq 1   # 必须恰好 1
+pii_scan: 1 file(s), 34 line(s), 43 hit(s) [amount, card_number, card_last4, jwt, authorization, cn_id_card, cn_mobile, email, secret_string, amount_field, credential_field, sensitive_field]
+exit=0
+$ uv run --project services/api python tools/pii_log_probe.py "$RUNNER_TEMP/probe.log"
+pii_log_probe: 12 requests x 2 formats (json, text), statuses as expected (200, 200, 404, 405, 422, 422, 422, 201, 422, 422, 200, 500); 26 cardflow.* lines
+exit=0
+$ python3 tools/pii_scan.py "$RUNNER_TEMP/probe.log"                                      # 必须 0
+pii_scan: 1 file(s), 26 line(s), 0 hit(s)
+exit=0
+$ python3 tools/pii_scan.py "$RUNNER_TEMP/does-not-exist.log"                             # 2 = 工具/输入错误
+pii_scan: error: /tmp/t014_scratch/runner/does-not-exist.log: no such file or directory
+pii_scan: 0 file(s), 0 line(s), 0 hit(s); 1 error(s)
+exit=2

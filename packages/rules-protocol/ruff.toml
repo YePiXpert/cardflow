@@ -1,0 +1,5 @@
+# Lint/format settings for the Python runner in packages/rules-protocol (T-004): the server's
+# rules from services/api/pyproject.toml. Picked up automatically:
+#   uv run --project services/api ruff check packages/rules-protocol
+#   uv run --project services/api ruff format --check packages/rules-protocol
+extend = "../../services/api/pyproject.toml"

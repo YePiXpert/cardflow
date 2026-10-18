@@ -1,0 +1,56 @@
+# T-004 probe: schema-valid but extreme values through plan_from_protocol (2026-10-17T02:29:15Z)
+# purpose: input for the report's open questions (no engine change made for these)
+```python
+"""T-004: engine behaviour on schema-valid but extreme protocol values (one-off probe).
+
+Each line: mutation of the F-18 v1 input -> business/solver status, or the exception raised.
+usage: python limits_probe.py REPO_ROOT
+"""
+
+import json
+import sys
+from pathlib import Path
+
+from cardflow.planner.engine.protocol import parse_json, plan_from_protocol
+
+I63 = 2**63 - 1
+repo = Path(sys.argv[1])
+fixture = repo / "packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json"
+base = parse_json(fixture.read_bytes())["input"]
+CASES = [
+    ("cards[0].raw_available_minor = 2^63-1", lambda d: d["cards"][0].update(raw_available_minor=I63)),
+    ("request.amount_minor = 2^62", lambda d: d["request"].update(amount_minor=2**62)),
+    ("request.amount_minor = 2^63-1", lambda d: d["request"].update(amount_minor=I63)),
+    ("snapshots[0].balance_minor = -2^63", lambda d: d["snapshots"][0].update(balance_minor=-(2**63))),
+    ("snapshots[0].balance_minor = 2^63-1", lambda d: d["snapshots"][0].update(balance_minor=I63)),
+    ("events[0].amount_minor = 2^63-1", lambda d: d["events"][0].update(amount_minor=I63)),
+    ("snapshots[0].balance_minor = 10^13", lambda d: d["snapshots"][0].update(balance_minor=10**13)),
+    ("cards[0].fee_rate = '0.006'", lambda d: d["cards"][0].update(fee_rate="0.006")),
+    ("cards[0].fee_rate = '0.1234567891'", lambda d: d["cards"][0].update(fee_rate="0.1234567891")),
+    ("cards[0].fee_rate = '9999999999.9999999999'", lambda d: d["cards"][0].update(fee_rate="9999999999.9999999999")),
+    ("request.payment_lead_days = 60", lambda d: d["request"].update(payment_lead_days=60)),
+]
+for name, mutate in CASES:
+    doc = json.loads(json.dumps(base))
+    mutate(doc)
+    try:
+        out = plan_from_protocol(doc)
+        alloc = {a["card_id"]: a["amount_minor"] for a in out["allocation"]}
+        note = out["notes"][-1][:90] if out["notes"] else ""
+        sys.stdout.write(f"{name}: {out['business_status']} / {out['solver_status']} {alloc} {note!r}\n")
+    except Exception as e:  # noqa: BLE001 -- the probe reports every exception type
+        sys.stdout.write(f"{name}: EXCEPTION {type(e).__name__}: {str(e).splitlines()[0][:120]}\n")
+```
+$ uv run --project /projects/cardflow/services/api python -I tools/limits_probe.py /projects/cardflow
+cards[0].raw_available_minor = 2^63-1: MODEL_INVALID / MODEL_INVALID {} 'var #0 domain do not fall in [-kint64max / 2, kint64max / 2]. name: "x_A" domain: 0 domain'
+request.amount_minor = 2^62: INFEASIBLE / INFEASIBLE {} ''
+request.amount_minor = 2^63-1: EXCEPTION ValueError: == INT_MIN or INT_MAX is not supported
+snapshots[0].balance_minor = -2^63: BASELINE_SHORTFALL / NOT_RUN {} 'baseline already breaches the reserve in the decision scenario; new spending not evaluated'
+snapshots[0].balance_minor = 2^63-1: EXCEPTION TypeError: Linear constraints only accept integer values and coefficients: FloatAffine(expr=x_B(0..1500000), coeff=-1, offset=9.223
+events[0].amount_minor = 2^63-1: EXCEPTION TypeError: __le__(): incompatible function arguments. The following argument types are supported:
+snapshots[0].balance_minor = 10^13: FEASIBLE_ROBUST / OPTIMAL {'A': 800000, 'C': 200000} ''
+cards[0].fee_rate = '0.006': CONDITIONALLY_FEASIBLE / OPTIMAL {'A': 500000, 'C': 500000} ''
+cards[0].fee_rate = '0.1234567891': MODEL_INVALID / MODEL_INVALID {} 'Possible integer overflow in constraint: linear {\n  vars: 0\n  vars: 7\n  coeffs: -123456789'
+cards[0].fee_rate = '9999999999.9999999999': EXCEPTION TypeError: Linear constraints only accept integer values and coefficients: IntAffine(expr=fee_A(0..10000000000000), coeff=100000000
+request.payment_lead_days = 60: INFEASIBLE / INFEASIBLE {} ''
+exit=0

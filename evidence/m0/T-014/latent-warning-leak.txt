@@ -1,0 +1,61 @@
+# T-014 发现：Python warnings 经 logging.captureWarnings(True) 原文进入 JSON 日志（潜在泄露路径，当前应用不可触发）（2026-10-17T02:08:26Z），工作目录为仓库根目录
+# 复现脚本（只用合成数据；只打印扫描结果与 logger 名，不打印泄露的原文行）：
+$ cat warning_leak_repro.py
+"""T-014 finding: Python warnings reach the JSON log with their full text (latent leak path).
+
+configure_logging() calls logging.captureWarnings(True); the record's message is written
+verbatim (only `extra` fields are whitelisted). Pydantic's serializer warnings quote the
+offending value (input_value=...). Reproduced with a test-only route that returns a model
+built without validation; the current app (only /healthz) has no such route.
+Run from the repository root:
+    uv run --project services/api python <this file>
+Prints scanner findings and logger names only, never the leaked line itself.
+"""
+
+import sys
+from importlib.metadata import version
+from pathlib import Path
+
+sys.path.insert(0, str(Path("tools").resolve()))
+
+from pydantic import BaseModel  # noqa: E402
+
+import pii_log_probe as probe  # noqa: E402
+import pii_scan  # noqa: E402
+from cardflow.settings import Settings  # noqa: E402
+
+
+class CardSummary(BaseModel):
+    """Response model of the test-only route."""
+
+    statement_count: int
+
+
+app = probe.build_probe_app(Settings())
+
+
+@app.get("/v1/_probe/unvalidated")
+async def unvalidated() -> CardSummary:
+    """Bug pattern: model_construct() skips validation, a card number ends up in an int field."""
+    return CardSummary.model_construct(statement_count=probe.CARD_VISA)
+
+
+request = probe.ProbeRequest("unvalidated model", "GET", "/v1/_probe/unvalidated", 200)
+run = probe.run_probe("json", app, [request])
+print(f"pydantic {version('pydantic')}, fastapi {version('fastapi')}")
+print("response statuses:", run.statuses)
+print("loggers in the server-side log:", sorted({line.logger for line in run.lines if not line.from_client}))
+findings = list(pii_scan.scan_lines(run.server_lines(), "server-log"))
+for finding in findings:
+    origin = run.server_lines()[finding.line - 1]
+    logger = next(line.logger for line in run.lines if line.text == origin)
+    print(f"{finding.render()}  (logger={logger})")
+print("cardflow.* lines only:", list(pii_scan.scan_lines(run.cardflow_lines(), "cardflow")) or "0 hits")
+
+$ uv run --project services/api python warning_leak_repro.py
+pydantic 2.14.1, fastapi 0.143.2
+response statuses: (200,)
+loggers in the server-side log: ['cardflow.access', 'py.warnings']
+server-log:1:message:card_number  (logger=py.warnings)
+cardflow.* lines only: 0 hits
+exit=0

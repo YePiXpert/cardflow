@@ -1,0 +1,75 @@
+$ date -u
+Fri Oct 16 02:59:13 PM UTC 2026
+$ ss -tlnH | grep -E ':(1808[0-9]|1843[2-9])\b' (project port ranges)
+(no listeners in 18080-18089 / 18432-18439)
+$ tools/dev-db.sh up
+dev-db: generated /projects/cardflow/deploy/secrets.dev/db_password (mode 600)
+ Image postgres:18.6-trixie Pulling 
+ d23c975c4693 Pulling fs layer 0B
+ c8145e79cc2b Pulling fs layer 0B
+ e0d4a6e58470 Pulling fs layer 0B
+ 496ce2ef5b2f Pulling fs layer 0B
+ dc25540d793f Pulling fs layer 0B
+ 7967f593457f Pulling fs layer 0B
+ 4a3cafbebf6d Pulling fs layer 0B
+ 06ea90d3bcc9 Pulling fs layer 0B
+ 28ced28a309b Pulling fs layer 0B
+ ab69e2551985 Pulling fs layer 0B
+ 1f04dfa92b9f Pulling fs layer 0B
+ 5a487c9461a5 Pulling fs layer 0B
+ ad65edc35a9f Download complete 0B
+ 85cc04fcafd7 Download complete 0B
+ e0d4a6e58470 Download complete 0B
+ d23c975c4693 Download complete 0B
+ 4a3cafbebf6d Download complete 0B
+ 4a3cafbebf6d Pull complete 0B
+ 496ce2ef5b2f Download complete 0B
+ 06ea90d3bcc9 Download complete 0B
+ dc25540d793f Download complete 0B
+ 7967f593457f Download complete 0B
+ 28ced28a309b Downloading 3.146MB
+ c8145e79cc2b Downloading 23.33MB
+ c8145e79cc2b Downloading 73.4MB
+ ab69e2551985 Download complete 0B
+ 1f04dfa92b9f Download complete 0B
+ 28ced28a309b Download complete 0B
+ 5a487c9461a5 Download complete 0B
+ ab69e2551985 Pull complete 0B
+ 1f04dfa92b9f Extracting 1B
+ 28ced28a309b Pull complete 0B
+ c8145e79cc2b Download complete 0B
+ 1f04dfa92b9f Pull complete 0B
+ 5a487c9461a5 Pull complete 0B
+ e0d4a6e58470 Pull complete 0B
+ 496ce2ef5b2f Pull complete 0B
+ c8145e79cc2b Extracting 1B
+ c8145e79cc2b Extracting 1B
+ c8145e79cc2b Extracting 1B
+ c8145e79cc2b Extracting 1B
+ c8145e79cc2b Extracting 1B
+ c8145e79cc2b Extracting 1B
+ c8145e79cc2b Extracting 1B
+ c8145e79cc2b Extracting 1B
+ c8145e79cc2b Extracting 1B
+ d23c975c4693 Pull complete 0B
+ 06ea90d3bcc9 Pull complete 0B
+ dc25540d793f Pull complete 0B
+ 7967f593457f Pull complete 0B
+ c8145e79cc2b Pull complete 0B
+ Image postgres:18.6-trixie Pulled 
+ Volume cardflow-dev_pgdata Creating 
+ Volume cardflow-dev_pgdata Creating 
+ Network cardflow-dev_default Creating 
+ Network cardflow-dev_default Creating 
+ Volume cardflow-dev_pgdata Created 
+ Volume cardflow-dev_pgdata Created 
+ Network cardflow-dev_default Created 
+ Network cardflow-dev_default Created 
+ Container cardflow-dev-db-1 Creating 
+ Container cardflow-dev-db-1 Created 
+ Container cardflow-dev-db-1 Starting 
+ Container cardflow-dev-db-1 Started 
+ Container cardflow-dev-db-1 Waiting 
+ Container cardflow-dev-db-1 Healthy 
+dev-db: ready on 127.0.0.1:18432 (compose project cardflow-dev)
+exit=0

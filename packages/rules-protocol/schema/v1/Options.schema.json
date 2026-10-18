@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/Options.schema.json",
+  "title": "Options",
+  "description": "Solve options (engine-spec §2 Options; ADR-004: 8 workers, fixed seed).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "decision_scenario",
+    "time_limit_s",
+    "workers",
+    "seed",
+    "stale_after_days",
+    "global_reserve_floor_minor"
+  ],
+  "properties": {
+    "profile": { "$ref": "common.schema.json#/$defs/Profile" },
+    "decision_scenario": {
+      "description": "scenario_id the allocation must satisfy. An id that is not among the scenarios makes the run NEEDS_DATA (UNKNOWN_DECISION_SCENARIO).",
+      "$ref": "common.schema.json#/$defs/Id"
+    },
+    "time_limit_s": {
+      "description": "Time budget of the whole run in seconds: every CP-SAT call (objective tiers, tie-break, sensitivity) ends within time_limit_s of the start (engine-spec §12.9). The main solve gets at most half of it, split evenly over the objective tiers and the tie-break; the sensitivity solves share the rest. Not money: one of the few fields that may be a non-integer JSON number.",
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 3600
+    },
+    "workers": {
+      "description": "CP-SAT num_workers for every solve of the run. The answer does not depend on it: ties are broken deterministically (engine-spec §12.5).",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 64
+    },
+    "seed": {
+      "description": "CP-SAT random_seed for every solve of the run.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "stale_after_days": {
+      "description": "A snapshot older than this many days before txn_date makes the run NEEDS_DATA (STALE_SNAPSHOT).",
+      "$ref": "common.schema.json#/$defs/DayCount"
+    },
+    "global_reserve_floor_minor": {
+      "description": "Minimum of the SUM over all cash accounts at every checkpoint; 0 = disabled.",
+      "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount"
+    }
+  }
+}

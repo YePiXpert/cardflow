@@ -1,0 +1,237 @@
+# T-004 part B: new tests against the UNMODIFIED T-003 engine (2026-10-17T02:01:18Z), cwd services/api
+# engine sources at this point = T-003 snapshot (sha256 below); only the three new test files exist
+  ef71b600126638c97652248ec96ca5ce5d0e3f6cb09691b03677b96fbead909f  cardflow/planner/engine/allocation.py
+  de26af2d5f294bdfb71325bbe533e80de294fbc0b3430edb129e28927d858d9d  cardflow/planner/engine/billing.py
+  2e9c351a41e4112c3482a741fd28f092d4212efcd67e2ec9565a3f729bac460d  cardflow/planner/engine/cash.py
+  0872c2f6182febe3fe125b5d624063dae92ae233f7279acd15d1e152f77266f5  cardflow/planner/engine/fixture.py
+  f431f249a2d187858566a8c0ae251f408d542a78fa8175257949241bd40999b1  cardflow/planner/engine/__init__.py
+  0d27d92a3f97838061d4014aed444035e465cadba6c3495ba425ed340ca30474  cardflow/planner/engine/money.py
+  2c8468676ae8f9632e510bc22edb9e37d198cba43de1d83d55df0ce86da3fcc4  cardflow/planner/engine/plan.py
+  cb6156d9ee239b042032f62d82763d2f30965bdba7b18618b8308b0addd2634c  cardflow/planner/engine/sample.py
+  4ca996b03813946d119b8d72676c035501b6835fcd87b14ecf4e6d23767221d2  cardflow/planner/engine/verifier.py
+$ uv run pytest -q -p no:cacheprovider tests/engine/test_production_fixes.py tests/engine/test_determinism.py tests/engine/test_billing_clamp.py -rfE
+FFFFFFFFFF......                                                         [100%]
+=================================== FAILURES ===================================
+____________ test_verifier_reports_unknown_card_instead_of_raising _____________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_verifier_reports_unknown_card_instead_of_raising(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+>       v = verify(inputs, {"A": 800000, "Z": 200000}, scenarios, "baseline")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_production_fixes.py:72: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/verifier.py:161: in verify
+    checks = {sid: check_scenario(inputs, infos, alloc, sc) for sid, sc in scenarios.items()}
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/verifier.py:73: in check_scenario
+    planned = planned_repayment_events(infos, allocation)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+infos = {'A': CardPlanInfo(card=CardOption(id='A', account_id='acc-A', name='卡A', raw_available=800000, billing_rule=BillingRu...-A', assumptions=('posting delay 0d -> posting 2026-10-16',)),), repay_on=datetime.date(2026, 11, 28), buffer_days=43)}
+allocation = {'A': 800000, 'Z': 200000}
+
+    def planned_repayment_events(infos: dict, allocation: dict) -> list:
+        evs = []
+        for cid, amt in allocation.items():
+>           i = infos[cid]
+                ^^^^^^^^^^
+E           KeyError: 'Z'
+
+cardflow/planner/engine/verifier.py:55: KeyError
+________ test_verifier_rejects_an_allocation_made_only_of_unknown_cards ________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_verifier_rejects_an_allocation_made_only_of_unknown_cards(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+>       v = verify(inputs, {"Z": 1000000}, scenarios, "baseline")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/engine/test_production_fixes.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+cardflow/planner/engine/verifier.py:161: in verify
+    checks = {sid: check_scenario(inputs, infos, alloc, sc) for sid, sc in scenarios.items()}
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cardflow/planner/engine/verifier.py:73: in check_scenario
+    planned = planned_repayment_events(infos, allocation)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+infos = {}, allocation = {'Z': 1000000}
+
+    def planned_repayment_events(infos: dict, allocation: dict) -> list:
+        evs = []
+        for cid, amt in allocation.items():
+>           i = infos[cid]
+                ^^^^^^^^^^
+E           KeyError: 'Z'
+
+cardflow/planner/engine/verifier.py:55: KeyError
+_ test_plan_records_the_hash_of_the_callers_input_before_the_horizon_extension _
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_plan_records_the_hash_of_the_callers_input_before_the_horizon_extension(
+        fx: Fx,
+    ) -> None:
+        inputs, scenarios, _ = fx
+        short = replace(inputs, horizon_end=date(2026, 11, 1))  # before every planned repayment
+        expected = short.input_hash()
+        out = plan(short, scenarios, "baseline", "cash_safety", time_limit_s=10, with_sensitivity=False)
+        assert any(n.startswith("horizon extended") for n in out.notes)  # the adjustment happened
+        assert out.solve is not None
+>       assert out.solve.input_hash == expected
+E       AssertionError: assert '0adf44db4303...dc51e96c264c1' == '6e7301466f67...4c55174c6080f'
+E         
+E         - 6e7301466f67fbb741def245c19db2b38ec0d6e1968a10970c24c55174c6080f
+E         + 0adf44db430375fc855db1c7e83540503a236cdd067eda08e1fdc51e96c264c1
+
+tests/engine/test_production_fixes.py:104: AssertionError
+_____________ test_plan_uses_a_caller_supplied_input_hash_verbatim _____________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_plan_uses_a_caller_supplied_input_hash_verbatim(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+        supplied = "0123456789abcdef" * 4
+>       out = plan(
+            inputs,
+            scenarios,
+            "baseline",
+            "cash_safety",
+            time_limit_s=10,
+            with_sensitivity=False,
+            input_hash=supplied,
+        )
+E       TypeError: plan() got an unexpected keyword argument 'input_hash'
+
+tests/engine/test_production_fixes.py:111: TypeError
+____________ test_plan_passes_workers_and_seed_to_every_solver_call ____________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+solver_calls = []
+
+    def test_plan_passes_workers_and_seed_to_every_solver_call(
+        fx: Fx, solver_calls: list[tuple[int, int]]
+    ) -> None:
+        inputs, scenarios, _ = fx
+>       out = plan(
+            inputs, scenarios, "baseline", "cash_safety", time_limit_s=10, workers=2, seed=7
+        )
+E       TypeError: plan() got an unexpected keyword argument 'workers'
+
+tests/engine/test_production_fixes.py:154: TypeError
+_____________ test_plan_defaults_to_eight_workers_and_a_fixed_seed _____________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+solver_calls = [(8, 0), (8, 0), (8, 0), (8, 0), (8, 0), (8, 0), ...]
+
+    def test_plan_defaults_to_eight_workers_and_a_fixed_seed(
+        fx: Fx, solver_calls: list[tuple[int, int]]
+    ) -> None:
+        inputs, scenarios, _ = fx
+        out = plan(inputs, scenarios, "baseline", "cash_safety", time_limit_s=10)
+        assert out.solve is not None
+        assert set(solver_calls) == {(8, 0)}  # ADR-004: num_workers=8, fixed random_seed
+>       assert (out.solve.workers, out.solve.seed) == (8, 0)
+                ^^^^^^^^^^^^^^^^^
+E       AttributeError: 'SolveResult' object has no attribute 'workers'
+
+tests/engine/test_production_fixes.py:175: AttributeError
+________ test_model_version_is_a_release_version_recorded_on_every_run _________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_model_version_is_a_release_version_recorded_on_every_run(fx: Fx) -> None:
+        match = re.fullmatch(r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)", MODEL_VERSION)
+>       assert match, MODEL_VERSION
+E       AssertionError: poc-0.1.0
+E       assert None
+
+tests/engine/test_production_fixes.py:185: AssertionError
+_______________ test_plan_and_its_solver_record_share_one_run_id _______________
+
+fx = (ModelInputs(request=PlanRequest(amount=1000000, currency='CNY', txn_date=datetime.date(2026, 10, 16), allow_split=Tru...', 'available': '15000.00', ...}, {'id': 'C', 'account_id': 'acc-C', 'name': '卡C', 'available': '6000.00', ...}], ...})
+
+    def test_plan_and_its_solver_record_share_one_run_id(fx: Fx) -> None:
+        inputs, scenarios, _ = fx
+        supplied = str(uuid.uuid4())
+>       out = plan(
+            inputs,
+            scenarios,
+            "baseline",
+            "cash_safety",
+            time_limit_s=10,
+            with_sensitivity=False,
+            run_id=supplied,
+        )
+E       TypeError: plan() got an unexpected keyword argument 'run_id'
+
+tests/engine/test_production_fixes.py:200: TypeError
+________________ test_declared_defaults_match_their_annotations ________________
+
+    def test_declared_defaults_match_their_annotations() -> None:
+        checked = list(_declared_defaults())
+        assert len(checked) > 40  # the scan reaches the engine's functions and dataclasses
+        wrong = [
+            f"{where}: default {default!r} is not a {hint}"
+            for where, hint, default in checked
+            if not _admits(hint, default)
+        ]
+>       assert wrong == []
+E       AssertionError: assert ['cardflow.pl..., str, int]]'] == []
+E         
+E         Left contains one more item: 'cardflow.planner.engine.allocation.build_model(prior_bounds): default () is not a list[tuple[str, str, int]]'
+E         Use -v to get more diff
+
+tests/engine/test_production_fixes.py:278: AssertionError
+________ test_low_series_by_day_annotation_admits_the_values_it_stores _________
+
+    def test_low_series_by_day_annotation_admits_the_values_it_stores() -> None:
+        fn = ast.parse(textwrap.dedent(inspect.getsource(allocation._low_series))).body[0]
+        (annotated,) = [
+            n
+            for n in ast.walk(fn)
+            if isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name) and n.target.id == "by_day"
+        ]
+        (initialiser,) = [
+            ast.literal_eval(n.args[1])
+            for n in ast.walk(fn)
+            if isinstance(n, ast.Call)
+            and isinstance(n.func, ast.Attribute)
+            and n.func.attr == "setdefault"
+        ]
+        assert initialiser == [None, None]  # by_day.setdefault(day, [low, end]) filled in later
+        hint = eval(  # noqa: S307 -- evaluates the engine's own annotation in its module namespace
+            compile(ast.Expression(annotated.annotation), "<by_day>", "eval"), vars(allocation)
+        )
+        assert typing.get_origin(hint) is dict
+        _, value_type = typing.get_args(hint)
+>       assert _admits(value_type, initialiser)
+E       assert False
+E        +  where False = _admits(tuple[int, int], [None, None])
+
+tests/engine/test_production_fixes.py:301: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/engine/test_production_fixes.py::test_verifier_reports_unknown_card_instead_of_raising
+FAILED tests/engine/test_production_fixes.py::test_verifier_rejects_an_allocation_made_only_of_unknown_cards
+FAILED tests/engine/test_production_fixes.py::test_plan_records_the_hash_of_the_callers_input_before_the_horizon_extension
+FAILED tests/engine/test_production_fixes.py::test_plan_uses_a_caller_supplied_input_hash_verbatim
+FAILED tests/engine/test_production_fixes.py::test_plan_passes_workers_and_seed_to_every_solver_call
+FAILED tests/engine/test_production_fixes.py::test_plan_defaults_to_eight_workers_and_a_fixed_seed
+FAILED tests/engine/test_production_fixes.py::test_model_version_is_a_release_version_recorded_on_every_run
+FAILED tests/engine/test_production_fixes.py::test_plan_and_its_solver_record_share_one_run_id
+FAILED tests/engine/test_production_fixes.py::test_declared_defaults_match_their_annotations
+FAILED tests/engine/test_production_fixes.py::test_low_series_by_day_annotation_admits_the_values_it_stores
+10 failed, 6 passed, 1 warning in 1.10s
+exit=1

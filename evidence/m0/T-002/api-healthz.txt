@@ -1,0 +1,51 @@
+# uv run cardflow api --port 18081 后台启动 -> curl -> 只停止该进程（2026-10-16T15:11:36Z），工作目录 services/api
+$ ss -tlnH 'sport = :18081'   # must be empty before start
+(end)
+$ uv run cardflow api --port 18081 2>api-server.log &
+started uv pid=21874
+$ ss -tlnpH 'sport = :18081'
+LISTEN 0      2048   127.0.0.1:18081 0.0.0.0:* users:(("cardflow",pid=21880,fd=6))
+
+$ curl -sS -i 127.0.0.1:18081/healthz
+HTTP/1.1 200 OK
+date: Fri, 16 Oct 2026 15:11:36 GMT
+content-length: 15
+content-type: application/json
+x-request-id: bf1c4de857f24951b3d08d88ed6ce0c3
+
+{"status":"ok"}
+
+$ curl -sS -i '127.0.0.1:18081/does-not-exist?q=secret'
+HTTP/1.1 404 Not Found
+date: Fri, 16 Oct 2026 15:11:36 GMT
+content-length: 113
+content-type: application/json
+x-request-id: 8d480d5e1fa64d8a8bb049fd937ea5ae
+
+{"error":{"code":"NOT_FOUND","message":"Not Found","details":{},"request_id":"8d480d5e1fa64d8a8bb049fd937ea5ae"}}
+
+$ curl -sS -i -X POST 127.0.0.1:18081/healthz
+HTTP/1.1 405 Method Not Allowed
+date: Fri, 16 Oct 2026 15:11:36 GMT
+allow: GET
+content-length: 131
+content-type: application/json
+x-request-id: f5d91ed307294e2893f5da5f66b18926
+
+{"error":{"code":"METHOD_NOT_ALLOWED","message":"Method Not Allowed","details":{},"request_id":"f5d91ed307294e2893f5da5f66b18926"}}
+
+$ curl -sS -i 127.0.0.1:18081/readyz   # not implemented here (T-012) -> 404 envelope
+HTTP/1.1 404 Not Found
+date: Fri, 16 Oct 2026 15:11:36 GMT
+content-length: 113
+content-type: application/json
+x-request-id: bab4dc7c45854d95ab8aa50544493961
+
+{"error":{"code":"NOT_FOUND","message":"Not Found","details":{},"request_id":"bab4dc7c45854d95ab8aa50544493961"}}
+
+uv pid=21874 child pid(s)=21880
+$ kill -TERM 21874   # only the process started above
+uv exit=143 (143 = terminated by SIGTERM)
+child 21880 exited
+$ ss -tlnH 'sport = :18081'   # must be empty after stop
+(end)

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/Pools.schema.json",
+  "title": "Pools",
+  "description": "Shared credit pools (engine-spec §2 Pools: pool_id -> available). The amounts of all member cards of a pool may not exceed max(0, available_minor - the holds_uncounted_minor and reservations_minor of every member card) (engine-spec §12.3). Each pool_id at most once. Protocol v1 expresses ONE pool level (on top of the card and credit-account layers); nested pools need protocol v2 (M2) and must not be approximated by one level.",
+  "type": "array",
+  "items": { "$ref": "#/$defs/Pool" },
+  "$defs": {
+    "Pool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pool_id", "available_minor"],
+      "properties": {
+        "pool_id": { "$ref": "common.schema.json#/$defs/Id" },
+        "available_minor": {
+          "description": "Available shared capacity as reported (raw value).",
+          "$ref": "common.schema.json#/$defs/MinorAmount"
+        }
+      }
+    }
+  }
+}

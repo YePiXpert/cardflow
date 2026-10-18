@@ -1,0 +1,260 @@
+# T-005 0002-alembic.txt - generated 2026-10-17T08:13:39Z on cardflow-dev (127.0.0.1:18432), working dir services/api
+# Fresh database cardflow_test_t005_0002_evidence; the database password is masked as *** everywhere.
+$ tools/dev-db.sh psql -c 'CREATE DATABASE cardflow_test_t005_0002_evidence TEMPLATE template0'
+CREATE DATABASE
+## state empty: alembic_version (no alembic_version table)
+   tables 0 (+alembic_version: no)  constraints 0  indexes 0  columns 0  triggers 0  functions 0
+   extensions plpgsql  currencies 0 rows
+   catalog fingerprint b5956d753621e94b3df1d0581ae58b9d
+$ uv run alembic heads
+0002 (head)
+$ uv run alembic history --verbose
+Rev: 0002 (head)
+Parent: 0001
+Path: /projects/cardflow/services/api/alembic/versions/0002_schema_fixes.py
+
+    Post-review structural fixes (M0 review wave 2, data-model §10).
+    
+    Revision ID: 0002
+    Revises: 0001
+    Create Date: 2026-10-17
+    
+    Implements the rulings of data-model §10 for evidence/m0/review-wave2-schema.md. 0001 is
+    not modified; everything is expressed here and reverted exactly by downgrade() (the
+    0001 function and trigger bodies are restored verbatim from V0001_FUNCTIONS /
+    V0001_TRIGGERS). Row-level security, roles and grants follow in 0003 (T-006).
+    
+    What changes (R2 = review finding):
+    
+    * R2-01  Every trigger/check function runs with ``SET search_path = pg_catalog, public,
+             pg_temp`` and qualifies tables with ``public.``: session temp tables can no longer
+             shadow the lookups.
+    * R2-02  Allocation sums live in repayment_allocation_totals (maintained row by row by
+             trigger). The deferred check *writes* that row, so concurrent allocators conflict
+             in every isolation level (READ COMMITTED waits and re-reads; REPEATABLE READ and
+             SERIALIZABLE fail with 40001) instead of relying on READ COMMITTED.
+    * R2-03/19  statement_versions, statement_lines, plan_runs, plan_allocations and
+             plan_run_checks are immutable except for the one-time tombstone
+             (deleted_at NULL -> NOT NULL). limit_snapshots / cash_balance_snapshots: amount,
+             time and account columns are immutable. Statement lines can only be written in
+             the transaction that creates their version.
+    * R2-10  Physical DELETE/TRUNCATE of those facts needs the transaction-scoped purge token
+             ``SELECT set_config('app.purge', pg_current_xact_id()::text, true)``; a leftover
+             session-level setting or the old value 'on' no longer opens the gate.
+    * R2-04/05  Currency and same-account consistency by composite foreign keys onto new
+             UNIQUE (workspace_id, id, currency) / (workspace_id, <account>, id) keys. Redundant
+             account columns (transactions.credit_account_id, statement_versions.
+             currency_account_id, ...) are derived from the parent row by BEFORE triggers
+             (derive_from_parent); clients never supply them. currency_accounts.(credit_account_id,
+             currency) and cash_accounts.currency are immutable.
+    * R2-06  Primary keys are id everywhere; natural keys (statement date, sub-account
+             currency, pool membership, document fingerprint, allocation, attribution, snapshot
+             inclusion, links, schedule periods, run checks) are partial unique indexes
+             WHERE deleted_at IS NULL. (statement_id, version_no) stays fully unique.
+    * R2-07  sync_changes.txid xid8 (top-level transaction id) for a lossless pull cursor.
+    * R2-08  repayments: event_tz, precision of cash_debited_at / credit_posted_at,
+             recorded_at; transactions.observed_at; cash_events.event_tz, recorded_at.
+    * R2-09  looks_like_pan(): free-text columns reject card-number-like digit runs
+             (13-19 digits, single spaces/hyphens allowed, Luhn-valid).
+    * R2-11..18, 20, 21, 25, 26, 27, 29, 32, 33: workspace_id immutable on every tenant table;
+             nil workspace id rejected; private rules cannot claim verified/published; no
+             overlapping rule bindings; inactive repayments keep no live allocations; non-zero
+             amounts with a sign per type/category and COMMENT ON COLUMN; status CHECKs; no
+             pool / card-replacement cycles; attachment references are composite foreign keys
+             (purging a document wipes the blob key, the metadata row stays); row_version /
+             updated_at maintained by trigger; foreign-key indexes; idempotency_keys.created_at
+             index; jobs.dedupe_key and lease-reclaim index; email/public key sanity checks.
+    * T-008  (coordinator, after the T-008 review) jobs.status admits 'canceled'
+             (admin-console-spec AP-05; the cancel action itself comes later), and the claim
+             index is ix_jobs_queued_run_after_created_at (run_after, created_at) WHERE status =
+             'queued' -- the worker's ORDER BY run_after, created_at -- replacing
+             ix_jobs_status_run_after (status, run_after).
+    
+    Backfills only touch derived id/currency columns and the allocation totals; no money
+    value is updated (data-model §7).
+    
+    Not expressible here (R2-23): 0001's downgrade drops btree_gist/pg_trgm unconditionally;
+    changing that needs an edit of 0001 and is left to the coordinator.
+
+Rev: 0001
+Parent: <base>
+Path: /projects/cardflow/services/api/alembic/versions/0001_initial.py
+
+    Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+    
+    Revision ID: 0001
+    Revises: (none)
+    Create Date: 2026-10-16
+    
+    Covers data-model §1 groups 1-7 plus sync_changes, sync_conflicts, audit_log,
+    deletion_tasks, jobs and worker_heartbeats (group 10). Promotions, benefits, points,
+    annual fees and notifications are NOT part of this revision. Row-level security, roles
+    and grants are revision 0003 (T-006); revision 0002 holds the post-review structural
+    fixes (data-model §10).
+    
+    Conventions (see cardflow/db/base.py):
+    * every name is explicit and equals what the SQLAlchemy naming convention produces
+      (pk_<table>, uq_<table>_<cols>, ck_<table>_<name>, fk_<table>_<cols without
+      workspace_id>, ix_<table>_<cols>); tests/db/test_model_drift.py checks this;
+    * primary keys default to uuidv7() (PostgreSQL 18);
+    * money: *_minor BIGINT + currency; rates NUMERIC(20,10); never float/double/real/money;
+    * tenant tables: workspace_id NOT NULL + UNIQUE (workspace_id, id) + composite foreign
+      keys (workspace_id, parent_id) so the database itself rejects cross-workspace links;
+    * banks, card_products and billing_rule_versions: workspace_id NULL = official template;
+      references to them are plain foreign keys on id plus a scope trigger
+      (check_template_scope) that only accepts templates or rows of the same workspace;
+    * soft references without a foreign key, by design: source_document_id /
+      evidence_document_id (attachments are purged by retention while financial facts stay,
+      data-model §9), origin_device_id / uploaded_by_device_id (provenance), polymorphic
+      references (billing_rule_versions.subject_id is checked by a trigger;
+      sync_changes.row_id, sync_conflicts.row_id, audit_log.target_id,
+      dedupe_keys.entity_id, import_batch_items.*_id, plan_invalidations.caused_by_id),
+      jobs references (parse_jobs.job_id, plan_runs.job_id) and the workspace_id of
+      audit_log, deletion_tasks and jobs (they must outlive a purged workspace).
+    
+    Constraint triggers (T-007):
+    * statement_versions: amount columns and due_date are append-only (UPDATE rejected,
+      data-model §4); DELETE/TRUNCATE are rejected unless the current transaction ran
+      SELECT set_config('app.purge', 'on', true) -- reserved for the future
+      workspace-deletion task (deletion_tasks, 30-day grace, data-model §9);
+    * repayment_allocations: DEFERRABLE INITIALLY DEFERRED constraint triggers check at
+      commit that the active allocations of a repayment sum to at most repayments.amount_minor,
+      also when the repayment amount is lowered, and that every allocated statement belongs
+      to the repayment's currency account;
+    * billing_rule_versions: exclusion constraint per scope (COALESCE(workspace_id, nil uuid)),
+      subject and effective period, for in-effect rows (published / user_declared, not
+      tombstoned).
+    
+    This revision never UPDATEs money values; its only data change is the currencies seed.
+
+
+# --- 0001 <-> 0002 ---
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence upgrade 0001
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+exit=0
+## state at-0001: alembic_version 0001
+   tables 58 (+alembic_version: yes)  constraints 883  indexes 170  columns 759  triggers 15  functions 9
+   extensions btree_gist,pg_trgm,plpgsql  currencies 13 rows
+   catalog fingerprint 118e44a0791efda5bb392f054dbef383
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence upgrade 0002
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, Post-review structural fixes (M0 review wave 2, data-model §10).
+exit=0
+## state at-0002: alembic_version 0002
+   tables 59 (+alembic_version: yes)  constraints 971  indexes 240  columns 782  triggers 139  functions 19
+   extensions btree_gist,pg_trgm,plpgsql  currencies 13 rows
+   catalog fingerprint 6f6d141472c73d114b2fdbf385764703
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence downgrade 0001
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, Post-review structural fixes (M0 review wave 2, data-model §10).
+exit=0
+## state back-at-0001: alembic_version 0001
+   tables 58 (+alembic_version: yes)  constraints 883  indexes 170  columns 759  triggers 15  functions 9
+   extensions btree_gist,pg_trgm,plpgsql  currencies 13 rows
+   catalog fingerprint 118e44a0791efda5bb392f054dbef383
+   identical to state at-0001: yes (every constraint, index, column, trigger,
+   function, extension, version row and seed row)
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence upgrade 0002
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, Post-review structural fixes (M0 review wave 2, data-model §10).
+exit=0
+## state again-at-0002: alembic_version 0002
+   tables 59 (+alembic_version: yes)  constraints 971  indexes 240  columns 782  triggers 139  functions 19
+   extensions btree_gist,pg_trgm,plpgsql  currencies 13 rows
+   catalog fingerprint 6f6d141472c73d114b2fdbf385764703
+   identical to state at-0002: yes (every constraint, index, column, trigger,
+   function, extension, version row and seed row)
+
+# --- base <-> head (twice) ---
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence downgrade base
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, Post-review structural fixes (M0 review wave 2, data-model §10).
+INFO  [alembic.runtime.migration] Running downgrade 0001 -> , Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+exit=0
+## state at-base: alembic_version (empty)
+   tables 0 (+alembic_version: yes)  constraints 0  indexes 0  columns 0  triggers 0  functions 0
+   extensions plpgsql  currencies 0 rows
+   catalog fingerprint d73197de55eeed1f445832caa087655a
+   identical to state empty: yes, apart from the empty alembic_version
+   table that Alembic keeps after downgrade base
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence upgrade head
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, Post-review structural fixes (M0 review wave 2, data-model §10).
+exit=0
+## state head-from-base: alembic_version 0002
+   tables 59 (+alembic_version: yes)  constraints 971  indexes 240  columns 782  triggers 139  functions 19
+   extensions btree_gist,pg_trgm,plpgsql  currencies 13 rows
+   catalog fingerprint 6f6d141472c73d114b2fdbf385764703
+   identical to state at-0002: yes (every constraint, index, column, trigger,
+   function, extension, version row and seed row)
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence downgrade base
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, Post-review structural fixes (M0 review wave 2, data-model §10).
+INFO  [alembic.runtime.migration] Running downgrade 0001 -> , Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+exit=0
+## state at-base-again: alembic_version (empty)
+   tables 0 (+alembic_version: yes)  constraints 0  indexes 0  columns 0  triggers 0  functions 0
+   extensions plpgsql  currencies 0 rows
+   catalog fingerprint d73197de55eeed1f445832caa087655a
+   identical to state at-base: yes (every constraint, index, column, trigger,
+   function, extension, version row and seed row)
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence upgrade head
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables.
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, Post-review structural fixes (M0 review wave 2, data-model §10).
+exit=0
+## state head-again: alembic_version 0002
+   tables 59 (+alembic_version: yes)  constraints 971  indexes 240  columns 782  triggers 139  functions 19
+   extensions btree_gist,pg_trgm,plpgsql  currencies 13 rows
+   catalog fingerprint 6f6d141472c73d114b2fdbf385764703
+   identical to state at-0002: yes (every constraint, index, column, trigger,
+   function, extension, version row and seed row)
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence current
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+0002 (head)
+exit=0
+
+# --- cardflow migrate (settings from env: DATABASE_URL without password + DATABASE_PASSWORD_FILE) ---
+$ export DATABASE_URL=postgresql+psycopg://cardflow@127.0.0.1:18432/cardflow_test_t005_0002_evidence DATABASE_PASSWORD_FILE=../../deploy/secrets.dev/db_password LOG_FORMAT=text
+$ uv run cardflow migrate --check        # database at head
+database revision 0002; code head 0002: up to date
+exit=0
+$ uv run alembic -x url=postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow_test_t005_0002_evidence downgrade -1
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, Post-review structural fixes (M0 review wave 2, data-model §10).
+exit=0
+$ uv run cardflow migrate --check        # one revision below head
+database revision 0001; code head 0002: NOT at head
+exit=1
+$ uv run cardflow migrate --lock         # upgrade under the advisory lock
+2026-10-17T08:13:49.575+00:00 INFO     cardflow.db.migrations: waiting for the migration advisory lock
+2026-10-17T08:13:49.576+00:00 INFO     cardflow.db.migrations: migration advisory lock acquired
+2026-10-17T08:13:49.666+00:00 INFO     alembic.runtime.migration: Context impl PostgresqlImpl.
+2026-10-17T08:13:49.666+00:00 INFO     alembic.runtime.migration: Will assume transactional DDL.
+2026-10-17T08:13:49.671+00:00 INFO     alembic.runtime.migration: Running upgrade 0001 -> 0002, Post-review structural fixes (M0 review wave 2, data-model §10).
+2026-10-17T08:13:49.781+00:00 INFO     cardflow.db.migrations: migration advisory lock released
+database revision 0002; code head 0002: up to date
+exit=0
+$ uv run cardflow migrate --check        # back at head
+database revision 0002; code head 0002: up to date
+exit=0
+## state final: alembic_version 0002
+   tables 59 (+alembic_version: yes)  constraints 971  indexes 240  columns 782  triggers 139  functions 19
+   extensions btree_gist,pg_trgm,plpgsql  currencies 13 rows
+   catalog fingerprint 6f6d141472c73d114b2fdbf385764703
+   identical to state at-0002: yes (every constraint, index, column, trigger,
+   function, extension, version row and seed row)
+$ tools/dev-db.sh psql -c 'DROP DATABASE cardflow_test_t005_0002_evidence'
+DROP DATABASE

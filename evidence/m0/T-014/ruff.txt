@@ -1,0 +1,31 @@
+# T-014 lint / format（2026-10-17T02:10:05Z），工作目录为仓库根目录；tools/ruff.toml 继承 services/api/pyproject.toml 的规则（另对 tests/** 放行 S101/S105/S106，与 services/api 相同）
+$ uv run --project services/api ruff --version
+ruff 0.17.1
+$ cat tools/ruff.toml
+# Lint/format settings for the Python scripts in tools/ (T-014): the server's rules from
+# services/api/pyproject.toml, plus the same exemptions for tests. Picked up automatically:
+#   uv run --project services/api ruff check tools/ && uv run --project services/api ruff format --check tools/
+extend = "../services/api/pyproject.toml"
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+$ uv run --project services/api ruff check --show-settings tools/pii_scan.py | grep -E "^Settings path|line_length|^linter.rules.enabled" 
+Settings path: "/projects/cardflow/tools/ruff.toml"
+linter.line_length = 100
+$ uv run --project services/api ruff check --show-files tools/
+/projects/cardflow/tools/pii_log_probe.py
+/projects/cardflow/tools/pii_scan.py
+/projects/cardflow/tools/ruff.toml
+/projects/cardflow/tools/tests/test_pii_scan.py
+$ uv run --project services/api ruff check tools/
+All checks passed!
+exit=0
+$ uv run --project services/api ruff format --check tools/
+4 files already formatted
+exit=0
+# 说明：format 的第 4 个文件是 tools/README.md（ruff 0.17 的 format 也检查 Markdown），见下：
+$ uv run --project services/api ruff format --check --verbose tools/ 2>&1 | grep -o "format_path; path=.*"
+format_path; path=/projects/cardflow/tools/pii_log_probe.py
+format_path; path=/projects/cardflow/tools/pii_scan.py
+format_path; path=/projects/cardflow/tools/README.md
+format_path; path=/projects/cardflow/tools/tests/test_pii_scan.py

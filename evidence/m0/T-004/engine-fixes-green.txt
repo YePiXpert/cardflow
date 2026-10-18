@@ -1,0 +1,116 @@
+# T-004 part B after the fixes (2026-10-17T02:29:44Z), cwd services/api
+# red run of the same tests against the unmodified engine: engine-fixes-red.txt
+
+## 1. the new tests (16): fixes B.1-B.4/B.6, determinism B.5, clamp test B.7
+$ uv run pytest -p no:cacheprovider -v tests/engine/test_production_fixes.py tests/engine/test_determinism.py tests/engine/test_billing_clamp.py
+tests/engine/test_production_fixes.py::test_verifier_reports_unknown_card_instead_of_raising PASSED [  6%]
+tests/engine/test_production_fixes.py::test_verifier_rejects_an_allocation_made_only_of_unknown_cards PASSED [ 12%]
+tests/engine/test_production_fixes.py::test_plan_records_the_hash_of_the_callers_input_before_the_horizon_extension PASSED [ 18%]
+tests/engine/test_production_fixes.py::test_plan_uses_a_caller_supplied_input_hash_verbatim PASSED [ 25%]
+tests/engine/test_production_fixes.py::test_plan_passes_workers_and_seed_to_every_solver_call PASSED [ 31%]
+tests/engine/test_production_fixes.py::test_plan_defaults_to_eight_workers_and_a_fixed_seed PASSED [ 37%]
+tests/engine/test_production_fixes.py::test_model_version_is_a_release_version_recorded_on_every_run PASSED [ 43%]
+tests/engine/test_production_fixes.py::test_plan_and_its_solver_record_share_one_run_id PASSED [ 50%]
+tests/engine/test_production_fixes.py::test_declared_defaults_match_their_annotations PASSED [ 56%]
+tests/engine/test_production_fixes.py::test_low_series_by_day_annotation_admits_the_values_it_stores PASSED [ 62%]
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[cash_safety] PASSED [ 68%]
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[verified_benefit] PASSED [ 75%]
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[fewer_cards] PASSED [ 81%]
+tests/engine/test_billing_clamp.py::test_posting_on_a_clamped_statement_day_respects_the_inclusive_toggle PASSED [ 87%]
+tests/engine/test_billing_clamp.py::test_exclusive_roll_lands_on_the_next_months_clamped_day PASSED [ 93%]
+tests/engine/test_billing_clamp.py::test_due_date_follows_the_rolled_statement_date PASSED [100%]
+======================== 16 passed, 1 warning in 0.97s =========================
+exit=0
+
+## 2. all of tests/engine: the 63 migrated/boundary tests + the 16 new ones
+$ uv run pytest -p no:cacheprovider -q tests/engine --collect-only | tail -1
+79 tests collected in 0.29s
+$ uv run pytest -p no:cacheprovider -q tests/engine/test_billing.py tests/engine/test_cash.py tests/engine/test_properties.py tests/engine/test_regression_sample.py tests/engine/test_dependency_boundary.py --collect-only | tail -1   # the T-003 set
+63 tests collected in 0.29s
+$ uv run pytest -p no:cacheprovider -q tests/engine
+79 passed, 1 warning in 2.87s
+exit=0
+$ diff /tmp/t004/orig/test_billing.py tests/engine/test_billing.py && echo "migrated test_billing.py unchanged"
+migrated test_billing.py unchanged
+
+## 3. B.6 annotation-only: allocation.py before (T-003 snapshot) vs after, per top-level definition
+# tool /tmp/t004/tools/ast_annotations.py (one-off, text below); _low_series and build_model must be identical
+```python
+"""T-004 B.6: which top-level definitions of a module changed beyond annotations (one-off tool).
+
+Both files are parsed; every annotation is removed (argument/return annotations, annotated
+assignments keep target and value), docstrings are dropped, then each top-level function/class
+is compared with ast.dump. usage: python ast_annotations.py OLD NEW
+"""
+
+import ast
+import sys
+from pathlib import Path
+
+
+class Strip(ast.NodeTransformer):
+    def _args(self, a: ast.arguments) -> None:
+        for arg in [*a.posonlyargs, *a.args, *a.kwonlyargs, a.vararg, a.kwarg]:
+            if arg is not None:
+                arg.annotation = None
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.AST:
+        node.returns = None
+        self._args(node.args)
+        if node.body and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
+            node.body = node.body[1:] or [ast.Pass()]
+        return self.generic_visit(node)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> ast.AST:
+        if node.value is None:
+            return node
+        return ast.copy_location(ast.Assign(targets=[node.target], value=node.value), node)
+
+
+def defs(path: str) -> dict[str, str]:
+    tree = Strip().visit(ast.parse(Path(path).read_text(encoding="utf-8")))
+    return {
+        n.name: ast.dump(n)
+        for n in tree.body
+        if isinstance(n, (ast.FunctionDef, ast.ClassDef))
+    }
+
+
+old, new = defs(sys.argv[1]), defs(sys.argv[2])
+for name in sorted(set(old) | set(new)):
+    if name not in old:
+        state = "ADDED"
+    elif name not in new:
+        state = "REMOVED"
+    elif old[name] == new[name]:
+        state = "identical after stripping annotations and docstrings"
+    else:
+        state = "DIFFERS (behaviour or signature changed)"
+    print(f"{name}: {state}")
+```
+$ uv run python -I /tmp/t004/tools/ast_annotations.py /tmp/t004/orig/allocation.py cardflow/planner/engine/allocation.py
+BuiltModel: identical after stripping annotations and docstrings
+CardOption: identical after stripping annotations and docstrings
+CardPlanInfo: identical after stripping annotations and docstrings
+ModelInputs: identical after stripping annotations and docstrings
+ModelInvalid: identical after stripping annotations and docstrings
+PlanRequest: identical after stripping annotations and docstrings
+SolveResult: DIFFERS (behaviour or signature changed)
+TierResult: identical after stripping annotations and docstrings
+_low_series: identical after stripping annotations and docstrings
+_solver: identical after stripping annotations and docstrings
+build_model: identical after stripping annotations and docstrings
+derive_card_info: identical after stripping annotations and docstrings
+feasibility_status: DIFFERS (behaviour or signature changed)
+first_feasible_date_shift: DIFFERS (behaviour or signature changed)
+ineligible_reason: identical after stripping annotations and docstrings
+max_affordable_amount: DIFFERS (behaviour or signature changed)
+min_extra_cash: DIFFERS (behaviour or signature changed)
+solve: DIFFERS (behaviour or signature changed)
+# DIFFERS = exactly the B.2/B.3 changes (SolveResult.workers/seed; solve run_id/input_hash/workers/seed; sensitivity helpers workers/seed)
+$ diff -u /tmp/t004/orig/allocation.py cardflow/planner/engine/allocation.py | grep -E "^[-+][^-+]" | grep -E "by_day|prior_bounds|Sequence"
++from collections.abc import Sequence
+-    by_day: dict[date, tuple[int, int]] = {}
++    by_day: dict[date, list[int | None]] = {}  # day -> [low, end]
+-    prior_bounds: list[tuple[str, str, int]] = (),
++    prior_bounds: Sequence[tuple[str, str, int]] = (),

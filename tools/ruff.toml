@@ -1,0 +1,7 @@
+# Lint/format settings for the Python scripts in tools/ (T-014): the server's rules from
+# services/api/pyproject.toml, plus the same exemptions for tests. Picked up automatically:
+#   uv run --project services/api ruff check tools/ && uv run --project services/api ruff format --check tools/
+extend = "../services/api/pyproject.toml"
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]

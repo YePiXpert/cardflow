@@ -1,0 +1,7 @@
+# poc/ 完工复核（2026-10-16T15:39:28Z）：与 poc-integrity-before.txt 比较
+$ find poc -type f | sort | xargs sha256sum > now; diff <(grep -v '^[#$]' poc-integrity-before.txt) now
+exit=0 (0 = 文件集合与内容均未变)
+$ find poc -name __pycache__ -o -name .pytest_cache -o -name .hypothesis | wc -l
+0
+$ find poc -type f | wc -l
+18

@@ -1,0 +1,6 @@
+$ uv run pip-audit --skip-editable --progress-spinner off
+No known vulnerabilities found
+Name     Skip Reason
+-------- -------------------------------
+cardflow distribution marked as editable
+exit=0

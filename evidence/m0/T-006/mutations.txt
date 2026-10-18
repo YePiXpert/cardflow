@@ -1,0 +1,45 @@
+# T-006 mutation experiments - 2026-10-17T22:32:54Z; copy of services/api in /tmp/t006-mutations (deleted at the end)
+# tests run per mutation: tests/db/test_rls.py tests/db/test_rls_grants.py
+#   tests/db/test_migrations.py::test_every_revision_steps_down_and_up_exactly
+=== mutation none (unpatched copy): 76 passed, 1 warning in 4.66s
+=== mutation M1 downgrade forgets the grants of cash_events: 1 failed, 75 passed, 1 warning in 4.58s
+    FAILED tests/db/test_migrations.py::test_every_revision_steps_down_and_up_exactly
+=== mutation M2 cash_events not FORCE ROW LEVEL SECURITY: 2 failed, 74 passed, 1 warning in 5.74s
+    FAILED tests/db/test_rls_grants.py::test_every_table_is_under_rls_or_listed_as_an_exception
+    FAILED tests/db/test_rls_grants.py::test_catalog_snapshot_sees_the_rls_objects
+=== mutation M3 transactions.currency_account_id declared updatable: 1 failed, 75 passed, 1 warning in 5.25s
+    FAILED tests/db/test_rls_grants.py::test_updatable_columns_respect_the_immutability_rules
+=== mutation M4 undeclared extra grant UPDATE (workspace_id) ON cash_events: 2 failed, 74 passed, 1 warning in 4.82s
+    FAILED tests/db/test_rls_grants.py::test_privileges_match_the_declared_access
+    FAILED tests/db/test_rls_grants.py::test_updatable_columns_respect_the_immutability_rules
+=== mutation M5 policies compare current_setting(...)::uuid without NULLIF: 2 failed, 74 passed, 1 warning in 5.41s
+    FAILED tests/db/test_rls.py::test_tc_db_05_unbound_sessions_see_no_tenant_row
+    FAILED tests/db/test_rls_grants.py::test_policies_match_the_declared_list
+=== mutation M6 TEMPORARY not revoked from PUBLIC: 6 failed, 70 passed, 1 warning in 4.98s
+    FAILED tests/db/test_rls.py::test_r2_01_roles_cannot_create_temporary_tables[app_engine]
+    FAILED tests/db/test_rls.py::test_r2_01_roles_cannot_create_temporary_tables[worker_engine]
+    FAILED tests/db/test_rls.py::test_r2_01_roles_cannot_create_temporary_tables[admin_engine]
+    FAILED tests/db/test_rls.py::test_r2_01_purge_role_cannot_create_temporary_tables
+    FAILED tests/db/test_rls_grants.py::test_no_role_holds_temp_or_create_and_public_schema_is_restricted
+    FAILED tests/db/test_rls_grants.py::test_catalog_snapshot_sees_the_rls_objects
+=== mutation M7 allocation trigger functions stay SECURITY INVOKER: 6 failed, 70 passed, 1 warning in 5.53s
+    FAILED tests/db/test_rls.py::test_purge_deletes_ordinary_rows_of_the_bound_workspace_only
+    FAILED tests/db/test_rls.py::test_allocations_as_app_hold_the_amount_at_commit
+    FAILED tests/db/test_rls.py::test_allocations_as_app_race_in_both_isolation_levels[READ COMMITTED-23514]
+    FAILED tests/db/test_rls.py::test_allocations_as_app_race_in_both_isolation_levels[REPEATABLE READ-40001]
+    FAILED tests/db/test_rls.py::test_allocation_check_fails_closed_when_its_owner_is_subject_to_rls
+    FAILED tests/db/test_migrations.py::test_every_revision_steps_down_and_up_exactly
+=== mutation M8 admin may read statement_versions: 6 failed, 70 passed, 1 warning in 4.87s
+    FAILED tests/db/test_rls.py::test_tc_db_06_admin_cannot_read_content[SELECT new_balance_minor FROM statement_versions]
+    FAILED tests/db/test_rls_grants.py::test_privileges_match_the_declared_access
+    FAILED tests/db/test_rls_grants.py::test_policies_match_the_declared_list
+    FAILED tests/db/test_rls_grants.py::test_admin_roles_cannot_read_content
+    FAILED tests/db/test_rls_grants.py::test_catalog_snapshot_sees_the_rls_objects
+    FAILED tests/db/test_migrations.py::test_every_revision_steps_down_and_up_exactly
+=== mutation M9 users visible to every business session: 2 failed, 74 passed, 1 warning in 6.15s
+    FAILED tests/db/test_rls.py::test_tc_db_05_unbound_sessions_see_no_tenant_row
+    FAILED tests/db/test_rls.py::test_registration_flow_under_rls
+=== mutation M10 worker keeps INSERT on auth_sessions/devices/members: 1 failed, 75 passed, 1 warning in 6.20s
+    FAILED tests/db/test_rls.py::test_worker_cannot_mint_api_access
+copy removed; databases now: cardflow, postgres, template0, template1
+roles now: cardflow, cardflow_admin, cardflow_admin_views, cardflow_app, cardflow_purge, cardflow_worker

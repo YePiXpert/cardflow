@@ -1,0 +1,91 @@
+[project]
+name = "cardflow"
+version = "0.1.0"
+description = "CardFlow self-hosted server: FastAPI modular monolith, worker and CLI."
+requires-python = ">=3.13,<3.14"
+# Versions follow docs/20-architecture/architecture.md §11 (verified 2026-10-16).
+# Packages not listed there are pinned to the latest stable release on 2026-10-16;
+# see evidence/m0/T-002/versions.md for the full comparison.
+dependencies = [
+    "fastapi==0.143.2",
+    "uvicorn==0.54.0",
+    "pydantic==2.14.1",
+    "pydantic-settings==2.16.0",
+    "sqlalchemy==2.1.4",
+    "alembic==1.20.0",
+    "psycopg[binary]==3.3.6",
+    "ortools==9.15.6755",
+    "pyjwt==2.15.1",
+    "argon2-cffi==25.1.0",
+    "cryptography==50.0.2",
+    "pypdf==6.20.1",
+    "pdfplumber==0.11.10",
+    "apscheduler==3.11.3",
+    "httpx==0.28.1",
+    "jsonschema==4.26.0",
+    "python-multipart==0.0.32",
+]
+
+[project.scripts]
+cardflow = "cardflow.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest==9.1.1",
+    "hypothesis==6.170.0",
+    "ruff==0.17.1",
+    "pip-audit==2.10.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# Flat layout: the package lives in services/api/cardflow/ (no src/ directory).
+module-name = "cardflow"
+module-root = ""
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--import-mode=importlib", "--strict-markers", "--strict-config", "-ra"]
+xfail_strict = true
+# The `db` marker is registered in tests/conftest.py.
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "A",    # builtins shadowing
+    "C4",   # comprehensions
+    "DTZ",  # naive datetimes are forbidden
+    "T20",  # no print()
+    "PT",   # pytest style
+    "SIM",  # simplifications
+    "RET",  # return statements
+    "PTH",  # pathlib
+    "S",    # bandit security checks
+    "BLE",  # blind except
+    "ANN",  # complete type annotations
+    "TID",  # tidy imports
+    "RUF",  # ruff-specific
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests: plain asserts and throwaway secrets are expected.
+"tests/**" = ["S101", "S105", "S106"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+known-first-party = ["cardflow"]

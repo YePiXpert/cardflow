@@ -1,0 +1,208 @@
+# T-008 tests/jobs re-run at Alembic head 0002 for the 0002 round - 2026-10-17T08:16:18Z, working dir services/api, dev DB 127.0.0.1:18432
+# (the tests/jobs blocks of evidence/m0/T-008/commands.sh; CARDFLOW_TEST_MIGRATION_TARGET unset)
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest tests/jobs -v
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- /projects/cardflow/services/api/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /projects/cardflow/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1, platformdirs-4.13.3, hypothesis-6.170.0
+collecting ... collected 122 items
+
+tests/jobs/test_cli_worker.py::test_console_script_worker_stops_gracefully_on_sigterm PASSED [  0%]
+tests/jobs/test_cli_worker.py::test_console_script_worker_once_exits_0 PASSED [  1%]
+tests/jobs/test_cli_worker.py::test_sigterm_lets_the_running_job_finish PASSED [  2%]
+tests/jobs/test_cli_worker.py::test_sigterm_after_the_grace_period_releases_the_job PASSED [  3%]
+tests/jobs/test_cli_worker.py::test_second_signal_forces_the_stop PASSED [  4%]
+tests/jobs/test_cli_worker.py::test_launcher_once_runs_the_due_jobs PASSED [  4%]
+tests/jobs/test_cli_worker.py::test_worker_exits_1_when_the_database_is_unreachable PASSED [  5%]
+tests/jobs/test_concurrency.py::test_tc_db_10_concurrent_claimers_never_share_a_job PASSED [  6%]
+tests/jobs/test_concurrency.py::test_tc_db_10_concurrent_workers_run_each_job_exactly_once PASSED [  7%]
+tests/jobs/test_queue.py::test_enqueue_commits_together_with_the_business_write PASSED [  8%]
+tests/jobs/test_queue.py::test_enqueue_rolls_back_together_with_the_business_write PASSED [  9%]
+tests/jobs/test_queue.py::test_enqueue_inside_workspace_tx_rolls_back_on_error PASSED [  9%]
+tests/jobs/test_queue.py::test_enqueue_rejects_float_payload_and_writes_nothing PASSED [ 10%]
+tests/jobs/test_queue.py::test_enqueue_validates_kind_and_options PASSED [ 11%]
+tests/jobs/test_queue.py::test_enqueue_defaults_come_from_the_handler_spec PASSED [ 12%]
+tests/jobs/test_queue.py::test_get_job_view_is_scoped_to_the_workspace PASSED [ 13%]
+tests/jobs/test_queue.py::test_enqueue_unique_coalesces_pending_jobs PASSED [ 13%]
+tests/jobs/test_queue.py::test_claim_leases_the_job PASSED               [ 14%]
+tests/jobs/test_queue.py::test_claim_honours_run_after_order_and_kinds PASSED [ 15%]
+tests/jobs/test_queue.py::test_claim_respects_per_kind_slots PASSED      [ 16%]
+tests/jobs/test_queue.py::test_claim_skips_rows_locked_by_another_transaction PASSED [ 17%]
+tests/jobs/test_queue.py::test_lease_is_fenced_by_worker_and_attempt PASSED [ 18%]
+tests/jobs/test_queue.py::test_key_share_fence_blocks_takeover_but_not_renewal PASSED [ 18%]
+tests/jobs/test_queue.py::test_renewal_skips_rows_locked_for_update_and_reports_them_busy PASSED [ 19%]
+tests/jobs/test_queue.py::test_failures_back_off_increasingly_then_go_dead PASSED [ 20%]
+tests/jobs/test_queue.py::test_permanent_failure_ends_as_failed PASSED   [ 21%]
+tests/jobs/test_queue.py::test_release_returns_the_job_without_counting_the_attempt PASSED [ 22%]
+tests/jobs/test_queue.py::test_reclaim_requeues_expired_lease_and_counts_the_attempt PASSED [ 22%]
+tests/jobs/test_queue.py::test_reclaim_buries_job_whose_attempts_are_used_up PASSED [ 23%]
+tests/jobs/test_queue.py::test_concurrent_reclaimers_take_each_job_once PASSED [ 24%]
+tests/jobs/test_queue.py::test_heartbeat_upsert_purge_and_delete PASSED  [ 25%]
+tests/jobs/test_units.py::test_payload_accepts_integers_strings_booleans_null_lists_objects PASSED [ 26%]
+tests/jobs/test_units.py::test_payload_rejects_non_integer_numbers_and_names_the_path_only[12.5-$] PASSED [ 27%]
+tests/jobs/test_units.py::test_payload_rejects_non_integer_numbers_and_names_the_path_only[value1-$.amount] PASSED [ 27%]
+tests/jobs/test_units.py::test_payload_rejects_non_integer_numbers_and_names_the_path_only[value2-$.items[1].amount_minor] PASSED [ 28%]
+tests/jobs/test_units.py::test_payload_rejects_non_integer_numbers_and_names_the_path_only[value3-$[2]] PASSED [ 29%]
+tests/jobs/test_units.py::test_payload_rejects_non_integer_numbers_and_names_the_path_only[value4-$.x] PASSED [ 30%]
+tests/jobs/test_units.py::test_payload_rejects_non_integer_numbers_and_names_the_path_only[value5-$.rate] PASSED [ 31%]
+tests/jobs/test_units.py::test_payload_rejects_non_integer_numbers_and_names_the_path_only[value6-$.<key>] PASSED [ 31%]
+tests/jobs/test_units.py::test_payload_rejects_values_json_or_jsonb_cannot_hold[value0] PASSED [ 32%]
+tests/jobs/test_units.py::test_payload_rejects_values_json_or_jsonb_cannot_hold[value1] PASSED [ 33%]
+tests/jobs/test_units.py::test_payload_rejects_values_json_or_jsonb_cannot_hold[value2] PASSED [ 34%]
+tests/jobs/test_units.py::test_payload_rejects_values_json_or_jsonb_cannot_hold[value3] PASSED [ 35%]
+tests/jobs/test_units.py::test_payload_rejects_values_json_or_jsonb_cannot_hold[value4] PASSED [ 36%]
+tests/jobs/test_units.py::test_payload_rejects_values_json_or_jsonb_cannot_hold[value5] PASSED [ 36%]
+tests/jobs/test_units.py::test_payload_rejects_values_json_or_jsonb_cannot_hold[value6] PASSED [ 37%]
+tests/jobs/test_units.py::test_payload_rejects_values_json_or_jsonb_cannot_hold[value7] PASSED [ 38%]
+tests/jobs/test_units.py::test_payload_size_and_depth_are_bounded PASSED [ 39%]
+tests/jobs/test_units.py::test_lone_surrogate_is_rejected_not_crashing PASSED [ 40%]
+tests/jobs/test_units.py::test_transport_keeps_fractions_exact_and_rejects_nan PASSED [ 40%]
+tests/jobs/test_units.py::test_default_backoff_bands PASSED              [ 41%]
+tests/jobs/test_units.py::test_backoff_never_decreases_and_never_exceeds_the_cap PASSED [ 42%]
+tests/jobs/test_units.py::test_backoff_slow_growth_does_not_plateau_below_the_cap PASSED [ 43%]
+tests/jobs/test_units.py::test_backoff_boundary_policies_are_rejected PASSED [ 44%]
+tests/jobs/test_units.py::test_backoff_random_draws_stay_in_band PASSED  [ 45%]
+tests/jobs/test_units.py::test_backoff_rejects_policies_that_could_decrease_or_overflow[kwargs0] PASSED [ 45%]
+tests/jobs/test_units.py::test_backoff_rejects_policies_that_could_decrease_or_overflow[kwargs1] PASSED [ 46%]
+tests/jobs/test_units.py::test_backoff_rejects_policies_that_could_decrease_or_overflow[kwargs2] PASSED [ 47%]
+tests/jobs/test_units.py::test_backoff_rejects_policies_that_could_decrease_or_overflow[kwargs3] PASSED [ 48%]
+tests/jobs/test_units.py::test_backoff_rejects_policies_that_could_decrease_or_overflow[kwargs4] PASSED [ 49%]
+tests/jobs/test_units.py::test_backoff_rejects_policies_that_could_decrease_or_overflow[kwargs5] PASSED [ 50%]
+tests/jobs/test_units.py::test_backoff_rejects_policies_that_could_decrease_or_overflow[kwargs6] PASSED [ 50%]
+tests/jobs/test_units.py::test_backoff_huge_factor_saturates_at_cap PASSED [ 51%]
+tests/jobs/test_units.py::test_error_text_keeps_codes_and_type_names_only PASSED [ 52%]
+tests/jobs/test_units.py::test_job_error_rejects_codes_outside_the_pattern[timeout] PASSED [ 53%]
+tests/jobs/test_units.py::test_job_error_rejects_codes_outside_the_pattern[T] PASSED [ 54%]
+tests/jobs/test_units.py::test_job_error_rejects_codes_outside_the_pattern[E12345] PASSED [ 54%]
+tests/jobs/test_units.py::test_job_error_rejects_codes_outside_the_pattern[HAS SPACE] PASSED [ 55%]
+tests/jobs/test_units.py::test_job_error_rejects_codes_outside_the_pattern[] PASSED [ 56%]
+tests/jobs/test_units.py::test_job_error_rejects_codes_outside_the_pattern[XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX] PASSED [ 57%]
+tests/jobs/test_units.py::test_parse_error_text_accepts_only_canonical_texts PASSED [ 58%]
+tests/jobs/test_units.py::test_queue_error_codes PASSED                  [ 59%]
+tests/jobs/test_units.py::test_valid_kinds[plan.solve] PASSED            [ 59%]
+tests/jobs/test_units.py::test_valid_kinds[imports.parse] PASSED         [ 60%]
+tests/jobs/test_units.py::test_valid_kinds[noop] PASSED                  [ 61%]
+tests/jobs/test_units.py::test_valid_kinds[a.b_c.d9] PASSED              [ 62%]
+tests/jobs/test_units.py::test_invalid_kinds[] PASSED                    [ 63%]
+tests/jobs/test_units.py::test_invalid_kinds[Plan.solve] PASSED          [ 63%]
+tests/jobs/test_units.py::test_invalid_kinds[plan..solve] PASSED         [ 64%]
+tests/jobs/test_units.py::test_invalid_kinds[plan.] PASSED               [ 65%]
+tests/jobs/test_units.py::test_invalid_kinds[1plan] PASSED               [ 66%]
+tests/jobs/test_units.py::test_invalid_kinds[a b] PASSED                 [ 67%]
+tests/jobs/test_units.py::test_invalid_kinds[3] PASSED                   [ 68%]
+tests/jobs/test_units.py::test_registry_rejects_duplicates_bad_limits_and_unimportable_subprocess_handlers PASSED [ 68%]
+tests/jobs/test_units.py::test_registered_handler_is_returned_unchanged PASSED [ 69%]
+tests/jobs/test_units.py::test_production_registry_holds_no_test_or_demo_kinds PASSED [ 70%]
+tests/jobs/test_units.py::test_signal_handler_takes_no_lock PASSED       [ 71%]
+tests/jobs/test_worker.py::test_inline_job_runs_once_and_stores_result PASSED [ 72%]
+tests/jobs/test_worker.py::test_inline_exception_message_never_reaches_last_error_or_logs PASSED [ 72%]
+tests/jobs/test_worker.py::test_retries_back_off_increasingly_then_dead PASSED [ 73%]
+tests/jobs/test_worker.py::test_failed_attempts_then_success_keeps_the_last_error PASSED [ 74%]
+tests/jobs/test_worker.py::test_job_error_codes_permanent_and_retryable PASSED [ 75%]
+tests/jobs/test_worker.py::test_inline_result_with_fraction_is_rejected PASSED [ 76%]
+tests/jobs/test_worker.py::test_inline_handler_writes_in_its_workspace_transaction PASSED [ 77%]
+tests/jobs/test_worker.py::test_stale_attempt_cannot_write_after_losing_its_lease PASSED [ 77%]
+tests/jobs/test_worker.py::test_heartbeat_notices_a_lost_lease_and_cancels_the_attempt PASSED [ 78%]
+tests/jobs/test_worker.py::test_subprocess_job_runs_in_a_separate_process PASSED [ 79%]
+tests/jobs/test_worker.py::test_subprocess_hard_timeout_kills_child_and_worker_keeps_going PASSED [ 80%]
+tests/jobs/test_worker.py::test_subprocess_ignoring_sigterm_is_killed PASSED [ 81%]
+tests/jobs/test_worker.py::test_subprocess_crash_is_a_failed_attempt PASSED [ 81%]
+tests/jobs/test_worker.py::test_subprocess_exception_message_stays_out_of_last_error_and_logs PASSED [ 82%]
+tests/jobs/test_worker.py::test_subprocess_that_cannot_start_is_a_crashed_attempt PASSED [ 83%]
+tests/jobs/test_worker.py::test_subprocess_permanent_job_error PASSED    [ 84%]
+tests/jobs/test_worker.py::test_subprocess_output_fractions_arrive_as_decimal_and_must_not_be_stored PASSED [ 85%]
+tests/jobs/test_worker.py::test_prepare_and_persist_hooks_run_in_the_worker PASSED [ 86%]
+tests/jobs/test_worker.py::test_persist_failure_rolls_back_the_business_write PASSED [ 86%]
+tests/jobs/test_worker.py::test_inline_timeout_cooperative_handler PASSED [ 87%]
+tests/jobs/test_worker.py::test_inline_timeout_stuck_handler_result_is_discarded PASSED [ 88%]
+tests/jobs/test_worker.py::test_worker_concurrency_and_per_kind_limit PASSED [ 89%]
+tests/jobs/test_worker.py::test_lease_is_renewed_while_a_long_job_runs PASSED [ 90%]
+tests/jobs/test_worker.py::test_job_of_a_crashed_worker_is_reclaimed_and_run PASSED [ 90%]
+tests/jobs/test_worker.py::test_claim_failures_are_logged_and_retried PASSED [ 91%]
+tests/jobs/test_worker.py::test_lease_that_cannot_be_renewed_is_given_up PASSED [ 92%]
+tests/jobs/test_worker.py::test_worker_heartbeat_row_tracks_running_jobs PASSED [ 93%]
+tests/jobs/test_worker.py::test_stop_waits_for_running_jobs_and_claims_nothing_new PASSED [ 94%]
+tests/jobs/test_worker.py::test_stop_after_grace_releases_jobs_without_counting_the_attempt PASSED [ 95%]
+tests/jobs/test_worker.py::test_second_stop_request_skips_the_grace_period PASSED [ 95%]
+tests/jobs/test_worker.py::test_once_runs_one_round_and_exits PASSED     [ 96%]
+tests/jobs/test_worker.py::test_periodic_enqueue_task_coalesces_across_workers PASSED [ 97%]
+tests/jobs/test_worker.py::test_system_task_purges_stale_heartbeats PASSED [ 98%]
+tests/jobs/test_worker.py::test_worker_refuses_to_start_without_database PASSED [ 99%]
+tests/jobs/test_worker.py::test_worker_refuses_to_start_on_an_unmigrated_database PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 122 passed, 1 warning in 41.75s ========================
+exit=0
+
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest tests/jobs/test_concurrency.py -v -s
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- /projects/cardflow/services/api/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /projects/cardflow/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1, platformdirs-4.13.3, hypothesis-6.170.0
+collecting ... collected 2 items
+
+tests/jobs/test_concurrency.py::test_tc_db_10_concurrent_claimers_never_share_a_job 
+[TC-DB-10 claimers] jobs=400 claimers=8 claims=400 distinct=400 duplicates=0 elapsed_s=0.29
+  claims per claimer: {'claimer-0': 52, 'claimer-1': 49, 'claimer-2': 46, 'claimer-3': 53, 'claimer-4': 48, 'claimer-5': 51, 'claimer-6': 49, 'claimer-7': 52}
+  empty claim rounds per claimer: {'claimer-0': 3, 'claimer-1': 3, 'claimer-2': 3, 'claimer-3': 3, 'claimer-4': 3, 'claimer-5': 3, 'claimer-6': 3, 'claimer-7': 3}
+  final statuses: {'succeeded': 400}; attempts histogram: {1: 400}
+PASSED
+tests/jobs/test_concurrency.py::test_tc_db_10_concurrent_workers_run_each_job_exactly_once 
+[TC-DB-10 workers] workers=3x4 threads jobs=156 (inline=150, subprocess=6) claims=156 per_worker=[52, 48, 56] inline executions: max=1 min=1 duplicates=0 attempts histogram={1: 156} elapsed_s=0.53
+PASSED
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 2 passed, 1 warning in 1.48s =========================
+exit=0
+
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest tests/jobs -v -s -k "timeout or sigterm or crash or cannot_start or grace or second"
+============================= test session starts ==============================
+platform linux -- Python 3.13.5, pytest-9.1.1, pluggy-1.7.0 -- /projects/cardflow/services/api/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /projects/cardflow/services/api
+configfile: pyproject.toml
+plugins: anyio-4.15.1, platformdirs-4.13.3, hypothesis-6.170.0
+collecting ... collected 122 items / 107 deselected / 15 selected
+
+tests/jobs/test_cli_worker.py::test_console_script_worker_stops_gracefully_on_sigterm PASSED
+tests/jobs/test_cli_worker.py::test_sigterm_lets_the_running_job_finish PASSED
+tests/jobs/test_cli_worker.py::test_sigterm_after_the_grace_period_releases_the_job PASSED
+tests/jobs/test_cli_worker.py::test_second_signal_forces_the_stop PASSED
+tests/jobs/test_units.py::test_lone_surrogate_is_rejected_not_crashing PASSED
+tests/jobs/test_units.py::test_job_error_rejects_codes_outside_the_pattern[timeout] PASSED
+tests/jobs/test_worker.py::test_subprocess_hard_timeout_kills_child_and_worker_keeps_going 
+[timeout] job=01a148ef-b82e-7e03-9693-e5e1dfcc4c22 timeout_s=2 child_pid=817021 time_to_dead_s=2.04 child_alive_after=False last_error=TIMEOUT status=dead following_jobs=['succeeded', 'succeeded']
+PASSED
+tests/jobs/test_worker.py::test_subprocess_ignoring_sigterm_is_killed 
+[timeout] child_pid=817039 ignored SIGTERM: killed with SIGKILL, last_error=TIMEOUT status=dead
+PASSED
+tests/jobs/test_worker.py::test_subprocess_crash_is_a_failed_attempt PASSED
+tests/jobs/test_worker.py::test_subprocess_that_cannot_start_is_a_crashed_attempt PASSED
+tests/jobs/test_worker.py::test_inline_timeout_cooperative_handler PASSED
+tests/jobs/test_worker.py::test_inline_timeout_stuck_handler_result_is_discarded PASSED
+tests/jobs/test_worker.py::test_job_of_a_crashed_worker_is_reclaimed_and_run PASSED
+tests/jobs/test_worker.py::test_stop_after_grace_releases_jobs_without_counting_the_attempt PASSED
+tests/jobs/test_worker.py::test_second_stop_request_skips_the_grace_period PASSED
+
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================ 15 passed, 107 deselected, 1 warning in 19.55s ================
+exit=0

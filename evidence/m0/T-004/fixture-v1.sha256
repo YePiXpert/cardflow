@@ -1,0 +1,32 @@
+# T-004 derived v1 fixture (2026-10-17T02:31:07Z), cwd = repository root
+$ sha256sum packages/rules-protocol/fixtures/regression_2026-10-16_10000.json poc/engine_reference/fixtures/regression_2026-10-16_10000.json packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e  packages/rules-protocol/fixtures/regression_2026-10-16_10000.json
+d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e  poc/engine_reference/fixtures/regression_2026-10-16_10000.json
+86c1ae85fd972d4fdf61e317dcbe85e7a3095b39c13c48648c0725277bbc7a6c  packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+# hand-written fixture: expected d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e (evidence/m0/T-003/fixture.sha256) -> UNCHANGED
+$ stat -c "%s bytes  %n" <the three files>
+3445 bytes  packages/rules-protocol/fixtures/regression_2026-10-16_10000.json
+3445 bytes  poc/engine_reference/fixtures/regression_2026-10-16_10000.json
+12977 bytes  packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+
+# recorded provenance inside the v1 file
+{"converter": "runner_py/convert_legacy_fixture.py", "path": "fixtures/regression_2026-10-16_10000.json", "sha256": "d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e"}
+
+# regeneration check (converter --check: regenerate in memory, compare bytes)
+$ uv run --project services/api python packages/rules-protocol/runner_py/convert_legacy_fixture.py packages/rules-protocol/fixtures/regression_2026-10-16_10000.json --check
+/projects/cardflow/packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json: regenerated output is identical (12977 bytes)
+exit=0
+
+# independent regeneration into /tmp, then cmp + sha256
+$ uv run --project services/api python packages/rules-protocol/runner_py/convert_legacy_fixture.py packages/rules-protocol/fixtures/regression_2026-10-16_10000.json -o /tmp/t004/regen.v1.json
+wrote /tmp/t004/regen.v1.json (12977 bytes)
+exit=0
+$ cmp /tmp/t004/regen.v1.json packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json && echo byte-identical
+byte-identical
+86c1ae85fd972d4fdf61e317dcbe85e7a3095b39c13c48648c0725277bbc7a6c  /tmp/t004/regen.v1.json
+
+# protocol_input_hash of the v1 PlanInput (pinned in tests/protocol/test_adapter.py and the README for the Dart port)
+ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+
+# tests: tests/protocol/test_fixture_v1.py (byte-identical regeneration, sha256 pinned, schema-valid, no float, two-path cross-check, converter error cases)
+16 passed, 1 warning in 0.31s

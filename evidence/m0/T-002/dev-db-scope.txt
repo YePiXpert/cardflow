@@ -1,0 +1,53 @@
+# dev-db.sh down/reset 作用范围核验：用 docker compose --dry-run（不实际执行），开发库保持运行（2026-10-16T15:10:12Z）
+$ docker compose -p cardflow-dev -f deploy/compose.dev.yaml config --quiet && echo config-ok
+config-ok
+$ docker compose --dry-run -p cardflow-dev -f deploy/compose.dev.yaml down            # = tools/dev-db.sh down
+ Container cardflow-dev-db-1 Stopping 
+ Container cardflow-dev-db-1 Stopped 
+ Container cardflow-dev-db-1 Removing 
+ Container cardflow-dev-db-1 Removed 
+ Network cardflow-dev_default Removing 
+ Network cardflow-dev_default Resource is still in use 
+$ docker compose --dry-run -p cardflow-dev -f deploy/compose.dev.yaml down --volumes   # = first step of tools/dev-db.sh reset
+ Container cardflow-dev-db-1 Stopping 
+ Container cardflow-dev-db-1 Stopped 
+ Container cardflow-dev-db-1 Removing 
+ Container cardflow-dev-db-1 Removed 
+ Volume cardflow-dev_pgdata Removing 
+ Volume cardflow-dev_pgdata Removed 
+ Network cardflow-dev_default Removing 
+ Network cardflow-dev_default Resource is still in use 
+(dry-run note: 'Resource is still in use' appears because the container is not really removed)
+$ tools/dev-db.sh up   # idempotent while running
+ Container cardflow-dev-db-1 Running 
+ Container cardflow-dev-db-1 Waiting 
+ Container cardflow-dev-db-1 Healthy 
+dev-db: ready on 127.0.0.1:18432 (compose project cardflow-dev)
+exit=0
+$ tools/dev-db.sh status
+NAME                IMAGE                  COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+cardflow-dev-db-1   postgres:18.6-trixie   "docker-entrypoint.s…"   db        10 minutes ago   Up 10 minutes (healthy)   127.0.0.1:18432->5432/tcp
+$ tools/dev-db.sh   # no argument -> usage, exit 2
+Manage the CardFlow development PostgreSQL. Every command is scoped to the compose
+project "cardflow-dev" (deploy/compose.dev.yaml); nothing else on the host is touched.
+
+  tools/dev-db.sh up      start and wait until healthy (first run generates
+                          deploy/secrets.dev/db_password with mode 0600)
+  tools/dev-db.sh down    stop and remove the container; the data volume is KEPT
+  tools/dev-db.sh reset   remove the container AND the cardflow-dev data volume, start fresh
+  tools/dev-db.sh psql    run psql inside the container (extra arguments go to psql)
+  tools/dev-db.sh url     print the superuser SQLAlchemy URL (includes the password),
+                          e.g. CARDFLOW_TEST_DATABASE_URL="$(tools/dev-db.sh url)"
+  tools/dev-db.sh status  show the container state
+exit=2
+$ docker volume ls --filter label=com.docker.compose.project=cardflow-dev
+DRIVER    VOLUME NAME
+local     cardflow-dev_pgdata
+$ docker network ls --filter label=com.docker.compose.project=cardflow-dev
+NETWORK ID     NAME                   DRIVER    SCOPE
+45fe49a83ea5   cardflow-dev_default   bridge    local
+$ docker compose ls -a   # other projects untouched
+NAME                STATUS              CONFIG FILES
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]
+cardflow-dev        running(1)          /projects/cardflow/deploy/compose.dev.yaml
+[redacted: 非本项目容器/端口，清单保存在服务器本地，不入库]

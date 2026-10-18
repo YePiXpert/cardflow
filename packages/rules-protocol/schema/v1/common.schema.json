@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/common.schema.json",
+  "title": "rules-protocol v1: shared definitions",
+  "description": "Value types shared by every v1 schema. Money is ALWAYS an integer number of minor units of the document currency (ADR-008: CNY fen, JPY yen, KWD fils); rates and scale factors are decimal strings. No money or rate field is a JSON floating-point number. INPUT values are limited to the range the engine's CP-SAT model can represent (README: supported numeric range): money |v| <= 10^13 minor units, rates 0..1 with at most 5 decimals, scale factors 0..10, dates 1970-01-01..2999-12-31. RESULT money (sums such as balances) uses the full int64 range.",
+  "$defs": {
+    "ProtocolVersion": {
+      "description": "Protocol version of the document. Validators reject any other value.",
+      "type": "string",
+      "const": "1"
+    },
+    "MinorAmount": {
+      "description": "Input money: signed integer minor units of the document currency, |v| <= 10^13 (the engine's variable bound BIG). An integer TOKEN: 1000000.0 is a float even where standard JSON Schema calls it an integer; every v1 validator redefines 'integer' accordingly (README).",
+      "type": "integer",
+      "minimum": -10000000000000,
+      "maximum": 10000000000000
+    },
+    "NonNegativeMinorAmount": {
+      "description": "Input money: integer minor units, 0 <= v <= 10^13.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000000000000
+    },
+    "PositiveMinorAmount": {
+      "description": "Input money: integer minor units, 1 <= v <= 10^13.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10000000000000
+    },
+    "ResultMinorAmount": {
+      "description": "Result money (may be a sum of input amounts, e.g. a balance): signed integer minor units within int64.",
+      "type": "integer",
+      "minimum": -9223372036854775808,
+      "maximum": 9223372036854775807
+    },
+    "NonNegativeResultMinorAmount": {
+      "description": "Result money: integer minor units >= 0 within int64.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9223372036854775807
+    },
+    "PositiveResultMinorAmount": {
+      "description": "Result money: integer minor units >= 1 within int64.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9223372036854775807
+    },
+    "Int64": {
+      "description": "Integer that is not money (e.g. an objective value), within int64.",
+      "type": "integer",
+      "minimum": -9223372036854775808,
+      "maximum": 9223372036854775807
+    },
+    "Count": {
+      "description": "Non-negative integer count, within int32.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "DayCount": {
+      "description": "Number of days, 0..366.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 366
+    },
+    "Currency": {
+      "description": "ISO 4217 alphabetic code.",
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "Date": {
+      "description": "Calendar date YYYY-MM-DD (business date in the account's time zone), years 1970..2999: the engine adds up to about two years to dates, far from the calendar's limits. The pattern bounds month and day; the 'date' format (checked by the runner) rejects impossible days such as 2026-02-30.",
+      "type": "string",
+      "format": "date",
+      "pattern": "^(19[7-9][0-9]|2[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "ResultDate": {
+      "description": "Date in a result: YYYY-MM-DD without the input year limit (derived dates such as due dates may lie up to about two years after the latest input date).",
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "Timestamp": {
+      "description": "RFC 3339 timestamp with an explicit offset (Z or +hh:mm/-hh:mm up to 23:59) and at most 6 fractional digits, years 1970..2999; hours 00-23, minutes and seconds 00-59 (no leap second). Upper-case T and Z only. The pattern is normative; the 'date-time' format must be checked as well (impossible days such as 2026-02-30): the Python runner registers a standard-library check because jsonschema skips 'date-time' without rfc3339-validator.",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^(19[7-9][0-9]|2[0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]{1,6})?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9])$"
+    },
+    "Id": {
+      "description": "Identifier (UUIDs and short fixture ids alike): ASCII letters, digits and . _ : - ; starts with a letter or digit; at most 128 characters.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "EventId": {
+      "description": "Cash event identifier. The prefix 'plan_repay_' is reserved for the repayment events the engine adds for a plan.",
+      "allOf": [
+        { "$ref": "#/$defs/Id" },
+        { "not": { "pattern": "^plan_repay_" } }
+      ]
+    },
+    "Rate": {
+      "description": "Rate as a decimal string in CANONICAL form, 0..1 with at most 5 fractional digits and no trailing zeros ('0.006', '0', '1'; never '0.00600' or '1.0'); never a JSON number. One value has one text, so equal rates give equal input hashes; a NUMERIC read from a database is written canonically before it enters a document. 5 digits is the most the CP-SAT fee/benefit constraints can carry next to 10^13 money (README: supported numeric range).",
+      "type": "string",
+      "pattern": "^(0|1|0\\.[0-9]{0,4}[1-9])$"
+    },
+    "ScaleFactor": {
+      "description": "Scenario scale factor as a decimal string in CANONICAL form, 0..10 with at most 10 fractional digits and no trailing zeros ('1', '0.5', '10'; never '1.0'); never a JSON number.",
+      "type": "string",
+      "pattern": "^(10|[0-9]|[0-9]\\.[0-9]{0,9}[1-9])$"
+    },
+    "SignedDecimalString": {
+      "description": "Decimal written as a string (derived quantities such as a weighted buffer in days).",
+      "type": "string",
+      "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+    },
+    "Sha256Hex": {
+      "description": "SHA-256 digest, 64 lowercase hex digits.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Profile": {
+      "description": "Objective profile (engine-spec §4).",
+      "enum": ["cash_safety", "verified_benefit", "fewer_cards"]
+    },
+    "Text": {
+      "description": "Free descriptive text; never interpreted by the engine. maxLength counts Unicode code points (an emoji is ONE; Dart: runes.length, not String.length), as JSON Schema does.",
+      "type": "string",
+      "maxLength": 1000
+    }
+  }
+}

@@ -1,0 +1,35 @@
+# T-005 0002-privileges.txt - 2026-10-17T08:18:06Z: scratch database at head + temporary non-superuser LOGIN
+# role (random name and password, dropped at the end); each attempt grants exactly the listed
+# privileges, then runs one write as that role in its own transaction.
+## table privileges for INSERT INTO repayment_allocations
+1) INSERT on allocations, SELECT on repayments; nothing on repayment_allocation_totals
+    -> 42501: permission denied for table repayment_allocation_totals
+2) + SELECT, INSERT, UPDATE on repayment_allocation_totals; no UPDATE on repayments
+    -> 42501: permission denied for table repayments
+3) + UPDATE on repayments (row lock SELECT ... FOR NO KEY UPDATE in the check)
+    -> OK (committed)
+4) as 3) with column-level UPDATE (status) on repayments only
+    -> OK (committed)
+5) as 3) but INSERT, UPDATE on repayment_allocation_totals without SELECT
+    -> 42501: permission denied for table repayment_allocation_totals
+## EXECUTE privileges (role has SELECT, INSERT, UPDATE on every table)
+A) EXECUTE on every function (default PUBLIC grant)
+    -> OK (committed)
+B) no EXECUTE on the trigger function maintain_repayment_allocation_totals()
+    -> OK (committed)
+C) no EXECUTE on add_to_repayment_allocation_total(uuid, uuid, bigint) (called by B)
+    -> 42501: permission denied for function add_to_repayment_allocation_total
+D) no EXECUTE on check_repayment_allocations(uuid) (called by the deferred check)
+    -> 42501: permission denied for function check_repayment_allocations
+E) no EXECUTE on looks_like_pan(text) (CHECK on credit_accounts.holder_alias)
+    -> 42501: permission denied for function looks_like_pan
+F) no EXECUTE on luhn_valid(text) (called by looks_like_pan for a 16-digit run)
+    -> 42501: permission denied for function luhn_valid
+G) EXECUTE everywhere, Luhn-valid 16-digit run
+    -> 23514: new row for relation "credit_accounts" violates check constraint "ck_credit_accounts_holder_alias_not_pan"
+H) EXECUTE everywhere: statement version + its line in one transaction
+    -> OK (committed)
+I) no EXECUTE on inserted_by_current_transaction(xid) (called by the line trigger)
+    -> 42501: permission denied for function inserted_by_current_transaction
+scratch database and role dropped
+exit=0

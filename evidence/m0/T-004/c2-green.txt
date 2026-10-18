@@ -1,0 +1,460 @@
+# T-004c green run: tests/engine + tests/protocol after the fixes -- 2026-10-17T23:30:48Z
+# engine files (sha256):
+d7aa3fc2471b8bc1a5d33de00eb5acad877f759f95d22d267a52c60ee1cae473  cardflow/planner/engine/allocation.py
+79b6779e47ba29a9c7842ab9fd078a1040317cc134e2efa3887b7b0cf76ad8dc  cardflow/planner/engine/billing.py
+88d06a07a71cd9ab810d6078c83ca25d456bb6245084deab5ef4c84ba6316433  cardflow/planner/engine/cash.py
+0872c2f6182febe3fe125b5d624063dae92ae233f7279acd15d1e152f77266f5  cardflow/planner/engine/fixture.py
+ff16e78c73505fb3207bb7a17b4b4b590aabe65ced5252205e09a6c92086c7f9  cardflow/planner/engine/__init__.py
+832d979e120f8c34c6617f329474fb113d908a6a0ed554d22da3309aea7ba7f5  cardflow/planner/engine/money.py
+a16a248b1f484784de8479c46fbe17cba9aec4bceeb0cb66074c8eb3577096a0  cardflow/planner/engine/plan.py
+ba1ef45e6a42b5262bdd8dac111e2013bc3567b275b876922772c0e4e50e400a  cardflow/planner/engine/protocol.py
+cb6156d9ee239b042032f62d82763d2f30965bdba7b18618b8308b0addd2634c  cardflow/planner/engine/sample.py
+635716da55b725856ff3d18c77d507aa7e9feda1930b33f2f9049c3422bab777  cardflow/planner/engine/verifier.py
+$ uv run pytest -p no:cacheprovider -q -rA -s tests/engine tests/protocol
+.........................................................
+differential summary: {"seeds": [20261017, 20261018, 20261019], "instances_per_seed": 400, "fuzz": false, "elapsed_s": 21.7, "stats": {"C11 random allocations": 1097, "C12 workers 1 vs 8": 600, "C13 sensitivity": 177, "C7 optimality + canonical tie-break": 429, "actionable": 429, "evaluated": 1091, "infeasible (proved)": 156, "no eligible card": 292, "solver INFEASIBLE": 156, "solver NOT_RUN": 615, "solver OPTIMAL": 429, "status BASELINE_SHORTFALL": 214, "status CONDITIONALLY_FEASIBLE": 51, "status FEASIBLE_ROBUST": 378, "status INFEASIBLE": 448, "status NEEDS_DATA": 109}}
+.........................................................................................................................................................................................................................................................................................................................................................................................
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/engine/test_billing.py::test_fixed_day_same_month_and_next_month
+PASSED tests/engine/test_billing.py::test_statement_day_inclusive_toggle
+PASSED tests/engine/test_billing.py::test_month_end_clamp_and_leap_year
+PASSED tests/engine/test_billing.py::test_cross_year
+PASSED tests/engine/test_billing.py::test_due_before_statement_is_model_invalid
+PASSED tests/engine/test_billing.py::test_posting_uncertainty_near_statement_day_yields_two_cycles_earliest_first
+PASSED tests/engine/test_billing.py::test_business_day_due_and_rollover_require_calendar
+PASSED tests/engine/test_billing.py::test_rule_versions_and_issued_statement_precedence
+PASSED tests/engine/test_billing_clamp.py::test_posting_on_a_clamped_statement_day_respects_the_inclusive_toggle
+PASSED tests/engine/test_billing_clamp.py::test_exclusive_roll_lands_on_the_next_months_clamped_day
+PASSED tests/engine/test_billing_clamp.py::test_due_date_follows_the_rolled_statement_date
+PASSED tests/engine/test_cash.py::test_same_day_event_not_in_snapshot_is_applied
+PASSED tests/engine/test_cash.py::test_same_day_event_marked_included_is_skipped
+PASSED tests/engine/test_cash.py::test_conservative_same_day_order_captures_intraday_low
+PASSED tests/engine/test_cash.py::test_timestamp_order_when_all_events_timed
+PASSED tests/engine/test_cash.py::test_expected_income_excluded_in_confirmed_scenario_and_delay_scale_in_stress
+PASSED tests/engine/test_cash.py::test_evaluate_reports_every_breach_and_both_gaps
+PASSED tests/engine/test_cash.py::test_accounts_are_isolated
+PASSED tests/engine/test_cash.py::test_snapshot_below_reserve_is_a_baseline_breach_even_without_events
+PASSED tests/engine/test_cash.py::test_inflow_only_day_does_not_add_breach_entry_but_min_and_end_are_visible
+PASSED tests/engine/test_dependency_boundary.py::test_scan_covers_the_engine_package
+PASSED tests/engine/test_dependency_boundary.py::test_engine_imports_only_stdlib_ortools_and_itself
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[import fastapi]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[from starlette.requests import Request]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[from pydantic import BaseModel]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[import sqlalchemy.orm]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[from alembic import op]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[import psycopg]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[from cardflow.db import create_engine]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[from cardflow.settings import Settings]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[from cardflow import planner]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[import cardflow.planner.service]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[import numpy]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[from .money import fmt]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[def f():\n    from sqlalchemy import text\n]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[import importlib\nimportlib.import_module('fastapi')]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_rejects[__import__('sqlalchemy')]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_accepts[from __future__ import annotations]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_accepts[import json\nfrom datetime import date\nfrom decimal import Decimal]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_accepts[import ortools\nfrom ortools.sat.python import cp_model]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_accepts[from cardflow.planner.engine import MODEL_VERSION]
+PASSED tests/engine/test_dependency_boundary.py::test_guard_accepts[from cardflow.planner.engine.money import fmt]
+PASSED tests/engine/test_dependency_boundary.py::test_importing_the_engine_loads_no_forbidden_module
+PASSED tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[cash_safety-8]
+PASSED tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[cash_safety-1]
+PASSED tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[verified_benefit-8]
+PASSED tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[verified_benefit-1]
+PASSED tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[fewer_cards-8]
+PASSED tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[fewer_cards-1]
+PASSED tests/engine/test_determinism.py::test_tied_optima_give_one_allocation_for_any_workers_r3e_06[cash_safety]
+PASSED tests/engine/test_determinism.py::test_tied_optima_give_one_allocation_for_any_workers_r3e_06[fewer_cards]
+PASSED tests/engine/test_determinism.py::test_identical_cards_fill_in_input_order_r3e_06[cash_safety-2-5000-1000-expected0]
+PASSED tests/engine/test_determinism.py::test_identical_cards_fill_in_input_order_r3e_06[cash_safety-3-10000-15000-expected1]
+PASSED tests/engine/test_determinism.py::test_identical_cards_fill_in_input_order_r3e_06[cash_safety-4-10000-30000-expected2]
+PASSED tests/engine/test_determinism.py::test_identical_cards_fill_in_input_order_r3e_06[fewer_cards-2-5000-1000-expected0]
+PASSED tests/engine/test_determinism.py::test_identical_cards_fill_in_input_order_r3e_06[fewer_cards-3-10000-15000-expected1]
+PASSED tests/engine/test_determinism.py::test_identical_cards_fill_in_input_order_r3e_06[fewer_cards-4-10000-30000-expected2]
+PASSED tests/engine/test_differential.py::test_engine_matches_the_independent_reference_r3e_06_r3e_16
+PASSED tests/engine/test_differential.py::test_review_nondeterministic_sensitivity_is_reproducible_r3e_06[105-10]
+PASSED tests/engine/test_differential.py::test_review_nondeterministic_sensitivity_is_reproducible_r3e_06[203-200]
+PASSED tests/engine/test_production_fixes.py::test_verifier_reports_unknown_card_instead_of_raising
+PASSED tests/engine/test_production_fixes.py::test_verifier_rejects_an_allocation_made_only_of_unknown_cards
+PASSED tests/engine/test_production_fixes.py::test_plan_records_the_hash_of_the_callers_input_r3e_15
+PASSED tests/engine/test_production_fixes.py::test_plan_uses_a_caller_supplied_input_hash_verbatim
+PASSED tests/engine/test_production_fixes.py::test_plan_passes_workers_and_seed_to_every_solver_call
+PASSED tests/engine/test_production_fixes.py::test_plan_defaults_to_eight_workers_and_a_fixed_seed
+PASSED tests/engine/test_production_fixes.py::test_model_version_is_a_release_version_recorded_on_every_run
+PASSED tests/engine/test_production_fixes.py::test_plan_and_its_solver_record_share_one_run_id
+PASSED tests/engine/test_production_fixes.py::test_declared_defaults_match_their_annotations
+PASSED tests/engine/test_production_fixes.py::test_low_series_by_day_annotation_admits_the_values_it_stores
+PASSED tests/engine/test_properties.py::test_more_confirmed_cash_never_hurts
+PASSED tests/engine/test_properties.py::test_known_outflow_never_raises_cash
+PASSED tests/engine/test_properties.py::test_event_order_invariance
+PASSED tests/engine/test_properties.py::test_solver_conservation_bounds_and_card_order
+PASSED tests/engine/test_properties.py::test_credit_limit_is_never_cash
+PASSED tests/engine/test_properties.py::test_installment_split_conserves_principal
+PASSED tests/engine/test_properties.py::test_minor_unit_roundtrip
+PASSED tests/engine/test_regression_sample.py::test_cycles_match_acceptance
+PASSED tests/engine/test_regression_sample.py::test_plan_A8000_C2000_baseline_min_cash_and_buffer
+PASSED tests/engine/test_regression_sample.py::test_plan_B_alone_reports_every_breach_not_only_the_first
+PASSED tests/engine/test_regression_sample.py::test_income_delay_stress_on_A_C_distinguishes_zero_and_reserve_gap
+PASSED tests/engine/test_regression_sample.py::test_confirmed_scenario_is_baseline_shortfall_before_any_new_spend
+PASSED tests/engine/test_regression_sample.py::test_cash_safety_profile_returns_A8000_C2000_optimal
+PASSED tests/engine/test_regression_sample.py::test_other_profiles_also_land_in_the_A_C_family_and_verify
+PASSED tests/engine/test_regression_sample.py::test_full_plan_is_conditionally_feasible_with_sensitivity_and_rejections
+PASSED tests/engine/test_regression_sample.py::test_stress_as_decision_scenario_is_infeasible_with_explanations
+PASSED tests/engine/test_regression_sample.py::test_card_input_order_does_not_change_result
+PASSED tests/engine/test_regression_sample.py::test_no_split_is_infeasible_and_explained
+PASSED tests/engine/test_regression_sample.py::test_exact_to_the_fen
+PASSED tests/engine/test_regression_sample.py::test_min_split_constraint
+PASSED tests/engine/test_regression_sample.py::test_stale_snapshot_is_needs_data
+PASSED tests/engine/test_regression_sample.py::test_shared_pool_constraint
+PASSED tests/engine/test_regression_sample.py::test_zero_time_limit_never_claims_infeasible
+PASSED tests/engine/test_review_wave3_fixes.py::test_model_version_is_1_1_0
+PASSED tests/engine/test_review_wave3_fixes.py::test_rule_version_ending_soon_keeps_the_plan_r3e_01[baseline]
+PASSED tests/engine/test_review_wave3_fixes.py::test_rule_version_ending_soon_keeps_the_plan_r3e_01[stress_income_delay]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_failing_sensitivity_item_is_marked_unavailable_r3e_01
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_verifier_rejected_plan_is_never_shown_r3e_02
+PASSED tests/engine/test_review_wave3_fixes.py::test_actionable_outcomes_have_no_diagnostics_r3e_02
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_reflected_inflow_is_not_counted_again_r3e_03[included-then-delayed]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_reflected_inflow_is_not_counted_again_r3e_03[before-snapshot-then-delayed]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_reflected_inflow_is_not_counted_again_r3e_03[included-then-moved]
+PASSED tests/engine/test_review_wave3_fixes.py::test_an_event_moved_before_the_snapshot_counts_on_the_snapshot_day_r3e_03
+PASSED tests/engine/test_review_wave3_fixes.py::test_delaying_or_shrinking_income_never_raises_a_balance_r3e_03
+PASSED tests/engine/test_review_wave3_fixes.py::test_cards_of_one_credit_account_share_its_available_credit_r3e_04
+PASSED tests/engine/test_review_wave3_fixes.py::test_the_verifier_checks_the_credit_account_layer_r3e_04
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_pool_deducts_its_members_reservations_and_holds_r3e_04[reservations]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_pool_deducts_its_members_reservations_and_holds_r3e_04[holds]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_candidate_repayment_day_keeps_the_timestamp_order_r3e_05[A]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_candidate_repayment_day_keeps_the_timestamp_order_r3e_05[A+B]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_planned_repayment_comes_first_on_a_timestamp_ordered_day_r3e_05
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_delayed_income_loses_its_timestamp_r3e_05
+PASSED tests/engine/test_review_wave3_fixes.py::test_the_fee_is_paid_with_the_repayment_r3e_07
+PASSED tests/engine/test_review_wave3_fixes.py::test_an_unusable_card_does_not_change_the_horizon_r3e_08[A+B]
+PASSED tests/engine/test_review_wave3_fixes.py::test_an_unusable_card_does_not_change_the_horizon_r3e_08[A]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_repayment_after_the_horizon_is_a_violation_in_the_verifier_r3e_08
+PASSED tests/engine/test_review_wave3_fixes.py::test_every_card_after_the_horizon_is_infeasible_without_extension_r3e_08
+PASSED tests/engine/test_review_wave3_fixes.py::test_the_baseline_checks_the_global_floor_r3e_09
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_starting_total_below_the_global_floor_is_a_baseline_shortfall_r3e_09
+PASSED tests/engine/test_review_wave3_fixes.py::test_insufficient_limit_considers_every_layer_r3e_10[pool]
+PASSED tests/engine/test_review_wave3_fixes.py::test_insufficient_limit_considers_every_layer_r3e_10[per-transaction-cap]
+PASSED tests/engine/test_review_wave3_fixes.py::test_a_minimum_part_above_the_amount_is_its_own_reason_r3e_10
+PASSED tests/engine/test_review_wave3_fixes.py::test_no_capacity_names_the_exhausted_layer_r3e_10
+PASSED tests/engine/test_review_wave3_fixes.py::test_unknown_does_not_claim_dominated_r3e_10
+PASSED tests/engine/test_review_wave3_fixes.py::test_the_default_hash_covers_scenarios_and_options_r3e_15
+PASSED tests/engine/test_review_wave3_fixes.py::test_errors_outside_modelling_are_not_disguised_r3e_15
+PASSED tests/engine/test_review_wave3_fixes.py::test_every_solver_call_ends_within_the_runs_time_limit_r3e_17
+PASSED tests/engine/test_review_wave3_fixes.py::test_no_eligible_card_still_searches_a_later_date_r3e_19
+PASSED tests/engine/test_review_wave3_fixes.py::test_no_eligible_card_without_a_date_reason_has_no_sensitivity_r3e_19
+PASSED tests/engine/test_review_wave3_fixes.py::test_fee_probe_allocation_pays_the_fee_from_cash_r3e_07
+PASSED tests/engine/test_review_wave3_mutants.py::test_a_repayment_on_the_transaction_date_is_allowed_m05_r3e_16[5-True]
+PASSED tests/engine/test_review_wave3_mutants.py::test_a_repayment_on_the_transaction_date_is_allowed_m05_r3e_16[6-False]
+PASSED tests/engine/test_review_wave3_mutants.py::test_the_verifier_rounds_a_fee_up_m14_r3e_16
+PASSED tests/engine/test_review_wave3_mutants.py::test_the_verifier_rounds_a_verified_benefit_down_m15_r3e_16
+PASSED tests/engine/test_review_wave3_mutants.py::test_the_model_caps_the_verified_benefit_m17_r3e_16
+PASSED tests/engine/test_review_wave3_mutants.py::test_a_snapshot_exactly_stale_after_days_old_is_not_stale_m20_r3e_16[2026-10-23-False]
+PASSED tests/engine/test_review_wave3_mutants.py::test_a_snapshot_exactly_stale_after_days_old_is_not_stale_m20_r3e_16[2026-10-24-True]
+PASSED tests/engine/test_review_wave3_mutants.py::test_the_weighted_buffer_rounds_half_up_m26_r3e_16
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[raw_available = 2^63-1]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[amount = 2^62]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[amount = 2^63-1]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[balance = -2^63]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[balance = 2^63-1]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[event amount = 2^63-1]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[balance = 10^13]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[fee_rate = 0.006]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[fee_rate = 0.1234567891]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[fee_rate = 9999999999.9999999999]
+PASSED tests/engine/test_robustness.py::test_probe_cases_never_raise_and_end_in_a_business_status[payment_lead_days = 60]
+PASSED tests/engine/test_robustness.py::test_fee_rate_case_of_the_probe_pays_the_fee_from_cash_r3e_07
+PASSED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[amount]
+PASSED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[balance]
+PASSED tests/engine/test_robustness.py::test_solver_and_sensitivity_helpers_report_model_invalid_instead_of_raising[event]
+PASSED tests/engine/test_robustness.py::test_a_date_beyond_the_supported_range_is_not_disguised_r3e_15
+PASSED tests/engine/test_robustness.py::test_a_card_whose_repayment_would_precede_the_transaction_is_rejected
+PASSED tests/engine/test_robustness.py::test_no_card_left_after_the_repayment_date_check_is_explained
+PASSED tests/engine/test_robustness.py::test_verifier_applies_and_flags_a_planned_repayment_dated_before_the_snapshot
+PASSED tests/engine/test_robustness.py::test_an_exhausted_pool_is_clamped_to_zero_and_other_cards_stay_usable[0]
+PASSED tests/engine/test_robustness.py::test_an_exhausted_pool_is_clamped_to_zero_and_other_cards_stay_usable[-100]
+PASSED tests/engine/test_robustness.py::test_any_amount_on_a_card_of_an_exhausted_pool_is_a_violation
+PASSED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[integral-float]
+PASSED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[float]
+PASSED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[bool]
+PASSED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[decimal]
+PASSED tests/engine/test_robustness.py::test_verifier_refuses_non_integer_amounts[string]
+PASSED tests/protocol/test_adapter.py::test_round_trip_is_lossless
+PASSED tests/protocol/test_adapter.py::test_engine_inputs_equal_those_of_the_t003_loader
+PASSED tests/protocol/test_adapter.py::test_defaults_of_optional_members
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-baseline]
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-confirmed]
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[cash_safety-stress_income_delay]
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-baseline]
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-confirmed]
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[verified_benefit-stress_income_delay]
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-baseline]
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-confirmed]
+PASSED tests/protocol/test_adapter.py::test_adapter_and_t003_loader_runs_agree_field_by_field[fewer_cards-stress_income_delay]
+PASSED tests/protocol/test_adapter.py::test_outcomes_of_every_business_status_validate
+PASSED tests/protocol/test_adapter.py::test_f18_outcome_matches_api_52
+PASSED tests/protocol/test_adapter.py::test_verify_from_protocol_reports_an_unknown_card
+PASSED tests/protocol/test_adapter.py::test_verify_from_protocol_rejects_invalid_requests
+PASSED tests/protocol/test_adapter.py::test_f18_input_hash_is_pinned
+PASSED tests/protocol/test_adapter.py::test_without_float_tokens_canonical_json_equals_sorted_compact_json_dumps
+PASSED tests/protocol/test_adapter.py::test_hash_ignores_member_order_and_whitespace_but_not_values
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[value0-{"a":[true,false,null],"b":1}]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[value1-{"z":"\u20ac","\u91d1\u989d":"\u5361A"}]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation["\\/\x08\x0c\n\r\t\x00\x1f\x7f\u2028-"\\"\\\\/\\b\\f\\n\\r\\t\\u0000\\u001f\x7f\u2028"]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[value3-{"\U0001f600":1,"\ufb01":2}]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[9223372036854775807-9223372036854775807]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[-9223372036854775808--9223372036854775808]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[1000000000000000000000000000000-1000000000000000000000000000000]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[10.0-10]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[0.5-0.5]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[-0.0-0]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[1e-06-0.000001]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[1e-07-1e-7]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[1e+21-1e+21]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[1e+20-100000000000000000000]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[123.456-123.456]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[5e-324-5e-324]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[1.7976931348623157e+308-1.7976931348623157e+308]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[2.9514790517935283e+20-295147905179352830000]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[9.999999999999997e+22-9.999999999999997e+22]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[1e+23-1e+23]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[9.999999999999997e-07-9.999999999999997e-7]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[333333333.3333333-333333333.3333333]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_serialisation[9.999999999999999e+20-999999999999999900000]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_rejects_non_json[nan]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_rejects_non_json[inf]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_rejects_non_json[nested-inf]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_rejects_non_json[lone-surrogate]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_rejects_non_json[int-key]
+PASSED tests/protocol/test_adapter.py::test_canonical_json_rejects_non_json[date]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[duplicate-key]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[nan]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[infinity]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[minus-infinity]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[overflow]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[bom]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[not-utf8]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[eof]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[integer-literal-too-long]
+PASSED tests/protocol/test_adapter.py::test_parse_json_is_strict[nested-too-deeply]
+PASSED tests/protocol/test_adapter.py::test_parse_json_keeps_integers_exact
+PASSED tests/protocol/test_adapter.py::test_the_adapter_imports_no_json_schema_library
+PASSED tests/protocol/test_fixture_v1.py::test_hand_written_fixture_is_unchanged
+PASSED tests/protocol/test_fixture_v1.py::test_v1_fixture_is_regenerated_byte_for_byte
+PASSED tests/protocol/test_fixture_v1.py::test_v1_fixture_records_its_source
+PASSED tests/protocol/test_fixture_v1.py::test_v1_file_is_normalised_json
+PASSED tests/protocol/test_fixture_v1.py::test_v1_fixture_is_a_valid_fixture_without_floats
+PASSED tests/protocol/test_fixture_v1.py::test_converter_and_loader_paths_produce_the_same_plan_input
+PASSED tests/protocol/test_fixture_v1.py::test_every_expected_key_became_exactly_one_case
+PASSED tests/protocol/test_fixture_v1.py::test_converter_refuses_what_it_cannot_convert_faithfully[<lambda>-more precision than CNY]
+PASSED tests/protocol/test_fixture_v1.py::test_converter_refuses_what_it_cannot_convert_faithfully[<lambda>-not a plain decimal string0]
+PASSED tests/protocol/test_fixture_v1.py::test_converter_refuses_what_it_cannot_convert_faithfully[<lambda>-not a plain decimal string1]
+PASSED tests/protocol/test_fixture_v1.py::test_converter_refuses_what_it_cannot_convert_faithfully[<lambda>-no conversion rule0]
+PASSED tests/protocol/test_fixture_v1.py::test_converter_refuses_what_it_cannot_convert_faithfully[<lambda>-no conversion rule1]
+PASSED tests/protocol/test_fixture_v1.py::test_converter_refuses_what_it_cannot_convert_faithfully[<lambda>-no conversion rule2]
+PASSED tests/protocol/test_fixture_v1.py::test_converter_refuses_what_it_cannot_convert_faithfully[<lambda>-no conversion rule3]
+PASSED tests/protocol/test_fixture_v1.py::test_converter_refuses_what_it_cannot_convert_faithfully[<lambda>-single-currency]
+PASSED tests/protocol/test_fixture_v1.py::test_converter_check_mode_confirms_the_committed_file
+PASSED tests/protocol/test_limits.py::test_the_limits_are_the_engine_bounds
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[amount-at-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[amount-over-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[balance-at-negative-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[balance-under-negative-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[available-at-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[available-over-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[event-under-negative-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[floor-over-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[global-floor-over-limit]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-one]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-one-padded]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-five-decimals]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-six-decimals]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-above-one]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[rate-two]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[scale-ten]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[scale-ten-padded]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[scale-below-ten]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[scale-above-ten]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[date-first]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[date-before-first]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[date-last]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[date-after-last]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[timestamp-in-range]
+PASSED tests/protocol/test_limits.py::test_schema_and_adapter_agree_on_the_supported_range[timestamp-after-last]
+PASSED tests/protocol/test_limits.py::test_array_sizes_are_limited[cards-200]
+PASSED tests/protocol/test_limits.py::test_array_sizes_are_limited[cash_accounts-100]
+PASSED tests/protocol/test_limits.py::test_array_sizes_are_limited[events-10000]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[raw_available = 2^63-1]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[amount = 2^62]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[amount = 2^63-1]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[balance = -2^63]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[balance = 2^63-1]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[event amount = 2^63-1]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[balance = 10^13]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[fee_rate = 0.006]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[fee_rate = 0.1234567891]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[fee_rate = 9999999999.9999999999]
+PASSED tests/protocol/test_limits.py::test_probe_cases_through_the_protocol[payment_lead_days = 60]
+PASSED tests/protocol/test_limits.py::test_a_document_with_every_value_at_its_limit_is_valid
+PASSED tests/protocol/test_limits.py::test_every_value_at_its_limit_still_builds_a_valid_cp_sat_model
+PASSED tests/protocol/test_limits.py::test_one_step_beyond_the_limits_overflows[sixth-rate-decimal]
+PASSED tests/protocol/test_limits.py::test_one_step_beyond_the_limits_overflows[money-times-ten]
+PASSED tests/protocol/test_limits.py::test_range_errors_name_the_bounds_but_never_echo_the_amount
+PASSED tests/protocol/test_limits.py::test_card_cycles_report_an_unrepresentable_cycle_instead_of_raising
+PASSED tests/protocol/test_rejections.py::test_the_unmodified_document_is_valid
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[float-amount]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[integral-float-amount]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[float-balance]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[float-rate]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[rate-exponent]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[rate-11-digits]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[bool-amount]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[bool-count]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[bool-floor]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[string-amount]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[missing-currency]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[missing-fee-rate]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[missing-workers]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[missing-includes]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[missing-options]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[extra-top-level]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[extra-daily-cap]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[extra-merchant]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[extra-due-member]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[negative-holds]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[int64-overflow]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[zero-amount]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[impossible-date]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[compact-date]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[naive-timestamp]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[protocol-version]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[unknown-profile]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[zero-workers]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[zero-time-limit]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[string-time-limit]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[reserved-event-id]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[empty-category]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[unknown-cls]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[override-without-change]
+PASSED tests/protocol/test_rejections.py::test_schema_and_adapter_both_reject[lowercase-currency]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[duplicate-card]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[duplicate-event]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[duplicate-scenario]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[duplicate-snapshot]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[duplicate-pool]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[currency-mismatch]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[unknown-repay-account]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[unknown-event-account]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[unknown-snapshot-account]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[includes-unknown-event]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[includes-other-accounts-event]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[override-unknown-event]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[override-twice]
+PASSED tests/protocol/test_rejections.py::test_rules_beyond_json_schema_are_enforced_by_the_adapter[posting-delay-inverted]
+PASSED tests/protocol/test_rejections.py::test_standard_json_schema_admits_an_integral_float_so_the_runner_is_stricter
+PASSED tests/protocol/test_review_wave3_protocol.py::test_the_f18_input_and_its_hash_are_unchanged
+PASSED tests/protocol/test_review_wave3_protocol.py::test_a_rejected_solution_is_only_in_the_diagnostics_r3e_02
+PASSED tests/protocol/test_review_wave3_protocol.py::test_the_schema_refuses_an_allocation_outside_actionable_statuses_r3e_02
+PASSED tests/protocol/test_review_wave3_protocol.py::test_cards_of_one_credit_account_report_one_available_credit_r3e_04
+PASSED tests/protocol/test_review_wave3_protocol.py::test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored0-0.006]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored1-0]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored2-1]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored3-0.12345]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_numeric_rates_from_the_database_enter_the_protocol_r3e_11[stored4-0.006]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path0-0.00600]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path1-0.0]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path2-1.0]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path3-1.00000]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path4-0.]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path5-1.0]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path6-10.0000000000]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_only_canonical_rates_and_factors_are_valid_r3e_11[path7-01]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_the_engine_hash_of_equal_rates_is_equal_r3e_11
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path0-100000000000000-100000000000000]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path1-1234567.89-1234567]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path2-123456789-123456789]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path3-value3-98765432]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path4-31415926-31415926]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path5-98765.4321-98765]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path6-6222 0212 3456 7890-6222]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path7-RMB-12345-12345]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path8-0.123456-123456]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path9-2026-02-30-2026-02-30]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path10-1999-99-99-99-99]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path11-2026-10-16T09:00:00+99:00-99:00]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path12-acct-998877-998877]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path13-value13-77665544]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path14-e55443322-55443322]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_protocol_errors_never_echo_the_value_r3e_12[path15-USD-USD]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_strict_json_errors_never_echo_the_value_r3e_12[duplicate-key]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_strict_json_errors_never_echo_the_value_r3e_12[not-utf8]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_strict_json_errors_never_echo_the_value_r3e_12[overflow]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_verify_reports_needs_data_instead_of_raising_r3e_13[missing-snapshot]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_verify_reports_needs_data_instead_of_raising_r3e_13[needs-calendar]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_verify_reports_needs_data_instead_of_raising_r3e_13[missing-pool]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_verify_reports_needs_data_instead_of_raising_r3e_13[stale]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_a_verify_case_on_such_a_document_runs_in_the_fixture_runner_r3e_13
+PASSED tests/protocol/test_review_wave3_protocol.py::test_includes_may_only_list_events_up_to_the_snapshot_day_r3e_14
+PASSED tests/protocol/test_review_wave3_protocol.py::test_a_timestamp_lies_on_the_events_date_r3e_14[2026-10-27T09:00:00+08:00-True]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_a_timestamp_lies_on_the_events_date_r3e_14[2026-10-27T23:30:00-05:00-True]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_a_timestamp_lies_on_the_events_date_r3e_14[2026-10-26T23:30:00Z-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_a_timestamp_lies_on_the_events_date_r3e_14[2026-10-28T00:00:00+08:00-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_outcome_schema_documents_the_corrected_semantics_r3e_18
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:00:00+08:00-True]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T23:59:59.999999Z-True]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:00:00+23:59-True]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T23:59:60Z-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T24:00:00Z-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T99:99:99+99:99-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-02-30T09:00:00Z-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:00:00+24:00-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:60:00Z-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16T09:00:00.1234567Z-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-10-16t09:00:00z-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_schema_and_adapter_agree_on_timestamps_r3e_20[2026-13-01T09:00:00Z-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_the_runner_checks_the_date_time_format_r3e_20
+PASSED tests/protocol/test_review_wave3_protocol.py::test_text_length_counts_code_points_r3e_21[1000-True]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_text_length_counts_code_points_r3e_21[1001-False]
+PASSED tests/protocol/test_review_wave3_protocol.py::test_readme_states_the_dart_rules_r3e_21_r3e_22
+PASSED tests/protocol/test_runner.py::test_f18_passes_with_exit_0
+PASSED tests/protocol/test_runner.py::test_default_target_is_every_v1_fixture
+PASSED tests/protocol/test_runner.py::test_a_tampered_expected_value_fails_with_exit_1
+PASSED tests/protocol/test_runner.py::test_invalid_input_exits_2[float-amount]
+PASSED tests/protocol/test_runner.py::test_invalid_input_exits_2[duplicate-card]
+PASSED tests/protocol/test_runner.py::test_invalid_input_exits_2[bad-case-kind]
+PASSED tests/protocol/test_runner.py::test_invalid_input_exits_2[unknown-verify-scenario]
+PASSED tests/protocol/test_runner.py::test_invalid_input_exits_2[float]
+PASSED tests/protocol/test_runner.py::test_invalid_input_exits_2_from_the_command_line
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion0-True]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion1-False]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion2-False]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion3-False]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion4-True]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion5-True]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion6-False]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion7-False]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion8-True]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion9-True]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion10-True]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion11-False]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion12-True]
+PASSED tests/protocol/test_runner.py::test_assertion_semantics[assertion13-False]
+PASSED tests/protocol/test_runner.py::test_where_must_select_exactly_one_element
+PASSED tests/protocol/test_schemas.py::test_the_schema_set_is_complete
+PASSED tests/protocol/test_schemas.py::test_every_schema_is_valid_draft_2020_12_with_a_matching_id
+PASSED tests/protocol/test_schemas.py::test_every_ref_resolves_inside_the_set
+PASSED tests/protocol/test_schemas.py::test_object_schemas_are_closed
+PASSED tests/protocol/test_schemas.py::test_no_number_type_outside_the_timing_whitelist
+PASSED tests/protocol/test_schemas.py::test_money_is_minor_units_in_range_and_rates_are_decimal_strings
+PASSED tests/protocol/test_schemas.py::test_conditions_are_not_objects_but_objects_inside_them_are_checked
+PASSED tests/protocol/test_schemas.py::test_guards_catch_a_float_money_field_and_an_open_object
+434 passed, 1 warning in 34.52s
+exit=0

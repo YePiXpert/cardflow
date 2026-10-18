@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/BillingRule.schema.json",
+  "title": "BillingRule",
+  "description": "One version of a billing-cycle rule (bank-rules-spec §2/§3, engine BillingRule). The statement day is clamped to the month end; a posting ON the statement day belongs to that statement only if statement_day_inclusive. holiday_rollover 'next_business_day' and due.day_kind 'business' need a verified business-day calendar, which protocol v1 does not carry: the engine reports such a rule as BILLING_RULE_INVALID (NEEDS_DATA).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rule_id", "statement_day", "statement_day_inclusive", "due", "holiday_rollover"],
+  "properties": {
+    "rule_id": { "$ref": "common.schema.json#/$defs/Id" },
+    "statement_day": { "type": "integer", "minimum": 1, "maximum": 31 },
+    "statement_day_inclusive": { "type": "boolean" },
+    "due": { "$ref": "#/$defs/DueRule" },
+    "holiday_rollover": { "enum": ["none", "next_business_day"] },
+    "effective_from": {
+      "description": "First posting date the version applies to (absent = unbounded).",
+      "$ref": "common.schema.json#/$defs/Date"
+    },
+    "effective_to": {
+      "description": "Exclusive end of validity (absent = unbounded). The rule must cover the transaction's posting window; in the date-shift search a card whose version has ended is unavailable on that date (engine-spec §12.9).",
+      "$ref": "common.schema.json#/$defs/Date"
+    },
+    "source": {
+      "description": "Where the rule comes from (S-nn, user declaration, fixture). Absent = empty.",
+      "$ref": "common.schema.json#/$defs/Text"
+    },
+    "verified_on": { "$ref": "common.schema.json#/$defs/Date" },
+    "status": {
+      "description": "Review status (metadata). Absent = 'user_declared'.",
+      "enum": ["draft", "verified", "user_declared"]
+    }
+  },
+  "$defs": {
+    "DueRule": {
+      "oneOf": [
+        { "$ref": "#/$defs/FixedDayDue" },
+        { "$ref": "#/$defs/DaysAfterStatementDue" }
+      ]
+    },
+    "FixedDayDue": {
+      "description": "Due on a fixed day (clamped to the month end) of the statement month plus month_offset; must fall after the statement date.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "day", "month_offset"],
+      "properties": {
+        "kind": { "const": "fixed_day" },
+        "day": { "type": "integer", "minimum": 1, "maximum": 31 },
+        "month_offset": { "type": "integer", "minimum": 0, "maximum": 2 }
+      }
+    },
+    "DaysAfterStatementDue": {
+      "description": "Due N calendar or business days after the statement date.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "days", "day_kind"],
+      "properties": {
+        "kind": { "const": "days_after_statement" },
+        "days": { "type": "integer", "minimum": 1, "maximum": 60 },
+        "day_kind": { "enum": ["calendar", "business"] }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+# T-004b full non-DB run (2026-10-17T02:59:36Z), cwd services/api
+$ uv run pytest -q -m "not db"
+FAILED tests/jobs/test_units.py::test_backoff_never_decreases_and_never_exceeds_the_cap
+FAILED tests/test_cli.py::test_unimplemented_commands_exit_2_and_name_owner[argv0-T-008]
+FAILED tests/test_cli.py::test_unimplemented_commands_exit_2_and_name_owner[argv1-T-008]
+FAILED tests/test_cli.py::test_console_script_worker_exits_2 - assert 1 == 2
+4 failed, 404 passed, 138 deselected, 1 warning in 17.15s
+exit=1
+
+# the T-004 paths alone
+$ uv run pytest -q -m "not db" tests/engine tests/protocol
+310 passed, 1 warning in 16.14s
+exit=0
+
+# The 4 failures belong to T-008 (jobs/worker), implemented in parallel right now (not T-004 paths, not touched by T-004b):
+#   tests/test_cli.py x3 still assert that 'cardflow worker' is unimplemented (exit 2, owner T-008);
+#   tests/jobs/test_units.py::test_backoff_never_decreases_and_never_exceeds_the_cap is a new T-008 test.
+# T-008 / CLI files and their modification times (local time, UTC+1):
+2026-10-17T03:50 cardflow/cli.py
+2026-10-17T03:59 cardflow/jobs/backoff.py
+2026-10-17T03:43 cardflow/jobs/child.py
+2026-10-17T03:49 cardflow/jobs/codec.py
+2026-10-17T03:49 cardflow/jobs/context.py
+2026-10-17T03:43 cardflow/jobs/errors.py
+2026-10-17T03:49 cardflow/jobs/__init__.py
+2026-10-16T16:51 cardflow/jobs/models.py
+2026-10-17T03:44 cardflow/jobs/periodic.py
+2026-10-17T03:49 cardflow/jobs/queue.py
+2026-10-17T03:41 cardflow/jobs/registry.py
+2026-10-17T03:44 cardflow/jobs/subproc.py
+2026-10-17T03:49 cardflow/jobs/worker.py
+2026-10-17T03:53 tests/jobs/conftest.py
+2026-10-17T03:53 tests/jobs/jobs_helpers.py
+2026-10-17T03:57 tests/jobs/jobs_testkit.py
+2026-10-17T03:55 tests/jobs/test_queue.py
+2026-10-17T04:00 tests/jobs/test_units.py
+2026-10-17T03:57 tests/jobs/test_worker.py
+2026-10-17T03:15 tests/test_cli.py

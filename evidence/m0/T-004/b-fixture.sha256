@@ -1,0 +1,11 @@
+# T-004b fixtures (2026-10-17T02:57:16Z), cwd = repository root
+$ sha256sum packages/rules-protocol/fixtures/*.json poc/engine_reference/fixtures/regression_2026-10-16_10000.json
+d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e  packages/rules-protocol/fixtures/regression_2026-10-16_10000.json
+86c1ae85fd972d4fdf61e317dcbe85e7a3095b39c13c48648c0725277bbc7a6c  packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e  poc/engine_reference/fixtures/regression_2026-10-16_10000.json
+# expected (unchanged since T-004): hand-written d7e64809...e555d6e, v1 86c1ae85...7a6c
+$ uv run --project services/api python packages/rules-protocol/runner_py/convert_legacy_fixture.py packages/rules-protocol/fixtures/regression_2026-10-16_10000.json --check
+/projects/cardflow/packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json: regenerated output is identical (12977 bytes)
+exit=0
+# protocol_input_hash of the F-18 PlanInput (unchanged; pinned in tests/protocol/test_adapter.py)
+ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8

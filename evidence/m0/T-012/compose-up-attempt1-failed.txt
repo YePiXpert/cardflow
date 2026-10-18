@@ -1,0 +1,227 @@
+# T-012 secrets and deploy/.env - 2026-10-17T23:08:22Z
+$ tools/gen-secrets.sh
+gen-secrets: created  db_password
+gen-secrets: created  db_api_password
+gen-secrets: created  db_worker_password
+gen-secrets: created  db_admin_password
+gen-secrets: created  jwt_key
+gen-secrets: created  kek
+gen-secrets: created  backup_passphrase
+gen-secrets: /projects/cardflow/deploy/secrets (mode 700):
+  backup_passphrase mode=600 owner=10001:10001 size=64
+  db_admin_password mode=600 owner=10001:10001 size=64
+  db_api_password mode=600 owner=10001:10001 size=64
+  db_password mode=600 owner=10001:10001 size=64
+  db_worker_password mode=600 owner=10001:10001 size=64
+  jwt_key mode=600 owner=10001:10001 size=86
+  kek mode=600 owner=10001:10001 size=44
+  README.md mode=644 owner=0:0 size=5900
+gen-secrets: store a copy of backup_passphrase (and kek) outside this server; without them backups and attachments cannot be decrypted.
+exit=0
+
+$ cp -n deploy/.env.example deploy/.env; set CARDFLOW_VERSION=0.1.0-bfb695f1ea05
+$ grep -E ^(CARDFLOW_VERSION|CARDFLOW_API_PORT|LOG_LEVEL|API_DOCS_ENABLED)= deploy/.env
+CARDFLOW_VERSION=0.1.0-bfb695f1ea05
+CARDFLOW_API_PORT=18080
+LOG_LEVEL=info
+API_DOCS_ENABLED=false
+exit=0
+
+# no secret value is in deploy/.env or in the rendered service environments:
+$ docker compose -p cardflow -f deploy/compose.yaml config | grep -qF -f deploy/secrets/<each file>
+  secret values found in config/.env: 0
+
+# environment entries of the services that mention secrets: file paths only
+  api: DATABASE_PASSWORD_FILE=/run/secrets/db_api_password, JWT_KEY_FILE=/run/secrets/jwt_key, KEK_FILE=/run/secrets/kek
+  db: POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+  migrate: DATABASE_PASSWORD_FILE=/run/secrets/db_password
+  provision: DATABASE_ADMIN_PASSWORD_FILE=/run/secrets/db_admin_password, DATABASE_API_PASSWORD_FILE=/run/secrets/db_api_password, DATABASE_PASSWORD_FILE=/run/secrets/db_password, DATABASE_WORKER_PASSWORD_FILE=/run/secrets/db_worker_password
+  worker: DATABASE_PASSWORD_FILE=/run/secrets/db_worker_password, KEK_FILE=/run/secrets/kek
+
+# T-012 docker compose up - 2026-10-17T23:08:26Z
+$ docker compose -p cardflow -f deploy/compose.yaml up -d
+ Volume cardflow_pgdata Creating 
+ Volume cardflow_attachments Creating 
+ Network cardflow_edge Creating 
+ Volume cardflow_attachments Creating 
+ Network cardflow_backend Creating 
+ Network cardflow_edge Creating 
+ Network cardflow_backend Creating 
+ Volume cardflow_pgdata Creating 
+ Volume cardflow_attachments Created 
+ Volume cardflow_attachments Created 
+ Volume cardflow_pgdata Created 
+ Volume cardflow_pgdata Created 
+ Network cardflow_backend Created 
+ Network cardflow_backend Created 
+ Container cardflow-db-1 Creating 
+ Network cardflow_edge Created 
+ Network cardflow_edge Created 
+ Container cardflow-db-1 Created 
+ Container cardflow-migrate-1 Creating 
+ Container cardflow-migrate-1 Created 
+ Container cardflow-provision-1 Creating 
+ Container cardflow-provision-1 Created 
+ Container cardflow-worker-1 Creating 
+ Container cardflow-api-1 Creating 
+ Container cardflow-api-1 Created 
+ Container cardflow-worker-1 Created 
+ Container cardflow-db-1 Starting 
+ Container cardflow-db-1 Started 
+ Container cardflow-db-1 Waiting 
+ Container cardflow-db-1 Healthy 
+ Container cardflow-migrate-1 Starting 
+ Container cardflow-migrate-1 Started 
+ Container cardflow-migrate-1 Waiting 
+ Container cardflow-db-1 Waiting 
+ Container cardflow-db-1 Healthy 
+ Container cardflow-migrate-1 Exited 
+ Container cardflow-provision-1 Starting 
+ Container cardflow-provision-1 Started 
+ Container cardflow-migrate-1 Waiting 
+ Container cardflow-provision-1 Waiting 
+ Container cardflow-migrate-1 Waiting 
+ Container cardflow-provision-1 Waiting 
+ Container cardflow-migrate-1 Exited 
+ Container cardflow-migrate-1 Exited 
+ Container cardflow-provision-1 Error service "provision" didn't complete successfully: exit 1
+ Container cardflow-provision-1 Error service "provision" didn't complete successfully: exit 1
+service "provision" didn't complete successfully: exit 1
+exit=1
+
+# waiting for: db healthy, migrate and provision exited 0, worker running, api healthy
+[2026-10-17T23:08:32Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:08:35Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:08:38Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:08:41Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:08:44Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:08:48Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:08:51Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:08:54Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:08:57Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:00Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:03Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:06Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:09Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:12Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:15Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:19Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:22Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:25Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:28Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:31Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:34Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:37Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:40Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:43Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:46Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:49Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:53Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:56Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:09:59Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:02Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:05Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:08Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:11Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:14Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:17Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:21Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:24Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:27Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:30Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:33Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:36Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:39Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:42Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:46Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:49Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:52Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:55Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:10:58Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:01Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:04Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:07Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:10Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:13Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:17Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:20Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:23Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:26Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:29Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:32Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:35Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:38Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:41Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:44Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:47Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:50Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:54Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:11:57Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:00Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:03Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:06Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:09Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:12Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:15Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:18Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:21Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:24Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:27Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+[2026-10-17T23:12:30Z] db=healthy migrate=exited/0 provision=exited/1 api= worker=created
+TIMEOUT waiting for the services
+
+$ docker compose -p cardflow -f deploy/compose.yaml ps -a
+NAME                   IMAGE                             COMMAND                  SERVICE     CREATED         STATUS                     PORTS
+cardflow-api-1         cardflow/api:0.1.0-bfb695f1ea05   "cardflow api --host…"   api         4 minutes ago   Created                    
+cardflow-db-1          postgres:18.6-trixie              "docker-entrypoint.s…"   db          4 minutes ago   Up 4 minutes (healthy)     5432/tcp
+cardflow-migrate-1     cardflow/api:0.1.0-bfb695f1ea05   "cardflow migrate --…"   migrate     4 minutes ago   Exited (0) 4 minutes ago   
+cardflow-provision-1   cardflow/api:0.1.0-bfb695f1ea05   "cardflow db-provisi…"   provision   4 minutes ago   Exited (1) 4 minutes ago   
+cardflow-worker-1      cardflow/api:0.1.0-bfb695f1ea05   "cardflow worker --c…"   worker      4 minutes ago   Created                    
+exit=0
+
+$ docker compose -p cardflow -f deploy/compose.yaml logs --no-color migrate provision
+provision-1  | cardflow db-provision: missing group roles cardflow_auth_lookup (run cardflow migrate first)
+migrate-1    | {"ts":"2026-10-17T23:08:30.267+00:00","level":"info","logger":"cardflow.db.migrations","message":"waiting for the migration advisory lock"}
+migrate-1    | {"ts":"2026-10-17T23:08:30.269+00:00","level":"info","logger":"cardflow.db.migrations","message":"migration advisory lock acquired"}
+migrate-1    | {"ts":"2026-10-17T23:08:30.378+00:00","level":"info","logger":"alembic.runtime.migration","message":"Context impl PostgresqlImpl."}
+migrate-1    | {"ts":"2026-10-17T23:08:30.378+00:00","level":"info","logger":"alembic.runtime.migration","message":"Will assume transactional DDL."}
+migrate-1    | {"ts":"2026-10-17T23:08:30.385+00:00","level":"info","logger":"alembic.runtime.migration","message":"Running upgrade  -> 0001, Initial schema: identity, banking, limits, statements, cash, imports, planner, ops tables."}
+migrate-1    | {"ts":"2026-10-17T23:08:30.542+00:00","level":"info","logger":"alembic.runtime.migration","message":"Running upgrade 0001 -> 0002, Post-review structural fixes (M0 review wave 2, data-model §10)."}
+migrate-1    | {"ts":"2026-10-17T23:08:30.621+00:00","level":"info","logger":"alembic.runtime.migration","message":"Running upgrade 0002 -> 0003, Row-level security, database roles and grants (T-006; data-model §6, §10)."}
+migrate-1    | {"ts":"2026-10-17T23:08:30.686+00:00","level":"info","logger":"cardflow.db.migrations","message":"migration advisory lock released"}
+migrate-1    | database revision 0003; code head 0003: up to date
+exit=0
+
+# published ports of the project (expect only 127.0.0.1:18080 -> api:8000)
+  cardflow-api-1: {"8000/tcp":[{"HostIp":"127.0.0.1","HostPort":"18080"}]} network_mode=cardflow_backend
+  cardflow-db-1: {} network_mode=cardflow_backend
+  cardflow-migrate-1: {} network_mode=cardflow_backend
+  cardflow-provision-1: {} network_mode=cardflow_backend
+  cardflow-worker-1: {} network_mode=cardflow_backend
+
+# networks of the project
+$ docker network ls --filter label=com.docker.compose.project=cardflow --format {{.Name}} driver={{.Driver}} internal={{.Internal}}
+cardflow_backend driver=bridge internal=true
+cardflow_edge driver=bridge internal=false
+exit=0
+
+# volumes of the project
+$ docker volume ls --filter label=com.docker.compose.project=cardflow --format {{.Name}}
+cardflow_attachments
+cardflow_pgdata
+exit=0
+
+# secrets inside the containers: read-only bind mounts, owner 10001, mode 0600
+$ docker exec cardflow-api-1 stat -c "%n %U:%G(%u:%g) %a" /run/secrets/*
+Error response from daemon: container 4b11c2227fb24ef9e832a884baabe5ad0c552a49584843432d944d7fe1a571ef is not running
+  mounts: bind rw=false /run/secrets/kek
+$ docker exec cardflow-worker-1 stat -c "%n %U:%G(%u:%g) %a" /run/secrets/*
+Error response from daemon: container 680b43388dc942a327b93013834e5eeab89e3cb465519c051c8bb5373ed3a69d is not running
+  mounts: bind rw=false /run/secrets/kek
+
+# resource limits and hardening as applied by Docker
+template parsing error: template: :1:257: executing "" at <.HostConfig.Init>: map has no entry for key "Init"
+  cardflow-db-1: 
+template parsing error: template: :1:320: executing "" at <.Config.StopTimeout>: map has no entry for key "StopTimeout"
+  cardflow-api-1: 
+  cardflow-worker-1: user=10001:10001 readonly_rootfs=true memory=2147483648 nano_cpus=4000000000 pids=1024 cap_drop=[ALL] security_opt=[no-new-privileges:true] init=true tmpfs={"/tmp":"size=64m,mode=1777,noexec,nosuid,nodev"} stop_timeout=30

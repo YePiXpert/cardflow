@@ -1,0 +1,68 @@
+# T-004 lint / format (2026-10-17T02:31:25Z)
+$ uv run --project services/api ruff --version
+ruff 0.17.1
+
+## services/api (cwd services/api)
+$ uv run ruff check .
+All checks passed!
+exit=0
+$ uv run ruff format --check .
+84 files already formatted
+exit=0
+
+## only the paths T-004 changed or added (excludes the parallel tasks' files)
+$ uv run ruff check cardflow/planner/engine tests/engine tests/protocol && uv run ruff format --check cardflow/planner/engine tests/engine tests/protocol
+All checks passed!
+24 files already formatted
+exit=0
+
+## packages/rules-protocol (runner, converter; packages/rules-protocol/ruff.toml extends services/api/pyproject.toml), cwd = repository root
+$ uv run --project services/api ruff check packages/rules-protocol
+All checks passed!
+exit=0
+$ uv run --project services/api ruff format --check packages/rules-protocol
+3 files already formatted
+exit=0
+
+## noqa added by T-004 (single-line, with reason where not obvious); no file-level exemptions
+$ grep -rn "# noqa" cardflow/planner/engine/protocol.py tests/engine/test_production_fixes.py tests/engine/test_determinism.py tests/engine/test_billing_clamp.py tests/protocol ../../packages/rules-protocol/runner_py
+tests/protocol/test_runner.py:21:    return subprocess.run(  # noqa: S603 -- fixed argv: this interpreter + repository files
+tests/protocol/test_runner.py:36:def test_f18_passes_with_exit_0(paths: Any, tmp_path: Path) -> None:  # noqa: ANN401
+tests/protocol/test_runner.py:45:def test_default_target_is_every_v1_fixture(paths: Any, tmp_path: Path) -> None:  # noqa: ANN401
+tests/protocol/test_runner.py:52:    paths: Any,  # noqa: ANN401
+tests/protocol/test_runner.py:86:    mutate: Any,  # noqa: ANN401
+tests/protocol/test_runner.py:97:def test_invalid_input_exits_2_from_the_command_line(paths: Any, tmp_path: Path) -> None:  # noqa: ANN401
+tests/protocol/test_adapter.py:67:def legacy(paths: Any) -> tuple[Any, Any, Any]:  # noqa: ANN401
+tests/protocol/test_adapter.py:172:    def unknown_solve(*args: Any, **kwargs: Any) -> SolveResult:  # noqa: ANN401
+tests/protocol/test_adapter.py:181:    def rejecting_verify(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+tests/protocol/test_adapter.py:371:    result = subprocess.run(  # noqa: S603 -- fixed argv: this interpreter + a constant probe
+tests/engine/test_production_fixes.py:142:    def spy(time_limit_s: float, workers: int, seed: int) -> Any:  # noqa: ANN401
+tests/engine/test_production_fixes.py:296:    hint = eval(  # noqa: S307 -- evaluates the engine's own annotation in its module namespace
+tests/protocol/test_fixture_v1.py:40:def test_hand_written_fixture_is_unchanged(paths: Any) -> None:  # noqa: ANN401
+tests/protocol/test_fixture_v1.py:46:def test_v1_fixture_is_regenerated_byte_for_byte(paths: Any, converter: ModuleType) -> None:  # noqa: ANN401
+tests/protocol/test_fixture_v1.py:60:def test_v1_file_is_normalised_json(paths: Any) -> None:  # noqa: ANN401
+tests/protocol/test_fixture_v1.py:75:    paths: Any,  # noqa: ANN401
+tests/protocol/test_fixture_v1.py:84:    paths: Any,  # noqa: ANN401
+tests/protocol/test_fixture_v1.py:109:    paths: Any,  # noqa: ANN401
+tests/protocol/test_fixture_v1.py:111:    mutate: Any,  # noqa: ANN401
+tests/protocol/test_fixture_v1.py:121:def test_converter_check_mode_confirms_the_committed_file(paths: Any) -> None:  # noqa: ANN401
+tests/protocol/test_fixture_v1.py:122:    result = subprocess.run(  # noqa: S603 -- fixed argv: this interpreter + repository files
+tests/protocol/test_schemas.py:73:def schemas(paths: Any) -> Schemas:  # noqa: ANN401 -- conftest.ProtocolPaths
+cardflow/planner/engine/protocol.py:394:    def req(self, key: str, conv: Conv) -> Any:  # noqa: ANN401 -- converter-defined type
+cardflow/planner/engine/protocol.py:399:    def opt(self, key: str, conv: Conv, default: object = None) -> Any:  # noqa: ANN401
+$ grep -rn "ruff: noqa\|flake8: noqa" services/api/cardflow/planner/engine services/api/tests/engine services/api/tests/protocol packages/rules-protocol
+exit=1 (1 = none)
+
+## untouched: pyproject.toml / uv.lock (hashes equal to evidence/m0/T-002/ruff-and-lock.txt and T-003/ruff.txt), docs/, poc/
+$ sha256sum services/api/pyproject.toml services/api/uv.lock
+cf736de388f527a119ca1bfba9cb01e42cded6a35e1d983dae59c632283bb7fc  services/api/pyproject.toml
+51ef0eb15283eaddaa22b2ec2c6e366bdf38f48f09896de69ff116b532f12553  services/api/uv.lock
+# T-003: $ sha256sum pyproject.toml uv.lock   # 与 evidence/m0/T-002/ruff-and-lock.txt 相同 = 未修改
+# T-003: cf736de388f527a119ca1bfba9cb01e42cded6a35e1d983dae59c632283bb7fc  pyproject.toml
+# T-003: 51ef0eb15283eaddaa22b2ec2c6e366bdf38f48f09896de69ff116b532f12553  uv.lock
+$ find poc -type f | sort | xargs sha256sum | diff <(grep -v "^[#$]" evidence/m0/T-003/poc-integrity-before.txt) -
+exit=0 (0 = poc/ unchanged)
+$ find docs -newer evidence/m0/T-003/ruff.txt -type f | wc -l   # docs files modified after T-003 finished
+1
+# the one file: docs/80-delivery/m0-execution-plan.md (mtime 2026-10-17 03:21 +01:00) -- the main session's
+# status-table update (T-005 / T-014 rows); T-004 made no edit under docs/.

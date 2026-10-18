@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/Scenario.schema.json",
+  "title": "Scenario",
+  "description": "A cash scenario (engine-spec §2/§5): which events count and how they are shifted or scaled. Order of application (engine-spec §12.2/§12.4): events the snapshot already reflects are removed first (judged on the original event); then expected events are dropped (include_expected=false), overrides applied, expected inflows delayed and scaled, 'living' outflows scaled; an event whose date changed loses its timestamp; one moved before the snapshot day counts on the snapshot day. Per engine-spec §2 a plan input carries at least a confirmed-only and a baseline scenario and may carry stress scenarios; outputs list scenarios in input order.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scenario_id",
+    "include_expected",
+    "income_delay_days",
+    "income_scale",
+    "expense_scale",
+    "event_overrides",
+    "same_day_order"
+  ],
+  "properties": {
+    "scenario_id": { "$ref": "common.schema.json#/$defs/Id" },
+    "include_expected": {
+      "description": "false = confirmed-only view (every 'expected' event is dropped).",
+      "type": "boolean"
+    },
+    "income_delay_days": {
+      "description": "Delay applied to every expected inflow.",
+      "$ref": "common.schema.json#/$defs/DayCount"
+    },
+    "income_scale": {
+      "description": "Factor on expected inflows (rounded half up to the minor unit).",
+      "$ref": "common.schema.json#/$defs/ScaleFactor"
+    },
+    "expense_scale": {
+      "description": "Factor on outflows of category 'living' (rounded half up to the minor unit).",
+      "$ref": "common.schema.json#/$defs/ScaleFactor"
+    },
+    "event_overrides": {
+      "description": "Per-event replacement of date and/or amount, applied before delay and scaling. Each event at most once; the event must exist.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/EventOverride" }
+    },
+    "same_day_order": {
+      "description": "conservative = outflows before inflows; timestamp = by 'at' when every event of the day has one.",
+      "enum": ["conservative", "timestamp"]
+    },
+    "description": {
+      "description": "Display text. Absent = empty.",
+      "$ref": "common.schema.json#/$defs/Text"
+    }
+  },
+  "$defs": {
+    "EventOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id"],
+      "anyOf": [{ "required": ["on"] }, { "required": ["amount_minor"] }],
+      "properties": {
+        "event_id": { "$ref": "common.schema.json#/$defs/EventId" },
+        "on": { "$ref": "common.schema.json#/$defs/Date" },
+        "amount_minor": { "$ref": "common.schema.json#/$defs/MinorAmount" }
+      }
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/CardOption.schema.json",
+  "title": "CardOption",
+  "description": "A card that may take part of the planned spend (engine-spec §2 CardOption, engine CardOption). Capacity layers (engine-spec §12.3, bank-rules-spec §5, checked together): card = max(0, raw_available_minor - holds_uncounted_minor - reservations_minor); credit account = cards sharing credit_account_id (main and supplementary cards) share the account's available credit, max(0, that value - the holds and reservations of ALL its cards); pool = max(0, pool available - the holds and reservations of all its member cards). The raw value is kept as reported (may be negative / over limit). Not yet supported by engine model 1.1.0 and therefore not accepted here (rejected, never ignored): daily_cap, temp_limit_expiry, future_releases.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "card_id",
+    "credit_account_id",
+    "raw_available_minor",
+    "holds_uncounted_minor",
+    "reservations_minor",
+    "billing_rule",
+    "repay_from_cash_account_id",
+    "channel_ok",
+    "currency_ok",
+    "status_ok",
+    "fee_rate",
+    "fee_fixed_minor",
+    "verified_benefit_rate",
+    "potential_benefit_rate",
+    "posting_delay_min_days",
+    "posting_delay_max_days"
+  ],
+  "properties": {
+    "card_id": { "$ref": "common.schema.json#/$defs/Id" },
+    "credit_account_id": {
+      "description": "Credit account of the card. Cards with the same credit_account_id form one capacity layer; they must report the same raw_available_minor and the same pool_id (adapter rule, not expressible in JSON Schema).",
+      "$ref": "common.schema.json#/$defs/Id"
+    },
+    "name": {
+      "description": "Display name. Absent = card_id.",
+      "$ref": "common.schema.json#/$defs/Text"
+    },
+    "raw_available_minor": {
+      "description": "Available credit of the card's credit account as last reported by the bank; may be negative. One value per credit account.",
+      "$ref": "common.schema.json#/$defs/MinorAmount"
+    },
+    "holds_uncounted_minor": {
+      "description": "Pre-authorisations / holds the reported value does not include yet. Deducted from this card, its credit account and its pool; record each hold on ONE card of the account (never repeated on every card).",
+      "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount"
+    },
+    "reservations_minor": {
+      "description": "Reservations of other adopted plans on this card. Deducted like holds_uncounted_minor (card, credit account, pool); record each reservation on ONE card.",
+      "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount"
+    },
+    "pool_id": {
+      "description": "Shared credit pool of the card (absent = none); all cards of a credit account name the same pool. A pool without an entry in PlanInput.pools makes the run NEEDS_DATA (MISSING_POOL_SNAPSHOT).",
+      "$ref": "common.schema.json#/$defs/Id"
+    },
+    "per_txn_cap_minor": {
+      "description": "Per-transaction cap (absent = none).",
+      "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount"
+    },
+    "min_split_minor": {
+      "description": "Card-specific minimum part when used (absent = the request's min_split_minor).",
+      "$ref": "common.schema.json#/$defs/PositiveMinorAmount"
+    },
+    "billing_rule": { "$ref": "BillingRule.schema.json" },
+    "repay_from_cash_account_id": {
+      "description": "Cash account that pays this card's repayment; must be one of PlanInput.cash_accounts.",
+      "$ref": "common.schema.json#/$defs/Id"
+    },
+    "channel_ok": { "type": "boolean" },
+    "currency_ok": { "type": "boolean" },
+    "status_ok": { "type": "boolean" },
+    "fee_rate": {
+      "description": "Proportional fee rate (rounded UP to the minor unit). Fee = rate part + fee_fixed_minor; it is paid in cash with the repayment on repay_on (engine-spec §12.6).",
+      "$ref": "common.schema.json#/$defs/Rate"
+    },
+    "fee_fixed_minor": { "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount" },
+    "verified_benefit_rate": {
+      "description": "Verified benefit rate (enters the objective; rounded DOWN).",
+      "$ref": "common.schema.json#/$defs/Rate"
+    },
+    "verified_benefit_cap_minor": {
+      "description": "Cap of the verified benefit (absent = none).",
+      "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount"
+    },
+    "potential_benefit_rate": {
+      "description": "Unverified benefit rate: reported only, never in the objective.",
+      "$ref": "common.schema.json#/$defs/Rate"
+    },
+    "posting_delay_min_days": {
+      "description": "Earliest bank posting, in days after the transaction date.",
+      "$ref": "common.schema.json#/$defs/DayCount"
+    },
+    "posting_delay_max_days": {
+      "description": "Latest bank posting, in days after the transaction date; must be >= posting_delay_min_days.",
+      "$ref": "common.schema.json#/$defs/DayCount"
+    }
+  }
+}

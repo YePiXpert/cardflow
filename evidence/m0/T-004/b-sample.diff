@@ -1,0 +1,23 @@
+# T-004b sample runner vs evidence/m0/T-004/sample_after.md (T-004 state) (2026-10-17T03:00:31Z)
+$ uv run --project services/api python -m cardflow.planner.engine.sample > /tmp/t004b/sample_b.md
+exit=0, stderr 0 bytes
+
+## 1. raw diff
+$ diff evidence/m0/T-004/sample_after.md /tmp/t004b/sample_b.md
+32,34c32,34
+< - 目标画像 **cash_safety**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 min_margin=100000(OPTIMAL)；fees=0(SKIPPED_CONSTANT)；net_verified_benefit=0(SKIPPED_CONSTANT)；buffer=42400000(OPTIMAL)；cards=2(OPTIMAL)；耗时 0.012s
+< - 目标画像 **verified_benefit**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 net_verified_benefit=0(SKIPPED_CONSTANT)；min_margin=100000(OPTIMAL)；buffer=42400000(OPTIMAL)；cards=2(OPTIMAL)；耗时 0.007s
+< - 目标画像 **fewer_cards**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 cards=2(OPTIMAL)；min_margin=100000(OPTIMAL)；net_verified_benefit=0(SKIPPED_CONSTANT)；buffer=42400000(OPTIMAL)；耗时 0.006s
+---
+> - 目标画像 **cash_safety**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 min_margin=100000(OPTIMAL)；fees=0(SKIPPED_CONSTANT)；net_verified_benefit=0(SKIPPED_CONSTANT)；buffer=42400000(OPTIMAL)；cards=2(OPTIMAL)；耗时 0.013s
+> - 目标画像 **verified_benefit**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 net_verified_benefit=0(SKIPPED_CONSTANT)；min_margin=100000(OPTIMAL)；buffer=42400000(OPTIMAL)；cards=2(OPTIMAL)；耗时 0.008s
+> - 目标画像 **fewer_cards**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 cards=2(OPTIMAL)；min_margin=100000(OPTIMAL)；net_verified_benefit=0(SKIPPED_CONSTANT)；buffer=42400000(OPTIMAL)；耗时 0.007s
+57c57
+< - run_id `83e446d9-daf3-49ba-b6e4-50e19b6b4fdd`；求解器 OR-Tools 9.15.6755；模型 1.0.0；时限 10s；检查点 10；创建 2026-10-17T02:25:16.054576+00:00
+---
+> - run_id `16808ea2-ea78-4ed9-8b46-2eaf6bf660ec`；求解器 OR-Tools 9.15.6755；模型 1.0.0；时限 10s；检查点 10；创建 2026-10-17T03:00:31.091509+00:00
+exit=1
+
+## 2. masking only wall times, run_id, creation timestamp and report date (same MASK as sample-after.diff)
+# MASK (sed -E): s/耗时 [0-9]+\.[0-9]{3}s/耗时 <wall-time>s/g; s/run_id `[0-9a-f-]{36}`/run_id `<uuid4>`/; s/创建 [0-9T:.+-]+$/创建 <utc-timestamp>/; s/生成日期 [0-9]{4}-[0-9]{2}-[0-9]{2}$/生成日期 <date>/
+exit=0 (0 = identical apart from timing / run_id / dates)

@@ -1,0 +1,22 @@
+# T-004b lint / format (2026-10-17T03:00:30Z)
+## T-004 paths (cwd services/api)
+$ uv run ruff check cardflow/planner/engine tests/engine tests/protocol && uv run ruff format --check cardflow/planner/engine tests/engine tests/protocol
+All checks passed!
+26 files already formatted
+exit=0
+$ uv run --project services/api ruff check packages/rules-protocol && uv run --project services/api ruff format --check packages/rules-protocol   (cwd repo root)
+All checks passed!
+3 files already formatted
+exit=0
+
+## whole services/api: changing under T-008's concurrent edits (tests/jobs/, cardflow/jobs/)
+# 2026-10-17T03:00:30Z: ruff check -> 1 finding (tests/jobs/test_concurrency.py BLE001), format -> 1 file to reformat
+# 2026-10-17T03:00:49Z: re-run below shows the then-current state; none of the findings is in a T-004 path
+
+## untouched
+cf736de388f527a119ca1bfba9cb01e42cded6a35e1d983dae59c632283bb7fc  services/api/pyproject.toml
+51ef0eb15283eaddaa22b2ec2c6e366bdf38f48f09896de69ff116b532f12553  services/api/uv.lock
+$ find poc -type f | sort | xargs sha256sum | diff <(grep -v "^[#$]" evidence/m0/T-003/poc-integrity-before.txt) -
+exit=0 (0 = poc/ unchanged)
+$ uv run ruff check . --output-format concise | grep -E "^[a-z]"; uv run ruff format --check . | tail -1   (cwd services/api)
+103 files already formatted

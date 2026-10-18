@@ -1,0 +1,37 @@
+{
+  "fixture_id": "REG-2026-10-16-10000",
+  "description": "任务书第10节回归样本：2026-10-16 消费 10,000 元，三张独立授信卡，商户允许最多3张卡拆分，交易当天入账，无活动/手续费/利息，还款在到期日扣现金（提前量0）。纯合成数据。",
+  "request": {"amount": "10000.00", "currency": "CNY", "txn_date": "2026-10-16", "allow_split": true, "max_cards": 3, "min_split": "0.01", "payment_lead_days": 0},
+  "cards": [
+    {"id": "A", "account_id": "acc-A", "name": "卡A", "available": "8000.00", "statement_day": 10, "due": {"kind": "fixed_day", "day": 28, "month_offset": 0}, "repay_from": "cash-main"},
+    {"id": "B", "account_id": "acc-B", "name": "卡B", "available": "15000.00", "statement_day": 20, "due": {"kind": "fixed_day", "day": 8, "month_offset": 1}, "repay_from": "cash-main"},
+    {"id": "C", "account_id": "acc-C", "name": "卡C", "available": "6000.00", "statement_day": 5, "due": {"kind": "fixed_day", "day": 25, "month_offset": 0}, "repay_from": "cash-main"}
+  ],
+  "cash_accounts": [{"id": "cash-main", "name": "主现金账户", "reserve_floor": "2000.00"}],
+  "snapshots": [{"account": "cash-main", "balance": "5000.00", "as_of": "2026-10-16"}],
+  "events": [
+    {"id": "e1", "on": "2026-10-27", "amount": "-1000.00", "cls": "confirmed", "category": "living", "label": "生活支出"},
+    {"id": "e2", "on": "2026-10-28", "amount": "-1000.00", "cls": "confirmed", "category": "bill", "label": "已有账单"},
+    {"id": "e3", "on": "2026-11-06", "amount": "8500.00", "cls": "expected", "category": "income", "label": "预计收入"},
+    {"id": "e4", "on": "2026-11-08", "amount": "-5000.00", "cls": "confirmed", "category": "bill", "label": "已有账单"},
+    {"id": "e5", "on": "2026-11-16", "amount": "-3500.00", "cls": "confirmed", "category": "bill", "label": "已有账单"},
+    {"id": "e6", "on": "2026-11-20", "amount": "7000.00", "cls": "expected", "category": "income", "label": "预计收入"},
+    {"id": "e7", "on": "2026-11-22", "amount": "-2000.00", "cls": "confirmed", "category": "living", "label": "生活支出"},
+    {"id": "e8", "on": "2026-11-26", "amount": "5000.00", "cls": "expected", "category": "income", "label": "预计收入"}
+  ],
+  "horizon_end": "2027-01-14",
+  "scenarios": {
+    "confirmed": {"include_expected": false, "description": "已确认口径：不计任何预计收入"},
+    "baseline": {"include_expected": true, "description": "基准预期口径：预计收入按期发生"},
+    "stress_income_delay": {"include_expected": true, "event_overrides": {"e8": {"on": "2026-11-29"}}, "description": "压力情景：2026-11-26 的 5,000 收入延迟至 2026-11-29"}
+  },
+  "decision_scenario": "baseline",
+  "expected": {
+    "cycles": {"A": ["2026-11-10", "2026-11-28"], "B": ["2026-10-20", "2026-11-08"], "C": ["2026-11-05", "2026-11-25"]},
+    "plan_A8000_C2000": {"baseline_min_cash": "3000.00", "weighted_buffer_days": "42.4", "stress_balance_2026-11-28": "-2000.00", "stress_gap_to_zero": "2000.00", "stress_gap_to_reserve": "4000.00"},
+    "plan_B10000": {"balance_2026-11-08": "-3500.00", "balance_2026-11-16": "-7000.00", "min_cash": "-7000.00"},
+    "confirmed_scenario": {"baseline_shortfall_on": "2026-11-08", "balance": "-2000.00"},
+    "cash_safety_optimum": {"A": "8000.00", "C": "2000.00"},
+    "stress_sensitivity": {"min_extra_confirmed_cash": "4000.00", "max_affordable_amount": "6000.00"}
+  }
+}

@@ -1,0 +1,155 @@
+# T-004c determinism evidence (engine-spec §12.5, review R3E-06) -- 2026-10-17T23:21:02Z
+# Before the fix (review §4.6, model 1.0.0): the 30-card instance gave 4 distinct allocations in 20 runs
+# (cash_safety) and 3 (fewer_cards) with workers=8; 1 with workers=1. Now: one outcome per configuration,
+# identical for workers=8 and workers=1 (sensitivity allocations included).
+# Script (scratch, outside the repository; source below) imports the 30-card builder from
+# services/api/tests/engine/test_determinism.py and the F-18 v1 fixture.
+$ services/api/.venv/bin/python determinism.py
+# engine model 1.1.0; 20 runs per line; protocol path with sensitivity
+F-18 cash_safety / baseline | workers=8 | 20 runs in 0.5s | distinct outcomes: 1 | distinct allocations: 1 | CONDITIONALLY_FEASIBLE/OPTIMAL
+    allocation: A=800000, C=200000
+    sensitivity: stress_income_delay: extra 400000 {'A': 800000, 'B': 200000}, max 600000 {'A': 600000}, shift {'shift_days': 5, 'txn_date': '2026-10-21', 'status': 'OPTIMAL'}
+F-18 cash_safety / baseline | workers=1 | 20 runs in 0.2s | distinct outcomes: 1 | distinct allocations: 1 | CONDITIONALLY_FEASIBLE/OPTIMAL
+    allocation: A=800000, C=200000
+    sensitivity: stress_income_delay: extra 400000 {'A': 800000, 'B': 200000}, max 600000 {'A': 600000}, shift {'shift_days': 5, 'txn_date': '2026-10-21', 'status': 'OPTIMAL'}
+    workers=8 and workers=1 give the same single outcome: True
+F-18 verified_benefit / baseline | workers=8 | 20 runs in 0.6s | distinct outcomes: 1 | distinct allocations: 1 | CONDITIONALLY_FEASIBLE/OPTIMAL
+    allocation: A=800000, C=200000
+    sensitivity: stress_income_delay: extra 400000 {'A': 800000, 'B': 200000}, max 600000 {'A': 600000}, shift {'shift_days': 5, 'txn_date': '2026-10-21', 'status': 'OPTIMAL'}
+F-18 verified_benefit / baseline | workers=1 | 20 runs in 0.2s | distinct outcomes: 1 | distinct allocations: 1 | CONDITIONALLY_FEASIBLE/OPTIMAL
+    allocation: A=800000, C=200000
+    sensitivity: stress_income_delay: extra 400000 {'A': 800000, 'B': 200000}, max 600000 {'A': 600000}, shift {'shift_days': 5, 'txn_date': '2026-10-21', 'status': 'OPTIMAL'}
+    workers=8 and workers=1 give the same single outcome: True
+F-18 fewer_cards / baseline | workers=8 | 20 runs in 0.6s | distinct outcomes: 1 | distinct allocations: 1 | CONDITIONALLY_FEASIBLE/OPTIMAL
+    allocation: A=800000, C=200000
+    sensitivity: stress_income_delay: extra 400000 {'A': 800000, 'B': 200000}, max 600000 {'A': 600000}, shift {'shift_days': 5, 'txn_date': '2026-10-21', 'status': 'OPTIMAL'}
+F-18 fewer_cards / baseline | workers=1 | 20 runs in 0.2s | distinct outcomes: 1 | distinct allocations: 1 | CONDITIONALLY_FEASIBLE/OPTIMAL
+    allocation: A=800000, C=200000
+    sensitivity: stress_income_delay: extra 400000 {'A': 800000, 'B': 200000}, max 600000 {'A': 600000}, shift {'shift_days': 5, 'txn_date': '2026-10-21', 'status': 'OPTIMAL'}
+    workers=8 and workers=1 give the same single outcome: True
+F-18 cash_safety / stress_income_delay (INFEASIBLE + sensitivity) | workers=8 | 20 runs in 0.3s | distinct outcomes: 1 | distinct allocations: 1 | INFEASIBLE/INFEASIBLE
+    allocation: -
+    sensitivity: stress_income_delay: extra 400000 {'A': 800000, 'B': 200000}, max 600000 {'A': 600000}, shift {'shift_days': 5, 'txn_date': '2026-10-21', 'status': 'OPTIMAL'}
+F-18 cash_safety / stress_income_delay (INFEASIBLE + sensitivity) | workers=1 | 20 runs in 0.1s | distinct outcomes: 1 | distinct allocations: 1 | INFEASIBLE/INFEASIBLE
+    allocation: -
+    sensitivity: stress_income_delay: extra 400000 {'A': 800000, 'B': 200000}, max 600000 {'A': 600000}, shift {'shift_days': 5, 'txn_date': '2026-10-21', 'status': 'OPTIMAL'}
+    workers=8 and workers=1 give the same single outcome: True
+30 near-identical cards (review P-DET) cash_safety | workers=8 | 20 runs in 1.9s | distinct outcomes: 1 | distinct allocations: 1 | FEASIBLE_ROBUST/OPTIMAL
+    allocation: c00=1000, c01=1100, c03=1000, c04=1100, c05=1200, c06=789, c07=1100, c09=1000, c11=911, c13=1100, c15=1000, c19=1100, c21=1000, c25=1100, c27=1000
+    sensitivity: -
+30 near-identical cards (review P-DET) cash_safety | workers=1 | 20 runs in 0.8s | distinct outcomes: 1 | distinct allocations: 1 | FEASIBLE_ROBUST/OPTIMAL
+    allocation: c00=1000, c01=1100, c03=1000, c04=1100, c05=1200, c06=789, c07=1100, c09=1000, c11=911, c13=1100, c15=1000, c19=1100, c21=1000, c25=1100, c27=1000
+    sensitivity: -
+    workers=8 and workers=1 give the same single outcome: True
+30 near-identical cards (review P-DET) verified_benefit | workers=8 | 20 runs in 2.1s | distinct outcomes: 1 | distinct allocations: 1 | FEASIBLE_ROBUST/OPTIMAL
+    allocation: c00=1000, c01=1100, c03=1000, c04=1100, c05=1200, c06=789, c07=1100, c09=1000, c11=911, c13=1100, c15=1000, c19=1100, c21=1000, c25=1100, c27=1000
+    sensitivity: -
+30 near-identical cards (review P-DET) verified_benefit | workers=1 | 20 runs in 0.8s | distinct outcomes: 1 | distinct allocations: 1 | FEASIBLE_ROBUST/OPTIMAL
+    allocation: c00=1000, c01=1100, c03=1000, c04=1100, c05=1200, c06=789, c07=1100, c09=1000, c11=911, c13=1100, c15=1000, c19=1100, c21=1000, c25=1100, c27=1000
+    sensitivity: -
+    workers=8 and workers=1 give the same single outcome: True
+30 near-identical cards (review P-DET) fewer_cards | workers=8 | 20 runs in 3.1s | distinct outcomes: 1 | distinct allocations: 1 | FEASIBLE_ROBUST/OPTIMAL
+    allocation: c00=1000, c01=1100, c03=1000, c04=1100, c05=1200, c06=900, c07=1100, c11=1200, c13=1100, c17=1200, c19=1100, c23=1200, c25=1100, c29=1200
+    sensitivity: -
+30 near-identical cards (review P-DET) fewer_cards | workers=1 | 20 runs in 3.3s | distinct outcomes: 1 | distinct allocations: 1 | FEASIBLE_ROBUST/OPTIMAL
+    allocation: c00=1000, c01=1100, c03=1000, c04=1100, c05=1200, c06=900, c07=1100, c11=1200, c13=1100, c17=1200, c19=1100, c23=1200, c25=1100, c29=1200
+    sensitivity: -
+    workers=8 and workers=1 give the same single outcome: True
+
+ALL CONFIGURATIONS DETERMINISTIC ACROSS RUNS AND WORKERS: True
+exit=0
+
+## source of determinism.py
+```python
+"""T-004c determinism evidence (engine-spec §12.5, review R3E-06): every configuration is run 20
+times with workers=8 and 20 times with workers=1 through plan_from_protocol (sensitivity on);
+an outcome is compared without run_id, created_at, wall times, input_hash and the workers
+option itself (the two latter differ by construction between workers=8 and workers=1)."""
+import collections
+import copy
+import importlib.util
+import json
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, "/projects/cardflow/services/api")
+from cardflow.planner.engine import MODEL_VERSION  # noqa: E402
+from cardflow.planner.engine.protocol import parse_json, plan_from_protocol  # noqa: E402
+
+REPO = Path("/projects/cardflow")
+spec = importlib.util.spec_from_file_location(
+    "det", REPO / "services/api/tests/engine/test_determinism.py")
+det = importlib.util.module_from_spec(spec)
+sys.modules["det"] = det
+spec.loader.exec_module(det)
+F18 = parse_json((REPO / "packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json").read_bytes())["input"]
+N = 20
+
+
+def key(out: dict) -> str:
+    keep = {k: v for k, v in out.items() if k not in ("run_id", "created_at", "wall_time_s", "input_hash", "workers")}
+    keep["tiers"] = [{k: v for k, v in t.items() if k != "wall_time_s"} for t in out["tiers"]]
+    return json.dumps(keep, sort_keys=True, ensure_ascii=False)
+
+
+def alloc(out: dict) -> str:
+    return ", ".join(f"{a['card_id']}={a['amount_minor']}" for a in out["allocation"]) or "-"
+
+
+def sens(out: dict) -> str:
+    parts = []
+    for sid, s in out["sensitivity"].items():
+        if "note" in s:
+            continue
+        parts.append(f"{sid}: extra {s['min_extra_confirmed_cash'].get('total')} {s['min_extra_confirmed_cash'].get('allocation')}, "
+                     f"max {s['max_affordable_amount'].get('amount')} {s['max_affordable_amount'].get('allocation')}, "
+                     f"shift {s['first_feasible_date_shift']}")
+    return "; ".join(parts) or "-"
+
+
+def run(label: str, make) -> bool:
+    per_workers = {}
+    for workers in (8, 1):
+        outcomes, allocs = collections.Counter(), collections.Counter()
+        t0 = time.monotonic()
+        last = None
+        for _ in range(N):
+            doc = make(workers)
+            out = plan_from_protocol(doc)
+            outcomes[key(out)] += 1
+            allocs[alloc(out)] += 1
+            last = out
+        dt = time.monotonic() - t0
+        per_workers[workers] = set(outcomes)
+        print(f"{label} | workers={workers} | {N} runs in {dt:.1f}s | distinct outcomes: {len(outcomes)} | "
+              f"distinct allocations: {len(allocs)} | {last['business_status']}/{last['solver_status']}")
+        print(f"    allocation: {alloc(last)}")
+        print(f"    sensitivity: {sens(last)}")
+    same = per_workers[8] == per_workers[1] and len(per_workers[8]) == 1
+    print(f"    workers=8 and workers=1 give the same single outcome: {same}")
+    return same
+
+
+def f18(profile: str, decision: str):
+    def make(workers: int) -> dict:
+        d = copy.deepcopy(F18)
+        d["options"].update(profile=profile, decision_scenario=decision, workers=workers)
+        return d
+    return make
+
+
+def thirty(profile: str):
+    return lambda workers: det.thirty_near_identical_cards(profile, workers)
+
+
+print(f"# engine model {MODEL_VERSION}; {N} runs per line; protocol path with sensitivity")
+ok = True
+for profile in ("cash_safety", "verified_benefit", "fewer_cards"):
+    ok &= run(f"F-18 {profile} / baseline", f18(profile, "baseline"))
+ok &= run("F-18 cash_safety / stress_income_delay (INFEASIBLE + sensitivity)", f18("cash_safety", "stress_income_delay"))
+for profile in ("cash_safety", "verified_benefit", "fewer_cards"):
+    ok &= run(f"30 near-identical cards (review P-DET) {profile}", thirty(profile))
+print(f"\nALL CONFIGURATIONS DETERMINISTIC ACROSS RUNS AND WORKERS: {ok}")
+sys.exit(0 if ok else 1)
+```

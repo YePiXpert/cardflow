@@ -1,0 +1,34 @@
+# Synthetic injection samples for tools/pii_scan.py (T-014). Every value is fictional: public test card numbers, the GB sample ID number, reserved example domains, a placeholder phone number, made-up tokens and keys.
+# Every line that does not start with a hash must produce hits; tools/tests/test_pii_scan.py pins the exact FIELD and RULE of each line.
+{"ts":"2026-10-16T08:00:00.000+00:00","level":"info","logger":"cardflow.statements","message":"repayment recorded ¥8,000.00","request_id":"5bab78464d6444f4889adc83043f2934"}
+{"ts":"2026-10-16T08:00:01.000+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"ee8ed4eef7b04d45910ab1f9c3696f9c","method":"POST","path":"/v1/repayments","status":201,"duration_ms":3.2,"amount_minor":800000}
+{"ts":"2026-10-16T08:00:02.000+00:00","level":"warning","logger":"cardflow.planner","message":"plan_infeasible","credit_limit":5000000,"balance":"12,345.67"}
+2026-10-16T08:00:03.000+00:00 INFO     cardflow.cash: snapshot_saved request_id="b72e2f1207c241f7935bf2c64adea0e8" balance_minor=1234567 note="余额 3500元"
+{"logger":"cardflow.imports","message":"parsed card 4111 1111 1111 1111 from statement"}
+127.0.0.1 - - [16/Oct/2026:08:00:04 +0000] "GET /v1/cards?pan=5555555555554444 HTTP/1.1" 200
+{"logger":"cardflow.cards","message":"card_added","card_last4":"4444"}
+2026-10-16 08:00:05 WARN reminder sent for card 尾号1111
+{"logger":"cardflow.imports","message":"statement for Visa ending in 1881 imported"}
+{"logger":"cardflow.notifications","message":"push preview **** **** **** 4444"}
+{"logger":"cardflow.identity","message":"token_issued","detail":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0LWRldmljZSIsImV4cCI6MTc2MDYwMDAwMH0.dGVzdC1zaWduYXR1cmUtbm90LXJlYWw"}
+Authorization: Bearer 9f8e7d6c5b4a39281706f5e4d3c2b1a0
+{"logger":"cardflow.sync","message":"upstream_call","headers":{"authorization":"Basic dGVzdHVzZXI6dGVzdHBhc3M="}}
+{"logger":"cardflow.identity","message":"login_failed","password":"hunter2-not-real"}
+refresh_token=r3fr35h-t0k3n-n0t-r34l device=test-device
+{"logger":"cardflow.statements","message":"transaction_imported","merchant":"虚构测试商户"}
+{"logger":"cardflow.identity","message":"kyc_checked","id_number":"11010519491231002X"}
+2026-10-16 08:00:09 INFO user registered, 身份证 11010519491231002X
+{"logger":"cardflow.notifications","message":"sms reminder to 13800138000"}
+contact phone: +86 138-0013-8000
+{"logger":"cardflow.notifications","message":"statement mailed to zhang.san@example.com"}
+{"logger":"cardflow.crypto","message":"kek loaded MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="}
+{"logger":"cardflow.imports","message":"document_stored","value":"c0ffee00deadbeef0123456789abcdef0a1b2c3d"}
+api-1  | {"ts":"2026-10-16T08:00:12.000+00:00","level":"info","logger":"cardflow.payments","message":"refund ￥66.00 queued"}
+{"logger":"cardflow.sync","message":"bad_map","counts":{"li.si@example.org":3}}
+127.0.0.1 - - "POST /v1/plans?amount=8000&phone=13800138000 HTTP/1.1" 422
+amount=¥1,234.56 card=6011111111111117
+{"logger":"cardflow.access","message":"http_request","method":"GET","path":"/v1/cards/4111111111111111","status":200}
+{"logger":"cardflow.access","message":"http_request","status":"4111-1111-1111-1111","request_id":"not-a-uuid 13800138000"}
+{"logger":"cardflow.planner","message":"retry amount_minor=800000 for card_last4=4444"}
+GET /healthz?amount=%C2%A58%2C000.00&card=4111+1111+1111+1111 HTTP/1.1
+{"ts":"2026-10-16T08:00:13.000+00:00","level":"warning","logger":"py.warnings","message":"pydantic/type_adapter.py:651: UserWarning: Pydantic serializer warnings:\n  PydanticSerializationUnexpectedValue(Expected `int` - serialized value may not be as expected [field_name='n', input_value='4111111111111111', input_type=str])"}

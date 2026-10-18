@@ -1,0 +1,11 @@
+# 主会话修正 T-014 发现的潜在泄露（2026-10-17）
+# 改动：cardflow/log.py 用 log_warning 取代 logging.captureWarnings（只记警告类别与位置）；httpx/httpcore 限制为 WARNING
+$ uv run pytest tests/test_logging.py -v
+tests/test_logging.py::test_json_formatter_drops_fields_outside_whitelist PASSED [ 14%]
+tests/test_logging.py::test_exception_message_is_never_logged PASSED     [ 28%]
+tests/test_logging.py::test_exception_chain_lists_types_only PASSED      [ 42%]
+tests/test_logging.py::test_text_formatter_keeps_one_line_per_record PASSED [ 57%]
+tests/test_logging.py::test_configure_logging_emits_json_with_request_id_and_mutes_uvicorn_access PASSED [ 71%]
+tests/test_logging.py::test_warning_text_is_never_logged PASSED          [ 85%]
+tests/test_logging.py::test_url_logging_third_parties_are_capped_at_warning PASSED [100%]
+========================= 7 passed, 1 warning in 0.06s =========================

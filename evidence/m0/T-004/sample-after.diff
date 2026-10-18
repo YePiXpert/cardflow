@@ -1,0 +1,45 @@
+# T-004 B.8 sample runner after the engine fixes vs T-003 (2026-10-17T02:25:27Z), cwd services/api, same venv
+# before: evidence/m0/T-003/sample_new.md (T-003 run, model poc-0.1.0)
+# after : evidence/m0/T-004/sample_after.md
+$ uv run python -m cardflow.planner.engine.sample > evidence/m0/T-004/sample_after.md
+exit=0, stderr empty (0 bytes)
+
+## 1. raw diff
+$ diff evidence/m0/T-003/sample_new.md evidence/m0/T-004/sample_after.md
+2c2
+< 模型版本 poc-0.1.0；输入哈希 `50b7df309486409b…`；生成日期 2026-10-16
+---
+> 模型版本 1.0.0；输入哈希 `50b7df309486409b…`；生成日期 2026-10-17
+32c32
+< - 目标画像 **cash_safety**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 min_margin=100000(OPTIMAL)；fees=0(SKIPPED_CONSTANT)；net_verified_benefit=0(SKIPPED_CONSTANT)；buffer=42400000(OPTIMAL)；cards=2(OPTIMAL)；耗时 0.013s
+---
+> - 目标画像 **cash_safety**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 min_margin=100000(OPTIMAL)；fees=0(SKIPPED_CONSTANT)；net_verified_benefit=0(SKIPPED_CONSTANT)；buffer=42400000(OPTIMAL)；cards=2(OPTIMAL)；耗时 0.012s
+34c34
+< - 目标画像 **fewer_cards**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 cards=2(OPTIMAL)；min_margin=100000(OPTIMAL)；net_verified_benefit=0(SKIPPED_CONSTANT)；buffer=42400000(OPTIMAL)；耗时 0.007s
+---
+> - 目标画像 **fewer_cards**：求解器 OPTIMAL，业务状态 **CONDITIONALLY_FEASIBLE**，分配 A 8,000.00，C 2,000.00；未通过情景 ['confirmed', 'stress_income_delay']；层级 cards=2(OPTIMAL)；min_margin=100000(OPTIMAL)；net_verified_benefit=0(SKIPPED_CONSTANT)；buffer=42400000(OPTIMAL)；耗时 0.006s
+57c57
+< - run_id `2eff97b6-6ee3-45dd-858a-519827c4fbb6`；求解器 OR-Tools 9.15.6755；模型 poc-0.1.0；时限 10s；检查点 10；创建 2026-10-16T15:37:07.839693+00:00
+---
+> - run_id `83e446d9-daf3-49ba-b6e4-50e19b6b4fdd`；求解器 OR-Tools 9.15.6755；模型 1.0.0；时限 10s；检查点 10；创建 2026-10-17T02:25:16.054576+00:00
+exit=1
+
+## 2. volatile values masked exactly as in evidence/m0/T-003/sample.diff
+# MASK (sed -E): s/耗时 [0-9]+\.[0-9]{3}s/耗时 <wall-time>s/g; s/run_id `[0-9a-f-]{36}`/run_id `<uuid4>`/; s/创建 [0-9T:.+-]+$/创建 <utc-timestamp>/; s/生成日期 [0-9]{4}-[0-9]{2}-[0-9]{2}$/生成日期 <date>/
+$ diff <(sed -E "$MASK" before) <(sed -E "$MASK" after)
+2c2
+< 模型版本 poc-0.1.0；输入哈希 `50b7df309486409b…`；生成日期 <date>
+---
+> 模型版本 1.0.0；输入哈希 `50b7df309486409b…`；生成日期 <date>
+57c57
+< - run_id `<uuid4>`；求解器 OR-Tools 9.15.6755；模型 poc-0.1.0；时限 10s；检查点 10；创建 <utc-timestamp>
+---
+> - run_id `<uuid4>`；求解器 OR-Tools 9.15.6755；模型 1.0.0；时限 10s；检查点 10；创建 <utc-timestamp>
+exit=1
+# => exactly two lines differ, both only by the model version (B.4: MODEL_VERSION poc-0.1.0 -> 1.0.0):
+#    line 2  header  '模型版本 <MODEL_VERSION>'   line 57  run record '模型 <solve.model_version>'
+#    the input hash prefix (50b7df309486409b, ModelInputs.input_hash of the fixture) is unchanged.
+
+## 3. additionally masking the model version: no difference left
+# VMASK (sed -E): s/模型版本 (poc-0\.1\.0|1\.0\.0)；/模型版本 <model-version>；/; s/；模型 (poc-0\.1\.0|1\.0\.0)；/；模型 <model-version>；/
+exit=0

@@ -1,0 +1,9 @@
+# T-014 clean.log 扫描（2026-10-17T02:09:31Z），工作目录为仓库根目录；clean.log 由 tools/pii_log_probe.py 真实运行生成（见 clean-log-generation.txt）
+$ sha256sum tools/pii_samples/clean.log
+0a290b924bd9f19d0ac27afdc235c3e7bf70766c6ed09b0ff247490138be84ba  tools/pii_samples/clean.log
+$ uv run --project services/api python tools/pii_scan.py tools/pii_samples/clean.log
+pii_scan: 1 file(s), 26 line(s), 0 hit(s)
+exit=0
+$ python3 -I -S tools/pii_scan.py tools/pii_samples/clean.log   # 不加载 site-packages：只用标准库
+pii_scan: 1 file(s), 26 line(s), 0 hit(s)
+exit=0

@@ -1,0 +1,140 @@
+# T-004 B.5 determinism of the F-18 solve (2026-10-17T02:25:04Z)
+# one-off tool /tmp/t004/tools/determinism.py (not committed; full text in section 0), run in the services/api venv
+
+## 0. tool
+```python
+"""T-004 B.5: repeat the F-18 solve 20 times per profile and compare results (one-off tool).
+
+(a) allocation.solve(): status, allocation (with card order) and every tier's
+    (name, sense, status, value, bound) -- the objective values of every tier;
+(b) protocol.plan_from_protocol(): the whole PlanOutcome document minus per-run values
+    (run_id, created_at, wall times) -- also covers sensitivity, rejections, verification.
+
+usage: python determinism.py REPO_ROOT
+"""
+
+import json
+import os
+import statistics
+import sys
+from pathlib import Path
+
+import ortools
+
+from cardflow.planner.engine import MODEL_VERSION
+from cardflow.planner.engine.allocation import solve
+from cardflow.planner.engine.fixture import load_fixture
+from cardflow.planner.engine.protocol import parse_json, plan_from_protocol
+
+N = 20
+PROFILES = ("cash_safety", "verified_benefit", "fewer_cards")
+
+
+def stable(outcome: dict) -> str:
+    out = {k: v for k, v in outcome.items() if k not in ("run_id", "created_at", "wall_time_s")}
+    out["tiers"] = [{k: v for k, v in t.items() if k != "wall_time_s"} for t in out["tiers"]]
+    return json.dumps(out, sort_keys=True, ensure_ascii=False)
+
+
+def main(repo: Path) -> int:
+    fixtures = repo / "packages" / "rules-protocol" / "fixtures"
+    inputs, scenarios, _ = load_fixture(fixtures / "regression_2026-10-16_10000.json")
+    v1 = parse_json((fixtures / "regression_2026-10-16_10000.v1.json").read_bytes())
+    w = sys.stdout.write
+    w(f"engine model {MODEL_VERSION}, OR-Tools {ortools.__version__}, os.cpu_count()={os.cpu_count()}\n")
+    w(f"solver parameters per CP-SAT call: num_workers=8, random_seed=0 (ADR-004 defaults); "
+      f"no other parameter set; repetitions N={N}\n\n")
+    bad = 0
+    w("(a) allocation.solve(inputs, scenarios['baseline'], profile, time_limit_s=10)\n")
+    for profile in PROFILES:
+        seen, times = {}, []
+        for _ in range(N):
+            r = solve(inputs, scenarios["baseline"], profile, time_limit_s=10)
+            key = (
+                r.status,
+                tuple(r.allocation.items()),
+                tuple((t.name, t.sense, t.status, t.value, t.bound) for t in r.tiers),
+            )
+            seen[key] = seen.get(key, 0) + 1
+            times.append(r.wall_time_s)
+            assert (r.workers, r.seed) == (8, 0)
+        bad += len(seen) != 1
+        w(f"  {profile}: {N} runs -> {len(seen)} distinct result(s)\n")
+        for (status, alloc, tiers), count in seen.items():
+            w(f"    x{count}: status {status}; allocation {dict(alloc)}\n")
+            for name, sense, st, value, bound in tiers:
+                w(f"           tier {name:<20} {sense} {st:<16} value={value} bound={bound}\n")
+        w(
+            f"    wall time s: min {min(times):.4f} median {statistics.median(times):.4f} "
+            f"max {max(times):.4f}\n"
+        )
+    w("\n(b) protocol.plan_from_protocol(F-18 v1 input with options.profile=<profile>):\n")
+    w("    whole PlanOutcome compared, minus run_id, created_at and wall times\n")
+    for profile in PROFILES:
+        doc = json.loads(json.dumps(v1["input"]))
+        doc["options"]["profile"] = profile
+        seen = {}
+        for _ in range(N):
+            s = stable(plan_from_protocol(doc))
+            seen[s] = seen.get(s, 0) + 1
+        bad += len(seen) != 1
+        sample = json.loads(next(iter(seen)))
+        alloc = {a["card_id"]: a["amount_minor"] for a in sample["allocation"]}
+        tiers = [(t["name"], t["value"]) for t in sample["tiers"]]
+        w(
+            f"  {profile}: {N} runs -> {len(seen)} distinct outcome(s); "
+            f"{sample['business_status']}/{sample['solver_status']} {alloc} tiers {tiers}\n"
+        )
+    w(f"\nRESULT: {'all repetitions identical' if bad == 0 else f'{bad} profile(s) NOT identical'}\n")
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(Path(sys.argv[1])))
+```
+
+## 1. run
+$ cd /tmp/t004 && uv run --project /projects/cardflow/services/api python -I tools/determinism.py /projects/cardflow
+engine model 1.0.0, OR-Tools 9.15.6755, os.cpu_count()=8
+solver parameters per CP-SAT call: num_workers=8, random_seed=0 (ADR-004 defaults); no other parameter set; repetitions N=20
+
+(a) allocation.solve(inputs, scenarios['baseline'], profile, time_limit_s=10)
+  cash_safety: 20 runs -> 1 distinct result(s)
+    x20: status OPTIMAL; allocation {'A': 800000, 'C': 200000}
+           tier min_margin           max OPTIMAL          value=100000 bound=100000
+           tier fees                 min SKIPPED_CONSTANT value=0 bound=0
+           tier net_verified_benefit max SKIPPED_CONSTANT value=0 bound=0
+           tier buffer               max OPTIMAL          value=42400000 bound=42400000
+           tier cards                min OPTIMAL          value=2 bound=2
+    wall time s: min 0.0073 median 0.0080 max 0.0135
+  verified_benefit: 20 runs -> 1 distinct result(s)
+    x20: status OPTIMAL; allocation {'A': 800000, 'C': 200000}
+           tier net_verified_benefit max SKIPPED_CONSTANT value=0 bound=0
+           tier min_margin           max OPTIMAL          value=100000 bound=100000
+           tier buffer               max OPTIMAL          value=42400000 bound=42400000
+           tier cards                min OPTIMAL          value=2 bound=2
+    wall time s: min 0.0095 median 0.0118 max 0.0147
+  fewer_cards: 20 runs -> 1 distinct result(s)
+    x20: status OPTIMAL; allocation {'A': 800000, 'C': 200000}
+           tier cards                min OPTIMAL          value=2 bound=2
+           tier min_margin           max OPTIMAL          value=100000 bound=100000
+           tier net_verified_benefit max SKIPPED_CONSTANT value=0 bound=0
+           tier buffer               max OPTIMAL          value=42400000 bound=42400000
+    wall time s: min 0.0083 median 0.0114 max 0.0146
+
+(b) protocol.plan_from_protocol(F-18 v1 input with options.profile=<profile>):
+    whole PlanOutcome compared, minus run_id, created_at and wall times
+  cash_safety: 20 runs -> 1 distinct outcome(s); CONDITIONALLY_FEASIBLE/OPTIMAL {'A': 800000, 'C': 200000} tiers [('min_margin', 100000), ('fees', 0), ('net_verified_benefit', 0), ('buffer', 42400000), ('cards', 2)]
+  verified_benefit: 20 runs -> 1 distinct outcome(s); CONDITIONALLY_FEASIBLE/OPTIMAL {'A': 800000, 'C': 200000} tiers [('net_verified_benefit', 0), ('min_margin', 100000), ('buffer', 42400000), ('cards', 2)]
+  fewer_cards: 20 runs -> 1 distinct outcome(s); CONDITIONALLY_FEASIBLE/OPTIMAL {'A': 800000, 'C': 200000} tiers [('cards', 2), ('min_margin', 100000), ('net_verified_benefit', 0), ('buffer', 42400000)]
+
+RESULT: all repetitions identical
+exit=0
+
+## 2. the same property as a regression test (tests/engine/test_determinism.py, 20 runs per profile)
+$ uv run pytest -q -p no:cacheprovider tests/engine/test_determinism.py -v  (cwd services/api)
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[cash_safety] PASSED [ 33%]
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[verified_benefit] PASSED [ 66%]
+tests/engine/test_determinism.py::test_repeated_solves_return_identical_allocations_and_tier_values[fewer_cards] PASSED [100%]
+========================= 3 passed, 1 warning in 0.84s =========================
+exit=0

@@ -1,0 +1,55 @@
+# T-008 signal-handler deadlock: reproduction of the OLD behaviour vs. the fixed handler - 2026-10-17T07:45:22Z
+# Old handler called Worker.request_stop() -> Event.set() inside the SIGTERM handler. threading.Event wraps a
+# NON-reentrant Lock; when the signal lands while the main thread holds that lock (inside Event.clear()/wait()),
+# the handler blocks forever. Replay script (outside the repo): holds the Events' locks, sends SIGTERM to itself;
+# faulthandler kills it after 5 s and prints where it is stuck.
+$ uv run python /tmp/t008_verify/old_handler.py   # old behaviour
+Timeout (0:00:05)!
+Thread 0x00007eff954b0780 (most recent call first):
+  File "/usr/lib/python3.13/threading.py", line 304 in __enter__
+  File "/usr/lib/python3.13/threading.py", line 627 in set
+  File "/projects/cardflow/services/api/cardflow/jobs/worker.py", line 300 in request_stop
+  File "/tmp/t008_verify/old_handler.py", line 20 in old_handle
+  File "/tmp/t008_verify/old_handler.py", line 28 in <module>
+exit=1 (1 = killed by faulthandler: deadlocked in threading.Event.set inside the handler)
+
+# Fixed handler (cardflow/jobs/worker.py install_signal_handlers): only deque.append(signum); the main thread
+# calls request_stop() within SIGNAL_POLL_S. Regression test: same lock-holding scenario, no deadlock.
+$ uv run pytest tests/jobs/test_units.py -v -k signal_handler_takes_no_lock
+tests/jobs/test_units.py::test_signal_handler_takes_no_lock PASSED       [100%]
+================= 1 passed, 55 deselected, 1 warning in 0.17s ==================
+exit=0
+
+# source of the replay script /tmp/t008_verify/old_handler.py (kept here; /tmp is cleaned up):
+    """Replays test_signal_handler_takes_no_lock with the OLD handler (Event.set in the handler)."""
+    import faulthandler
+    import os
+    import signal
+    import sys
+    import time
+    
+    sys.path.insert(0, "/projects/cardflow/services/api/tests/jobs")
+    import jobs_testkit
+    from jobs_helpers import make_config
+    from sqlalchemy.orm import sessionmaker
+    
+    from cardflow.jobs.worker import Worker
+    
+    worker = Worker(sessionmaker(), jobs_testkit.build_registry(), make_config())
+    
+    
+    def old_handle(signum, frame):  # what the handler did before the fix
+        worker._signal = signum
+        worker.request_stop()
+    
+    
+    signal.signal(signal.SIGTERM, old_handle)
+    faulthandler.dump_traceback_later(5, exit=True)
+    events = (worker._wake, worker._stop, worker._force)
+    for event in events:
+        event._cond.acquire()
+    os.kill(os.getpid(), signal.SIGTERM)
+    time.sleep(0.05)
+    for event in events:
+        event._cond.release()
+    print("NO DEADLOCK (unexpected)")

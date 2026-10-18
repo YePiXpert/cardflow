@@ -1,0 +1,53 @@
+# T-012 non-root containers - 2026-10-17T23:15:07Z
+$ docker exec cardflow-api-1 id
+uid=10001(cardflow) gid=10001(cardflow) groups=10001(cardflow)
+exit=0
+$ docker exec cardflow-worker-1 id
+uid=10001(cardflow) gid=10001(cardflow) groups=10001(cardflow)
+exit=0
+
+# process owners inside the containers (uid of PID 1 = docker-init, and its child)
+$ docker exec cardflow-api-1 sh -c 'for p in /proc/[0-9]*; do ...'
+  pid=1 uid=10001 cmd=/sbin/docker-init -- cardflow api --host 0.0.0.0 --port 8000 
+  pid=7 uid=10001 cmd=/app/.venv/bin/python /app/.venv/bin/cardflow api --host 0.0.0.0 --port 8000 
+  pid=83 uid=10001 cmd=sh -c for p in /proc/[0-9]*; do [ -r "$p/status" ] || continue; printf "  pid=%s
+$ docker exec cardflow-worker-1 sh -c 'for p in /proc/[0-9]*; do ...'
+  pid=1 uid=10001 cmd=/sbin/docker-init -- cardflow worker --concurrency 2 --shutdown-timeout 20 
+  pid=51 uid=10001 cmd=sh -c for p in /proc/[0-9]*; do [ -r "$p/status" ] || continue; printf "  pid=%s
+  pid=7 uid=10001 cmd=/app/.venv/bin/python /app/.venv/bin/cardflow worker --concurrency 2 --shutdown-
+
+# effective capabilities of the api process (all zero = cap_drop ALL)
+$ docker exec cardflow-api-1 sh -c grep -E "^Cap(Eff|Prm|Bnd)" /proc/1/status
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	0000000000000000
+exit=0
+
+# root filesystem is read-only; only /tmp (tmpfs) and the attachment volume are writable
+$ docker exec cardflow-api-1 sh -c touch /app/probe 2>&1; touch /etc/probe 2>&1; true
+touch: cannot touch '/app/probe': Read-only file system
+touch: cannot touch '/etc/probe': Read-only file system
+exit=0
+$ docker exec cardflow-api-1 sh -c f=$(mktemp -p /tmp) && echo "tmp writable: $f" && rm "$f"
+tmp writable: /tmp/tmp.qCO9wft7Ub
+exit=0
+$ docker exec cardflow-api-1 sh -c stat -c "%n %U(%u):%G(%g) %a" /data/attachments /app /app/cardflow
+/data/attachments cardflow(10001):cardflow(10001) 700
+/app root(0):root(0) 755
+/app/cardflow root(0):root(0) 755
+exit=0
+
+# the database container: PostgreSQL runs as the image's postgres user (uid 999)
+$ docker exec cardflow-db-1 sh -c 'for p in /proc/[0-9]*; do ... postgres processes only'
+  pid=1 uid=999 cmd=postgres 
+  pid=401 uid=999 cmd=postgres: cardflow_worker_login cardflow 172.25.0.4(40998) i
+  pid=402 uid=999 cmd=postgres: cardflow_worker_login cardflow 172.25.0.4(41012) i
+  pid=70 uid=999 cmd=postgres: io worker 0 
+  pid=71 uid=999 cmd=postgres: io worker 2 
+  pid=72 uid=999 cmd=postgres: io worker 1 
+  pid=73 uid=999 cmd=postgres: checkpointer  
+  pid=74 uid=999 cmd=postgres: background writer  
+  pid=76 uid=999 cmd=postgres: walwriter  
+  pid=77 uid=999 cmd=postgres: autovacuum launcher  
+  pid=78 uid=999 cmd=postgres: logical replication launcher  
+exit=0

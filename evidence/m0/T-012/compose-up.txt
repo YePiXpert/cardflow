@@ -1,0 +1,141 @@
+# T-012 secrets and deploy/.env - 2026-10-17T23:14:30Z
+$ tools/gen-secrets.sh
+gen-secrets: kept     db_password (exists, not overwritten)
+gen-secrets: kept     db_api_password (exists, not overwritten)
+gen-secrets: kept     db_worker_password (exists, not overwritten)
+gen-secrets: kept     db_admin_password (exists, not overwritten)
+gen-secrets: kept     jwt_key (exists, not overwritten)
+gen-secrets: kept     kek (exists, not overwritten)
+gen-secrets: kept     backup_passphrase (exists, not overwritten)
+gen-secrets: /projects/cardflow/deploy/secrets (mode 700):
+  backup_passphrase mode=600 owner=10001:10001 size=64
+  db_admin_password mode=600 owner=10001:10001 size=64
+  db_api_password mode=600 owner=10001:10001 size=64
+  db_password mode=600 owner=10001:10001 size=64
+  db_worker_password mode=600 owner=10001:10001 size=64
+  jwt_key mode=600 owner=10001:10001 size=86
+  kek mode=600 owner=10001:10001 size=44
+  README.md mode=644 owner=0:0 size=5900
+gen-secrets: store a copy of backup_passphrase (and kek) outside this server; without them backups and attachments cannot be decrypted.
+exit=0
+
+$ cp -n deploy/.env.example deploy/.env; set CARDFLOW_VERSION=0.1.0-3166fe6bf311
+$ grep -E ^(CARDFLOW_VERSION|CARDFLOW_API_PORT|LOG_LEVEL|API_DOCS_ENABLED)= deploy/.env
+CARDFLOW_VERSION=0.1.0-3166fe6bf311
+CARDFLOW_API_PORT=18080
+LOG_LEVEL=info
+API_DOCS_ENABLED=false
+exit=0
+
+# no secret value is in deploy/.env or in the rendered service environments:
+$ docker compose -p cardflow -f deploy/compose.yaml config | grep -qF -f deploy/secrets/<each file>
+  secret values found in config/.env: 0
+
+# environment entries of the services that mention secrets: file paths only
+  api: DATABASE_PASSWORD_FILE=/run/secrets/db_api_password, JWT_KEY_FILE=/run/secrets/jwt_key, KEK_FILE=/run/secrets/kek
+  db: POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+  migrate: DATABASE_PASSWORD_FILE=/run/secrets/db_password
+  provision: DATABASE_ADMIN_PASSWORD_FILE=/run/secrets/db_admin_password, DATABASE_API_PASSWORD_FILE=/run/secrets/db_api_password, DATABASE_PASSWORD_FILE=/run/secrets/db_password, DATABASE_WORKER_PASSWORD_FILE=/run/secrets/db_worker_password
+  worker: DATABASE_PASSWORD_FILE=/run/secrets/db_worker_password, KEK_FILE=/run/secrets/kek
+
+# T-012 docker compose up - 2026-10-17T23:14:33Z
+$ docker compose -p cardflow -f deploy/compose.yaml up -d
+ Container cardflow-db-1 Running 
+ Container cardflow-migrate-1 Recreate 
+ Container cardflow-migrate-1 Recreated 
+ Container cardflow-provision-1 Recreate 
+ Container cardflow-provision-1 Recreated 
+ Container cardflow-worker-1 Recreate 
+ Container cardflow-api-1 Recreate 
+ Container cardflow-worker-1 Recreated 
+ Container cardflow-api-1 Recreated 
+ Container cardflow-db-1 Waiting 
+ Container cardflow-db-1 Healthy 
+ Container cardflow-migrate-1 Starting 
+ Container cardflow-migrate-1 Started 
+ Container cardflow-db-1 Waiting 
+ Container cardflow-migrate-1 Waiting 
+ Container cardflow-db-1 Healthy 
+ Container cardflow-migrate-1 Exited 
+ Container cardflow-provision-1 Starting 
+ Container cardflow-provision-1 Started 
+ Container cardflow-provision-1 Waiting 
+ Container cardflow-migrate-1 Waiting 
+ Container cardflow-migrate-1 Waiting 
+ Container cardflow-provision-1 Waiting 
+ Container cardflow-migrate-1 Exited 
+ Container cardflow-migrate-1 Exited 
+ Container cardflow-provision-1 Exited 
+ Container cardflow-provision-1 Exited 
+ Container cardflow-api-1 Starting 
+ Container cardflow-worker-1 Starting 
+ Container cardflow-api-1 Started 
+ Container cardflow-worker-1 Started 
+exit=0
+
+# waiting for: db healthy, migrate and provision exited 0, worker running, api healthy
+[2026-10-17T23:14:37Z] db=healthy migrate=exited/0 provision=exited/0 api=starting worker=running
+[2026-10-17T23:14:40Z] db=healthy migrate=exited/0 provision=exited/0 api=healthy worker=running
+all services ready after 3s
+
+$ docker compose -p cardflow -f deploy/compose.yaml ps -a
+NAME                   IMAGE                             COMMAND                  SERVICE     CREATED         STATUS                     PORTS
+cardflow-api-1         cardflow/api:0.1.0-3166fe6bf311   "cardflow api --host…"   api         6 seconds ago   Up 3 seconds (healthy)     127.0.0.1:18080->8000/tcp
+cardflow-db-1          postgres:18.6-trixie              "docker-entrypoint.s…"   db          6 minutes ago   Up 6 minutes (healthy)     5432/tcp
+cardflow-migrate-1     cardflow/api:0.1.0-3166fe6bf311   "cardflow migrate --…"   migrate     6 seconds ago   Exited (0) 4 seconds ago   
+cardflow-provision-1   cardflow/api:0.1.0-3166fe6bf311   "cardflow db-provisi…"   provision   6 seconds ago   Exited (0) 3 seconds ago   
+cardflow-worker-1      cardflow/api:0.1.0-3166fe6bf311   "cardflow worker --c…"   worker      6 seconds ago   Up 3 seconds               8000/tcp
+exit=0
+
+$ docker compose -p cardflow -f deploy/compose.yaml logs --no-color migrate provision
+provision-1  | cardflow_api: created; password ******** (scram-sha-256); granted: cardflow_app (inherit, noset); member of: cardflow_app (inherit, noset)
+provision-1  | cardflow_worker_login: created; password ******** (scram-sha-256); granted: cardflow_worker (inherit, noset), cardflow_purge (noinherit, set); member of: cardflow_worker (inherit, noset), cardflow_purge (noinherit, set)
+provision-1  | cardflow_admin_login: created; password ******** (scram-sha-256); granted: cardflow_admin (inherit, noset); member of: cardflow_admin (inherit, noset)
+migrate-1    | {"ts":"2026-10-17T23:14:35.568+00:00","level":"info","logger":"cardflow.db.migrations","message":"waiting for the migration advisory lock"}
+migrate-1    | {"ts":"2026-10-17T23:14:35.570+00:00","level":"info","logger":"cardflow.db.migrations","message":"migration advisory lock acquired"}
+migrate-1    | {"ts":"2026-10-17T23:14:35.686+00:00","level":"info","logger":"alembic.runtime.migration","message":"Context impl PostgresqlImpl."}
+migrate-1    | {"ts":"2026-10-17T23:14:35.686+00:00","level":"info","logger":"alembic.runtime.migration","message":"Will assume transactional DDL."}
+migrate-1    | {"ts":"2026-10-17T23:14:35.693+00:00","level":"info","logger":"cardflow.db.migrations","message":"migration advisory lock released"}
+migrate-1    | database revision 0003; code head 0003: up to date
+exit=0
+
+# published ports of the project (expect only 127.0.0.1:18080 -> api:8000)
+  cardflow-api-1: {"8000/tcp":[{"HostIp":"127.0.0.1","HostPort":"18080"}]} network_mode=cardflow_backend
+  cardflow-db-1: {} network_mode=cardflow_backend
+  cardflow-migrate-1: {} network_mode=cardflow_backend
+  cardflow-provision-1: {} network_mode=cardflow_backend
+  cardflow-worker-1: {} network_mode=cardflow_backend
+
+# networks of the project
+$ docker network ls --filter label=com.docker.compose.project=cardflow --format {{.Name}} driver={{.Driver}} internal={{.Internal}}
+cardflow_backend driver=bridge internal=true
+cardflow_edge driver=bridge internal=false
+exit=0
+
+# volumes of the project
+$ docker volume ls --filter label=com.docker.compose.project=cardflow --format {{.Name}}
+cardflow_attachments
+cardflow_pgdata
+exit=0
+
+# secrets inside the containers: read-only bind mounts, owner 10001, mode 0600
+$ docker exec cardflow-api-1 stat -c "%n %U:%G(%u:%g) %a" /run/secrets/*
+/run/secrets/db_api_password cardflow:cardflow(10001:10001) 600
+/run/secrets/jwt_key cardflow:cardflow(10001:10001) 600
+/run/secrets/kek cardflow:cardflow(10001:10001) 600
+  mounts: bind rw=false /run/secrets/kek
+$ docker exec cardflow-worker-1 stat -c "%n %U:%G(%u:%g) %a" /run/secrets/*
+/run/secrets/db_worker_password cardflow:cardflow(10001:10001) 600
+/run/secrets/kek cardflow:cardflow(10001:10001) 600
+  mounts: bind rw=false /run/secrets/kek
+
+# resource limits and hardening as applied by Docker
+template parsing error: template: :1:297: executing "" at <.HostConfig.Tmpfs>: map has no entry for key "Tmpfs"
+  cardflow-db-1: 
+  cardflow-api-1: user=10001:10001 readonly_rootfs=true memory=1073741824 nano_cpus=2000000000 pids=512 cap_drop=[ALL] security_opt=[no-new-privileges:true] init=true tmpfs={"/tmp":"size=64m,mode=1777,noexec,nosuid,nodev"} stop_timeout=<no value>
+  cardflow-worker-1: user=10001:10001 readonly_rootfs=true memory=2147483648 nano_cpus=4000000000 pids=1024 cap_drop=[ALL] security_opt=[no-new-privileges:true] init=true tmpfs={"/tmp":"size=64m,mode=1777,noexec,nosuid,nodev"} stop_timeout=30
+
+# addendum 2026-10-17T23:14:52Z: the db line above failed on a template key that only app containers have; corrected template:
+  cardflow-db-1: user= readonly_rootfs=false memory=1073741824 nano_cpus=0 pids=<no value> cap_drop=<no value> security_opt=[no-new-privileges:true] init=<no value> shm_size=268435456 tmpfs=null stop_timeout=30 restart=unless-stopped
+  cardflow-api-1: user=10001:10001 readonly_rootfs=true memory=1073741824 nano_cpus=2000000000 pids=512 cap_drop=[ALL] security_opt=[no-new-privileges:true] init=true shm_size=67108864 tmpfs={"/tmp":"size=64m,mode=1777,noexec,nosuid,nodev"} stop_timeout=<no value> restart=unless-stopped
+  cardflow-worker-1: user=10001:10001 readonly_rootfs=true memory=2147483648 nano_cpus=4000000000 pids=1024 cap_drop=[ALL] security_opt=[no-new-privileges:true] init=true shm_size=67108864 tmpfs={"/tmp":"size=64m,mode=1777,noexec,nosuid,nodev"} stop_timeout=30 restart=unless-stopped

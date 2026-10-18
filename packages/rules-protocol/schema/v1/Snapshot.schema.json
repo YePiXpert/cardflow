@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/Snapshot.schema.json",
+  "title": "Snapshot",
+  "description": "Balance of one cash account at the start of business date as_of (engine-spec §2 Snapshot). Events dated before as_of are taken as already reflected; events ON as_of are applied unless listed in includes_event_ids. Reflection is judged on the event as written, before any scenario moves or scales it (engine-spec §12.2); an event a scenario moves before as_of is not in the balance and counts on as_of. At most one snapshot per cash account.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cash_account_id", "balance_minor", "as_of", "includes_event_ids"],
+  "properties": {
+    "cash_account_id": { "$ref": "common.schema.json#/$defs/Id" },
+    "balance_minor": { "$ref": "common.schema.json#/$defs/MinorAmount" },
+    "as_of": { "$ref": "common.schema.json#/$defs/Date" },
+    "observed_at": {
+      "description": "When the balance was observed (metadata; absent = unknown).",
+      "$ref": "common.schema.json#/$defs/Timestamp"
+    },
+    "includes_event_ids": {
+      "description": "Events of this account dated on or before as_of that the balance ALREADY includes (an event dated after as_of is refused by every adapter). A set: order carries no meaning (but is part of the input hash).",
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "common.schema.json#/$defs/EventId" }
+    }
+  }
+}

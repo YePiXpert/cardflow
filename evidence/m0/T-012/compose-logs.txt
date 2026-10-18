@@ -1,0 +1,96 @@
+migrate-1  | {"ts":"2026-10-17T23:14:35.568+00:00","level":"info","logger":"cardflow.db.migrations","message":"waiting for the migration advisory lock"}
+migrate-1  | {"ts":"2026-10-17T23:14:35.570+00:00","level":"info","logger":"cardflow.db.migrations","message":"migration advisory lock acquired"}
+migrate-1  | {"ts":"2026-10-17T23:14:35.686+00:00","level":"info","logger":"alembic.runtime.migration","message":"Context impl PostgresqlImpl."}
+migrate-1  | {"ts":"2026-10-17T23:14:35.686+00:00","level":"info","logger":"alembic.runtime.migration","message":"Will assume transactional DDL."}
+migrate-1  | {"ts":"2026-10-17T23:14:35.693+00:00","level":"info","logger":"cardflow.db.migrations","message":"migration advisory lock released"}
+api-1      | {"ts":"2026-10-17T23:14:37.996+00:00","level":"info","logger":"uvicorn.error","message":"Started server process [7]"}
+migrate-1  | database revision 0003; code head 0003: up to date
+api-1      | {"ts":"2026-10-17T23:14:37.996+00:00","level":"info","logger":"uvicorn.error","message":"Waiting for application startup."}
+api-1      | {"ts":"2026-10-17T23:14:37.997+00:00","level":"info","logger":"uvicorn.error","message":"Application startup complete."}
+api-1      | {"ts":"2026-10-17T23:14:37.997+00:00","level":"info","logger":"uvicorn.error","message":"Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)"}
+api-1      | {"ts":"2026-10-17T23:14:39.569+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"5f7ae133ed134962a4735da6541c5fea","method":"GET","path":"/readyz","status":200,"duration_ms":80.274}
+api-1      | {"ts":"2026-10-17T23:14:54.098+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"4c10d75d86e342399ba48aa94fd4ae4b","method":"GET","path":"/readyz","status":200,"duration_ms":15.199}
+api-1      | {"ts":"2026-10-17T23:14:54.110+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"4938b8e8857f42f0992b2529e5fda65d","method":"GET","path":"/healthz","status":200,"duration_ms":0.876}
+api-1      | {"ts":"2026-10-17T23:14:54.122+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"6dac2831e9b14273a55cccee459b00bb","method":"GET","path":"<unmatched>","status":404,"duration_ms":0.565}
+api-1      | {"ts":"2026-10-17T23:14:54.133+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"56b800b9186649d88420cc08f91ed903","method":"GET","path":"<unmatched>","status":404,"duration_ms":0.465}
+api-1      | {"ts":"2026-10-17T23:14:54.140+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"dfe6b224f12147509c89110ccf560e0b","method":"GET","path":"<unmatched>","status":404,"duration_ms":0.424}
+api-1      | {"ts":"2026-10-17T23:14:54.161+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"48855915fa714074aa2d7f6d2c494339","method":"GET","path":"/readyz","status":200,"duration_ms":11.665}
+api-1      | {"ts":"2026-10-17T23:14:54.183+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"50c96870d0154680aa3f3203247168ad","method":"GET","path":"/readyz","status":200,"duration_ms":11.342}
+api-1      | {"ts":"2026-10-17T23:14:54.206+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"deb9b1e130034e41ab5718d78cff54b7","method":"GET","path":"/readyz","status":200,"duration_ms":12.017}
+api-1      | {"ts":"2026-10-17T23:14:54.228+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"376e9f8d6d0e4c4b83e318e8163fd30e","method":"GET","path":"/readyz","status":200,"duration_ms":13.884}
+api-1      | {"ts":"2026-10-17T23:14:54.246+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"1fc3d7192d284035bdc431e8d64b8ce0","method":"GET","path":"/readyz","status":200,"duration_ms":13.443}
+api-1      | {"ts":"2026-10-17T23:15:09.800+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"ed4b31ff43c94f57a5d3e03b88926671","method":"GET","path":"/readyz","status":200,"duration_ms":14.524}
+api-1      | {"ts":"2026-10-17T23:15:39.987+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"319cf70898f94c5cb7f2db1eefb8cb0f","method":"GET","path":"/readyz","status":200,"duration_ms":7.889}
+api-1      | {"ts":"2026-10-17T23:16:10.166+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"aaa70d873b76465ebf7bf50c1cbf5480","method":"GET","path":"/readyz","status":200,"duration_ms":7.7}
+api-1      | {"ts":"2026-10-17T23:16:40.350+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"a9e39a4eaccc4a17be124b9ded7aaead","method":"GET","path":"/readyz","status":200,"duration_ms":9.962}
+api-1      | {"ts":"2026-10-17T23:17:10.561+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"caad97bf9ce349ae9b01dd591d926fd8","method":"GET","path":"/readyz","status":200,"duration_ms":7.576}
+api-1      | {"ts":"2026-10-17T23:17:40.742+00:00","level":"info","logger":"cardflow.access","message":"http_request","request_id":"5dfd7cdc790745d6bfcdf091225a9599","method":"GET","path":"/readyz","status":200,"duration_ms":6.717}
+worker-1   | {"ts":"2026-10-17T23:14:38.001+00:00","level":"info","logger":"cardflow.jobs.worker","message":"worker started worker_id=a95cbd3fd9e7:7:1b70d9 concurrency=2 kinds=- lease_s=60 heartbeat_s=10 version=0.1.0-3166fe6bf311"}
+worker-1   | {"ts":"2026-10-17T23:14:38.002+00:00","level":"info","logger":"cardflow.jobs.periodic","message":"periodic tasks scheduled system.reclaim_leases=30s system.purge_heartbeats=600s"}
+db-1       | The files belonging to this database system will be owned by user "postgres".
+db-1       | This user must also own the server process.
+db-1       | 
+db-1       | The database cluster will be initialized with locale "en_US.utf8".
+db-1       | The default database encoding has accordingly been set to "UTF8".
+db-1       | The default text search configuration will be set to "english".
+db-1       | 
+db-1       | Data page checksums are enabled.
+db-1       | 
+db-1       | fixing permissions on existing directory /var/lib/postgresql/18/docker ... ok
+db-1       | creating subdirectories ... ok
+db-1       | selecting dynamic shared memory implementation ... posix
+db-1       | selecting default "max_connections" ... 100
+db-1       | selecting default "shared_buffers" ... 128MB
+db-1       | selecting default time zone ... Etc/UTC
+db-1       | creating configuration files ... ok
+db-1       | running bootstrap script ... ok
+db-1       | performing post-bootstrap initialization ... ok
+db-1       | syncing data to disk ... ok
+db-1       | 
+db-1       | 
+db-1       | Success. You can now start the database server using:
+db-1       | 
+db-1       |     pg_ctl -D /var/lib/postgresql/18/docker -l logfile start
+db-1       | 
+db-1       | initdb: warning: enabling "trust" authentication for local connections
+db-1       | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+db-1       | waiting for server to start....2026-10-17 23:08:27.369 UTC [53] LOG:  starting PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+db-1       | 2026-10-17 23:08:27.369 UTC [53] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1       | 2026-10-17 23:08:27.373 UTC [59] LOG:  database system was shut down at 2026-10-17 23:08:27 UTC
+db-1       | 2026-10-17 23:08:27.376 UTC [53] LOG:  database system is ready to accept connections
+db-1       |  done
+db-1       | server started
+db-1       | CREATE DATABASE
+db-1       | 
+db-1       | 
+db-1       | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+db-1       | 
+db-1       | 2026-10-17 23:08:27.575 UTC [53] LOG:  received fast shutdown request
+db-1       | waiting for server to shut down....2026-10-17 23:08:27.575 UTC [53] LOG:  aborting any active transactions
+db-1       | 2026-10-17 23:08:27.576 UTC [53] LOG:  background worker "logical replication launcher" (PID 62) exited with exit code 1
+db-1       | 2026-10-17 23:08:27.577 UTC [57] LOG:  shutting down
+db-1       | 2026-10-17 23:08:27.578 UTC [57] LOG:  checkpoint starting: shutdown immediate
+db-1       | 2026-10-17 23:08:27.609 UTC [57] LOG:  checkpoint complete: wrote 943 buffers (5.8%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.013 s, sync=0.017 s, total=0.033 s; sync files=303, longest=0.001 s, average=0.001 s; distance=4352 kB, estimate=4352 kB; lsn=0/1BA1BE8, redo lsn=0/1BA1BE8
+db-1       | 2026-10-17 23:08:27.618 UTC [53] LOG:  database system is shut down
+db-1       |  done
+db-1       | server stopped
+db-1       | 
+db-1       | PostgreSQL init process complete; ready for start up.
+db-1       | 
+db-1       | 2026-10-17 23:08:27.691 UTC [1] LOG:  starting PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+db-1       | 2026-10-17 23:08:27.691 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db-1       | 2026-10-17 23:08:27.691 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db-1       | 2026-10-17 23:08:27.693 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1       | 2026-10-17 23:08:27.697 UTC [75] LOG:  database system was shut down at 2026-10-17 23:08:27 UTC
+db-1       | 2026-10-17 23:08:27.700 UTC [1] LOG:  database system is ready to accept connections
+db-1       | 2026-10-17 23:13:27.794 UTC [73] LOG:  checkpoint starting: time
+db-1       | 2026-10-17 23:14:41.467 UTC [73] LOG:  checkpoint complete: wrote 737 buffers (4.5%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=73.635 s, sync=0.034 s, total=73.674 s; sync files=547, longest=0.002 s, average=0.001 s; distance=7652 kB, estimate=7652 kB; lsn=0/23212B8, redo lsn=0/231AFC8
+db-1       | 2026-10-17 23:15:10.848 UTC [556] ERROR:  new row violates row-level security policy for table "workspaces"
+db-1       | 2026-10-17 23:15:10.848 UTC [556] STATEMENT:  INSERT INTO workspaces (owner_user_id, kind) VALUES ('2433dc62-4ef1-4399-bc31-120ff73b2f66', 'demo');
+db-1       | 2026-10-17 23:15:10.848 UTC [556] ERROR:  permission denied to create temporary tables in database "cardflow" at character 19
+db-1       | 2026-10-17 23:15:10.848 UTC [556] STATEMENT:  CREATE TEMP TABLE t012_probe (x int);
+db-1       | 2026-10-17 23:15:10.848 UTC [556] ERROR:  permission denied for schema public at character 14
+db-1       | 2026-10-17 23:15:10.848 UTC [556] STATEMENT:  CREATE TABLE public.t012_probe (x int);
+provision-1  | cardflow_api: created; password ******** (scram-sha-256); granted: cardflow_app (inherit, noset); member of: cardflow_app (inherit, noset)
+provision-1  | cardflow_worker_login: created; password ******** (scram-sha-256); granted: cardflow_worker (inherit, noset), cardflow_purge (noinherit, set); member of: cardflow_worker (inherit, noset), cardflow_purge (noinherit, set)
+provision-1  | cardflow_admin_login: created; password ******** (scram-sha-256); granted: cardflow_admin (inherit, noset); member of: cardflow_admin (inherit, noset)

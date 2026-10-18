@@ -1,0 +1,23 @@
+$ ss -tlnH 'sport = :18432'
+LISTEN 0      4096   127.0.0.1:18432 0.0.0.0:*
+$ docker port cardflow-dev-db-1
+5432/tcp -> 127.0.0.1:18432
+$ stat -c '%a %U %n' deploy/secrets.dev deploy/secrets.dev/db_password
+700 root deploy/secrets.dev
+600 root deploy/secrets.dev/db_password
+$ tools/dev-db.sh status
+NAME                IMAGE                  COMMAND                  SERVICE   CREATED          STATUS                    PORTS
+cardflow-dev-db-1   postgres:18.6-trixie   "docker-entrypoint.s…"   db        11 seconds ago   Up 11 seconds (healthy)   127.0.0.1:18432->5432/tcp
+$ tools/dev-db.sh psql -c 'select version()' -c 'show server_version'
+                                                      version                                                       
+--------------------------------------------------------------------------------------------------------------------
+ PostgreSQL 18.6 (Debian 18.6-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+(1 row)
+
+        server_version         
+-------------------------------
+ 18.6 (Debian 18.6-1.pgdg13+2)
+(1 row)
+
+$ tools/dev-db.sh url | sed -E 's#(://[^:]+:)[^@]+@#\1***@#'   (password masked)
+postgresql+psycopg://cardflow:***@127.0.0.1:18432/cardflow

@@ -1,0 +1,79 @@
+# T-006 cardflow db-provision demo - 2026-10-17T22:31:20Z, working dir services/api, dev cluster 127.0.0.1:18432
+# Scratch database cardflow_test_t006_provision migrated to head (the group roles are cluster-wide);
+# demo passwords are random 36-hex strings in a mode-700 temp dir (shown as ***); the three demo
+# login roles and the scratch database are dropped at the end.
+login roles before the demo: none
+scratch database migrated to head
+
+$ cardflow db-provision        # no *_PASSWORD_FILE set yet
+cardflow db-provision: no password configured: set DATABASE_API_PASSWORD_FILE, DATABASE_WORKER_PASSWORD_FILE, DATABASE_ADMIN_PASSWORD_FILE
+exit=1
+
+$ DATABASE_{API,WORKER,ADMIN}_PASSWORD_FILE=<secret files> cardflow db-provision    # create
+cardflow_api: created; password ******** (scram-sha-256); granted: cardflow_app (inherit, noset); member of: cardflow_app (inherit, noset)
+cardflow_worker_login: created; password ******** (scram-sha-256); granted: cardflow_worker (inherit, noset), cardflow_purge (noinherit, set); member of: cardflow_worker (inherit, noset), cardflow_purge (noinherit, set)
+cardflow_admin_login: created; password ******** (scram-sha-256); granted: cardflow_admin (inherit, noset); member of: cardflow_admin (inherit, noset)
+exit=0
+
+$ cardflow db-provision        # second run: idempotent
+cardflow_api: updated; password ******** (scram-sha-256); member of: cardflow_app (inherit, noset)
+cardflow_worker_login: updated; password ******** (scram-sha-256); member of: cardflow_worker (inherit, noset), cardflow_purge (noinherit, set)
+cardflow_admin_login: updated; password ******** (scram-sha-256); member of: cardflow_admin (inherit, noset)
+exit=0
+
+# drift: someone gives cardflow_api an extra membership and CREATEDB; provisioning repairs it
+   ?column?    
+---------------
+ drift applied
+(1 row)
+
+$ cardflow db-provision --role api
+cardflow_api: updated; password ******** (scram-sha-256); attributes fixed: rolcreatedb; revoked: cardflow_admin; member of: cardflow_app (inherit, noset)
+exit=0
+
+# roles and memberships now (pg_roles / pg_auth_members):
+        rolname        | login | super | bypassrls | createdb | createrole | inherit 
+-----------------------+-------+-------+-----------+----------+------------+---------
+ cardflow_admin        | f     | f     | f         | f        | f          | t
+ cardflow_admin_login  | t     | f     | f         | f        | f          | t
+ cardflow_admin_views  | f     | f     | f         | f        | f          | t
+ cardflow_api          | t     | f     | f         | f        | f          | t
+ cardflow_app          | f     | f     | f         | f        | f          | t
+ cardflow_purge        | f     | f     | f         | f        | f          | t
+ cardflow_worker       | f     | f     | f         | f        | f          | t
+ cardflow_worker_login | t     | f     | f         | f        | f          | t
+(8 rows)
+
+        member         |   group_role    | inherit_option | set_option | admin_option 
+-----------------------+-----------------+----------------+------------+--------------
+ cardflow_admin_login  | cardflow_admin  | t              | f          | f
+ cardflow_api          | cardflow_app    | t              | f          | f
+ cardflow_worker_login | cardflow_purge  | f              | t          | f
+ cardflow_worker_login | cardflow_worker | t              | f          | f
+(4 rows)
+
+        rolname        | stored_verifier_prefix 
+-----------------------+------------------------
+ cardflow_admin_login  | SCRAM-SHA-256$...
+ cardflow_api          | SCRAM-SHA-256$...
+ cardflow_worker_login | SCRAM-SHA-256$...
+(3 rows)
+
+
+# logging in as each role on the scratch database:
+[cardflow_api] current_user / readyz version: [('cardflow_api', '0003')]
+[cardflow_api] workers seen (readyz): [(0,)]
+[cardflow_api] unbound: tenant rows visible: [(0,)]
+[cardflow_api] temp table: ERROR 42501 permission denied to create temporary tables in database "cardflow_test_t006_provision"
+[cardflow_api] admin view: ERROR 42501 permission denied for schema admin
+[cardflow_worker_login] current_user: [('cardflow_worker_login',)]
+[cardflow_worker_login] jobs across workspaces: [(0,)]
+[cardflow_worker_login] DELETE without SET ROLE: ERROR 42501 permission denied for table statement_lines
+[cardflow_worker_login] SET ROLE cardflow_purge: [('cardflow_purge',)]
+[cardflow_admin_login] current_user: [('cardflow_admin_login',)]
+[cardflow_admin_login] admin.system_status: [('0003', 0, 0)]
+[cardflow_admin_login] content table: ERROR 42501 permission denied for table transactions
+
+# cleanup: drop the demo login roles and the scratch database
+roles now: ['cardflow', 'cardflow_admin', 'cardflow_admin_views', 'cardflow_app', 'cardflow_purge', 'cardflow_worker']
+databases now: ['cardflow', 'postgres', 'template0', 'template1']

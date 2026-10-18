@@ -1,0 +1,62 @@
+# T-004c fixture runner (F-18) and converter check -- 2026-10-17T23:26:15Z
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+rules-protocol runner: protocol v1, engine model 1.1.0, OR-Tools 9.15.6755
+== packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+   fixture REG-2026-10-16-10000: Fixture.schema.json OK (Draft 2020-12, format checker); input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+   case cycles [cycles]
+     output schema OK (PlanOutcome.schema.json#/$defs/CardCycles)
+     PASS /A/statement_date == "2026-11-10"  <- cycles.A[0]
+     PASS /A/due_date == "2026-11-28"  <- cycles.A[1]
+     PASS /B/statement_date == "2026-10-20"  <- cycles.B[0]
+     PASS /B/due_date == "2026-11-08"  <- cycles.B[1]
+     PASS /C/statement_date == "2026-11-05"  <- cycles.C[0]
+     PASS /C/due_date == "2026-11-25"  <- cycles.C[1]
+   case plan_A8000_C2000 [verify A=800000, C=200000 / baseline]
+     output schema OK (PlanOutcome.schema.json#/$defs/VerificationResult)
+     PASS /verification/checks/baseline/min_balance_by_account/cash-main == 300000  <- plan_A8000_C2000.baseline_min_cash
+     PASS /verification/weighted_buffer_days == "42.4"  <- plan_A8000_C2000.weighted_buffer_days
+     PASS /verification/checks/stress_income_delay/breaches[cash_account_id="cash-main", on="2026-11-28"]/balance == -200000  <- plan_A8000_C2000.stress_balance_2026-11-28
+     PASS /verification/checks/stress_income_delay/breaches[cash_account_id="cash-main", on="2026-11-28"]/gap_to_zero == 200000  <- plan_A8000_C2000.stress_gap_to_zero
+     PASS /verification/checks/stress_income_delay/breaches[cash_account_id="cash-main", on="2026-11-28"]/gap_to_reserve == 400000  <- plan_A8000_C2000.stress_gap_to_reserve
+   case plan_B10000 [verify B=1000000 / baseline]
+     output schema OK (PlanOutcome.schema.json#/$defs/VerificationResult)
+     PASS /verification/checks/baseline/breaches[cash_account_id="cash-main", on="2026-11-08"]/balance == -350000  <- plan_B10000.balance_2026-11-08
+     PASS /verification/checks/baseline/breaches[cash_account_id="cash-main", on="2026-11-16"]/balance == -700000  <- plan_B10000.balance_2026-11-16
+     PASS /verification/checks/baseline/min_balance_by_account/cash-main == -700000  <- plan_B10000.min_cash
+   case confirmed_scenario [plan cash_safety / confirmed]
+     business_status BASELINE_SHORTFALL, solver NOT_RUN, allocation -, failing confirmed, input_hash b75d1d42ac036ace
+     output schema OK (PlanOutcome.schema.json)
+     PASS /business_status == "BASELINE_SHORTFALL"  <- confirmed_scenario.baseline_shortfall_on (implies the status)
+     PASS /baseline/confirmed/accounts/cash-main/breaches/0/on == "2026-11-08"  <- confirmed_scenario.baseline_shortfall_on
+     PASS /baseline/confirmed/accounts/cash-main/breaches/0/balance == -200000  <- confirmed_scenario.balance
+   case cash_safety_optimum [plan cash_safety / baseline]
+     business_status CONDITIONALLY_FEASIBLE, solver OPTIMAL, allocation A=800000, C=200000, failing confirmed,stress_income_delay, input_hash ea990327f08b42d4
+     output schema OK (PlanOutcome.schema.json)
+     PASS /solver_status == "OPTIMAL"  <- cash_safety_optimum (implies proven optimality)
+     PASS len(/allocation) == 2  <- cash_safety_optimum (the cards listed, no others)
+     PASS /allocation[card_id="A"]/amount_minor == 800000  <- cash_safety_optimum.A
+     PASS /allocation[card_id="C"]/amount_minor == 200000  <- cash_safety_optimum.C
+   case stress_sensitivity [plan cash_safety / baseline]
+     business_status CONDITIONALLY_FEASIBLE, solver OPTIMAL, allocation A=800000, C=200000, failing confirmed,stress_income_delay, input_hash ea990327f08b42d4
+     output schema OK (PlanOutcome.schema.json)
+     PASS /sensitivity/stress_income_delay/min_extra_confirmed_cash/total == 400000  <- stress_sensitivity.min_extra_confirmed_cash
+     PASS /sensitivity/stress_income_delay/max_affordable_amount/amount == 600000  <- stress_sensitivity.max_affordable_amount
+   result: PASS (23/23 assertions hold, 0 output schema violation(s))
+summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+exit=0
+
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py   # default: every fixtures/*.v1.json
+   result: PASS (23/23 assertions hold, 0 output schema violation(s))
+summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+exit=0
+
+$ uv run --project services/api python packages/rules-protocol/runner_py/convert_legacy_fixture.py packages/rules-protocol/fixtures/regression_2026-10-16_10000.json --check
+/projects/cardflow/packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json: regenerated output is identical (12977 bytes)
+exit=0
+
+$ sha256sum packages/rules-protocol/fixtures/*.json poc/engine_reference/fixtures/regression_2026-10-16_10000.json
+d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e  packages/rules-protocol/fixtures/regression_2026-10-16_10000.json
+86c1ae85fd972d4fdf61e317dcbe85e7a3095b39c13c48648c0725277bbc7a6c  packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+d7e64809b11642a615102596adefcf3d21f538e25dd7c9db99b546e3fe555d6e  poc/engine_reference/fixtures/regression_2026-10-16_10000.json
+# pre-task sha256 of the v1 fixture:
+86c1ae85fd972d4fdf61e317dcbe85e7a3095b39c13c48648c0725277bbc7a6c  packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json

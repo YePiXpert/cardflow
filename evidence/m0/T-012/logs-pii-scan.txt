@@ -1,0 +1,16 @@
+# T-012 PII scan of the deployment logs - 2026-10-17T23:17:57Z
+$ docker compose -p cardflow -f deploy/compose.yaml logs --no-color > evidence/m0/T-012/compose-logs.txt
+exit=0 lines=96
+lines per service:
+     21   api-1
+     64   db-1
+      6   migrate-1
+      3   provision-1
+      2   worker-1
+
+$ docker compose -p cardflow -f deploy/compose.yaml logs --no-color | python3 tools/pii_scan.py -
+pii_scan: 1 file(s), 96 line(s), 0 hit(s)
+exit=0 (0 = no hits)
+
+# none of the secret values occurs in the logs
+  secret values found in the logs: 0

@@ -1,0 +1,155 @@
+# DB 测试在没有数据库时必须报错（ERROR）而不是跳过；显式 -m 'not db' 才排除（2026-10-16T15:11:34Z）
+
+## A. CARDFLOW_TEST_DATABASE_URL 未设置
+$ env -u CARDFLOW_TEST_DATABASE_URL uv run pytest -q -p no:cacheprovider
+..................EEEEEE.....................E                           [100%]
+==================================== ERRORS ====================================
+__________________ ERROR at setup of test_commits_on_success ___________________
+CARDFLOW_TEST_DATABASE_URL is not set. DB tests need a PostgreSQL superuser URL, e.g. CARDFLOW_TEST_DATABASE_URL="$(tools/dev-db.sh url)"; or deselect them with -m "not db".
+________________ ERROR at setup of test_rolls_back_on_exception ________________
+CARDFLOW_TEST_DATABASE_URL is not set. DB tests need a PostgreSQL superuser URL, e.g. CARDFLOW_TEST_DATABASE_URL="$(tools/dev-db.sh url)"; or deselect them with -m "not db".
+________ ERROR at setup of test_no_statement_runs_after_an_early_commit ________
+CARDFLOW_TEST_DATABASE_URL is not set. DB tests need a PostgreSQL superuser URL, e.g. CARDFLOW_TEST_DATABASE_URL="$(tools/dev-db.sh url)"; or deselect them with -m "not db".
+______________ ERROR at setup of test_rejects_non_uuid_workspace _______________
+CARDFLOW_TEST_DATABASE_URL is not set. DB tests need a PostgreSQL superuser URL, e.g. CARDFLOW_TEST_DATABASE_URL="$(tools/dev-db.sh url)"; or deselect them with -m "not db".
+__________ ERROR at setup of test_set_workspace_id_on_core_connection __________
+CARDFLOW_TEST_DATABASE_URL is not set. DB tests need a PostgreSQL superuser URL, e.g. CARDFLOW_TEST_DATABASE_URL="$(tools/dev-db.sh url)"; or deselect them with -m "not db".
+__ ERROR at setup of test_engine_from_settings_connects_with_secret_password ___
+CARDFLOW_TEST_DATABASE_URL is not set. DB tests need a PostgreSQL superuser URL, e.g. CARDFLOW_TEST_DATABASE_URL="$(tools/dev-db.sh url)"; or deselect them with -m "not db".
+_ ERROR at setup of test_workspace_tx_binds_workspace_for_one_transaction_only _
+CARDFLOW_TEST_DATABASE_URL is not set. DB tests need a PostgreSQL superuser URL, e.g. CARDFLOW_TEST_DATABASE_URL="$(tools/dev-db.sh url)"; or deselect them with -m "not db".
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/test_db.py::test_commits_on_success - Failed: CARDFLOW_TEST_DATAB...
+ERROR tests/test_db.py::test_rolls_back_on_exception - Failed: CARDFLOW_TEST_...
+ERROR tests/test_db.py::test_no_statement_runs_after_an_early_commit - Failed...
+ERROR tests/test_db.py::test_rejects_non_uuid_workspace - Failed: CARDFLOW_TE...
+ERROR tests/test_db.py::test_set_workspace_id_on_core_connection - Failed: CA...
+ERROR tests/test_db.py::test_engine_from_settings_connects_with_secret_password
+ERROR tests/test_smoke.py::test_workspace_tx_binds_workspace_for_one_transaction_only
+39 passed, 1 warning, 7 errors in 0.22s
+exit=1
+
+## B. 数据库不可达（127.0.0.1:18439，无监听；口令为假值 dummy）
+$ ss -tlnH 'sport = :18439'
+(end)
+$ CARDFLOW_TEST_DATABASE_URL=postgresql+psycopg://cardflow:dummy@127.0.0.1:18439/cardflow uv run pytest -q -p no:cacheprovider
+..................EEEEEE.....................E                           [100%]
+==================================== ERRORS ====================================
+__________________ ERROR at setup of test_commits_on_success ___________________
+connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+The above exception was the direct cause of the following exception:
+(psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+During handling of the above exception, another exception occurred:
+cannot connect to postgresql+psycopg://cardflow:***@127.0.0.1:18439/cardflow: connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+________________ ERROR at setup of test_rolls_back_on_exception ________________
+connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+The above exception was the direct cause of the following exception:
+(psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+During handling of the above exception, another exception occurred:
+cannot connect to postgresql+psycopg://cardflow:***@127.0.0.1:18439/cardflow: connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+________ ERROR at setup of test_no_statement_runs_after_an_early_commit ________
+connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+The above exception was the direct cause of the following exception:
+(psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+During handling of the above exception, another exception occurred:
+cannot connect to postgresql+psycopg://cardflow:***@127.0.0.1:18439/cardflow: connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+______________ ERROR at setup of test_rejects_non_uuid_workspace _______________
+connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+The above exception was the direct cause of the following exception:
+(psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+During handling of the above exception, another exception occurred:
+cannot connect to postgresql+psycopg://cardflow:***@127.0.0.1:18439/cardflow: connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+__________ ERROR at setup of test_set_workspace_id_on_core_connection __________
+connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+The above exception was the direct cause of the following exception:
+(psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+During handling of the above exception, another exception occurred:
+cannot connect to postgresql+psycopg://cardflow:***@127.0.0.1:18439/cardflow: connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+__ ERROR at setup of test_engine_from_settings_connects_with_secret_password ___
+connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+The above exception was the direct cause of the following exception:
+(psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+During handling of the above exception, another exception occurred:
+cannot connect to postgresql+psycopg://cardflow:***@127.0.0.1:18439/cardflow: connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+_ ERROR at setup of test_workspace_tx_binds_workspace_for_one_transaction_only _
+connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+
+The above exception was the direct cause of the following exception:
+(psycopg.OperationalError) connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+During handling of the above exception, another exception occurred:
+cannot connect to postgresql+psycopg://cardflow:***@127.0.0.1:18439/cardflow: connection failed: connection to server at "127.0.0.1", port 18439 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/test_db.py::test_commits_on_success - Failed: cannot connect to p...
+ERROR tests/test_db.py::test_rolls_back_on_exception - Failed: cannot connect...
+ERROR tests/test_db.py::test_no_statement_runs_after_an_early_commit - Failed...
+ERROR tests/test_db.py::test_rejects_non_uuid_workspace - Failed: cannot conn...
+ERROR tests/test_db.py::test_set_workspace_id_on_core_connection - Failed: ca...
+ERROR tests/test_db.py::test_engine_from_settings_connects_with_secret_password
+ERROR tests/test_smoke.py::test_workspace_tx_binds_workspace_for_one_transaction_only
+39 passed, 1 warning, 7 errors in 0.31s
+exit=1
+
+## C. 显式排除
+$ env -u CARDFLOW_TEST_DATABASE_URL uv run pytest -q -m 'not db' -p no:cacheprovider
+.......................................                                  [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+39 passed, 7 deselected, 1 warning in 0.24s
+exit=0

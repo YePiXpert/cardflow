@@ -1,0 +1,62 @@
+# PoC 原测试在 services/api 同一 venv 中的基线运行（2026-10-16T15:20:19Z），工作目录 services/api
+# PYTHONDONTWRITEBYTECODE=1 与 -p no:cacheprovider：避免在 poc/ 下写入 __pycache__/.pytest_cache
+$ PYTHONDONTWRITEBYTECODE=1 uv run pytest -p no:cacheprovider /projects/cardflow/poc/engine_reference/tests --collect-only -q
+poc/engine_reference/tests/test_billing.py::test_fixed_day_same_month_and_next_month
+poc/engine_reference/tests/test_billing.py::test_statement_day_inclusive_toggle
+poc/engine_reference/tests/test_billing.py::test_month_end_clamp_and_leap_year
+poc/engine_reference/tests/test_billing.py::test_cross_year
+poc/engine_reference/tests/test_billing.py::test_due_before_statement_is_model_invalid
+poc/engine_reference/tests/test_billing.py::test_posting_uncertainty_near_statement_day_yields_two_cycles_earliest_first
+poc/engine_reference/tests/test_billing.py::test_business_day_due_and_rollover_require_calendar
+poc/engine_reference/tests/test_billing.py::test_rule_versions_and_issued_statement_precedence
+poc/engine_reference/tests/test_cash.py::test_same_day_event_not_in_snapshot_is_applied
+poc/engine_reference/tests/test_cash.py::test_same_day_event_marked_included_is_skipped
+poc/engine_reference/tests/test_cash.py::test_conservative_same_day_order_captures_intraday_low
+poc/engine_reference/tests/test_cash.py::test_timestamp_order_when_all_events_timed
+poc/engine_reference/tests/test_cash.py::test_expected_income_excluded_in_confirmed_scenario_and_delay_scale_in_stress
+poc/engine_reference/tests/test_cash.py::test_evaluate_reports_every_breach_and_both_gaps
+poc/engine_reference/tests/test_cash.py::test_accounts_are_isolated
+poc/engine_reference/tests/test_cash.py::test_snapshot_below_reserve_is_a_baseline_breach_even_without_events
+poc/engine_reference/tests/test_cash.py::test_inflow_only_day_does_not_add_breach_entry_but_min_and_end_are_visible
+poc/engine_reference/tests/test_properties.py::test_more_confirmed_cash_never_hurts
+poc/engine_reference/tests/test_properties.py::test_known_outflow_never_raises_cash
+poc/engine_reference/tests/test_properties.py::test_event_order_invariance
+poc/engine_reference/tests/test_properties.py::test_solver_conservation_bounds_and_card_order
+poc/engine_reference/tests/test_properties.py::test_credit_limit_is_never_cash
+poc/engine_reference/tests/test_properties.py::test_installment_split_conserves_principal
+poc/engine_reference/tests/test_properties.py::test_minor_unit_roundtrip
+poc/engine_reference/tests/test_regression_sample.py::test_cycles_match_acceptance
+poc/engine_reference/tests/test_regression_sample.py::test_plan_A8000_C2000_baseline_min_cash_and_buffer
+poc/engine_reference/tests/test_regression_sample.py::test_plan_B_alone_reports_every_breach_not_only_the_first
+poc/engine_reference/tests/test_regression_sample.py::test_income_delay_stress_on_A_C_distinguishes_zero_and_reserve_gap
+poc/engine_reference/tests/test_regression_sample.py::test_confirmed_scenario_is_baseline_shortfall_before_any_new_spend
+poc/engine_reference/tests/test_regression_sample.py::test_cash_safety_profile_returns_A8000_C2000_optimal
+poc/engine_reference/tests/test_regression_sample.py::test_other_profiles_also_land_in_the_A_C_family_and_verify
+poc/engine_reference/tests/test_regression_sample.py::test_full_plan_is_conditionally_feasible_with_sensitivity_and_rejections
+poc/engine_reference/tests/test_regression_sample.py::test_stress_as_decision_scenario_is_infeasible_with_explanations
+poc/engine_reference/tests/test_regression_sample.py::test_card_input_order_does_not_change_result
+poc/engine_reference/tests/test_regression_sample.py::test_no_split_is_infeasible_and_explained
+poc/engine_reference/tests/test_regression_sample.py::test_exact_to_the_fen
+poc/engine_reference/tests/test_regression_sample.py::test_min_split_constraint
+poc/engine_reference/tests/test_regression_sample.py::test_stale_snapshot_is_needs_data
+poc/engine_reference/tests/test_regression_sample.py::test_shared_pool_constraint
+poc/engine_reference/tests/test_regression_sample.py::test_zero_time_limit_never_claims_infeasible
+
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: Bitwise inversion '~' on bool is deprecated and will be removed in Python 3.16. This returns the bitwise inversion of the underlying int object and is usually not what you expect from negating a bool. Use the 'not' operator for boolean negation or ~int(x) if you really want the bitwise inversion of the underlying int.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+40 tests collected in 1.11s
+exit=0
+$ PYTHONDONTWRITEBYTECODE=1 uv run pytest -p no:cacheprovider /projects/cardflow/poc/engine_reference/tests -q
+........................................                                 [100%]
+=============================== warnings summary ===============================
+<frozen importlib._bootstrap>:488
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: Bitwise inversion '~' on bool is deprecated and will be removed in Python 3.16. This returns the bitwise inversion of the underlying int object and is usually not what you expect from negating a bool. Use the 'not' operator for boolean negation or ~int(x) if you really want the bitwise inversion of the underlying int.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+40 passed, 2 warnings in 2.12s
+exit=0

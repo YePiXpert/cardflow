@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rules-protocol.cardflow.invalid/v1/CashAccount.schema.json",
+  "title": "CashAccount",
+  "description": "A cash account whose timeline is checked at every checkpoint (engine-spec §2 CashAccount). Accounts are never netted against each other. In protocol v1 every cash account has the request currency. Not yet supported by engine model 1.0.0 and therefore not accepted: available_from.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cash_account_id", "currency", "reserve_floor_minor", "usable_for_repayment"],
+  "properties": {
+    "cash_account_id": { "$ref": "common.schema.json#/$defs/Id" },
+    "name": {
+      "description": "Display name. Absent = cash_account_id.",
+      "$ref": "common.schema.json#/$defs/Text"
+    },
+    "currency": { "$ref": "common.schema.json#/$defs/Currency" },
+    "reserve_floor_minor": {
+      "description": "User's minimum balance for this account (hard constraint).",
+      "$ref": "common.schema.json#/$defs/NonNegativeMinorAmount"
+    },
+    "usable_for_repayment": {
+      "description": "false = restricted money (e.g. wealth products): cards repaid from it are rejected (REPAY_ACCOUNT_RESTRICTED).",
+      "type": "boolean"
+    }
+  }
+}

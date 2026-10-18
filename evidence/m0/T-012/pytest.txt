@@ -1,0 +1,2 @@
+# T-012 full test suite - 2026-10-17T23:20:25Z, working dir services/api, dev DB 127.0.0.1:18432 (cardflow-dev), head 0004
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest -q -p no:cacheprovider

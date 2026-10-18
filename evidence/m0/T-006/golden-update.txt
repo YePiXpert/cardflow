@@ -1,0 +1,48 @@
+# T-006 golden manifest update - 2026-10-17T22:31:15Z, working dir services/api, head 0003
+# golden_objects.json before T-006 (T-005 revision round): sha256 574931f64c9b68a7d23b4e146515f747293dffcd34f7dcc4f2134d2255b46982
+$ CARDFLOW_UPDATE_GOLDEN=1 CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest tests/db/test_db_objects.py -q -rs
+..ss.s                                                                   [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/db/test_db_objects.py:106: CARDFLOW_UPDATE_GOLDEN=1: the golden file is being rewritten, nothing to compare
+SKIPPED [1] tests/db/test_db_objects.py:139: CARDFLOW_UPDATE_GOLDEN=1: the golden file is being rewritten, nothing to compare
+SKIPPED [1] tests/db/test_db_objects.py:183: CARDFLOW_UPDATE_GOLDEN=1: the golden file is being rewritten
+3 passed, 3 skipped, 1 warning in 0.98s
+exit=0
+# golden_objects.json after: sha256 f68eaebaf6b4aafe860810adfc0bceaf621792360407b10ef1a26b5648276f99
+$ CARDFLOW_TEST_DATABASE_URL="$(../../tools/dev-db.sh url)" uv run pytest tests/db/test_db_objects.py -q   # compare mode
+......                                                                   [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /projects/cardflow/services/api/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+6 passed, 1 warning in 1.59s
+exit=0
+# entry-by-entry difference (before -> after):
+revisions before: ['0001', '0002'] after: ['0001', '0002', '0003']
+[0001] triggers: added 0, removed 0, changed 0
+[0001] functions: added 0, removed 0, changed 0
+[0002] triggers: added 0, removed 0, changed 0
+[0002] functions: added 0, removed 0, changed 0
+[0003] triggers: added 139, removed 0, changed 0
+[0003] functions: added 19, removed 0, changed 0
+new entry 0003 compared with 0002 (what revision 0003 changes in triggers/functions):
+  triggers: only in 0003 []; only in 0002 []
+  functions: only in 0003 []; only in 0002 []
+  changed maintain_repayment_allocation_totals():
+      0002: 46100ee2afdef1722b0d1acc903345eb search_path=pg_catalog, public, pg_temp
+      0003: 46100ee2afdef1722b0d1acc903345eb search_path=pg_catalog, public, pg_temp security_definer
+  changed repayment_allocations_check():
+      0002: 6f24aac5b3e9e4be6aff2ac5f5113826 search_path=pg_catalog, public, pg_temp
+      0003: 6f24aac5b3e9e4be6aff2ac5f5113826 search_path=pg_catalog, public, pg_temp security_definer
+  changed repayments_allocation_check():
+      0002: 12e59eb714375bafa0df7e9ae7a4370b search_path=pg_catalog, public, pg_temp
+      0003: 12e59eb714375bafa0df7e9ae7a4370b search_path=pg_catalog, public, pg_temp security_definer
+format change: a SECURITY DEFINER function's fingerprint now ends with ' security_definer' (tests/db/conftest.py database_objects); 0001/0002 have none, so their entries are unchanged.
