@@ -12,7 +12,7 @@
 - 已完成：**I-0a**（Flutter 骨架、主题、金额组件、诊断页；iOS 配置；CI）。第一个未签名 IPA：https://github.com/YePiXpert/cardflow/actions/runs/39098193527/artifacts/12125766769（源码 eaed4a8，sha256 53e46d9e…，2026-11-01 过期）。证据 `evidence/i0/I0-a/`。
 - 已完成：**I-0b**（drift + sqlite3mc 钩子加密库、Keychain 原始密钥、失败即止、诊断页加密状态与 10 万行基准）。第二个 IPA：https://github.com/YePiXpert/cardflow/actions/runs/39101728143/artifacts/12126439551（源码 4d720c9，sha256 4119031e…，2026-11-01 过期；4 个嵌套 framework 需一并重签）。证据 `evidence/i0/I0-b/`。
 - 已完成：**I-0c**（纯 Dart 领域包 `apps/mobile/packages/cardflow_domain`：金额/日期/账期/现金时间线/验证器/有限搜索/协议 v1 适配与哈希；Dart fixture 运行器 `dart run cardflow_domain:run_fixtures [--dump DIR]`；Python 运行器 `--dump`；CI `protocol-parity` job 双端逐字节一致）。265 项领域测试、App 154 项；CI 运行 39114057360 全绿。不出 IPA。证据 `evidence/i0/I0-c/`。I-1 的领域包 API 说明见 `apps/mobile/README.md`"领域层"一节与 `packages/rules-protocol/README.md` 末节。
-- I-0 代码部分已全部完成；阶段退出还差：用户真机回传（IPA 4d720c9 的诊断信息）与阶段末审查（一次，只修 blocker/major）。
+- I-0 阶段末审查已完成（报告 `evidence/i0/review-i0.md`，简报 `briefs/review-i0.md`）：blocker 0、major 0、minor 15、疑问 5。处置：R-15/R-03/R-08 等 8 条写入 `briefs/I1-a.md` §6，1 条写入 `briefs/I1-b.md` §5，其余记 backlog BL-13~BL-19；疑问裁决：有限搜索漏报（R-01）作 I-2 第一个任务 I2-0（BL-15）；PrivacyInfo 保留待 I1-c 扫描二进制（BL-16）；v1 暂不混淆（BL-17，security-privacy §3 已注明）。I-0 阶段退出只差用户真机回传。
 
 ## 2. 如何判断进行中任务做到哪了
 
@@ -23,7 +23,7 @@
 
 ## 3. 下一步（按顺序，一次一个代理）
 
-1. **I-0 阶段末审查**（一个审查代理，只读 + 写 `evidence/i0/review-i0.md`）：范围 apps/mobile（含领域包）与 `.github/workflows/mobile.yml`；重点：金额/日期语义与 Python 引擎的偏离、密钥与日志泄露、失败即止是否有绕过、协议适配层的拒绝清单是否齐、CI 是否可能静默跳过检查。只修 blocker/major，其余记 `backlog.md`。
+1. **I1-a 进行中**（2026-10-18 派发，简报 `briefs/I1-a.md`，证据 `evidence/i1/I1-a/`）：本地库 v2、真实/演示工作空间、建卡/账期/额度页面。验收后派 I1-b。
 2. 等用户对 IPA 4d720c9 回传：加密库状态应为"已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）"，密钥"已生成"，基准 `open_ms + count_ms < 1000`。若真机加密库不可用，按 ADR-001 回退 sqflite_sqlcipher（只换 drift 的执行器，领域包与数据层接口不变）。
 3. **I-1**（卡片、账期、现金流；`ios-first-plan.md` §3、§4b）已拆为三个单代理任务，简报已写好：`briefs/I1-a.md`（本地库 v2 + 工作空间 + 建卡/账期/额度）→ `briefs/I1-b.md`（现金与资金日历）→ `briefs/I1-c.md`（交易/账单/分期/还款 + 阶段交付 IPA）。按顺序逐个派发，每个验收后再派下一个。真机回传未到时也可开始，但 DB 层必须留在 `openAppDatabase` 抽象之后以便回退。只有 I1-c 触发 iOS 构建。
 
@@ -35,6 +35,7 @@
 - 公开仓库：不得出现宿主服务清单、端口清单、口令、令牌、用户邮箱；推送前扫描。
 - iOS 构建只在阶段交付或修 iOS 原生配置时触发。
 - 宿主是用户的生产 VPS：不碰其他容器、/opt 下其他目录、系统配置；不连接 127.0.0.1:5432。
+- 证据必须是工具原文（tee），不得省略成 `<关键行>`/`...`；证据中过滤宿主发行版/内核/代理状态行（`grep -Ev`）并在文件头注明（审查 R-10/R-11）。
 - 用量上限将至时：更新本文 §1–§3 与记忆文件，提交推送，再停。
 
 ## 5. 待用户的事

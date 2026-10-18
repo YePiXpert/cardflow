@@ -54,6 +54,16 @@
 - `apps/mobile/README.md`：目录表加 `lib/data/repositories/`、`lib/data/time/`；"加密本地库"加 v2 表清单与"加表步骤"实际做法（drift DSL + 生成）；新增"工作空间与演示模式"一节；"领域层"一节加"数据层 → 领域对象映射"小节（账户/卡/规则/快照 → `BillingRule`、`CardOption`、`ModelInputs`）。
 - 根 README `apps/mobile` 一行状态改为"I-1a（建卡/账期/额度）"。
 
+## 6. 审查带入项（I-0 阶段末审查 `evidence/i0/review-i0.md`，派发前写入，不是中途追加）
+1. **R-15（必做，含测试）**：`DatabaseKeyManager` 永久缓存首次取到的密钥且无失效接口。"重置本地数据"必须同时让密钥管理器忘掉缓存（加 `forget()` 或重置流程 `invalidate(databaseKeyManagerProvider)`），并写测试："wrong_key → 重置 → 写入 → 模拟重启（新容器、同一假钥匙串与目录）→ 能读回，且钥匙串中有新密钥"。复现探针见 `evidence/i0/review-i0/scripts/reset_trap_probe_test.dart`、`db-probes.txt` 第 4 节。
+2. **R-03**：强化测试辅助 `containsKeyMaterial`：按日志掩码后的形态（数字换成 `#`）与字节列表形态匹配；本任务要求的"日志与报告不含金额、末四位以外的卡片数字、别名"用同样方式断言。
+3. **R-08**：Release 构建下未捕获错误的正文只进环形日志（脱敏），不再打印到系统日志（`error_hooks.dart`）。
+4. **迁移幂等**：drift 在 `onUpgrade` 返回后才写 `user_version`，中途崩溃会重跑 expand 步骤；用 `IF NOT EXISTS` 或在同一事务内设置 `user_version`，并测试"重跑 1→2 不报错"。
+5. **`PRAGMA foreign_keys` 读回校验**：`beforeOpen` 执行后读回不是 1 则失败即止（新错误码或并入 `open_failed`，README 登记）。
+6. **`key_store_failed` 可重试**：钥匙串暂时不可用时在原页面提供「重试」，不要求重启 App。
+7. **币种约束前移**：库表币种列加 CHECK（只允许领域包 `minorDigits` 的 13 种），UI 选择器只列这些。
+8. **`AppDatabase` 只允许经 `openAppDatabase` 构造**：构造函数私有化 + 工厂，测试用 `@visibleForTesting` 入口；防止仓库代码用未加密执行器绕过检查。
+
 ## 验收（evidence/i1/I1-a/）
 analyze.txt、format.txt、test.txt、schema-diff.txt（新建 vs 升级的 sqlite_master 对比命令与输出）、isolation.txt（隔离测试输出）、build-web.txt、ci-dart-run.txt、git-log.txt。
 

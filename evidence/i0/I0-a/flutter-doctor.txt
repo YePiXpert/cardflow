@@ -1,9 +1,10 @@
+# 2026-10-18 I-0 审查 R-11：宿主发行版/内核版本与代理环境变量状态已脱敏（不影响 Flutter 版本与工具链结论）
 $ flutter doctor -v   # 2026-10-18T04:09:38Z
    Woah! You appear to be trying to run flutter as root.
    We strongly recommend running the flutter tool without superuser privileges.
   /
 📎
-[✓] Flutter (Channel stable, 3.47.7, on Debian GNU/Linux 13 (trixie) 6.12.111+deb13-amd64, locale en_US.UTF-8) [26ms]
+[✓] Flutter (Channel stable, 3.47.7, on [redacted: 宿主发行版与内核], locale en_US.UTF-8) [26ms]
     • Flutter version 3.47.7 on channel stable at /opt/flutter-sdk
     • Upstream repository https://github.com/flutter/flutter.git
     • Framework revision abaf9c5237 (9 days ago), 2026-10-08 09:51:21 -0700
@@ -38,14 +39,10 @@ $ flutter doctor -v   # 2026-10-18T04:09:38Z
       It is likely available from your distribution (e.g.: apt install mesa-utils)
 
 [✓] Proxy Configuration [12ms]
-    • HTTP_PROXY is set
-    • NO_PROXY is 127.0.0.1,localhost,::1
-    • NO_PROXY contains localhost
-    • NO_PROXY contains 127.0.0.1
-    • NO_PROXY contains ::1
+    • [redacted: 代理环境变量状态]
 
 [✓] Connected device (1 available) [11ms]
-    • Linux (desktop) • linux • linux-x64 • Debian GNU/Linux 13 (trixie) 6.12.111+deb13-amd64
+    • Linux (desktop) • linux • linux-x64 • [redacted: 宿主发行版与内核]
 
 [✓] Network resources [218ms]
     • All expected network resources are available.

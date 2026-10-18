@@ -44,7 +44,7 @@ flutter build web --release            # 只作编译检查，产物不发布
 ### 触发 iOS 构建
 
 CI 定义在 `.github/workflows/mobile.yml`：
-- `dart` job：每次 push 或 PR（`apps/mobile/` 或该工作流有变动时）自动运行。
+- `dart` job 与 `protocol-parity` job：push 到 main 或 PR 时自动运行，触发路径为 `apps/mobile/**`、`packages/rules-protocol/**`、`services/api/cardflow/planner/engine/**`、`services/api/pyproject.toml`、`services/api/uv.lock` 与该工作流文件。`protocol-parity` 用 Python 引擎与 Dart 领域包各自运行 golden fixture 和 300 份随机 fixture，输出逐字节比较并经 jsonschema 校验。
 - `ios-unsigned` job：只在手动触发或推送 `ios-v*` 标签时运行。macOS 分钟按 Linux 的 10 倍计，所以只在阶段交付或修 iOS 原生配置时触发。
 
 ```bash

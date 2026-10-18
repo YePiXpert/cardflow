@@ -12,5 +12,12 @@
 | BL-08 | I-0b | 基准的 open_ms 测的是文件缓存热的新连接，不是磁盘冷读 | 记录口径，不再追求真冷读 |
 | BL-09 | I-0c | Python 适配层对超出浮点范围的整数 `time_limit_s` 抛未处理的 `OverflowError`，而不是 `ProtocolError`；Dart 端报 `ProtocolError` | 后端已冻结；解冻时修 `protocol.py` 并加拒绝用例；parity 不受影响（该输入在 fixture 中不出现） |
 | BL-10 | I-0c | 本地有限搜索只保证可行、不保证最优：切点为上下限、单卡现金余量、补足额、等分、共享额度层剩余（范围 ≤64 时逐一枚举）。带手续费样本 R3E-07 本地得 500000/500000（余量 97000），CP-SAT 最优 497166/502834（余量 97017） | I-2 加"余量平衡"切点（整数三分搜索）；UI 始终显示"非最优证明" |
-| BL-11 | I-0c | 已知无影响的双端差异：Dart 严格 JSON 嵌套深度上限 512、Python 约 1000；错误消息措辞不同；fixture 名称校验 Python 的 `pattern` `$` 可匹配末尾换行前、Dart 整串匹配 | 记录即可；任何一端输出都不受影响 |
+| BL-11 | I-0c | 已知无影响的双端差异：Dart 严格 JSON 嵌套深度上限 512；Python `parse_json` 实测接受到约 9,998 层、`canonical_json` 约 995 层以上抛错（BL-13）；错误消息措辞不同；fixture 名称校验 Python 的 `pattern` `$` 可匹配末尾换行前、Dart 整串匹配 | 记录即可；任何一端输出都不受影响 |
 | BL-12 | I-0c | 领域包能编译到 Web，但 JS 整数语义与 VM 不同；Web 只是编译烟雾测试 | 不处理；若将来做 Web 端需先改 `int` 大数路径 |
+| BL-13 | R-I0 Q-4 | 冻结的 Python 端两处未处理异常：`canonical_json` 对孤立代理项作键抛 `UnicodeEncodeError`；约 995 层以上嵌套抛 `RecursionError`（`parse_json` 却接受到约 9,998 层）。两端都拒绝，parity 不受影响 | 与 BL-09 一并在后端解冻时修为 `ProtocolError` |
+| BL-14 | R-I0 R-05/R-06 | CI：golden 与 schema 校验步骤只断言"有产出"未断言数量；第三方 action 只固定到大版本标签未固定到提交 SHA（影响用户自签安装的 IPA 的供应链） | I1-c 阶段交付改 CI 时一起做：断言输出文件数 = 期望数；action 固定 SHA 并注明版本 |
+| BL-15 | R-I0 R-01/R-02/R-07/R-12/R-14 | 领域包 **I-2 前必修**：R-01 有限搜索切点不含全局底线导致有可行方案却报"本地未找到"（反例 `evidence/i0/review-i0/scripts/global_floor_band.json`，CP-SAT 给 A 600000 + B 400000）；R-02 时间预算是软上限（2000 ms 预算实测 2065 ms），需为最终验证预留；R-07 `bounded_search` CLI 错误输入退出码 255 与文档 0/2 不符；R-12 `Money` 加减无 64 位溢出检查；R-14 `test_limits.py` 边界用例与 R3E-13 运行器用例未移植。另 BL-10 的"余量平衡"切点 | 作为 I-2 的第一个任务 I2-0 派发（含反例做成测试、全局底线切点、预算预留、Python 对照） |
+| BL-16 | R-I0 Q-2 | `PrivacyInfo.xcprivacy` 声明 DiskSpace（E174.1）与 UserDefaults（CA92.1），App 自身代码未用到；是否由引擎/插件/sqlite3mc 调用在 Linux 上无法核实 | 保留声明（多报不影响安装）；I1-c 的 iOS 构建在 macOS runner 上扫描二进制符号后再定 |
+| BL-17 | R-I0 Q-3 | security-privacy §3 CODE 要求 Release 混淆；v1 自签纯本地阶段**暂不启用** `--obfuscate`：诊断页是唯一反馈渠道，混淆后代码位置不可读且需保管符号文件 | 已在 security-privacy §3 注明；I-4（备份/应用锁）阶段评估随符号文件管理一起启用 |
+| BL-18 | R-I0 R-13 | `test/ios/ios_config_test.dart` 遍历目录，有本地签名配置（`CardFlow.local.xcconfig`）的 Mac 上会误报 | 测试排除 `*.local.xcconfig`；I1-c 顺手 |
+| BL-19 | R-I0 R-04 | 领域包 `json.dart` 注释写 Python 深度"约 1000"不准（实测约 9,998 层接受、约 995 层 canonical 抛错） | 随 BL-15 改注释 |

@@ -38,6 +38,9 @@
 ## 4. 文档
 `apps/mobile/README.md`：v3 表清单、周期事项展开规则、情景版本约定、"数据层 → 领域对象映射"补现金部分。根 README 一行状态"I-1b（现金与资金日历）"。
 
+## 5. 审查带入项（I-0 阶段末审查 `evidence/i0/review-i0.md` §4 第 2 条）
+交给 `verify`/`boundedSearch` 的数据先经 `inputsToProtocol`（它会再跑一遍 `inputsFromProtocol` 的全部交叉校验）。只用现金时间线的资金日历在仓库层复刻这些交叉规则并测试：事件 `at` 的日期按自身偏移等于 `on`；`includes` 只列快照日当天及以前的本账户事件；金额绝对值 ≤ 10^13；ID 唯一；币种一致。领域对象构造函数不做这些检查（与 Python 数据类相同）。若认为应在领域包提供公开校验函数，停下汇报，不自行改领域包。
+
 ## 验收（evidence/i1/I1-b/）
 analyze.txt、format.txt、test.txt、schema-diff.txt、parity-with-domain.txt（F-01~F-05/F-07 经仓库映射与领域包直算一致的测试输出）、build-web.txt、ci-dart-run.txt、git-log.txt。
 

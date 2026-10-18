@@ -1,6 +1,6 @@
 # 84 · iOS 优先执行计划（2026-10-18 重排）
 
-版本 0.1 · 2026-10-18 · 状态：**执行中（I-0 代码完成，I-0a/b/c 已验收；待真机回传与阶段末审查，随后 I-1）**。用户于 2026-10-18 确认：公开仓库 `YePiXpert/cardflow`，Bundle ID `li.yep.cardflow`。本文取代 `m0-execution-plan.md` 的后续波次安排；M0 批次 A 已完成的部分冻结保留（§6）。
+版本 0.1 · 2026-10-18 · 状态：**执行中（I-0 代码与阶段末审查完成，待真机回传；I-1 执行中，当前 I1-a）**。用户于 2026-10-18 确认：公开仓库 `YePiXpert/cardflow`，Bundle ID `li.yep.cardflow`。本文取代 `m0-execution-plan.md` 的后续波次安排；M0 批次 A 已完成的部分冻结保留（§6）。
 
 ## 1. 为什么重排
 
@@ -107,3 +107,4 @@ I-1 退出条件不变（§3）。I1-a 的前置：I-0 阶段末审查（`briefs
 | 2026-10-18 | I-0a 完成并验收：analyze 零输出、104 项测试、CI dart job 两次绿、ios-unsigned 首次即成功（Xcode 26.6，3m51s）；IPA `cardflow-unsigned-eaed4a8`（Bundle ID、MinimumOSVersion 15.0 核对无误）。I-0b 派发 |
 | 2026-10-18 | I-0b 完成并验收：sqlite3mc 钩子方案成功、未回退；153 项测试；CI dart/ios 各一次绿（iOS 2m23s）；IPA `cardflow-unsigned-4d720c9`（含 sqlite3mc.framework 2.6.1）。发现 `PRAGMA cipher_version` 为 SQLCipher 专有，文档改为"加密自检"。I-0c 派发 |
 | 2026-10-18 | I-0c 完成并验收（I0-6、I0-7）：纯 Dart 领域包 `apps/mobile/packages/cardflow_domain`（money/time/billing/cash/verifier/search/protocol，7619 行，禁止 double 扫描 0 违规），265 项测试；F-18 哈希 `ea990327…1ee8` 双端一致；Dart 与 Python 运行器 `--dump` 对 F-18 的 3 个 cycles/verify 输出逐字节一致，另 300 份（CI）+ 24,000 份（本机）随机 fixture 一致；有限搜索 K≤3 返回 A 800000 + C 200000（proven=false，约 18 ms），K=1 返回"本地未找到（非证明无解）"，与 CP-SAT 在 3000 份随机文档上 0 不一致；App 154 项测试、web 构建通过；CI 运行 39113804928、39114057360 dart 与 protocol-parity 全绿。提交 16cb2da…5fd23ca，证据 `evidence/i0/I0-c/`。代理曾被用量上限打断一次，SendMessage 续跑完成。裁决：登记 `test` 1.33.0（dev）；顺延无日历按引擎报 `BILLING_RULE_INVALID`，bank-rules-spec §3.7 已统一；ADR-008 改为自写 `Rational`；其余记 BL-09~BL-12。I-0 代码部分完成，待用户真机回传 IPA 4d720c9 的诊断信息；阶段末审查随后进行 |
+| 2026-10-18 | I-0 阶段末审查完成（`evidence/i0/review-i0.md`）：blocker 0、major 0、minor 15、疑问 5；双端差分 18,000 盲区输出 + 20,000 变异文档 + 5,489 JSON 用例 + 5,000 搜索对照只见一处 Dart 更严格的分歧。处置：8 条进 I1-a 简报 §6（含 R-15 密钥缓存与重置）、1 条进 I1-b 简报、其余 BL-13~BL-19；裁决 Q-1 有限搜索漏报作 I2-0、Q-2 PrivacyInfo 待扫描、Q-3 v1 暂不混淆、Q-4 随 BL-09。I-1 拆为 I1-a/b/c（§4b），I1-a 派发 |
