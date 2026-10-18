@@ -1,0 +1,117 @@
+# 双端 parity：覆盖随机生成器盲区的 fixture（闰年/世纪年、月末、10^13 级金额、5 位小数费率、10 位小数情景系数、
+# 混合时区偏移与小数秒、规则生效区间、需要日历的规则、快照晚于交易日、horizon 早于交易日/快照日、长入账窗口、
+# 共享信用账户与池、全局底线）。生成器 scripts/gen_blind.py；每份 1 个 cycles + 4 个 verify。
+# HEAD 8b331b3（代码自 fdd7433 起未变）；2026-10-18T09:54:40Z
+
+$ uv run --project services/api python evidence/i0/review-i0/scripts/gen_blind.py /tmp/rv/ev_blind_101/fixtures 600 101 mixed
+wrote 600 fixtures (tried 600)
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py --dump /tmp/rv/ev_blind_101/py /tmp/rv/ev_blind_101/fixtures | tail -1
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:run_fixtures --dump /tmp/rv/ev_blind_101/dart /tmp/rv/ev_blind_101/fixtures | tail -1)
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ find /tmp/rv/ev_blind_101/py -name '*.json' | wc -l; find /tmp/rv/ev_blind_101/dart -name '*.json' | wc -l; diff -r /tmp/rv/ev_blind_101/py /tmp/rv/ev_blind_101/dart; echo diff exit=$?
+3000
+3000
+diff exit=0
+
+$ uv run --project services/api python evidence/i0/review-i0/scripts/gen_blind.py /tmp/rv/ev_blind_202/fixtures 600 202 clean
+wrote 600 fixtures (tried 600)
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py --dump /tmp/rv/ev_blind_202/py /tmp/rv/ev_blind_202/fixtures | tail -1
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:run_fixtures --dump /tmp/rv/ev_blind_202/dart /tmp/rv/ev_blind_202/fixtures | tail -1)
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ find /tmp/rv/ev_blind_202/py -name '*.json' | wc -l; find /tmp/rv/ev_blind_202/dart -name '*.json' | wc -l; diff -r /tmp/rv/ev_blind_202/py /tmp/rv/ev_blind_202/dart; echo diff exit=$?
+3000
+3000
+diff exit=0
+
+$ uv run --project services/api python evidence/i0/review-i0/scripts/gen_blind.py /tmp/rv/ev_blind_303/fixtures 600 303 clean
+wrote 600 fixtures (tried 600)
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py --dump /tmp/rv/ev_blind_303/py /tmp/rv/ev_blind_303/fixtures | tail -1
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:run_fixtures --dump /tmp/rv/ev_blind_303/dart /tmp/rv/ev_blind_303/fixtures | tail -1)
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ find /tmp/rv/ev_blind_303/py -name '*.json' | wc -l; find /tmp/rv/ev_blind_303/dart -name '*.json' | wc -l; diff -r /tmp/rv/ev_blind_303/py /tmp/rv/ev_blind_303/dart; echo diff exit=$?
+3000
+3000
+diff exit=0
+
+$ uv run --project services/api python evidence/i0/review-i0/scripts/gen_blind.py /tmp/rv/ev_blind_404/fixtures 600 404 clean
+wrote 600 fixtures (tried 600)
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py --dump /tmp/rv/ev_blind_404/py /tmp/rv/ev_blind_404/fixtures | tail -1
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:run_fixtures --dump /tmp/rv/ev_blind_404/dart /tmp/rv/ev_blind_404/fixtures | tail -1)
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ find /tmp/rv/ev_blind_404/py -name '*.json' | wc -l; find /tmp/rv/ev_blind_404/dart -name '*.json' | wc -l; diff -r /tmp/rv/ev_blind_404/py /tmp/rv/ev_blind_404/dart; echo diff exit=$?
+3000
+3000
+diff exit=0
+
+$ uv run --project services/api python evidence/i0/review-i0/scripts/gen_blind.py /tmp/rv/ev_blind_505/fixtures 600 505 mixed
+wrote 600 fixtures (tried 600)
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py --dump /tmp/rv/ev_blind_505/py /tmp/rv/ev_blind_505/fixtures | tail -1
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:run_fixtures --dump /tmp/rv/ev_blind_505/dart /tmp/rv/ev_blind_505/fixtures | tail -1)
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ find /tmp/rv/ev_blind_505/py -name '*.json' | wc -l; find /tmp/rv/ev_blind_505/dart -name '*.json' | wc -l; diff -r /tmp/rv/ev_blind_505/py /tmp/rv/ev_blind_505/dart; echo diff exit=$?
+3000
+3000
+diff exit=0
+
+$ uv run --project services/api python evidence/i0/review-i0/scripts/gen_blind.py /tmp/rv/ev_blind_606/fixtures 600 606 clean
+wrote 600 fixtures (tried 600)
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py --dump /tmp/rv/ev_blind_606/py /tmp/rv/ev_blind_606/fixtures | tail -1
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:run_fixtures --dump /tmp/rv/ev_blind_606/dart /tmp/rv/ev_blind_606/fixtures | tail -1)
+summary: 600 fixture(s): 600 passed, 0 failed, 0 invalid -> exit 0
+$ find /tmp/rv/ev_blind_606/py -name '*.json' | wc -l; find /tmp/rv/ev_blind_606/dart -name '*.json' | wc -l; diff -r /tmp/rv/ev_blind_606/py /tmp/rv/ev_blind_606/dart; echo diff exit=$?
+3000
+3000
+diff exit=0
+
+# 覆盖面（6 个种子合计，Python 输出统计；scripts/stats.py）
+  9923  assumption X: X dated X precedes the snapshot of X; applied on the snapshot day
+  1223  assumption X: X: 同日收支顺序未知，按保守顺序（先支出后收入）校验
+   948  assumption X: X: 快照当天未标记为已包含的事件按未发生处理并计入当日
+   328  assumption X: X: 情景将其日期移到快照日之前，按快照日 X 计入
+   125  assumption X: X: 计划还款没有时间戳，按当日最先发生处理
+ 18108  breaches
+   945  cycle touches Feb 29
+   159  cycles error: business-day counting requires a verified calendar
+   391  cycles error: holiday_rollover requires a verified business-day calendar
+   575  cycles error: rule X not effective on X
+   505  cycles error: rule X: due X is not after statement X (month_offset/day misconfigured)
+ 12856  cycles ok
+  3181  cycles with alternatives
+  4460  global breaches
+  6520  issue BILLING_RULE_INVALID
+   356  issue MISSING_POOL_SNAPSHOT
+   768  issue MISSING_SNAPSHOT
+  2080  issue SNAPSHOT_AFTER_TXN_DATE
+  5188  issue STALE_SNAPSHOT
+  1635  negative weighted buffer
+  7207  verify not ok
+    33  verify ok
+  7160  verify: data issues
+  2756  violation PLANNED_REPAYMENT_BEFORE_SNAPSHOT
+   291  violation UNKNOWN_CARD
+  3265  violation amount  below minimum split 
+  8523  violation amount  exceeds capacity 
+  2259  violation amount  exceeds per-transaction cap 
+  2946  violation amount conservation violated
+  1625  violation credit account acc-A
+   517  violation credit account acc-B
+   259  violation credit account acc-C
+   119  violation credit account acc-D
+    38  violation credit account acc-E
+    10  violation credit account acc-F
+   396  violation ineligible (CARD_STATUS)
+   373  violation ineligible (CHANNEL_NOT_SUPPORTED)
+   393  violation ineligible (CURRENCY_NOT_SUPPORTED)
+  1020  violation ineligible (MIN_SPLIT_ABOVE_AMOUNT)
+  6508  violation ineligible (NO_CAPACITY)
+   590  violation ineligible (REPAY_ACCOUNT_RESTRICTED)
+  1113  violation ineligible (REPAY_AFTER_HORIZON)
+   704  violation ineligible (REPAY_BEFORE_TXN_DATE)
+  2375  violation pool p
+  1806  violation uses  cards > allowed 

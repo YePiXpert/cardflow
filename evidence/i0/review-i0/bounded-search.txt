@@ -1,0 +1,127 @@
+# 有限搜索审查复现（2026-10-18T09:57:08Z；HEAD 8b331b3，代码自 fdd7433 起未变）
+
+## 1. 反例：全局底线把两卡可行拆分限制在窄带 [600000, 650000]，候选切点全部落空
+$ uv run --project services/api python evidence/i0/review-i0/scripts/make_cx.py /tmp/rv/cx/global_floor_band.json   # 写出文档并用 Python 引擎求解与验证
+input_hash 211876ba519d9dc2e98de2b66c29135d40433409ab0d8744cec1e99b9d4bd5f6
+python plan(): FEASIBLE_ROBUST OPTIMAL proven_optimal True [('A', 600000, '2026-11-25', 6000), ('B', 400000, '2026-11-05', 0)]
+python baseline ok: {'confirmed': True, 'baseline': True}
+verify A 1 + B 999999: ok=False global_breaches=[('2026-11-05', 599999), ('2026-11-10', 599999)]
+verify A 999999 + B 1: ok=False global_breaches=[('2026-11-25', 3500)]
+verify A 500000 + B 500000: ok=False global_breaches=[('2026-11-05', 100000), ('2026-11-10', 100000)]
+verify A 600000 + B 400000: ok=True global_breaches=[]
+verify A 650000 + B 350000: ok=True global_breaches=[]
+verify A 651000 + B 349000: ok=False global_breaches=[('2026-11-25', 10)]
+verify A 599999 + B 400001: ok=False global_breaches=[('2026-11-05', 1), ('2026-11-10', 1)]
+$ cmp /tmp/rv/cx/global_floor_band.json evidence/i0/review-i0/scripts/global_floor_band.json && echo same-document
+same-document
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search /tmp/rv/cx/global_floor_band.json)
+== /tmp/rv/cx/global_floor_band.json
+   input_hash 211876ba519d9dc2e98de2b66c29135d40433409ab0d8744cec1e99b9d4bd5f6
+   decision baseline, profile cash_safety, K <= 2, budget 2000ms
+   outcome notFound: 本地未找到（非证明无解） (proven: false)
+   candidates 5, verifier calls 5, exhausted true, timed out false, elapsed 14ms
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search --budget-ms 60000 /tmp/rv/cx/global_floor_band.json | tail -2)
+   outcome notFound: 本地未找到（非证明无解） (proven: false)
+   candidates 5, verifier calls 5, exhausted true, timed out false, elapsed 14ms
+
+## 2. 与 Python CP-SAT 逐文档对照（plan_from_protocol(with_sensitivity=False) vs bounded_search --json；scripts/compare_search.py）
+#   小金额（gen_parity_fixtures.dart 原样，Dart 逐一枚举）：
+$ (cd evidence/i0/review-i0/../../../apps/mobile/packages/cardflow_domain && dart run tool/gen_parity_fixtures.dart /tmp/rv/srch/r11 --count 1000 --seed 11)
+wrote 1000 fixtures (4000 cases) to /tmp/rv/srch/r11 (seed 11)
+$ uv run --project services/api python evidence/i0/review-i0/scripts/plan_all.py /tmp/rv/srch/r11 /tmp/rv/srch/r11.py.jsonl; (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search --json /tmp/rv/srch/r11 > /tmp/rv/srch/r11.dart.jsonl); uv run --project services/api python evidence/i0/review-i0/scripts/compare_search.py /tmp/rv/srch/r11.py.jsonl /tmp/rv/srch/r11.dart.jsonl
+   194  agree BASELINE_SHORTFALL
+   362  agree INFEASIBLE/notFound
+   102  agree NEEDS_DATA
+   342  agree found (same allocation)
+$ (cd evidence/i0/review-i0/../../../apps/mobile/packages/cardflow_domain && dart run tool/gen_parity_fixtures.dart /tmp/rv/srch/r12 --count 1000 --seed 12)
+wrote 1000 fixtures (4000 cases) to /tmp/rv/srch/r12 (seed 12)
+$ uv run --project services/api python evidence/i0/review-i0/scripts/plan_all.py /tmp/rv/srch/r12 /tmp/rv/srch/r12.py.jsonl; (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search --json /tmp/rv/srch/r12 > /tmp/rv/srch/r12.dart.jsonl); uv run --project services/api python evidence/i0/review-i0/scripts/compare_search.py /tmp/rv/srch/r12.py.jsonl /tmp/rv/srch/r12.dart.jsonl
+   208  agree BASELINE_SHORTFALL
+   363  agree INFEASIBLE/notFound
+    87  agree NEEDS_DATA
+   342  agree found (same allocation)
+$ (cd evidence/i0/review-i0/../../../apps/mobile/packages/cardflow_domain && dart run tool/gen_parity_fixtures.dart /tmp/rv/srch/r13 --count 1000 --seed 13)
+wrote 1000 fixtures (4000 cases) to /tmp/rv/srch/r13 (seed 13)
+$ uv run --project services/api python evidence/i0/review-i0/scripts/plan_all.py /tmp/rv/srch/r13 /tmp/rv/srch/r13.py.jsonl; (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search --json /tmp/rv/srch/r13 > /tmp/rv/srch/r13.dart.jsonl); uv run --project services/api python evidence/i0/review-i0/scripts/compare_search.py /tmp/rv/srch/r13.py.jsonl /tmp/rv/srch/r13.dart.jsonl
+   191  agree BASELINE_SHORTFALL
+   395  agree INFEASIBLE/notFound
+    73  agree NEEDS_DATA
+   341  agree found (same allocation)
+$ (cd evidence/i0/review-i0/../../../apps/mobile/packages/cardflow_domain && dart run tool/gen_parity_fixtures.dart /tmp/rv/srch/r14 --count 1000 --seed 14)
+wrote 1000 fixtures (4000 cases) to /tmp/rv/srch/r14 (seed 14)
+$ uv run --project services/api python evidence/i0/review-i0/scripts/plan_all.py /tmp/rv/srch/r14 /tmp/rv/srch/r14.py.jsonl; (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search --json /tmp/rv/srch/r14 > /tmp/rv/srch/r14.dart.jsonl); uv run --project services/api python evidence/i0/review-i0/scripts/compare_search.py /tmp/rv/srch/r14.py.jsonl /tmp/rv/srch/r14.dart.jsonl
+   171  agree BASELINE_SHORTFALL
+   373  agree INFEASIBLE/notFound
+   105  agree NEEDS_DATA
+   351  agree found (same allocation)
+$ (cd evidence/i0/review-i0/../../../apps/mobile/packages/cardflow_domain && dart run tool/gen_parity_fixtures.dart /tmp/rv/srch/r15 --count 1000 --seed 15)
+wrote 1000 fixtures (4000 cases) to /tmp/rv/srch/r15 (seed 15)
+$ uv run --project services/api python evidence/i0/review-i0/scripts/plan_all.py /tmp/rv/srch/r15 /tmp/rv/srch/r15.py.jsonl; (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search --json /tmp/rv/srch/r15 > /tmp/rv/srch/r15.dart.jsonl); uv run --project services/api python evidence/i0/review-i0/scripts/compare_search.py /tmp/rv/srch/r15.py.jsonl /tmp/rv/srch/r15.dart.jsonl
+   195  agree BASELINE_SHORTFALL
+   364  agree INFEASIBLE/notFound
+    82  agree NEEDS_DATA
+   359  agree found (same allocation)
+#   放大金额（所有金额 ×100003，余额与事件另加抖动；Dart 不再逐一枚举，只走切点）：
+$ uv run --project services/api python evidence/i0/review-i0/scripts/scale_fixtures.py /tmp/rv/srch/r11 /tmp/rv/srch/big11 100003 11; plan_all.py; bounded_search --json; compare_search.py
+     2  DIFFERENT allocation
+     3  DIFFERENT allocation (k>3)
+   197  agree BASELINE_SHORTFALL
+   362  agree INFEASIBLE/notFound
+   102  agree NEEDS_DATA
+   334  agree found (same allocation)
+["random_0161.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0161.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"B": 900026, "D": 100004}, "failing": [], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"B": 900027, "D": 100003}, "failing": [], "objectives": {"min_margin": 2271863, "fees": 55403, "net_verified_benefit": 194603, "buffe
+["random_0282.v1.json", "DIFFERENT allocation", {"file": "random_0282.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"B": 500018, "C": 900024}, "failing": [], "k": 3, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"B": 500015, "C": 900027}, "failing": [], "objectives": {"min_margin": 2032879, "fees": 200006, "net_verified_benefit": 25000, "buffer": 46
+["random_0319.v1.json", "DIFFERENT allocation", {"file": "random_0319.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"A": 675356, "B": 524680}, "failing": [], "k": 2, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"A": 600018, "B": 600018}, "failing": [], "objectives": {"min_margin": 3507792, "fees": 303610, "net_verified_benefit": 46397, "buffer": 46
+["random_0736.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0736.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"A": 700022, "B": 900026}, "failing": [], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"A": 700021, "B": 900027}, "failing": [], "objectives": {"min_margin": 2621804, "fees": 555418, "net_verified_benefit": -313081, "buf
+["random_0912.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0912.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"A": 199816, "C": 700211}, "failing": [], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"A": 199815, "C": 700212}, "failing": [], "objectives": {"min_margin": 0, "fees": 99908, "net_verified_benefit": -49955, "buffer": 23
+$ uv run --project services/api python evidence/i0/review-i0/scripts/scale_fixtures.py /tmp/rv/srch/r12 /tmp/rv/srch/big12 100003 12; plan_all.py; bounded_search --json; compare_search.py
+     3  DIFFERENT allocation
+     6  DIFFERENT allocation (k>3)
+   212  agree BASELINE_SHORTFALL
+   359  agree INFEASIBLE/notFound
+    87  agree NEEDS_DATA
+   333  agree found (same allocation)
+["random_0022.v1.json", "DIFFERENT allocation", {"file": "random_0022.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"B": 1000028, "D": 500017}, "failing": [], "k": 3, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"B": 1000030, "D": 500015}, "failing": [], "objectives": {"min_margin": 536424, "fees": 6001, "net_verified_benefit": 244006, "buffer": 45
+["random_0080.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0080.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"B": 766330, "C": 833718}, "failing": [], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"B": 800024, "C": 800024}, "failing": [], "objectives": {"min_margin": 323494, "fees": 600018, "net_verified_benefit": -592018, "buff
+["random_0089.v1.json", "DIFFERENT allocation", {"file": "random_0089.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"A": 1100032, "B": 300010}, "failing": [], "k": 2, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"A": 1100033, "B": 300009}, "failing": [], "objectives": {"min_margin": 3053540, "fees": 136605, "net_verified_benefit": -125605, "buffer"
+["random_0093.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0093.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"C": 600021, "D": 900024}, "failing": [], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"C": 600018, "D": 900027}, "failing": [], "objectives": {"min_margin": 1533255, "fees": 0, "net_verified_benefit": 225006, "buffer": 
+["random_0283.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0283.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"A": 500020, "B": 700016}, "failing": [], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"A": 500015, "B": 700021}, "failing": [], "objectives": {"min_margin": 4373351, "fees": 283340, "net_verified_benefit": -50003, "buff
+["random_0404.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0404.v1.json", "status": "CONDITIONALLY_FEASIBLE", "solver": "OPTIMAL", "allocation": {"B": 486412, "C": 513618}, "failing": ["stress0"], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"B": 500015, "C": 500015}, "failing": ["stress0"], "objectives": {"min_margin": 738515, "fees": 269674, "net_verified
+["random_0548.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0548.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"A": 499876, "B": 900166}, "failing": [], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"A": 500015, "B": 900027}, "failing": [], "objectives": {"min_margin": 1511051, "fees": 205407, "net_verified_benefit": -205407, "buf
+["random_0716.v1.json", "DIFFERENT allocation", {"file": "random_0716.v1.json", "status": "FEASIBLE_ROBUST", "solver": "OPTIMAL", "allocation": {"A": 500020, "B": 800019}, "failing": [], "k": 3, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"A": 500015, "B": 800024}, "failing": [], "objectives": {"min_margin": 2112379, "fees": 283010, "net_verified_benefit": -11339, "buffer": 6
+["random_0876.v1.json", "DIFFERENT allocation (k>3)", {"file": "random_0876.v1.json", "status": "CONDITIONALLY_FEASIBLE", "solver": "OPTIMAL", "allocation": {"A": 300008, "B": 200007}, "failing": ["stress0"], "k": 4, "proven": true, "notes": []}, {"outcome": "found", "allocation": {"A": 250008, "B": 250007}, "failing": ["stress0"], "objectives": {"min_margin": 18147, "fees": 400012, "net_verified_
+
+## 3. 时间预算：协议上限文档（200 卡、100 现金账户、10,000 事件、5 情景），AOT 编译的同一 CLI（/tmp/rv/bs = dart compile exe bin/bounded_search.dart）
+$ uv run --project services/api python evidence/i0/review-i0/scripts/make_big.py /tmp/rv/cx/big_limits.json 0
+ok /tmp/rv/cx/big_limits.json
+$ /tmp/rv/bs --budget-ms 0 /tmp/rv/cx/big_limits.json
+   outcome notFound: 本地未找到（非证明无解） (proven: false)
+   candidates 0, verifier calls 0, exhausted false, timed out true, elapsed 83ms
+   process wall time (含读文件与 JSON 解析): 264 ms
+$ /tmp/rv/bs --budget-ms 100 /tmp/rv/cx/big_limits.json
+   outcome found: 本地找到可行方案，非最优证明 (proven: false)
+   candidates 2, verifier calls 2, exhausted false, timed out true, elapsed 174ms
+   process wall time (含读文件与 JSON 解析): 357 ms
+$ /tmp/rv/bs --budget-ms 2000 /tmp/rv/cx/big_limits.json
+   outcome found: 本地找到可行方案，非最优证明 (proven: false)
+   candidates 482980, verifier calls 9, exhausted false, timed out true, elapsed 2065ms
+   process wall time (含读文件与 JSON 解析): 2239 ms
+
+## 4. F-18 复现（I0-c 验收项）
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json)
+== ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+   input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+   decision baseline, profile cash_safety, K <= 3, budget 2000ms
+   outcome found: 本地找到可行方案，非最优证明 (proven: false)
+   allocation A=800000, C=200000
+   verification ok true; weighted buffer 42.4 days; fees 0; failing scenarios confirmed,stress_income_delay
+   objectives {min_margin: 100000, fees: 0, net_verified_benefit: 0, buffer: 42400000, cards: 2}
+     A: 800000 statement 2026-11-10 due 2026-11-28 repay 2026-11-28 from cash-main (buffer 43 days, fee 0)
+     C: 200000 statement 2026-11-05 due 2026-11-25 repay 2026-11-25 from cash-main (buffer 40 days, fee 0)
+   candidates 29, verifier calls 5, exhausted true, timed out false, elapsed 14ms
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:bounded_search --max-cards 1 ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json)
+== ../../../../packages/rules-protocol/fixtures/regression_2026-10-16_10000.v1.json
+   input_hash ea990327f08b42d476fa157d9bb8ddff6a1d8eb4e41ff60b1e498c5861a91ee8
+   decision baseline, profile cash_safety, K <= 1, budget 2000ms
+   outcome notFound: 本地未找到（非证明无解） (proven: false)
+   candidates 1, verifier calls 1, exhausted true, timed out false, elapsed 17ms

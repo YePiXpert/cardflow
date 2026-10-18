@@ -1,0 +1,12 @@
+# 领域包基线（2026-10-18T10:02:52Z，HEAD 8b331b3；flutter 工具的 root 提示行用 grep -Ev "Woah|strongly recommend|^  /$|^📎$" 滤掉）
+$ cd apps/mobile/packages/cardflow_domain && dart --version && dart format --output=none --set-exit-if-changed . && dart analyze --fatal-infos && dart test 2>&1 | tail -3
+Dart SDK version: 3.13.5 (stable) (Tue Sep 29 01:00:52 2026 -0700) on "linux_x64"
+Formatted 44 files (0 changed) in 0.15 seconds.
+format exit=0
+Analyzing cardflow_domain...
+No issues found!
+analyze exit=0
+00:00 +263: test/fixture_runner_test.dart: assertion semantics (test_runner.py) where must select exactly one element
+00:00 +264: test/cash_properties_test.dart: verifier invariants on random documents and allocations (300 documents x 3)
+00:00 +265: All tests passed!
+test exit=0

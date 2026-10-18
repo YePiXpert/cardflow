@@ -1,0 +1,140 @@
+{
+ "protocol_version": "1",
+ "request": {
+  "amount_minor": 1000000,
+  "currency": "CNY",
+  "txn_date": "2026-10-16",
+  "allow_split": true,
+  "max_cards": 2,
+  "min_split_minor": 1,
+  "payment_lead_days": 0,
+  "channel": "pos"
+ },
+ "cards": [
+  {
+   "card_id": "A",
+   "credit_account_id": "acc-A",
+   "raw_available_minor": 10000000,
+   "holds_uncounted_minor": 0,
+   "reservations_minor": 0,
+   "billing_rule": {
+    "rule_id": "rA",
+    "statement_day": 20,
+    "statement_day_inclusive": true,
+    "due": {
+     "kind": "fixed_day",
+     "day": 25,
+     "month_offset": 1
+    },
+    "holiday_rollover": "none"
+   },
+   "repay_from_cash_account_id": "cash-1",
+   "channel_ok": true,
+   "currency_ok": true,
+   "status_ok": true,
+   "fee_rate": "0.01",
+   "fee_fixed_minor": 0,
+   "verified_benefit_rate": "0",
+   "potential_benefit_rate": "0",
+   "posting_delay_min_days": 0,
+   "posting_delay_max_days": 0
+  },
+  {
+   "card_id": "B",
+   "credit_account_id": "acc-B",
+   "raw_available_minor": 10000000,
+   "holds_uncounted_minor": 0,
+   "reservations_minor": 0,
+   "billing_rule": {
+    "rule_id": "rB",
+    "statement_day": 18,
+    "statement_day_inclusive": true,
+    "due": {
+     "kind": "fixed_day",
+     "day": 5,
+     "month_offset": 1
+    },
+    "holiday_rollover": "none"
+   },
+   "repay_from_cash_account_id": "cash-2",
+   "channel_ok": true,
+   "currency_ok": true,
+   "status_ok": true,
+   "fee_rate": "0",
+   "fee_fixed_minor": 0,
+   "verified_benefit_rate": "0",
+   "potential_benefit_rate": "0",
+   "posting_delay_min_days": 0,
+   "posting_delay_max_days": 0
+  }
+ ],
+ "pools": [],
+ "cash_accounts": [
+  {
+   "cash_account_id": "cash-1",
+   "currency": "CNY",
+   "reserve_floor_minor": 0,
+   "usable_for_repayment": true
+  },
+  {
+   "cash_account_id": "cash-2",
+   "currency": "CNY",
+   "reserve_floor_minor": 0,
+   "usable_for_repayment": true
+  }
+ ],
+ "snapshots": [
+  {
+   "cash_account_id": "cash-1",
+   "balance_minor": 10000000,
+   "as_of": "2026-10-16",
+   "includes_event_ids": []
+  },
+  {
+   "cash_account_id": "cash-2",
+   "balance_minor": 10000000,
+   "as_of": "2026-10-16",
+   "includes_event_ids": []
+  }
+ ],
+ "events": [
+  {
+   "event_id": "salary",
+   "cash_account_id": "cash-2",
+   "on": "2026-11-10",
+   "amount_minor": 606500,
+   "cls": "confirmed",
+   "category": "income"
+  }
+ ],
+ "scenarios": [
+  {
+   "scenario_id": "confirmed",
+   "include_expected": false,
+   "income_delay_days": 0,
+   "income_scale": "1",
+   "expense_scale": "1",
+   "event_overrides": [],
+   "same_day_order": "conservative"
+  },
+  {
+   "scenario_id": "baseline",
+   "include_expected": true,
+   "income_delay_days": 0,
+   "income_scale": "1",
+   "expense_scale": "1",
+   "event_overrides": [],
+   "same_day_order": "conservative"
+  }
+ ],
+ "horizon_end": "2027-04-30",
+ "options": {
+  "profile": "cash_safety",
+  "decision_scenario": "baseline",
+  "time_limit_s": 10,
+  "workers": 8,
+  "seed": 0,
+  "stale_after_days": 7,
+  "global_reserve_floor_minor": 19600000
+ }
+}

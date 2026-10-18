@@ -1,0 +1,47 @@
+# tests/protocol/test_limits.py 的边界文档（BOUNDARY、PROBE、数组上限 200/100/10000 与 +1）在两端适配层上的裁决与指针
+$ uv run --project services/api python -I evidence/i0/review-i0/scripts/gen_limits_cases.py /tmp/rv/lim/docs.txt /tmp/rv/lim/names.txt
+42 documents
+$ uv run --project services/api python -I evidence/i0/review-i0/scripts/adapter_diff.py /tmp/rv/lim/docs.txt /tmp/rv/lim/py.txt; (cd /tmp/rv/dart && dart run bin/adapter_diff.dart /tmp/rv/lim/docs.txt /tmp/rv/lim/dart.txt)
+$ paste names py dart（OK 行只显示 input_hash 前 12 位）
+same amount-at-limit | py: OK 03855a958b7f | dart: OK 03855a958b7f
+same amount-over-limit | py: ERR /request/amount_minor | must be an integer in [1, 10000000000000] | dart: ERR /request/amount_minor | must be an integer in [1, 10000000000000]
+same balance-at-negative-limit | py: OK 9977feeda7c0 | dart: OK 9977feeda7c0
+same balance-under-negative-limit | py: ERR /snapshots/0/balance_minor | must be an integer in [-10000000000000, 10000000000000] | dart: ERR /snapshots/0/balance_minor | must be an integer in [-10000000000000, 10000000000000]
+same available-at-limit | py: OK c7848c53bc66 | dart: OK c7848c53bc66
+same available-over-limit | py: ERR /cards/0/raw_available_minor | must be an integer in [-10000000000000, 10000000000000] | dart: ERR /cards/0/raw_available_minor | must be an integer in [-10000000000000, 10000000000000]
+same event-under-negative-limit | py: ERR /events/0/amount_minor | must be an integer in [-10000000000000, 10000000000000] | dart: ERR /events/0/amount_minor | must be an integer in [-10000000000000, 10000000000000]
+same floor-over-limit | py: ERR /cash_accounts/0/reserve_floor_minor | must be an integer in [0, 10000000000000] | dart: ERR /cash_accounts/0/reserve_floor_minor | must be an integer in [0, 10000000000000]
+same global-floor-over-limit | py: ERR /options/global_reserve_floor_minor | must be an integer in [0, 10000000000000] | dart: ERR /options/global_reserve_floor_minor | must be an integer in [0, 10000000000000]
+same rate-one | py: OK 3e2297815143 | dart: OK 3e2297815143
+same rate-one-padded | py: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros) | dart: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros)
+same rate-five-decimals | py: OK dab4b63f2a02 | dart: OK dab4b63f2a02
+same rate-six-decimals | py: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros) | dart: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros)
+same rate-above-one | py: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros) | dart: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros)
+same rate-two | py: ERR /cards/0/verified_benefit_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros) | dart: ERR /cards/0/verified_benefit_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros)
+same scale-ten | py: OK 950bd5ae52dc | dart: OK 950bd5ae52dc
+same scale-ten-padded | py: ERR /scenarios/0/expense_scale | not a scale factor (canonical decimal string 0..10, at most 10 decimals, no trailing zeros) | dart: ERR /scenarios/0/expense_scale | not a scale factor (canonical decimal string 0..10, at most 10 decimals, no trailing zeros)
+same scale-below-ten | py: OK 2c09de7bc700 | dart: OK 2c09de7bc700
+same scale-above-ten | py: ERR /scenarios/0/income_scale | not a scale factor (canonical decimal string 0..10, at most 10 decimals, no trailing zeros) | dart: ERR /scenarios/0/income_scale | not a scale factor (canonical decimal string 0..10, at most 10 decimals, no trailing zeros)
+same date-first | py: OK 91ca8ac2450f | dart: OK 91ca8ac2450f
+same date-before-first | py: ERR /horizon_end | not a YYYY-MM-DD date in 1970..2999 | dart: ERR /horizon_end | not a YYYY-MM-DD date in 1970..2999
+same date-last | py: OK 724592eed14d | dart: OK 724592eed14d
+same date-after-last | py: ERR /horizon_end | not a YYYY-MM-DD date in 1970..2999 | dart: ERR /horizon_end | not a YYYY-MM-DD date in 1970..2999
+same timestamp-in-range | py: OK 2fcf1727a8e2 | dart: OK 2fcf1727a8e2
+same timestamp-after-last | py: ERR /snapshots/0/observed_at | not an RFC 3339 timestamp with an offset in 1970..2999 | dart: ERR /snapshots/0/observed_at | not an RFC 3339 timestamp with an offset in 1970..2999
+same raw_available = 2^63-1 | py: ERR /cards/0/raw_available_minor | must be an integer in [-10000000000000, 10000000000000] | dart: ERR /cards/0/raw_available_minor | must be an integer in [-10000000000000, 10000000000000]
+same amount = 2^62 | py: ERR /request/amount_minor | must be an integer in [1, 10000000000000] | dart: ERR /request/amount_minor | must be an integer in [1, 10000000000000]
+same amount = 2^63-1 | py: ERR /request/amount_minor | must be an integer in [1, 10000000000000] | dart: ERR /request/amount_minor | must be an integer in [1, 10000000000000]
+same balance = -2^63 | py: ERR /snapshots/0/balance_minor | must be an integer in [-10000000000000, 10000000000000] | dart: ERR /snapshots/0/balance_minor | must be an integer in [-10000000000000, 10000000000000]
+same balance = 2^63-1 | py: ERR /snapshots/0/balance_minor | must be an integer in [-10000000000000, 10000000000000] | dart: ERR /snapshots/0/balance_minor | must be an integer in [-10000000000000, 10000000000000]
+same event amount = 2^63-1 | py: ERR /events/0/amount_minor | must be an integer in [-10000000000000, 10000000000000] | dart: ERR /events/0/amount_minor | must be an integer in [-10000000000000, 10000000000000]
+same balance = 10^13 | py: OK d1eab535b339 | dart: OK d1eab535b339
+same fee_rate = 0.006 | py: OK 94fc9c63141d | dart: OK 94fc9c63141d
+same fee_rate = 0.1234567891 | py: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros) | dart: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros)
+same fee_rate = 9999999999.9999999999 | py: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros) | dart: ERR /cards/0/fee_rate | not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros)
+same payment_lead_days = 60 | py: OK 6919a375501b | dart: OK 6919a375501b
+same cards-at-200 | py: OK 6196ba9cffee | dart: OK 6196ba9cffee
+same cards-at-201 | py: ERR /cards | more than 200 items (supported range) | dart: ERR /cards | more than 200 items (supported range)
+same cash_accounts-at-100 | py: OK 34af8feb430c | dart: OK 34af8feb430c
+same cash_accounts-at-101 | py: ERR /cash_accounts | more than 100 items (supported range) | dart: ERR /cash_accounts | more than 100 items (supported range)
+same events-at-10000 | py: OK 828e2ee7ac36 | dart: OK 828e2ee7ac36
+same events-at-10001 | py: ERR /events | more than 10000 items (supported range) | dart: ERR /events | more than 10000 items (supported range)

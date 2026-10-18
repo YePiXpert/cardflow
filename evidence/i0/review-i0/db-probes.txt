@@ -1,0 +1,30 @@
+# 加密库探针（flutter test 在 apps/mobile 下运行仓库外的临时测试文件；真实 sqlite3mc，构建钩子同 CI）
+# 1) PRAGMA key = "x'<64 hex>'" 是否按原始密钥使用（不经 KDF）：把 kdf_iter 改成 1 后用同一字面量重开；把同样的十六进制当口令重开
+$ (cd apps/mobile && flutter test /tmp/rv/ftest/rawkey_probe_test.dart)   # 文件副本：scripts/rawkey_probe_test.dart
+00:00 +0: loading /tmp/rv/ftest/rawkey_probe_test.dart
+00:00 +0: raw key probe
+kdf_iter pragma -> "1"; opened with kdf_iter=1 (value 42) -> raw key, no KDF; hex text as passphrase rejected (SqliteException); raw key apply+check 5890us; passphrase key+first write 19388us; library Version(libVersion: 3.54.0, sourceId: 2026-10-09 15:46:58 be8d059e9a49089ab2dce5ed26dd87aaf598fdc5fbe0b107c0dd758464bcd5e3, number: 3054000)
+00:00 +1: All tests passed!
+
+# 2) 测试辅助 containsKeyMaterial（test/data/db/db_test_support.dart:96）能否发现进入诊断日志的密钥：日志把数字换成 #
+$ (cd apps/mobile && flutter test /tmp/rv/ftest/key_leak_probe_test.dart)   # 文件副本：scripts/key_leak_probe_test.dart
+00:00 +0: loading /tmp/rv/ftest/key_leak_probe_test.dart
+00:00 +0: masked key in a log detail
+report line:  E db/open_failed PRAGMA key = "x'####################aabbccddeeff##################a#bacbdcedfe#f'"
+containsKeyMaterial(line) = false
+byte-list form detected = false
+00:00 +1: All tests passed!
+
+# 3) 钩子加载的 sqlite3mc 的编译选项（临时存储是否默认在内存）
+$ (cd apps/mobile && flutter test /tmp/rv/ftest/compile_options_probe_test.dart)   # 副本：scripts/compile_options_probe_test.dart
+00:00 +0: loading /tmp/rv/ftest/compile_options_probe_test.dart
+00:00 +0: compile options
+library: SQLite3 Multiple Ciphers 2.6.1; temp_store pragma: 0; selected compile options: [DEFAULT_JOURNAL_SIZE_LIMIT=-1, DEFAULT_WAL_AUTOCHECKPOINT=1000, DEFAULT_WAL_SYNCHRONOUS=2, TEMP_STORE=2]
+00:00 +1: All tests passed!
+
+# 4) R-15：wrong_key 后用同一个 DatabaseKeyManager 做"删库删密钥再打开"，重启后是否还能打开
+$ (cd apps/mobile && flutter test /tmp/rv/ftest/reset_trap_probe_test.dart)   # 副本：scripts/reset_trap_probe_test.dart
+00:00 +0: loading /tmp/rv/ftest/reset_trap_probe_test.dart
+00:00 +0: reset after wrong_key with a cached key manager
+step2=wrong_key; after reset: created=true, keychain empty; after restart: key_missing
+00:00 +1: All tests passed!

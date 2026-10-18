@@ -1,0 +1,26 @@
+# 公开仓库卫生扫描（范围：apps/mobile、evidence/i0（不含本目录）、.github、packages/rules-protocol 的 README 与 runner_py；只扫 git 已跟踪文件）
+$ FILES=$(git ls-files apps/mobile evidence/i0 .github packages/rules-protocol/README.md packages/rules-protocol/runner_py | grep -v "\.png$")
+files: 173
+$ 邮箱地址（只按域名计数，不回显地址）
+     20 users.noreply.github.com
+$ 令牌/私钥特征（ghp_ github_pat_ gho_ ghs_ AKIA -----BEGIN xox? sk-）
+0
+$ IPv4 形态（排除 RFC 章节号）
+evidence/i0/I0-a/flutter-doctor.txt:42:127.0.0.1
+evidence/i0/I0-a/flutter-doctor.txt:44:127.0.0.1
+$ 13–19 位数字串中通过 Luhn 校验、首位 3–6 的（卡号形态）
+card-like candidates (prefix 3-6, 13-19 digits): 6 ; luhn-valid: 0
+  apps/mobile/packages/cardflow_domain/test/json_test.dart: 622202… luhn=invalid
+  apps/mobile/packages/cardflow_domain/test/protocol_adapter_test.dart: 622202… luhn=invalid
+  apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart: 300000… luhn=invalid
+  apps/mobile/test/features/diagnostics/diagnostic_log_test.dart: 622202… luhn=invalid
+  apps/mobile/test/features/diagnostics/error_hooks_test.dart: 622202… luhn=invalid
+  evidence/i0/I0-c/git-log.txt: 386075… luhn=invalid
+$ 宿主信息：flutter doctor 证据中的系统/代理行
+6:[✓] Flutter (Channel stable, 3.47.7, on Debian GNU/Linux 13 (trixie) 6.12.111+deb13-amd64, locale en_US.UTF-8) [26ms]
+41:    • HTTP_PROXY is set
+42:    • NO_PROXY is 127.0.0.1,localhost,::1
+43:    • NO_PROXY contains localhost
+44:    • NO_PROXY contains 127.0.0.1
+45:    • NO_PROXY contains ::1
+48:    • Linux (desktop) • linux • linux-x64 • Debian GNU/Linux 13 (trixie) 6.12.111+deb13-amd64

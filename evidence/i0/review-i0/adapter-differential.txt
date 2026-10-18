@@ -1,0 +1,169 @@
+# 协议适配层拒绝规则：Python inputs_from_protocol 与 Dart inputsFromProtocol 逐文档对照（变异文档）；2026-10-18T10:02:07Z，HEAD 8b331b3
+# 变异来源：blind 生成器（种子 202，clean）与 gen_parity_fixtures（种子 11）的 input 各取前 150 份，加 F-18；每份随机改类型/删成员/加未知成员/浮点记号/复制 ID/增删数组项，30% 再变异一次
+$ uv run --project services/api python evidence/i0/review-i0/scripts/gen_blind.py /tmp/rv/adp/blind 150 202 clean
+wrote 150 fixtures (tried 150)
+$ (cd apps/mobile/packages/cardflow_domain && dart run tool/gen_parity_fixtures.dart /tmp/rv/adp/r11 --count 150 --seed 11)
+wrote 150 fixtures (600 cases) to /tmp/rv/adp/r11 (seed 11)
+$ uv run --project services/api python -I evidence/i0/review-i0/scripts/gen_mutants.py /tmp/rv/adp/mutants.txt 20000 5 /tmp/rv/adp/blind /tmp/rv/adp/r11
+wrote 20000
+$ uv run --project services/api python -I evidence/i0/review-i0/scripts/adapter_diff.py /tmp/rv/adp/mutants.txt /tmp/rv/adp/py.txt
+$ (cd /tmp/rv/dart && dart run bin/adapter_diff.dart /tmp/rv/adp/mutants.txt /tmp/rv/adp/dart.txt)   # /tmp/rv/dart = path 依赖领域包的临时包；bin/adapter_diff.dart 副本见 scripts/
+$ awk "{print \$1}" /tmp/rv/adp/py.txt | sort | uniq -c
+  16463 ERR
+   3537 OK
+$ paste -d"\t" /tmp/rv/adp/py.txt /tmp/rv/adp/dart.txt | awk -F"\t" "{if (\$1!=\$2) n++} END {print \"lines:\", NR, \" differing:\", n+0}"   # 裁决、指针、消息、input_hash 全部相同才算一致
+lines: 20000  differing: 0
+$ sed "s/^ERR [^|]*| //" /tmp/rv/adp/py.txt | grep -v "^OK" | sort | uniq -c | sort -rn   # 触发到的全部拒绝规则
+   1624 expected an integer, got a string
+   1308 unknown member (not in protocol v1)
+    964 unknown cash account
+    927 expected an object, got a string
+    891 expected a string, got an integer
+    628 expected an object, got a float
+    556 expected a boolean, got a string
+    514 expected a string, got a float
+    465 must be one of ['confirmed', 'expected', 'planned']
+    458 expected an integer, got a float
+    422 not a YYYY-MM-DD date in 1970..2999
+    420 must be one of ['income', 'bill', 'living', 'repayment', 'transfer_in', 'transfer_out', 'fee', 'other']
+    320 expected an array, got a string
+    320 duplicate cash_account_id
+    314 expected an object, got an integer
+    303 duplicate event_id
+    276 rates and factors are decimal strings, not JSON numbers
+    248 not a rate (canonical decimal string 0..1, at most 5 decimals, no trailing zeros)
+    211 unknown event
+    186 expected a boolean, got an integer
+    184 must be one of ['fixed_day', 'days_after_statement']
+    183 not a valid id (ASCII letters, digits and . _ : -, at most 128)
+    165 must be one of ['none', 'next_business_day']
+    146 not a scale factor (canonical decimal string 0..10, at most 10 decimals, no trailing zeros)
+    146 expected a boolean, got a float
+    143 duplicate scenario_id
+    141 not an RFC 3339 timestamp with an offset in 1970..2999
+    138 missing required member 'cash_account_id'
+    130 must be one of ['conservative', 'timestamp']
+    127 duplicate card_id
+    113 expected an array, got an integer
+    104 expected a string, got an array
+    104 event overridden twice
+    102 expected a string, got a boolean
+     98 expected a string, got an object
+     91 expected an array, got a float
+     86 missing required member 'amount_minor'
+     85 missing required member 'category'
+     83 missing required member 'event_id'
+     78 not a valid ISO 4217 currency code (3 capital letters)
+     74 missing required member 'cls'
+     74 expected an integer, got an array
+     72 needs at least 1 item(s)
+     71 unsupported protocol_version (expected '1')
+     71 duplicate pool_id
+     66 missing required member 'on'
+     63 expected an integer, got a boolean
+     54 must be an integer in [0, 366]
+     54 duplicate event id
+     53 expected an integer, got an object
+     49 expected a string, got null
+     47 must be an integer in [1, 31]
+     41 missing required member 'rule_id'
+     40 missing required member 'fee_rate'
+     40 expected an object, got an array
+     39 missing required member 'verified_benefit_rate'
+     39 missing required member 'potential_benefit_rate'
+     38 must be one of ['cash_safety', 'verified_benefit', 'fewer_cards']
+     37 missing required member 'expense_scale'
+     37 missing required member 'due'
+     36 must be an integer in [-10000000000000, 10000000000000]
+     35 missing required member 'currency_ok'
+     34 missing required member 'posting_delay_min_days'
+     34 missing required member 'credit_account_id'
+     34 expected an integer, got null
+     33 must be an integer in [0, 10000000000000]
+     33 missing required member 'holiday_rollover'
+     32 missing required member 'reserve_floor_minor'
+     32 missing required member 'fee_fixed_minor'
+     31 missing required member 'status_ok'
+     31 missing required member 'repay_from_cash_account_id'
+     31 missing required member 'income_delay_days'
+     31 expected an object, got a boolean
+     30 missing required member 'reservations_minor'
+     30 missing required member 'holds_uncounted_minor'
+     29 missing required member 'statement_day_inclusive'
+     29 missing required member 'posting_delay_max_days'
+     29 missing required member 'income_scale'
+     29 missing required member 'channel_ok'
+     28 missing required member 'raw_available_minor'
+     28 missing required member 'month_offset'
+     28 missing required member 'billing_rule'
+     27 missing required member 'statement_day'
+     27 missing required member 'same_day_order'
+     27 missing required member 'kind'
+     26 missing required member 'event_overrides'
+     25 missing required member 'scenario_id'
+     25 missing required member 'include_expected'
+     25 missing required member 'card_id'
+     24 not an event of this snapshot's cash account
+     24 must be an integer in [0, 2]
+     22 must be one of ['calendar', 'business']
+     22 missing required member 'balance_minor'
+     22 expected a number, got a string
+     22 expected a boolean, got an object
+     20 not a valid channel (lowercase letters, digits and _)
+     20 missing required member 'currency'
+     20 missing required member 'as_of'
+     20 expected a boolean, got an array
+     20 differs from another card of the same credit account
+     19 must be one of ['draft', 'verified', 'user_declared']
+     19 missing required member 'day'
+     18 must be an integer in [1, 10000000000000]
+     17 missing required member 'usable_for_repayment'
+     17 differs from another card of the same credit account (the account's available credit is one value)
+     16 missing required member 'request'
+     16 missing required member 'includes_event_ids'
+     15 missing required member 'profile'
+     15 expected an object, got null
+     14 missing required member 'protocol_version'
+     14 missing required member 'min_split_minor'
+     14 missing required member 'cash_accounts'
+     14 missing required member 'allow_split'
+     14 expected an array, got an object
+     13 missing required member 'scenarios'
+     12 must be >= posting_delay_min_days
+     12 missing required member 'snapshots'
+     12 missing required member 'pools'
+     12 expected a boolean, got null
+     11 missing required member 'channel'
+     11 expected an array, got a boolean
+     11 an override needs 'on' and/or 'amount_minor'
+     10 missing required member 'txn_date'
+     10 missing required member 'horizon_end'
+     10 missing required member 'day_kind'
+      9 missing required member 'payment_lead_days'
+      9 missing required member 'options'
+      9 missing required member 'max_cards'
+      9 missing required member 'days'
+      8 missing required member 'events'
+      8 missing required member 'decision_scenario'
+      8 missing required member 'cards'
+      8 expected an array, got null
+      8 event ids starting with 'plan_repay_' are reserved
+      7 must be an integer in [1, 60]
+      7 missing required member 'pool_id'
+      6 not a valid calendar date
+      6 must be in (0, 3600]
+      6 missing required member 'available_minor'
+      5 must be an integer in [1, 64]
+      5 missing required member 'seed'
+      4 must be an integer in [1, 2147483647]
+      4 missing required member 'time_limit_s'
+      4 its date (in its own offset) is not 'on'
+      3 missing required member 'workers'
+      3 missing required member 'stale_after_days'
+      3 missing required member 'global_reserve_floor_minor'
+      3 expected a number, got an object
+      3 expected a number, got an array
+      2 must be an integer in [0, 2147483647]
+      2 differs from the request currency (protocol v1 plans are single-currency)
+      1 longer than 1000 characters
+      1 expected a number, got null

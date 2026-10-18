@@ -1,0 +1,53 @@
+# CI 工作流静态检查（.github/workflows/mobile.yml）与最近运行
+$ grep -nE "continue-on-error|\|\| true|set -[a-z]*e|shell:|working-directory|--enforce-lockfile|--locked|paths:|test \"\$n\"|not files|if: " .github/workflows/mobile.yml
+30:    paths:
+38:    paths:
+64:    shell: bash
+65:    working-directory: apps/mobile
+85:        run: flutter pub get --enforce-lockfile
+88:        working-directory: ${{ env.DOMAIN_DIR }}
+89:        run: dart pub get --enforce-lockfile
+95:        working-directory: ${{ env.DOMAIN_DIR }}
+102:        working-directory: ${{ env.DOMAIN_DIR }}
+109:        working-directory: ${{ env.DOMAIN_DIR }}
+121:        working-directory: .
+137:      - name: uv sync --locked (services/api)
+138:        run: uv sync --locked --project services/api
+141:        working-directory: ${{ env.DOMAIN_DIR }}
+142:        run: dart pub get --enforce-lockfile
+150:        working-directory: ${{ env.DOMAIN_DIR }}
+155:          set -euo pipefail
+157:          test "$n" -gt 0 || { echo "::error::the Python runner dumped no outputs"; exit 1; }
+163:        working-directory: ${{ env.DOMAIN_DIR }}
+170:          set -euo pipefail
+179:          test "$n" -eq 1200 || { echo "::error::expected 1200 dumped outputs, found $n"; exit 1; }
+211:          sys.exit(1 if failed or not files else 0)
+215:        if: failure()
+225:    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/ios-v')
+246:          flutter doctor -v > build-logs/flutter-doctor.txt 2>&1 || true
+249:        run: flutter pub get --enforce-lockfile
+270:          set -euo pipefail
+282:          set -euo pipefail
+341:        if: failure()
+353:        if: failure()
+$ grep -nE "uses: " .github/workflows/mobile.yml   # action 固定方式
+73:      - uses: actions/checkout@v7
+75:      - uses: subosito/flutter-action@v2
+123:      - uses: actions/checkout@v7
+125:      - uses: astral-sh/setup-uv@v10.3.0
+131:      - uses: subosito/flutter-action@v2
+216:        uses: actions/upload-artifact@v7
+230:      - uses: actions/checkout@v7
+232:      - uses: subosito/flutter-action@v2
+332:        uses: actions/upload-artifact@v7
+354:        uses: actions/upload-artifact@v7
+$ gh run list --workflow mobile.yml --limit 6 --json databaseId,headSha,event,conclusion,createdAt --jq ".[] | [.databaseId, .headSha[0:7], .event, .conclusion, .createdAt] | @tsv"
+39114777414	d74deeb	push	success	2026-10-18T09:17:53Z
+39114057360	fdd7433	push	success	2026-10-18T09:06:49Z
+39113804928	3860756	push	success	2026-10-18T09:02:57Z
+39113675794	11c55c0	push	cancelled	2026-10-18T09:01:02Z
+39113542028	ebb1882	push	cancelled	2026-10-18T08:59:06Z
+39113449468	7d91448	push	cancelled	2026-10-18T08:57:32Z
+$ git diff --stat fdd7433..HEAD -- apps .github packages services   # 最后一次 CI 运行之后代码是否有变
+ packages/rules-protocol/README.md | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)

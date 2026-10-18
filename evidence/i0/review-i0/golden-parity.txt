@@ -1,0 +1,22 @@
+# golden fixture（F-18）双端 --dump 与 diff（与 CI protocol-parity 第 1 步相同的命令）；2026-10-18T10:10:37Z，HEAD 8b331b3
+$ uv run --project services/api python packages/rules-protocol/runner_py/run_fixtures.py --dump /tmp/rv/golden/python | tail -2
+   result: PASS (23/23 assertions hold, 0 output schema violation(s))
+summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+$ (cd apps/mobile/packages/cardflow_domain && dart run cardflow_domain:run_fixtures --dump /tmp/rv/golden/dart | tail -2)
+   result: PASS (14/14 assertions hold; 3 plan case(s) not run: need CP-SAT)
+summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+$ find /tmp/rv/golden -name '*.json' | sort; diff -r /tmp/rv/golden/python /tmp/rv/golden/dart; echo diff exit=$?
+/tmp/rv/golden/dart/regression_2026-10-16_10000/00-cycles.cycles.json
+/tmp/rv/golden/dart/regression_2026-10-16_10000/01-plan_A8000_C2000.verify.json
+/tmp/rv/golden/dart/regression_2026-10-16_10000/02-plan_B10000.verify.json
+/tmp/rv/golden/python/regression_2026-10-16_10000/00-cycles.cycles.json
+/tmp/rv/golden/python/regression_2026-10-16_10000/01-plan_A8000_C2000.verify.json
+/tmp/rv/golden/python/regression_2026-10-16_10000/02-plan_B10000.verify.json
+diff exit=0
+$ (cd /tmp/rv/golden && sha256sum python/*/*.json dart/*/*.json)
+253a59c445472a7ba92be513da4ab131471f1c98ce86df2b5820497c78763a36  python/regression_2026-10-16_10000/00-cycles.cycles.json
+a3dc469a639e77ca7f7f0fb13c7aba2ee4adb3cbf6a0563f0db09b8327b3e831  python/regression_2026-10-16_10000/01-plan_A8000_C2000.verify.json
+eaf8b04bdd5b36dbc212089323faa4719f4b9d6adde8dcdafa76886faba1a207  python/regression_2026-10-16_10000/02-plan_B10000.verify.json
+253a59c445472a7ba92be513da4ab131471f1c98ce86df2b5820497c78763a36  dart/regression_2026-10-16_10000/00-cycles.cycles.json
+a3dc469a639e77ca7f7f0fb13c7aba2ee4adb3cbf6a0563f0db09b8327b3e831  dart/regression_2026-10-16_10000/01-plan_A8000_C2000.verify.json
+eaf8b04bdd5b36dbc212089323faa4719f4b9d6adde8dcdafa76886faba1a207  dart/regression_2026-10-16_10000/02-plan_B10000.verify.json

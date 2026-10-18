@@ -1,0 +1,40 @@
+# 严格 JSON 读取与规范化 JSON：Python parse_json+canonical_json 与 Dart parseJson+canonicalJson 逐例对照；2026-10-18T10:02:41Z，HEAD 8b331b3
+# 用例：随机小数/指数记号 3000 个、binary64 相邻值中点 ±10^-60 扰动约 2000 个、边界数字、超长整数、转义与代理项、非法 UTF-8、BOM、控制字符、嵌套深度 1–3000、重复键、Unicode 键排序 300 组
+$ uv run --project services/api python -I evidence/i0/review-i0/scripts/gen_json_cases.py /tmp/rv/jd/cases.txt 7
+5489 cases
+$ uv run --project services/api python -I evidence/i0/review-i0/scripts/json_diff.py /tmp/rv/jd/cases.txt /tmp/rv/jd/py.txt
+$ (cd /tmp/rv/dart && dart run bin/json_diff.dart /tmp/rv/jd/cases.txt /tmp/rv/jd/dart.txt)   # 副本见 scripts/json_diff.dart
+$ awk "{print \$1}" /tmp/rv/jd/py.txt | sort | uniq -c   # Python 结果：OK=接受并规范化，ERR=ProtocolError，CRASH=其他异常
+      6 CRASH
+    455 ERR
+   5028 OK
+$ 两端都接受时规范化字节是否相同；接受/拒绝是否一致（逐行）
+both-accepted: 5014  canonical-differs: 0  accept/reject-differs: 14
+$ 分歧的行（输入取 base64 前 16 字符）
+5131: input=W1tbW1tbW1tbW1tb… PY=OK W1tbW1tbW1tbW1tbW1tbW DART=ERR invalid JSON: nested too deeply
+5132: input=eyJhIjp7ImEiOnsi… PY=OK eyJhIjp7ImEiOnsiYSI6e DART=ERR invalid JSON: nested too deeply
+5133: input=W1tbW1tbW1tbW1tb… PY=OK W1tbW1tbW1tbW1tbW1tbW DART=ERR invalid JSON: nested too deeply
+5134: input=eyJhIjp7ImEiOnsi… PY=OK eyJhIjp7ImEiOnsiYSI6e DART=ERR invalid JSON: nested too deeply
+5135: input=W1tbW1tbW1tbW1tb… PY=OK W1tbW1tbW1tbW1tbW1tbW DART=ERR invalid JSON: nested too deeply
+5136: input=eyJhIjp7ImEiOnsi… PY=OK eyJhIjp7ImEiOnsiYSI6e DART=ERR invalid JSON: nested too deeply
+5137: input=W1tbW1tbW1tbW1tb… PY=OK W1tbW1tbW1tbW1tbW1tbW DART=ERR invalid JSON: nested too deeply
+5138: input=eyJhIjp7ImEiOnsi… PY=OK eyJhIjp7ImEiOnsiYSI6e DART=ERR invalid JSON: nested too deeply
+5139: input=W1tbW1tbW1tbW1tb… PY=OK W1tbW1tbW1tbW1tbW1tbW DART=ERR invalid JSON: nested too deeply
+5140: input=eyJhIjp7ImEiOnsi… PY=OK eyJhIjp7ImEiOnsiYSI6e DART=ERR invalid JSON: nested too deeply
+5141: input=W1tbW1tbW1tbW1tb… PY=OK W1tbW1tbW1tbW1tbW1tbW DART=ERR invalid JSON: nested too deeply
+5142: input=eyJhIjp7ImEiOnsi… PY=OK eyJhIjp7ImEiOnsiYSI6e DART=ERR invalid JSON: nested too deeply
+5143: input=W1tbW1tbW1tbW1tb… PY=OK W1tbW1tbW1tbW1tbW1tbW DART=ERR invalid JSON: nested too deeply
+5144: input=eyJhIjp7ImEiOnsi… PY=OK eyJhIjp7ImEiOnsiYSI6e DART=ERR invalid JSON: nested too deeply
+$ 分歧输入的嵌套深度（解码后数 [ 与 {）
+513 600 800 900 950 990 995 
+
+$ uv run --project services/api python -I -  # Python 深度阈值：parse_json 与 canonical_json 分开探测
+512 array: ok | object: ok
+513 array: ok | object: ok
+990 array: ok | object: ok
+995 array: ok | object: canonical uncaught RecursionError
+998 array: canonical uncaught RecursionError | object: canonical uncaught RecursionError
+5000 array: canonical uncaught RecursionError | object: canonical uncaught RecursionError
+9998 array: canonical uncaught RecursionError | object: parse ProtocolError: invalid JSON: nested too deeply
+9999 array: parse ProtocolError: invalid JSON: nested too deeply | object: parse ProtocolError: invalid JSON: nested too deeply
+10000 array: parse ProtocolError: invalid JSON: nested too deeply | object: parse ProtocolError: invalid JSON: nested too deeply
