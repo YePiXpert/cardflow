@@ -21,10 +21,16 @@ import 'bank_repository.dart';
 import 'billing_rule_repository.dart';
 import 'card_repository.dart';
 import 'card_wallet_reader.dart';
+import 'cash_account_repository.dart';
+import 'cash_event_repository.dart';
+import 'cash_forecast_reader.dart';
+import 'cash_plan_reader.dart';
 import 'credit_account_repository.dart';
 import 'credit_pool_repository.dart';
 import 'limit_snapshot_repository.dart';
 import 'models.dart';
+import 'recurring_item_repository.dart';
+import 'scenario_repository.dart';
 import 'workspace_repository.dart';
 import 'workspace_scope.dart';
 
@@ -196,4 +202,72 @@ Future<WalletView> wallet(Ref ref) async {
   ref.watch(localDataRevisionProvider);
   final scope = await ref.watch(workspaceScopeProvider.future);
   return CardWalletReader(scope).load();
+}
+
+/// 现金账户与余额快照仓库（当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<CashAccountRepository> cashAccountRepository(Ref ref) async =>
+    CashAccountRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 现金余额快照仓库（当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<CashSnapshotRepository> cashSnapshotRepository(Ref ref) async =>
+    CashSnapshotRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 现金事件仓库（收支计划、调拨、还款扣款；当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<CashEventRepository> cashEventRepository(Ref ref) async =>
+    CashEventRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 周期事项仓库（当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<RecurringItemRepository> recurringItemRepository(Ref ref) async =>
+    RecurringItemRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 情景仓库（当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<ScenarioRepository> scenarioRepository(Ref ref) async =>
+    ScenarioRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 现金与收支计划（P-08）读模型：数据变化时自动重算。
+@Riverpod(retry: noDatabaseRetry)
+Future<CashPlanView> cashPlan(Ref ref) async {
+  ref.watch(localDataRevisionProvider);
+  final scope = await ref.watch(workspaceScopeProvider.future);
+  return CashPlanReader(scope).load();
+}
+
+/// 现金账户详情（P-08）；账户不在当前空间时失败（NotFoundException）。
+@Riverpod(retry: noDatabaseRetry)
+Future<CashAccountDetailView> cashAccountDetail(
+  Ref ref,
+  String accountId,
+) async {
+  ref.watch(localDataRevisionProvider);
+  final scope = await ref.watch(workspaceScopeProvider.future);
+  return CashPlanReader(scope).loadAccount(accountId);
+}
+
+/// 周期事项详情（P-08）；不在当前空间时失败（NotFoundException）。
+@Riverpod(retry: noDatabaseRetry)
+Future<RecurringDetailView> recurringDetail(Ref ref, String itemId) async {
+  ref.watch(localDataRevisionProvider);
+  final scope = await ref.watch(workspaceScopeProvider.future);
+  return CashPlanReader(scope).loadRecurring(itemId);
+}
+
+/// 资金日历（P-07）与总览现金压力卡（P-01）：数据变化时自动重算（provider 依赖）。
+@Riverpod(retry: noDatabaseRetry)
+Future<CashForecast> cashForecast(Ref ref, CashForecastQuery query) async {
+  ref.watch(localDataRevisionProvider);
+  final scope = await ref.watch(workspaceScopeProvider.future);
+  return CashForecastReader(scope).forecast(query);
+}
+
+/// 情景列表（P-09）：每个情景的计算版本（新的在前）与最新版本是否已过期。
+@Riverpod(retry: noDatabaseRetry)
+Future<ScenarioBoard> scenarioBoard(Ref ref) async {
+  ref.watch(localDataRevisionProvider);
+  final scope = await ref.watch(workspaceScopeProvider.future);
+  return ScenarioBoard.load(scope);
 }

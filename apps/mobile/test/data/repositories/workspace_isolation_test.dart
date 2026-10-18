@@ -7,7 +7,6 @@ import 'dart:io';
 
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/demo/demo_workspace.dart';
-import 'package:cardflow/data/ids.dart';
 import 'package:cardflow/data/repositories/bank_repository.dart';
 import 'package:cardflow/data/repositories/billing_rule_repository.dart';
 import 'package:cardflow/data/repositories/card_repository.dart';
@@ -303,74 +302,8 @@ Future<void> expectForeignCashWritesRejected(
   );
 }
 
-/// v3 的现金表各写一些行（直接写库；仓库与演示数据接入后改用仓库写入）。
-Future<void> _enrichCash(WorkspaceScope scope) async {
-  final ws = scope.workspaceId;
-  final id = <String, String>{
-    for (final name in <String>[
-      'a1',
-      'a2',
-      's1',
-      'e1',
-      'e2',
-      't1',
-      't2',
-      'g1',
-      'r1',
-      'sc',
-      'run',
-    ])
-      name: newUuidV4(),
-  };
-  const ts = '2026-10-16T09:00:00+08:00';
-  for (final sql in <String>[
-    'INSERT INTO cash_accounts (id, workspace_id, name, currency, kind, created_at, updated_at) '
-        "VALUES ('${id['a1']}', '$ws', '隔离测试甲', 'CNY', 'bank', '$ts', '$ts')",
-    'INSERT INTO cash_accounts (id, workspace_id, name, currency, kind, usable_for_repayment, '
-        "created_at, updated_at) VALUES ('${id['a2']}', '$ws', '隔离测试乙', 'CNY', "
-        "'restricted', 0, '$ts', '$ts')",
-    'INSERT INTO recurring_items (id, workspace_id, cash_account_id, label, amount_minor, cls, '
-        'category, frequency, anchor_on, start_on, created_at, updated_at) VALUES '
-        "('${id['r1']}', '$ws', '${id['a1']}', '房租', -100000, 'confirmed', 'living', "
-        "'monthly', '2026-10-27', '2026-10-27', '$ts', '$ts')",
-    'INSERT INTO recurring_overrides (workspace_id, recurring_item_id, occurrence_key, action, '
-        "created_at, updated_at) VALUES ('$ws', '${id['r1']}', '2026-11-27', 'skip', '$ts', '$ts')",
-    'INSERT INTO cash_events (id, workspace_id, cash_account_id, event_on, amount_minor, cls, '
-        'category, recurring_item_id, occurrence_key, created_at, updated_at) VALUES '
-        "('${id['e1']}', '$ws', '${id['a1']}', '2026-10-27', -100000, 'confirmed', 'living', "
-        "'${id['r1']}', '2026-10-27', '$ts', '$ts')",
-    'INSERT INTO cash_events (id, workspace_id, cash_account_id, event_on, amount_minor, cls, '
-        "category, created_at, updated_at) VALUES ('${id['e2']}', '$ws', '${id['a1']}', "
-        "'2026-10-16', 50000, 'expected', 'income', '$ts', '$ts')",
-    'INSERT INTO cash_events (id, workspace_id, cash_account_id, event_on, amount_minor, cls, '
-        'category, transfer_group_id, created_at, updated_at) VALUES '
-        "('${id['t1']}', '$ws', '${id['a1']}', '2026-11-01', -20000, 'confirmed', "
-        "'transfer_out', '${id['g1']}', '$ts', '$ts')",
-    'INSERT INTO cash_events (id, workspace_id, cash_account_id, event_on, amount_minor, cls, '
-        'category, transfer_group_id, created_at, updated_at) VALUES '
-        "('${id['t2']}', '$ws', '${id['a2']}', '2026-11-01', 20000, 'confirmed', "
-        "'transfer_in', '${id['g1']}', '$ts', '$ts')",
-    'INSERT INTO cash_balance_snapshots (id, workspace_id, cash_account_id, balance_minor, '
-        'balance_as_of, observed_at, source_kind, confirmation_level, recorded_at) VALUES '
-        "('${id['s1']}', '$ws', '${id['a1']}', 500000, '2026-10-16', '$ts', 'bank_app', "
-        "'user_confirmed', '$ts')",
-    'INSERT INTO snapshot_included_events (workspace_id, cash_account_id, snapshot_id, '
-        "cash_event_id) VALUES ('$ws', '${id['a1']}', '${id['s1']}', '${id['e2']}')",
-    'INSERT INTO scenarios (id, workspace_id, name, kind, include_expected, income_delay_days, '
-        "created_at, updated_at) VALUES ('${id['sc']}', '$ws', '收入推迟 3 天', 'user_stress', 1, "
-        "3, '$ts', '$ts')",
-    'INSERT INTO scenario_runs (id, workspace_id, scenario_id, version_no, computed_at, '
-        'horizon_from, horizon_to, inputs_hash, result) VALUES '
-        "('${id['run']}', '$ws', '${id['sc']}', 1, '$ts', '2026-10-16', '2027-04-14', "
-        "'${'0' * 64}', '{}')",
-  ]) {
-    await scope.db.customStatement(sql);
-  }
-}
-
 /// 给演示数据再加一些行：USD 子账户、子账户层的规则与快照、一张已换卡的旧卡，让每条查询路径都有数据。
 Future<void> _enrich(WorkspaceScope scope) async {
-  await _enrichCash(scope);
   final accounts = CreditAccountRepository(scope);
   final cards = CardRepository(scope);
   final first = (await accounts.list()).first;

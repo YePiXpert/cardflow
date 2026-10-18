@@ -612,3 +612,582 @@ final class WalletProvider
 }
 
 String _$walletHash() => r'313b21f2b6dccc226f89c6595c9d7543b64bff69';
+
+/// 现金账户与余额快照仓库（当前工作空间）。
+
+@ProviderFor(cashAccountRepository)
+final cashAccountRepositoryProvider = CashAccountRepositoryProvider._();
+
+/// 现金账户与余额快照仓库（当前工作空间）。
+
+final class CashAccountRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CashAccountRepository>,
+          CashAccountRepository,
+          FutureOr<CashAccountRepository>
+        >
+    with
+        $FutureModifier<CashAccountRepository>,
+        $FutureProvider<CashAccountRepository> {
+  /// 现金账户与余额快照仓库（当前工作空间）。
+  CashAccountRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'cashAccountRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cashAccountRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<CashAccountRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CashAccountRepository> create(Ref ref) {
+    return cashAccountRepository(ref);
+  }
+}
+
+String _$cashAccountRepositoryHash() =>
+    r'6e3fb4f1353a12c80e9e7dc38e80bd25c8df1e28';
+
+/// 现金余额快照仓库（当前工作空间）。
+
+@ProviderFor(cashSnapshotRepository)
+final cashSnapshotRepositoryProvider = CashSnapshotRepositoryProvider._();
+
+/// 现金余额快照仓库（当前工作空间）。
+
+final class CashSnapshotRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CashSnapshotRepository>,
+          CashSnapshotRepository,
+          FutureOr<CashSnapshotRepository>
+        >
+    with
+        $FutureModifier<CashSnapshotRepository>,
+        $FutureProvider<CashSnapshotRepository> {
+  /// 现金余额快照仓库（当前工作空间）。
+  CashSnapshotRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'cashSnapshotRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cashSnapshotRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<CashSnapshotRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CashSnapshotRepository> create(Ref ref) {
+    return cashSnapshotRepository(ref);
+  }
+}
+
+String _$cashSnapshotRepositoryHash() =>
+    r'cc7e68d629915bf2d22bb1dbebca9c4331733fc2';
+
+/// 现金事件仓库（收支计划、调拨、还款扣款；当前工作空间）。
+
+@ProviderFor(cashEventRepository)
+final cashEventRepositoryProvider = CashEventRepositoryProvider._();
+
+/// 现金事件仓库（收支计划、调拨、还款扣款；当前工作空间）。
+
+final class CashEventRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CashEventRepository>,
+          CashEventRepository,
+          FutureOr<CashEventRepository>
+        >
+    with
+        $FutureModifier<CashEventRepository>,
+        $FutureProvider<CashEventRepository> {
+  /// 现金事件仓库（收支计划、调拨、还款扣款；当前工作空间）。
+  CashEventRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'cashEventRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cashEventRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<CashEventRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CashEventRepository> create(Ref ref) {
+    return cashEventRepository(ref);
+  }
+}
+
+String _$cashEventRepositoryHash() =>
+    r'd9f073fa43b7b945d8566c1c157040fbe55c181d';
+
+/// 周期事项仓库（当前工作空间）。
+
+@ProviderFor(recurringItemRepository)
+final recurringItemRepositoryProvider = RecurringItemRepositoryProvider._();
+
+/// 周期事项仓库（当前工作空间）。
+
+final class RecurringItemRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<RecurringItemRepository>,
+          RecurringItemRepository,
+          FutureOr<RecurringItemRepository>
+        >
+    with
+        $FutureModifier<RecurringItemRepository>,
+        $FutureProvider<RecurringItemRepository> {
+  /// 周期事项仓库（当前工作空间）。
+  RecurringItemRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'recurringItemRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recurringItemRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<RecurringItemRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<RecurringItemRepository> create(Ref ref) {
+    return recurringItemRepository(ref);
+  }
+}
+
+String _$recurringItemRepositoryHash() =>
+    r'48bb44546c7221cae02535c87345d3c3fe7b2c41';
+
+/// 情景仓库（当前工作空间）。
+
+@ProviderFor(scenarioRepository)
+final scenarioRepositoryProvider = ScenarioRepositoryProvider._();
+
+/// 情景仓库（当前工作空间）。
+
+final class ScenarioRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ScenarioRepository>,
+          ScenarioRepository,
+          FutureOr<ScenarioRepository>
+        >
+    with
+        $FutureModifier<ScenarioRepository>,
+        $FutureProvider<ScenarioRepository> {
+  /// 情景仓库（当前工作空间）。
+  ScenarioRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'scenarioRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$scenarioRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<ScenarioRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ScenarioRepository> create(Ref ref) {
+    return scenarioRepository(ref);
+  }
+}
+
+String _$scenarioRepositoryHash() =>
+    r'17e37983014941eae559565315a6ab7203f1dc49';
+
+/// 现金与收支计划（P-08）读模型：数据变化时自动重算。
+
+@ProviderFor(cashPlan)
+final cashPlanProvider = CashPlanProvider._();
+
+/// 现金与收支计划（P-08）读模型：数据变化时自动重算。
+
+final class CashPlanProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CashPlanView>,
+          CashPlanView,
+          FutureOr<CashPlanView>
+        >
+    with $FutureModifier<CashPlanView>, $FutureProvider<CashPlanView> {
+  /// 现金与收支计划（P-08）读模型：数据变化时自动重算。
+  CashPlanProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'cashPlanProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$cashPlanHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<CashPlanView> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CashPlanView> create(Ref ref) {
+    return cashPlan(ref);
+  }
+}
+
+String _$cashPlanHash() => r'201cac61b08bcf7ed52211c819efcc41e104eed0';
+
+/// 现金账户详情（P-08）；账户不在当前空间时失败（NotFoundException）。
+
+@ProviderFor(cashAccountDetail)
+final cashAccountDetailProvider = CashAccountDetailFamily._();
+
+/// 现金账户详情（P-08）；账户不在当前空间时失败（NotFoundException）。
+
+final class CashAccountDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CashAccountDetailView>,
+          CashAccountDetailView,
+          FutureOr<CashAccountDetailView>
+        >
+    with
+        $FutureModifier<CashAccountDetailView>,
+        $FutureProvider<CashAccountDetailView> {
+  /// 现金账户详情（P-08）；账户不在当前空间时失败（NotFoundException）。
+  CashAccountDetailProvider._({
+    required CashAccountDetailFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: noDatabaseRetry,
+         name: r'cashAccountDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cashAccountDetailHash();
+
+  @override
+  String toString() {
+    return r'cashAccountDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<CashAccountDetailView> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CashAccountDetailView> create(Ref ref) {
+    final argument = this.argument as String;
+    return cashAccountDetail(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CashAccountDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cashAccountDetailHash() => r'0e2200981fb29aa04e0b4164db665bc0cc0d5474';
+
+/// 现金账户详情（P-08）；账户不在当前空间时失败（NotFoundException）。
+
+final class CashAccountDetailFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<CashAccountDetailView>, String> {
+  CashAccountDetailFamily._()
+    : super(
+        retry: noDatabaseRetry,
+        name: r'cashAccountDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 现金账户详情（P-08）；账户不在当前空间时失败（NotFoundException）。
+
+  CashAccountDetailProvider call(String accountId) =>
+      CashAccountDetailProvider._(argument: accountId, from: this);
+
+  @override
+  String toString() => r'cashAccountDetailProvider';
+}
+
+/// 周期事项详情（P-08）；不在当前空间时失败（NotFoundException）。
+
+@ProviderFor(recurringDetail)
+final recurringDetailProvider = RecurringDetailFamily._();
+
+/// 周期事项详情（P-08）；不在当前空间时失败（NotFoundException）。
+
+final class RecurringDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<RecurringDetailView>,
+          RecurringDetailView,
+          FutureOr<RecurringDetailView>
+        >
+    with
+        $FutureModifier<RecurringDetailView>,
+        $FutureProvider<RecurringDetailView> {
+  /// 周期事项详情（P-08）；不在当前空间时失败（NotFoundException）。
+  RecurringDetailProvider._({
+    required RecurringDetailFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: noDatabaseRetry,
+         name: r'recurringDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$recurringDetailHash();
+
+  @override
+  String toString() {
+    return r'recurringDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<RecurringDetailView> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<RecurringDetailView> create(Ref ref) {
+    final argument = this.argument as String;
+    return recurringDetail(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RecurringDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$recurringDetailHash() => r'd04b6b1ad04f78ad6a243fdd34be00a4d330de35';
+
+/// 周期事项详情（P-08）；不在当前空间时失败（NotFoundException）。
+
+final class RecurringDetailFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<RecurringDetailView>, String> {
+  RecurringDetailFamily._()
+    : super(
+        retry: noDatabaseRetry,
+        name: r'recurringDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 周期事项详情（P-08）；不在当前空间时失败（NotFoundException）。
+
+  RecurringDetailProvider call(String itemId) =>
+      RecurringDetailProvider._(argument: itemId, from: this);
+
+  @override
+  String toString() => r'recurringDetailProvider';
+}
+
+/// 资金日历（P-07）与总览现金压力卡（P-01）：数据变化时自动重算（provider 依赖）。
+
+@ProviderFor(cashForecast)
+final cashForecastProvider = CashForecastFamily._();
+
+/// 资金日历（P-07）与总览现金压力卡（P-01）：数据变化时自动重算（provider 依赖）。
+
+final class CashForecastProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<CashForecast>,
+          CashForecast,
+          FutureOr<CashForecast>
+        >
+    with $FutureModifier<CashForecast>, $FutureProvider<CashForecast> {
+  /// 资金日历（P-07）与总览现金压力卡（P-01）：数据变化时自动重算（provider 依赖）。
+  CashForecastProvider._({
+    required CashForecastFamily super.from,
+    required CashForecastQuery super.argument,
+  }) : super(
+         retry: noDatabaseRetry,
+         name: r'cashForecastProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$cashForecastHash();
+
+  @override
+  String toString() {
+    return r'cashForecastProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<CashForecast> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<CashForecast> create(Ref ref) {
+    final argument = this.argument as CashForecastQuery;
+    return cashForecast(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CashForecastProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$cashForecastHash() => r'c7d68b8de526cf490d11063ac0fa4bee2cfc83fd';
+
+/// 资金日历（P-07）与总览现金压力卡（P-01）：数据变化时自动重算（provider 依赖）。
+
+final class CashForecastFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<CashForecast>, CashForecastQuery> {
+  CashForecastFamily._()
+    : super(
+        retry: noDatabaseRetry,
+        name: r'cashForecastProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// 资金日历（P-07）与总览现金压力卡（P-01）：数据变化时自动重算（provider 依赖）。
+
+  CashForecastProvider call(CashForecastQuery query) =>
+      CashForecastProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'cashForecastProvider';
+}
+
+/// 情景列表（P-09）：每个情景的计算版本（新的在前）与最新版本是否已过期。
+
+@ProviderFor(scenarioBoard)
+final scenarioBoardProvider = ScenarioBoardProvider._();
+
+/// 情景列表（P-09）：每个情景的计算版本（新的在前）与最新版本是否已过期。
+
+final class ScenarioBoardProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ScenarioBoard>,
+          ScenarioBoard,
+          FutureOr<ScenarioBoard>
+        >
+    with $FutureModifier<ScenarioBoard>, $FutureProvider<ScenarioBoard> {
+  /// 情景列表（P-09）：每个情景的计算版本（新的在前）与最新版本是否已过期。
+  ScenarioBoardProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'scenarioBoardProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$scenarioBoardHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<ScenarioBoard> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ScenarioBoard> create(Ref ref) {
+    return scenarioBoard(ref);
+  }
+}
+
+String _$scenarioBoardHash() => r'8676de6feed29d0dcc26d5a2f57d89536e8248ac';

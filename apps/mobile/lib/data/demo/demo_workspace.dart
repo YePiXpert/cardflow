@@ -11,6 +11,12 @@
 /// | B + D | "乙行共享额度"池，上限 20,000 | 池内可用合计不超过池上限（F-23） |
 /// | C | 演示银行丙 | 截止时点 22:00 的规则说明 |
 ///
+/// 现金部分（I-1b，[seedDemoCash]）：现金账户 2 个（"工资卡"、受限的"定期存款"）、余额快照（工资卡的
+/// 快照当天已包含早餐、未包含水电费）、收支计划（与回归样本 engine-spec §9 的事件同一组数值）、
+/// 一个周期事项（房租，每月 27 日，12-27 那一期覆盖为 1,200）、一笔调拨（11-01 工资卡 → 定期存款
+/// 2,500）、一个压力情景（收入推迟 3 天），并计算"基准预期"与压力情景各一个版本。固定"今天"下，
+/// 基准口径 30 天内有一个可见缺口：11-01 定存转出后工资卡余额 300，低于储备 2,000。
+///
 /// 所有写入都经仓库（同样的校验），在一个事务里完成；固定"今天" = 2026-10-16（[demoClock]）。
 library;
 
@@ -20,10 +26,16 @@ import '../db/app_database.dart';
 import '../ids.dart';
 import '../repositories/billing_rule_repository.dart';
 import '../repositories/card_repository.dart';
+import '../repositories/cash_account_repository.dart';
+import '../repositories/cash_event_repository.dart';
+import '../repositories/cash_forecast_reader.dart';
+import '../repositories/cash_models.dart';
 import '../repositories/credit_account_repository.dart';
 import '../repositories/credit_pool_repository.dart';
 import '../repositories/limit_snapshot_repository.dart';
 import '../repositories/models.dart';
+import '../repositories/recurring_item_repository.dart';
+import '../repositories/scenario_repository.dart';
 import '../repositories/workspace_repository.dart';
 import '../repositories/workspace_scope.dart';
 import '../time/clock.dart';
@@ -177,4 +189,176 @@ Future<void> seedDemoWorkspace(WorkspaceScope scope) async {
     ),
   );
   await snapshot(accountC, fixed: 1000000, used: 400000, available: 600000);
+
+  await seedDemoCash(scope);
+}
+
+/// 演示空间的现金数据（见文件头）。
+Future<void> seedDemoCash(WorkspaceScope scope) async {
+  final accounts = CashAccountRepository(scope);
+  final snapshots = CashSnapshotRepository(scope);
+  final events = CashEventRepository(scope);
+  final recurring = RecurringItemRepository(scope);
+  final scenarios = ScenarioRepository(scope);
+  LocalDate day(int month, int date) => LocalDate(2026, month, date);
+  Timestamp at(LocalDate on, String time) =>
+      Timestamp.parse('${on}T$time:00+08:00');
+
+  final salary = await accounts.create(
+    NewCashAccount(
+      id: newUuidV4(),
+      name: '工资卡',
+      kind: CashAccountKind.bank,
+      reserveFloorMinor: 200000,
+    ),
+  );
+  final deposit = await accounts.create(
+    NewCashAccount(
+      id: newUuidV4(),
+      name: '定期存款',
+      kind: CashAccountKind.restricted,
+    ),
+  );
+
+  // 快照当天的两笔：早餐（已发生，余额已包含）、水电费（下午扣，余额未包含 → 计入当日）。
+  final breakfast = await events.create(
+    CashEventDraft(
+      cashAccountId: salary.id,
+      type: CashPlanType.oneOff,
+      cls: CashEventClass.confirmed,
+      on: day(10, 16),
+      at: at(day(10, 16), '08:10'),
+      amountMinor: 3000,
+      label: '早餐',
+    ),
+  );
+  await events.markPosted(breakfast.id);
+  final utilities = await events.create(
+    CashEventDraft(
+      cashAccountId: salary.id,
+      type: CashPlanType.living,
+      cls: CashEventClass.confirmed,
+      on: day(10, 16),
+      at: at(day(10, 16), '15:00'),
+      amountMinor: 20000,
+      label: '水电费',
+    ),
+  );
+  await snapshots.record(
+    CashSnapshotDraft(
+      cashAccountId: salary.id,
+      balanceMinor: 500000,
+      balanceAsOf: day(10, 16),
+      observedAt: at(day(10, 16), '09:30'),
+      sameDayAnswers: <String, bool>{breakfast.id: true, utilities.id: false},
+    ),
+  );
+  await snapshots.record(
+    CashSnapshotDraft(
+      cashAccountId: deposit.id,
+      balanceMinor: 2000000,
+      balanceAsOf: day(10, 15),
+      observedAt: at(day(10, 15), '18:00'),
+    ),
+  );
+
+  // 收支计划：回归样本的事件（生活支出改成周期事项"房租"，见下）。
+  for (final (on, type, cls, amount, label)
+      in <(LocalDate, CashPlanType, CashEventClass, int, String)>[
+        (
+          day(10, 28),
+          CashPlanType.debt,
+          CashEventClass.confirmed,
+          100000,
+          '贷款月供',
+        ),
+        (
+          day(11, 6),
+          CashPlanType.income,
+          CashEventClass.expected,
+          850000,
+          '工资',
+        ),
+        (
+          day(11, 8),
+          CashPlanType.debt,
+          CashEventClass.confirmed,
+          500000,
+          '已出账单',
+        ),
+        (
+          day(11, 16),
+          CashPlanType.debt,
+          CashEventClass.confirmed,
+          350000,
+          '已出账单',
+        ),
+        (
+          day(11, 20),
+          CashPlanType.income,
+          CashEventClass.expected,
+          700000,
+          '奖金',
+        ),
+        (
+          day(11, 22),
+          CashPlanType.living,
+          CashEventClass.confirmed,
+          200000,
+          '日常开销',
+        ),
+        (
+          day(11, 26),
+          CashPlanType.income,
+          CashEventClass.expected,
+          500000,
+          '报销',
+        ),
+      ]) {
+    await events.create(
+      CashEventDraft(
+        cashAccountId: salary.id,
+        type: type,
+        cls: cls,
+        on: on,
+        amountMinor: amount,
+        label: label,
+      ),
+    );
+  }
+
+  // 周期事项：房租每月 27 日；12-27 那一期续租涨价（单期覆盖，不影响他期）。
+  final rent = await recurring.create(
+    RecurringItemDraft(
+      cashAccountId: salary.id,
+      label: '房租',
+      type: CashPlanType.living,
+      cls: CashEventClass.confirmed,
+      amountMinor: 100000,
+      frequency: RecurringFrequency.monthly,
+      startOn: day(10, 27),
+    ),
+  );
+  await recurring.overrideOccurrence(rent.id, day(12, 27), amountMinor: 120000);
+
+  // 调拨：11-01 工资卡 → 定期存款（受限资金：不计入可用现金）。
+  await events.createTransfer(
+    TransferDraft(
+      fromAccountId: salary.id,
+      toAccountId: deposit.id,
+      amountMinor: 250000,
+      outOn: day(11, 1),
+      inOn: day(11, 1),
+      cls: CashEventClass.confirmed,
+      label: '定存',
+    ),
+  );
+
+  // 压力情景：预计收入推迟 3 天；"基准预期"与它各计算一个版本（P-09 可对比）。
+  final stress = await scenarios.create(
+    const ScenarioDraft(name: '收入推迟 3 天', incomeDelayDays: 3),
+  );
+  final reader = CashForecastReader(scope);
+  await reader.recompute(ScenarioView.builtinKey(ScenarioKind.builtinBaseline));
+  await reader.recompute(stress.id);
 }

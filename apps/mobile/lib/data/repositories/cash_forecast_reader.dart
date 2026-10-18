@@ -786,3 +786,81 @@ List<RunComparisonRow> compareRuns(CashRunResult a, CashRunResult b) {
       ),
   ];
 }
+
+/// P-09 情景列表的一项：情景、它的计算版本（新的在前）与最新版本是否已过期。
+@immutable
+final class ScenarioBoardItem {
+  const ScenarioBoardItem({
+    required this.scenario,
+    required this.runs,
+    required this.stale,
+  });
+
+  final ScenarioView scenario;
+  final List<ScenarioRunRow> runs;
+
+  /// 最新版本的输入与当前数据、当前参数不符（P-09"过期"）。
+  final bool stale;
+
+  ScenarioRunRow? get latest => runs.isEmpty ? null : runs.first;
+
+  CashRunResult? get latestResult =>
+      latest == null ? null : CashRunResult.parse(latest!.result);
+}
+
+/// P-09 情景列表的读模型。
+@immutable
+final class ScenarioBoard {
+  const ScenarioBoard({required this.inputs, required this.items});
+
+  /// 读入当前工作空间的情景与版本，并判断每个情景最新版本是否过期。
+  static Future<ScenarioBoard> load(WorkspaceScope scope) async {
+    final reader = CashForecastReader(scope);
+    final inputs = await reader.loadInputs();
+    final repo = ScenarioRepository(scope);
+    final items = <ScenarioBoardItem>[];
+    for (final scenario in await repo.list()) {
+      final row = scenario.row;
+      final runs = row == null
+          ? const <ScenarioRunRow>[]
+          : await repo.runs(row.id);
+      items.add(
+        ScenarioBoardItem(
+          scenario: scenario,
+          runs: runs,
+          stale:
+              runs.isNotEmpty &&
+              reader.isRunStale(inputs, scenario, runs.first),
+        ),
+      );
+    }
+    return ScenarioBoard(inputs: inputs, items: items);
+  }
+
+  final CashDomainInputs inputs;
+
+  /// 内置两条在前，然后是压力情景。
+  final List<ScenarioBoardItem> items;
+
+  ScenarioBoardItem? item(String key) {
+    for (final i in items) {
+      if (i.scenario.key == key) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  /// 用户压力情景。
+  List<ScenarioBoardItem> get stressItems => <ScenarioBoardItem>[
+    for (final i in items)
+      if (!i.scenario.isBuiltin) i,
+  ];
+
+  /// 全部计算版本（用于对比选择），按情景顺序、新的在前。
+  List<(ScenarioBoardItem, ScenarioRunRow)> get allRuns =>
+      <(ScenarioBoardItem, ScenarioRunRow)>[
+        for (final i in items)
+          for (final r in i.runs) (i, r),
+      ];
+}

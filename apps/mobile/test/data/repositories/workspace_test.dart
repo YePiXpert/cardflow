@@ -4,7 +4,11 @@ import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/demo/demo_workspace.dart';
 import 'package:cardflow/data/mapping/domain_mapping.dart';
 import 'package:cardflow/data/repositories/card_wallet_reader.dart';
+import 'package:cardflow/data/repositories/cash_event_repository.dart';
+import 'package:cardflow/data/repositories/cash_forecast_reader.dart';
 import 'package:cardflow/data/repositories/models.dart';
+import 'package:cardflow/data/repositories/recurring_item_repository.dart';
+import 'package:cardflow/data/repositories/scenario_repository.dart';
 import 'package:cardflow/data/repositories/workspace_repository.dart';
 import 'package:cardflow/data/repositories/workspace_scope.dart';
 import 'package:cardflow/data/time/clock.dart';
@@ -110,6 +114,60 @@ void main() {
       final temp = b.primaryCurrency.latestSnapshot!;
       expect(temp.tempMinor, 500000);
       expect(temp.tempExpiresOn, '2026-11-15');
+    });
+
+    test('现金：工资卡计入、受限的定期存款不计入；基准口径 30 天内一个可见缺口（11-01 余额 300 低于储备 2,000）；'
+        '已确认与压力口径更差；快照包含、周期事项与覆盖、调拨、压力情景与计算版本都有', () async {
+      final inputs = await CashForecastReader(demo).loadInputs();
+      expect(inputs.accountRows.map((a) => a.name), <String>['工资卡', '定期存款']);
+      expect(inputs.counted.map((a) => a.name), <String>['工资卡']);
+      expect(inputs.excluded.map((a) => a.name), <String>['定期存款']);
+      expect(inputs.issues, isEmpty, reason: '演示空间不判陈旧，没有缺快照');
+      final scenarios = await ScenarioRepository(demo).list();
+      expect(scenarios.map((s) => s.name), <String>['已确认', '基准预期', '收入推迟 3 天']);
+
+      final baseline = forecastFrom(inputs, scenarios[1], windowDays: 30);
+      expect(
+        baseline.gaps.map(
+          (g) => (g.breach.on, g.breach.balance, g.breach.gapToReserve),
+        ),
+        <(LocalDate, int, int)>[(LocalDate(2026, 11, 1), 30000, 170000)],
+      );
+      expect(baseline.summaries.single.lowestBalance, 30000);
+      expect(baseline.summaries.single.lowestOn, LocalDate(2026, 11, 1));
+      expect(
+        baseline.assumptions.any((a) => a.contains('快照当天未标记为已包含的事件')),
+        isTrue,
+        reason: '水电费在快照当天、未包含',
+      );
+      final confirmed = forecastFrom(inputs, scenarios[0], windowDays: 30);
+      expect(
+        confirmed.gaps.map((g) => (g.breach.on, g.breach.balance)),
+        <(LocalDate, int)>[
+          (LocalDate(2026, 11, 1), 30000),
+          (LocalDate(2026, 11, 8), -470000),
+        ],
+      );
+      final stress = forecastFrom(inputs, scenarios[2], windowDays: 30);
+      expect(stress.gaps.map((g) => g.breach.on), <LocalDate>[
+        LocalDate(2026, 11, 1),
+        LocalDate(2026, 11, 8),
+      ]);
+
+      final rent = (await RecurringItemRepository(demo).list()).single;
+      final occurrences = await RecurringItemRepository(demo)
+          .occurrences(rent.id);
+      expect(
+        occurrences
+            .firstWhere((o) => o.key == LocalDate(2026, 12, 27))
+            .event!
+            .amountMinor,
+        -120000,
+      );
+      expect(await CashEventRepository(demo).transfers(), hasLength(1));
+      final board = await ScenarioBoard.load(demo);
+      expect(board.items.map((i) => i.runs.length), <int>[0, 1, 1]);
+      expect(board.items.every((i) => !i.stale), isTrue);
     });
 
     test('A 8,000、C 6,000 与回归样本的可用额一致；演示空间不判陈旧', () {

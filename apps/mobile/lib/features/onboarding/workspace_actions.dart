@@ -67,7 +67,9 @@ Future<void> clearDemoWorkspace(
     message:
         '将删除演示空间的全部数据：${rows['credit_accounts'] ?? 0} 个信用账户、'
         '${rows['cards'] ?? 0} 张卡片、${rows['billing_rule_versions'] ?? 0} 个账期规则版本、'
-        '${rows['limit_snapshots'] ?? 0} 条额度快照、${rows['credit_pools'] ?? 0} 个授信池。'
+        '${rows['limit_snapshots'] ?? 0} 条额度快照、${rows['credit_pools'] ?? 0} 个授信池、'
+        '${rows['cash_accounts'] ?? 0} 个现金账户、${rows['cash_events'] ?? 0} 笔收支、'
+        '${rows['recurring_items'] ?? 0} 个周期事项、${rows['scenarios'] ?? 0} 个情景。'
         '真实数据不受影响。之后再体验演示会重新生成。',
     confirmLabel: '清除',
     destructive: true,
