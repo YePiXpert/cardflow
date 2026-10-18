@@ -573,3 +573,7 @@ CREATE ROLE cardflow_admin NOLOGIN;          -- 后台角色：只通过元数�
 13. 角色与 RLS 已由迁移 0003 实现，设计、授权矩阵与威胁模型见 `evidence/m0/T-006/rls-design.md`，摘要见 security-privacy §4.1。后续补充（2026-10-17 主会话裁决）：
     - limit_snapshots、cash_balance_snapshots 的 deleted_at 与五张不可变事实表一致，只能由 NULL 置为非 NULL 一次，不得撤销 tombstone。随迁移 0004 实施。
     - 后台写操作的授权（审计写入、任务重试/取消、设备撤销、用户禁用）随 T-031 的迁移实施。
+14. 移动端本地库（iOS 优先阶段，2026-10-18 主会话裁决，见 `docs/80-delivery/briefs/I1-a.md`）：
+    - `credit_pools` 增加 `shared_limit_minor BIGINT NOT NULL` 与 `currency CHAR(3)`：F-23"池内可用合计不超池上限"需要池上限；本表原缺该字段。池可用原值 = 池上限 − Σ 成员币种子账户最新快照 `used_minor`（同币种），可为负，容量截零由领域层完成。服务端表在解冻（同步阶段）时同步加列。
+    - 本地主键用 TEXT（UUID v4 字符串）；日期用 TEXT `YYYY-MM-DD`；时刻用 TEXT RFC 3339 带偏移；金额 INTEGER 最小单位；利率/系数 TEXT 十进制规范形式。§8 的同步列（`local_seq`、`sync_state`、`server_row_version`）在纯本地阶段暂不建，同步阶段随迁移补齐。
+    - 规则 `billing_rule_versions` 本地增加 `posting_delay_min_days`/`posting_delay_max_days`（入账延迟区间，供 `cycles_for_transaction` 的多账期判断）；同主体生效区间不重叠由仓库层保证（SQLite 无排除约束）。
