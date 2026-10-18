@@ -1,6 +1,6 @@
 # apps/mobile — 卡序 iOS App（Flutter）
 
-本目录是卡序的 Flutter 工程（I-0a 骨架）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见 `docs/80-delivery/ios-first-plan.md`。
+本目录是卡序的 Flutter 工程（I-0a 骨架；I-0b 加密本地库）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见 `docs/80-delivery/ios-first-plan.md`。
 
 ## 目录
 
@@ -10,8 +10,8 @@
 | `lib/app/` | App 外壳：`app.dart`（MaterialApp、语言）、`router.dart`/`routes.dart`（go_router，五个主导航）、`shell/`（底部 Tab）、`theme/`（`tokens.dart` 设计 token 唯一来源，`app_theme.dart` 浅色/深色主题）、`money/`（金额格式与 `minorDigits` 表、全局金额隐藏开关）、`widgets/`（`MoneyText`、首次空白态等） |
 | `lib/features/<模块>/` | 功能模块：`overview` 总览、`cards` 卡包、`planner` 规划、`promotions` 发现、`settings` 我的、`onboarding` 欢迎页、`diagnostics` 诊断页与内存日志 |
 | `lib/domain/` | 纯 Dart 领域层（下一任务移植引擎；禁止 double，见 `analysis_options.yaml` 末尾的约定） |
-| `lib/data/` | 数据层（下一任务：加密 drift） |
-| `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置 |
+| `lib/data/db/` | 加密本地库（drift + SQLite3MultipleCiphers，见下文"加密本地库"） |
+| `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置；`test/data/db/` 在真实 sqlite3mc 上测试加密本地库 |
 | `ios/` | iOS 工程：`Flutter/CardFlow.xcconfig`（Bundle ID 与签名参数的唯一来源）、`Runner/PrivacyInfo.xcprivacy`（隐私清单） |
 | `web/` | 只用于 CI 的 Web 编译烟雾测试，不发布 |
 
@@ -24,3 +24,69 @@
 - iOS：最低 15.0；插件走 Swift Package Manager（Flutter 3.47 默认），目前没有 Podfile。若将来引入只支持 CocoaPods 的插件，Podfile 必须写 `platform :ios, '15.0'`（测试会检查）。
 - 不提交任何签名材料（证书、描述文件、团队 ID、entitlements）。在 Mac 上自行签名时，把团队 ID 写进不入库的 `ios/Flutter/CardFlow.local.xcconfig`。
 - 重新运行 `flutter create` 时必须带 `--org li.yep`，否则会生成错误的包名。
+
+## 加密本地库（I-0b，ADR-001 PoC-1）
+
+**方案**：drift 2.35.2 + sqlite3 3.7.1。`pubspec.yaml` 末尾的 `hooks.user_defines.sqlite3.source: sqlite3mc`
+让 sqlite3 包的构建钩子把 [SQLite3MultipleCiphers](https://github.com/utelle/SQLite3MultipleCiphers)（sqlite3mc）
+而不是普通 SQLite 打进 App（写法出处：drift 文档 Encryption 页、sqlite3 包的 `doc/hook.md`；摘录见
+`evidence/i0/I0-b/hook-source.txt`）。钩子不在本机编译，而是从 sqlite3.dart 的 GitHub release 下载
+预编译库并用包内记录的 sha256 校验；iOS 上它成为 `Runner.app/Frameworks/sqlite3mc.framework`。
+不需要 Podfile，也不需要任何 entitlement。
+
+**密钥**：首次启动用 `Random.secure()` 生成 32 字节，存 iOS 钥匙串（flutter_secure_storage 11.2.0；
+`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`，不同步 iCloud 钥匙串，不设 access group）。
+以原始密钥（`PRAGMA key = "x'…'"`）交给 sqlite3mc，跳过口令派生；算法固定为 `chacha20`
+（ChaCha20-Poly1305）。密钥不进日志、诊断报告和异常消息（`DatabaseKey.toString()` 也不输出内容）。
+
+**失败即止**：数据库在 drift 的后台 isolate 中打开，任何读写之前（drift 的 `setup`）依次检查：
+`PRAGMA cipher` 非空 → 固定算法 → 设置密钥（结果须为 `ok`）→ 读 `sqlite_master` 验证密钥 →
+`sqlite3mc_version()` 非空；打开后再确认文件头不是明文 SQLite 头。任一步失败都关闭连接、抛
+`DatabaseOpenException`（只含错误码），绝不退回明文库。数据库文件已有数据而钥匙串没有密钥时报
+`key_missing`，不会新建密钥覆盖旧库。
+
+> 规划文档写的是"`PRAGMA cipher_version` 为空即拒绝"。`cipher_version` 是 SQLCipher 的 PRAGMA，
+> sqlite3mc 2.6.1 对它总是返回空（`test/data/db/encryption_test.dart` 有一条测试记录这一点），照字面执行会让
+> 数据库永远打不开；因此改用上面 sqlite3mc 自己的检查（drift 文档推荐 `PRAGMA cipher`），诊断报告里仍如实
+> 列出 `PRAGMA cipher_version` 的原始结果。
+
+| 错误码 | 含义 |
+|---|---|
+| `cipher_unavailable` | 加载的不是加密构建（钩子没有选中 sqlite3mc） |
+| `wrong_key` | 密钥打不开该库（SQLITE_NOTADB）：密钥错误或文件损坏 |
+| `key_missing` | 库已有数据但钥匙串没有密钥（例如从设备备份恢复到新手机） |
+| `key_invalid` / `key_store_failed` / `key_apply_failed` | 钥匙串内容格式不对 / 钥匙串读写失败 / 设置密钥失败 |
+| `plaintext_database` | 打开后发现文件是明文 SQLite |
+| `schema_too_new` / `migration_failed` | 库来自更新版本的 App（拒绝降级）/ 迁移失败（整体回滚） |
+| `location_unavailable` / `open_failed` / `unsupported_platform` | 取不到目录 / 其他 SQLite 错误 / Web |
+
+**文件位置**：`Library/Application Support/cardflow.sqlite`（"文件"App 里看不到）；sqlite3 临时文件与
+"数据库基准"临时库在 `Library/Caches`。
+
+**代码**（`lib/data/db/`）：
+
+| 文件 | 内容 |
+|---|---|
+| `database_providers.dart` | `databaseProvider`（`Future<AppDatabase>`，供仓库使用）、`openedDatabaseProvider`（含加密库信息与是否新建）、钥匙串与目录 provider（测试替换点）、`databaseKeyExistsProvider` |
+| `app_database.dart` | `AppDatabase`（drift `GeneratedDatabase`，目前无代码生成）、`readMeta()`、`readCipherInfo()` |
+| `schema.dart` | `LocalSchema.currentSchemaVersion`、v1 的 `meta` 表、`schemaMigrations` 迁移登记表、`createSchema` / `migrateSchema` |
+| `database_opener.dart` | `openAppDatabase`：取密钥 → 加密连接 → 迁移 → 文件头检查；错误码映射 |
+| `encryption.dart` | sqlite3mc 检查与设置密钥（drift 的 `setup`） |
+| `database_key.dart` | `DatabaseKey`、`DatabaseKeyStore`（钥匙串实现）、`DatabaseKeyManager`（只生成一次） |
+| `database_benchmark.dart` | "数据库基准"：临时加密库写 10 万行 → 关闭 → 重开 COUNT |
+| `database_platform*.dart` | 平台实现：iOS 用 dart:io + drift_flutter；Web 一律 `unsupported_platform` |
+
+**加表与迁移**（I-1 起）：把 `LocalSchema.currentSchemaVersion` 加 1；在 `schemaMigrations` 登记"旧版本 → 旧版本+1"
+的一步（只做 expand：加表、加列、建索引）；`createSchema` 建出最新完整结构；测试新建与升级两条路径结构一致。
+迁移在一个事务里执行，失败整体回滚。业务表若改用 drift 的表 DSL，需要代码生成器 drift_dev——它不在
+architecture §11 版本表内，引入前须评审登记。
+
+**诊断页**（我的 › 诊断信息 › 加密本地库）：加密库状态（成功显示 `SQLite3 Multiple Ciphers <版本>` 与算法，
+失败显示错误码）、数据库密钥（只显示"已生成/未生成"）、「运行数据库基准（10 万行）」（写入、重新打开、
+COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 万行冷启动 <1 s"以真机结果为准）。
+诊断日志记 `db/opened`（created/existing）、`db/open_failed`（错误码）、`db/benchmark_*`。
+
+**测试**：`test/data/db/` 用的是钩子提供的真实 sqlite3mc（本机与 CI 的 `flutter test` 都会运行钩子，
+需要能访问 GitHub release）；钩子没有选中 sqlite3mc 时第一条测试以明确的信息失败，不会跳过。
+组件测试默认用 `test/test_helpers.dart` 的 `fakeDatabaseOverrides()` 替换加密库状态；需要真实加密库的
+组件测试要在 `tester.runAsync` 里先把 provider 算好（例子见 `diagnostics_page_test.dart`）。

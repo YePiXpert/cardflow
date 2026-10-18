@@ -25,6 +25,8 @@
 
 iOS 优先（`docs/80-delivery/ios-first-plan.md`）。工程在 `apps/mobile/`（Flutter 3.47.7，Bundle ID `li.yep.cardflow`），结构与约定见 `apps/mobile/README.md`。本机（Linux）只做静态分析、测试和 Web 编译检查；iOS 包由 GitHub Actions 的 macOS runner 构建，产出**未签名** IPA，由用户用自己的证书签名后安装。仓库和 CI 不保存任何证书、描述文件或团队 ID。
 
+本机数据加密（I-0b）：App 的本地库用 drift + SQLite3MultipleCiphers（sqlite3 包的构建钩子选 `sqlite3mc`），首次启动生成 32 字节随机密钥存 iOS 钥匙串（仅本机、设备解锁时可读、不同步 iCloud），以原始密钥打开数据库；加密库或密钥检查不通过就拒绝打开并显示错误码，绝不退回明文库。细节、错误码与"加表/迁移"约定见 `apps/mobile/README.md` 的"加密本地库"一节。
+
 ### 本机命令
 
 ```bash
@@ -33,7 +35,7 @@ cd apps/mobile
 flutter pub get --enforce-lockfile
 dart format --output=none --set-exit-if-changed .
 flutter analyze --fatal-infos          # 要求输出 "No issues found!"
-flutter test
+flutter test                           # 含真实 sqlite3mc 上的加密库测试（钩子会从 GitHub 下载预编译库）
 flutter build web --release            # 只作编译检查，产物不发布
 ```
 
@@ -63,11 +65,13 @@ gh run watch <run-id>
 
 ### 用自己的证书签名并安装（通用步骤）
 
-1. IPA 内部结构是 `Payload/Runner.app`。主程序 `Runner` 未签名；`Runner.app/Frameworks/` 里的 `Flutter.framework`、`App.framework` 等只带临时（ad-hoc）签名。签名时要连同这些嵌套的 framework 一起重签，否则无法安装或启动。
+1. IPA 内部结构是 `Payload/Runner.app`。主程序 `Runner` 未签名；`Runner.app/Frameworks/` 里的 `Flutter.framework`、`App.framework`、`sqlite3mc.framework`（加密数据库）、`objective_c.framework`（path_provider 依赖）等只带临时（ad-hoc）签名。签名时要连同这些嵌套的 framework 一起重签，否则无法安装或启动。
 2. Bundle ID 保持 `li.yep.cardflow`，签名身份（证书和团队）每次都用同一个。这样新版本才能覆盖安装，App 内的数据才能保留。换 Bundle ID 会装成另一个 App；换签名身份（团队）则无法覆盖安装，只能删掉旧 App 再装。两种情况下原来的数据都不会保留（ADR-015）。
-3. App 不需要任何 entitlement（没有推送、App Group、钥匙串共享），普通开发证书或个人证书就能签。
+3. App 不需要任何 entitlement（没有推送、App Group、钥匙串共享），普通开发证书或个人证书就能签。数据库密钥放在 App 自己的默认钥匙串里，不需要 access group。
 4. 免费 Apple ID 的描述文件大约 7 天过期（ADR-015，待核验）。过期后 App 打不开，但数据还在。用同一个身份重新签名，再覆盖安装即可。
-5. 装好后打开 我的 › 诊断信息，点「复制诊断信息」，把文字发回即可反馈问题。复制的内容只有版本、系统和本机日志，不含金额与正文。如果签名工具改写了 Bundle ID，这一页也能看出来。
+5. 装好后打开 我的 › 诊断信息，点「复制诊断信息」，把文字发回即可反馈问题。复制的内容只有版本、系统、加密库状态、数据库基准耗时和本机日志，不含金额、正文与密钥。如果签名工具改写了 Bundle ID，这一页也能看出来。
+6. 加密库验证（I-0b）：诊断信息页"加密本地库"一节应显示"加密库状态：已启用（SQLite3 Multiple Ciphers <版本>，算法 chacha20）"与"数据库密钥：已生成"；点「运行数据库基准（10 万行）」，等它显示"写入 … ms · 重新打开 … ms · COUNT … ms"后再复制诊断信息发回（报告里的"数据库基准：rows=100000 … open_ms=… count_ms=…"一行就是 ADR-001 PoC-1"10 万行冷启动 <1 s"的真机数据）。
+7. 数据库密钥只存在这台手机的钥匙串里，不进 iCloud、不随备份迁移。从备份恢复到另一台手机后，加密库状态会显示 `key_missing`（旧库打不开，也不会被覆盖）；这时数据要靠 App 自己的备份恢复（I-4）。
 
 ## 本地启动（服务端，到"测试通过"为止）
 
