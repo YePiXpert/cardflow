@@ -25,7 +25,7 @@
 
 1. **I-0 阶段末审查**（一个审查代理，只读 + 写 `evidence/i0/review-i0.md`）：范围 apps/mobile（含领域包）与 `.github/workflows/mobile.yml`；重点：金额/日期语义与 Python 引擎的偏离、密钥与日志泄露、失败即止是否有绕过、协议适配层的拒绝清单是否齐、CI 是否可能静默跳过检查。只修 blocker/major，其余记 `backlog.md`。
 2. 等用户对 IPA 4d720c9 回传：加密库状态应为"已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）"，密钥"已生成"，基准 `open_ms + count_ms < 1000`。若真机加密库不可用，按 ADR-001 回退 sqflite_sqlcipher（只换 drift 的执行器，领域包与数据层接口不变）。
-3. **I-1**（卡片、账期、现金流；`ios-first-plan.md` §3）：写简报 `briefs/I1.md` 再派发。数据层把表行映射成领域对象/协议文档（见 `apps/mobile/README.md`"领域层"与 `packages/rules-protocol/README.md` 末节的映射规则）；真机回传未到时也可开始，但 DB 层必须留在 `openAppDatabase` 抽象之后以便回退。阶段末触发一次 iOS 构建。
+3. **I-1**（卡片、账期、现金流；`ios-first-plan.md` §3、§4b）已拆为三个单代理任务，简报已写好：`briefs/I1-a.md`（本地库 v2 + 工作空间 + 建卡/账期/额度）→ `briefs/I1-b.md`（现金与资金日历）→ `briefs/I1-c.md`（交易/账单/分期/还款 + 阶段交付 IPA）。按顺序逐个派发，每个验收后再派下一个。真机回传未到时也可开始，但 DB 层必须留在 `openAppDatabase` 抽象之后以便回退。只有 I1-c 触发 iOS 构建。
 
 ## 4. 执行规则（已与用户约定）
 
