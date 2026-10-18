@@ -36,6 +36,9 @@ dev_dependencies:
   flutter_lints: 6.0.0
   build_runner: 2.16.2
   riverpod_generator: 4.0.9
+  # drift 表 DSL 的代码生成（I-1a 本地库 v2）：§11 已登记 2.35.1；与上面写死的 build_runner 2.16.2、
+  # riverpod_generator 4.0.9 同时解析，不改变任何已写死的版本（只新增 drift_dev 及其传递依赖）。
+  drift_dev: 2.35.1
 
 flutter:
   uses-material-design: true

@@ -1,7 +1,7 @@
+import 'package:cardflow/app/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/app/widgets/not_found_page.dart';
 import 'package:cardflow/features/cards/cards_page.dart';
-import 'package:cardflow/features/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_page.dart';
 import 'package:cardflow/features/onboarding/welcome_page.dart';
 import 'package:cardflow/features/overview/overview_page.dart';

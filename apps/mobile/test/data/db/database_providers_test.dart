@@ -1,5 +1,6 @@
 // databaseProvider / cryptoLibraryStatusProvider / 基准控制器 与诊断日志、诊断报告
 // （真实 sqlite3mc；钥匙串与目录换成测试替身）。
+import 'package:cardflow/app/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_errors.dart';
 import 'package:cardflow/data/db/database_location.dart';
@@ -7,7 +8,6 @@ import 'package:cardflow/data/db/database_providers.dart';
 import 'package:cardflow/features/diagnostics/app_diagnostics.dart';
 import 'package:cardflow/features/diagnostics/crypto_status.dart';
 import 'package:cardflow/features/diagnostics/database_benchmark_controller.dart';
-import 'package:cardflow/features/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_report.dart';
 import 'package:cardflow/features/diagnostics/platform_description.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,6 +1,6 @@
 import 'dart:ui' show ErrorCallback, PlatformDispatcher;
 
-import 'package:cardflow/features/diagnostics/diagnostic_log.dart';
+import 'package:cardflow/app/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/features/diagnostics/error_hooks.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -79,6 +79,55 @@ void main() {
     expect(entry.category, 'platform');
     expect(entry.detail, 'StateError');
     expect(entry.toReportText(), isNot(contains('张三')));
+  });
+
+  group('Release（R-08）：错误正文只进环形日志，不再打印到系统日志', () {
+    test('框架错误不交给原处理器（默认处理器会把正文打印到控制台）', () {
+      final forwarded = <FlutterErrorDetails>[];
+      FlutterError.onError = forwarded.add;
+      final log = newLog();
+      installErrorHooks(log, releaseMode: true);
+
+      FlutterError.onError!(
+        FlutterErrorDetails(
+          exception: FlutterError('校验失败：别名 我的工资卡 6222020200112233445'),
+          stack: StackTrace.current,
+        ),
+      );
+
+      expect(forwarded, isEmpty);
+      final entry = log.entries.single;
+      expect(entry.category, 'flutter');
+      expect(entry.detail, 'FlutterError: 校验失败：别名 我的工资卡 ###################');
+    });
+
+    test('平台错误：返回 true（已处理，引擎不再打印），不调用原处理器', () {
+      var previousCalls = 0;
+      PlatformDispatcher.instance.onError = (error, stack) {
+        previousCalls++;
+        return false;
+      };
+      final log = newLog();
+      installErrorHooks(log, releaseMode: true);
+
+      final handled = PlatformDispatcher.instance.onError!(
+        StateError('用户输入：张三 6222020200112233445'),
+        StackTrace.current,
+      );
+
+      expect(handled, isTrue);
+      expect(previousCalls, 0);
+      expect(log.entries.single.detail, 'StateError');
+      expect(log.entries.single.toReportText(), isNot(contains('张三')));
+    });
+
+    test('debug（默认 kReleaseMode=false）仍转发给原处理器', () {
+      final forwarded = <FlutterErrorDetails>[];
+      FlutterError.onError = forwarded.add;
+      installErrorHooks(newLog(), releaseMode: false);
+      FlutterError.onError!(FlutterErrorDetails(exception: FlutterError('x')));
+      expect(forwarded, hasLength(1));
+    });
   });
 
   test('没有原处理器时返回 false，保持默认处理', () {

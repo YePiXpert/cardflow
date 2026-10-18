@@ -2,9 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/app.dart';
+import 'app/diagnostics/diagnostic_log.dart';
 import 'features/diagnostics/app_diagnostics.dart';
 import 'features/diagnostics/crypto_status.dart';
-import 'features/diagnostics/diagnostic_log.dart';
 import 'features/diagnostics/error_hooks.dart';
 
 void main() {

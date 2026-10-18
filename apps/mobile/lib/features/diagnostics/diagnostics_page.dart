@@ -5,13 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../app/diagnostics/diagnostic_log.dart';
 import '../../app/theme/tokens.dart';
 import '../../data/db/database_errors.dart';
 import '../../data/db/database_providers.dart';
 import 'app_diagnostics.dart';
 import 'crypto_status.dart';
 import 'database_benchmark_controller.dart';
-import 'diagnostic_log.dart';
 import 'diagnostics_report.dart';
 
 /// 诊断信息页（"我的"Tab 内）：没有 Mac 时唯一的真机反馈渠道。

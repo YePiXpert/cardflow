@@ -1,4 +1,4 @@
-import 'package:cardflow/features/diagnostics/diagnostic_log.dart';
+import 'package:cardflow/app/diagnostics/diagnostic_log.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

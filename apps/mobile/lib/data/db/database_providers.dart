@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../features/diagnostics/diagnostic_log.dart';
+import '../../app/diagnostics/diagnostic_log.dart';
 import 'app_database.dart';
 import 'database_errors.dart';
 import 'database_key.dart';

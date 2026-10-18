@@ -3,13 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../features/cards/cards_page.dart';
-import '../features/diagnostics/diagnostic_log.dart';
 import '../features/diagnostics/diagnostics_page.dart';
 import '../features/onboarding/welcome_page.dart';
 import '../features/overview/overview_page.dart';
 import '../features/planner/planner_page.dart';
 import '../features/promotions/promotions_page.dart';
 import '../features/settings/settings_page.dart';
+import 'diagnostics/diagnostic_log.dart';
 import 'routes.dart';
 import 'shell/home_shell.dart';
 import 'widgets/not_found_page.dart';

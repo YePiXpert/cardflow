@@ -11,6 +11,8 @@ import 'package:cardflow/data/db/database_key.dart';
 import 'package:cardflow/data/db/database_location.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+export '../../support/sensitive_text.dart' show containsKeyMaterial;
+
 /// 一把固定的测试密钥（64 个十六进制字符）。只用于测试。
 const String testKeyHex =
     '00112233445566778899aabbccddeeff102132435465768798a9bacbdcedfe0f';
@@ -91,9 +93,3 @@ Future<DatabaseOpenException> expectOpenError(
   }
   fail('expected DatabaseOpenException(${code.code})');
 }
-
-/// 文本里是否出现了密钥（完整十六进制、大写形式或前 16 个字符）。
-bool containsKeyMaterial(String text, String keyHex) =>
-    text.contains(keyHex) ||
-    text.contains(keyHex.toUpperCase()) ||
-    text.contains(keyHex.substring(0, 16));

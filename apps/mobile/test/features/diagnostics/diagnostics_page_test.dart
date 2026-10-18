@@ -1,3 +1,4 @@
+import 'package:cardflow/app/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/data/db/database_benchmark.dart';
 import 'package:cardflow/data/db/database_providers.dart';
@@ -5,7 +6,6 @@ import 'package:cardflow/data/db/encryption.dart';
 import 'package:cardflow/features/diagnostics/app_diagnostics.dart';
 import 'package:cardflow/features/diagnostics/crypto_status.dart';
 import 'package:cardflow/features/diagnostics/database_benchmark_controller.dart';
-import 'package:cardflow/features/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_page.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_report.dart';
 import 'package:cardflow/features/diagnostics/platform_description.dart';
@@ -225,6 +225,7 @@ void main() {
     expect(report, contains('I db/opened created'));
     expect(report, contains('I db/benchmark_done'));
     expect(containsKeyMaterial(report, testKeyHex), isFalse);
+    expect(report, isNot(contains("x'")));
 
     await tester.runAsync(
       () async => (await container.read(databaseProvider.future)).close(),

@@ -1,3 +1,9 @@
+/// 内存环形诊断日志（App 外壳层）。
+///
+/// 放在 `lib/app/diagnostics/`：数据层（`lib/data/`）与功能页都要写日志，而数据层不得向上依赖
+/// `lib/features/`（backlog BL-06）。诊断页与诊断报告（`lib/features/diagnostics/`）只读它。
+library;
+
 import 'dart:async';
 import 'dart:collection';
 

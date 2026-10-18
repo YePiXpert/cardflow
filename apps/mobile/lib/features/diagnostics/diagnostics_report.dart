@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../../app/diagnostics/diagnostic_log.dart';
 import 'app_diagnostics.dart';
-import 'diagnostic_log.dart';
 
 /// 打开诊断页时的显示环境（便于定位大字号、深色模式下的界面问题）。
 @immutable
