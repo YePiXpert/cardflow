@@ -14,7 +14,9 @@
 #   PlanOutcome.schema.json 的 $defs/CardCycles 或 $defs/VerificationResult。任一步失败即红。
 #
 # ios-unsigned（macos-26）：只在手动触发（workflow_dispatch）或推送 ios-v* 标签时运行；
-#   flutter build ios --release --no-codesign → 把 Runner.app 打成未签名 IPA → 上传为 artifact。
+#   flutter build ios --release --no-codesign → 把 Runner.app 打成未签名 IPA → 检查（Bundle ID、最低系统、
+#   隐私清单、App 图标、加密库 framework）→ 上传为 artifact → Required Reason API 扫描（BL-16，artifact
+#   required-reason-scan）。
 #   macOS runner 的分钟按 Linux 的 10 倍计。本仓库公开，目前不计费，但仍只在阶段交付或修复
 #   iOS 原生配置时手动触发；日常验证走 dart job。
 #
@@ -319,6 +321,12 @@ jobs:
           test -d Payload/Runner.app/Frameworks/Flutter.framework
           test -d Payload/Runner.app/Frameworks/App.framework
           ls Payload/Runner.app/Frameworks
+          # App 图标（公测版 0.1.0）：actool 编译出 Assets.car，并在 Info.plist 写入 CFBundleIcons（主图标名 AppIcon）。
+          icon_name="$(read_key CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName 2>/dev/null || true)"
+          test "$icon_name" = "AppIcon" || { echo "::error::CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName is '$icon_name', expected AppIcon"; exit 1; }
+          test -f Payload/Runner.app/Assets.car || { echo "::error::Runner.app/Assets.car missing (the app icon was not compiled)"; exit 1; }
+          assets_size="$(stat -f %z Payload/Runner.app/Assets.car)"
+          echo "CFBundleIcons primary icon: $icon_name; Assets.car: $assets_size bytes"
           # 加密本地库（I-0b）：sqlite3 构建钩子打进包里的必须是 SQLite3MultipleCiphers。
           cipher_fw=""
           for fw in Payload/Runner.app/Frameworks/*.framework; do
@@ -347,6 +355,8 @@ jobs:
             echo "| CFBundleShortVersionString | $version |"
             echo "| CFBundleVersion | $build |"
             echo "| MinimumOSVersion | $min_os |"
+            echo "| CFBundleIcons primary icon | $icon_name |"
+            echo "| Assets.car (bytes) | $assets_size |"
             echo "| SQLite3MultipleCiphers | \`$cipher_fw\` |"
             echo "| source | ${GITHUB_SHA} |"
           } >> "$GITHUB_STEP_SUMMARY"
@@ -358,6 +368,106 @@ jobs:
           path: apps/mobile/${{ steps.ipa.outputs.name }}
           retention-days: 14
           compression-level: 0
+          if-no-files-found: error
+
+      # BL-16：Required Reason API 扫描。Apple 要求在隐私清单里登记理由的四类 API（UserDefaults、FileTimestamp、
+      # SystemBootTime、DiskSpace）：对 Runner.app 的主二进制与 Frameworks/ 下每个二进制，nm -u 查导入的符号，
+      # strings 查 ObjC 选择器、常量名与 sysctl 名（C 函数名只看 nm -u，避免"stat"一类子串误报）；同时查每个
+      # framework 是否自带 PrivacyInfo.xcprivacy。规则：主二进制或没有自带清单的 framework 命中的类别留在
+      # ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）；结论见 evidence/i1/I1-c/required-reason-scan.txt。
+      # 命中是正常结果，只报告不判失败；工具出错才失败。
+      - name: Required Reason API scan (BL-16)
+        run: |
+          set -euo pipefail
+          export LC_ALL=C  # 二进制里的字符串不一定是合法 UTF-8：grep/sort 按字节处理
+          app=Payload/Runner.app
+          out=build-logs/required-reason-scan
+          rm -rf "$out"
+          mkdir -p "$out/nm-u" "$out/strings"
+          hits="$out/hits.tsv"
+          : > "$hits"
+          categories="UserDefaults FileTimestamp SystemBootTime DiskSpace"
+          nm_regex() {
+            case "$1" in
+              UserDefaults) echo '^_OBJC_CLASS_\$_NSUserDefaults$' ;;
+              FileTimestamp) echo '^_(stat|fstat|lstat|getattrlist|fgetattrlist|getattrlistbulk)(64)?(\$INODE64)?$|^_(NSFileCreationDate|NSFileModificationDate|NSURLContentModificationDateKey|NSURLCreationDateKey)$' ;;
+              SystemBootTime) echo '^_(mach_absolute_time|sysctl|sysctlbyname)$' ;;
+              DiskSpace) echo '^_(statfs|statvfs|fstatfs|fstatvfs)(64)?(\$INODE64)?$|^_(NSFileSystemFreeSize|NSFileSystemSize|NSURLVolumeAvailableCapacityKey|NSURLVolumeAvailableCapacityForImportantUsageKey|NSURLVolumeAvailableCapacityForOpportunisticUsageKey|NSURLVolumeTotalCapacityKey)$' ;;
+            esac
+          }
+          strings_regex() {
+            case "$1" in
+              UserDefaults) echo 'NSUserDefaults' ;;
+              FileTimestamp) echo 'NSFileCreationDate|NSFileModificationDate|NSURLContentModificationDateKey|NSURLCreationDateKey|getattrlist' ;;
+              SystemBootTime) echo 'systemUptime|kern\.boottime|mach_absolute_time' ;;
+              DiskSpace) echo 'NSFileSystemFreeSize|NSFileSystemSize|[vV]olumeAvailableCapacity[A-Za-z]*|[vV]olumeTotalCapacityKey|statv?fs' ;;
+            esac
+          }
+          all_strings_regex="$(for c in $categories; do printf '%s|' "$(strings_regex "$c")"; done | sed 's/|$//')"
+          # scan <文件名键> <显示名> <二进制> <自带清单：main/yes/no>
+          scan() {
+            local key="$1" label="$2" bin="$3" manifest="$4" c nm_hits str_hits
+            nm -u "$bin" | awk 'NF {print $NF}' | sort -u > "$out/nm-u/$key.txt"
+            if command -v strings > /dev/null; then
+              strings -a "$bin" > "$out/strings/$key.all"
+            else
+              grep -aoE '[[:print:]]{4,}' "$bin" > "$out/strings/$key.all" || true
+            fi
+            grep -E "$all_strings_regex" "$out/strings/$key.all" > "$out/strings/$key.txt" || true
+            echo "== $label（$(stat -f %z "$bin") 字节；自带 PrivacyInfo.xcprivacy：$manifest）"
+            for c in $categories; do
+              nm_hits="$(grep -E "$(nm_regex "$c")" "$out/nm-u/$key.txt" | tr '\n' ' ' || true)"
+              str_hits="$(grep -oE "$(strings_regex "$c")" "$out/strings/$key.all" | sort | uniq -c | awk '{printf "%s(%d) ", $2, $1}' || true)"
+              echo "  $c：nm -u ${nm_hits:-无}；strings ${str_hits:-无}"
+              if [ -n "$nm_hits$str_hits" ]; then
+                printf '%s\t%s\t%s\n' "$label" "$manifest" "$c" >> "$hits"
+              fi
+            done
+            rm -f "$out/strings/$key.all"
+          }
+          {
+            echo "# Required Reason API 扫描（BL-16）：$(date -u +%Y-%m-%dT%H:%M:%SZ)，源码 ${GITHUB_SHA}，运行 ${GITHUB_RUN_ID}"
+            echo "# 工具：nm = $(command -v nm)，strings = $(command -v strings || echo '无，改用 grep -ao')；$(xcodebuild -version | tr '\n' ' ')"
+            exe="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Info.plist")"
+            scan "main-$exe" "Runner.app/$exe（主二进制）" "$app/$exe" main
+            for fw in "$app"/Frameworks/*.framework; do
+              name="$(basename "$fw" .framework)"
+              fexe="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$fw/Info.plist" 2>/dev/null || echo "$name")"
+              if [ -f "$fw/PrivacyInfo.xcprivacy" ]; then own=yes; else own=no; fi
+              scan "framework-$name" "Frameworks/$name.framework/$fexe" "$fw/$fexe" "$own"
+            done
+            for dylib in "$app"/Frameworks/*.dylib; do
+              [ -f "$dylib" ] || continue
+              scan "dylib-$(basename "$dylib")" "Frameworks/$(basename "$dylib")" "$dylib" no
+            done
+            echo "== Runner.app 内的全部隐私清单"
+            (cd "$app" && find . -name PrivacyInfo.xcprivacy | sort) | while read -r manifest; do
+              echo "-- $manifest"
+              plutil -p "$app/$manifest"
+            done
+            echo "== 结论：主二进制或没有自带清单的 framework 命中的类别留在 ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）"
+            for c in $categories; do
+              need="$(awk -F '\t' -v c="$c" '$3 == c && ($2 == "main" || $2 == "no") {printf "%s ", $1}' "$hits")"
+              covered="$(awk -F '\t' -v c="$c" '$3 == c && $2 == "yes" {printf "%s ", $1}' "$hits")"
+              if grep -q "NSPrivacyAccessedAPICategory$c<" ios/Runner/PrivacyInfo.xcprivacy; then declared=已登记; else declared=未登记; fi
+              if [ -n "$need" ]; then verdict=保留; else verdict=删除; fi
+              echo "  $c：App 清单$declared；须由 App 清单承担的命中：${need:-无}；自带清单的 framework 命中：${covered:-无} → $verdict"
+            done
+          } | tee "$out/required-reason-scan.txt"
+          {
+            echo "### Required Reason API scan (BL-16)"
+            echo ""
+            echo '```'
+            sed -n '/^== 结论/,$p' "$out/required-reason-scan.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Required Reason API scan
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: required-reason-scan
+          path: apps/mobile/build-logs/required-reason-scan/
+          retention-days: 14
           if-no-files-found: error
 
       - name: Collect Xcode logs
