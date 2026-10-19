@@ -1,6 +1,6 @@
 # installment-parity.txt：领域包分期模块（apps/mobile/packages/cardflow_domain/lib/src/installment.dart）与 Python money.py 对照
 # 生成时间：2026-10-19T06:59:05Z；源码提交：8149c29（installment.dart 与 test/installment_test.dart 在 5af9a89 提交，之后未改：见文末 git log）
-# 过滤：dart 命令的输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 自带的 dart 以 root 运行时打印的宿主提示 4 行）；Python 输出未过滤。其余为工具原文，未删节。
+# 过滤：dart 命令的输出经 grep -Ev 去掉 flutter 工具打印的宿主运行环境提示（4 行）；Python 输出未过滤。其余为工具原文，未删节。（2026-10-19 按审查 R-13 改写本说明，不再写出宿主运行身份；过滤本身未变）
 # 方法：用下面的 Python 脚本（只读调用 services/api/cardflow/planner/engine/money.py 的 split_installments、
 # installment_cash_flows、irr_monthly、annualize）算 7 组样本（F-36、F-37、尾差加首期、单期、3 组带种子的随机样本），
 # 输出原文与 Dart 测试 test/installment_test.dart 的 _pythonSamples 期望值相同；Dart 测试断言拆分与各期费用逐期相等、

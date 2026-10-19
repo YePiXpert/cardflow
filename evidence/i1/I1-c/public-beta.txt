@@ -1,6 +1,6 @@
 # public-beta.txt：公测版 0.0.1 的界面约束——阶段代号防回归、P-22 与「关于」的公测说明（原文、版本号与 pubspec 一致、文案与版本显示）
 # 生成时间：2026-10-19T14:10:08Z；源码提交：8845348；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
-# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 过滤：输出经 grep -Ev 去掉 flutter 工具打印的宿主运行环境提示（4 行）；其余为工具原文，未删节。（2026-10-19 按审查 R-13 改写本说明，不再写出宿主运行身份；过滤本身未变）
 # 说明：版本号改为 0.0.1 后重跑（源码提交 8845348；上一版证据是 8149c29、App 版本 0.1.0 时生成的）。
 # 方法：test/app/public_beta_test.dart（扫描 lib/ 全部字符串字面量 + 逐页渲染检查；公测说明与关于页的组件测试）；
 # 另列出 lib/ 里仍含 I-数字 的行（应只有注释，界面文字不含）。

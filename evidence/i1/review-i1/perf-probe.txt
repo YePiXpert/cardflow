@@ -1,0 +1,14 @@
+# 大数据量计算耗时（flutter test，JIT/调试模式，真实加密库）
+# 生成时间：2026-10-19T15:27:34Z；仓库 HEAD 43cd136；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && flutter test ../../evidence/i1/review-i1/scripts/perf_probe_test.dart --reporter expanded 
+00:00 +0: loading /projects/cardflow/evidence/i1/review-i1/scripts/perf_probe_test.dart
+00:00 +0: 20 张卡、两年交易（每卡每天 1 笔 = 14,600 笔）、480 期账单、10 个分期、500 条现金事件
+PERF 数据准备完成（2272 ms）：transactions=14610 statements=476 repayments=450 installment_periods=204 cash_events=518
+PERF 第 1 次：CardWalletReader.load=9 ms；LedgerReader.load=1714 ms；资金日历 30 天=42 ms；180 天=9 ms；ScenarioBoard.load=9 ms；10 个分期成本（IRR）=1318 ms；480 期账单逐期取交易与差异=109 ms
+PERF 第 2 次：CardWalletReader.load=4 ms；LedgerReader.load=762 ms；资金日历 30 天=15 ms；180 天=17 ms；ScenarioBoard.load=15 ms；10 个分期成本（IRR）=1335 ms；480 期账单逐期取交易与差异=106 ms
+PERF 第 3 次：CardWalletReader.load=5 ms；LedgerReader.load=853 ms；资金日历 30 天=20 ms；180 天=13 ms；ScenarioBoard.load=12 ms；10 个分期成本（IRR）=1307 ms；480 期账单逐期取交易与差异=98 ms
+00:10 +1: All tests passed!
+[exit=0]
+

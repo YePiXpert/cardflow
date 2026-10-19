@@ -1,0 +1,7 @@
+name: rv1_probe
+publish_to: none
+environment:
+  sdk: ^3.9.0
+dependencies:
+  cardflow_domain:
+    path: /projects/cardflow/apps/mobile/packages/cardflow_domain

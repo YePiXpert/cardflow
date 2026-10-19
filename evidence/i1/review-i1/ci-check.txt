@@ -1,0 +1,120 @@
+# CI 与发布核对：mobile.yml 的 action 固定、失败掩盖、产出数断言、发版构建的 Required Reason 扫描结论
+# 生成时间：2026-10-19T15:14:57Z；仓库 HEAD 13d72c0；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow && ls .github/workflows/
+mobile.yml
+[exit=0]
+
+$ cd /projects/cardflow && grep -n 'uses:' .github/workflows/mobile.yml
+79:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+81:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+139:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+141:      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+147:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+241:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+255:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+257:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+365:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+466:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+487:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+[exit=0]
+
+$ cd /projects/cardflow && for spec in 'actions/checkout v7.0.1' 'subosito/flutter-action v2.23.0' 'astral-sh/setup-uv v10.3.0' 'actions/upload-artifact v7.0.2'; do set -- $spec; r=$(gh api repos/$1/git/ref/tags/$2 --jq '.object.type + " " + .object.sha'); t=${r%% *}; s=${r##* }; if [ "$t" = tag ]; then s=$(gh api repos/$1/git/tags/$s --jq '.object.sha'); fi; echo "$1 $2 -> $s ($t)"; done
+actions/checkout v7.0.1 -> 3d3c42e5aac5ba805825da76410c181273ba90b1 (commit)
+subosito/flutter-action v2.23.0 -> 1a449444c387b1966244ae4d4f8c696479add0b2 (commit)
+astral-sh/setup-uv v10.3.0 -> 1c37ad07a6a961277cf70c0d37d6f313000f5884 (commit)
+actions/upload-artifact v7.0.2 -> cf430e030ddbb5b0abf93d22962f4752f3646cd9 (commit)
+[exit=0]
+
+$ gh api 'repos/subosito/flutter-action/contents/action.yaml?ref=1a449444c387b1966244ae4d4f8c696479add0b2' --jq '.content' | base64 -d | grep -n 'uses:'
+123:      uses: actions/cache@v5
+130:      uses: actions/cache@v5
+[exit=0]
+
+$ cd /projects/cardflow && grep -n 'continue-on-error\||| true\|if: always\|if: failure' .github/workflows/mobile.yml
+240:        if: failure()
+271:          flutter doctor -v > build-logs/flutter-doctor.txt 2>&1 || true
+325:          icon_name="$(read_key CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName 2>/dev/null || true)"
+414:              grep -aoE '[[:print:]]{4,}' "$bin" > "$out/strings/$key.all" || true
+416:            grep -E "$all_strings_regex" "$out/strings/$key.all" > "$out/strings/$key.txt" || true
+419:              nm_hits="$(grep -E "$(nm_regex "$c")" "$out/nm-u/$key.txt" | tr '\n' ' ' || true)"
+420:              str_hits="$(grep -oE "$(strings_regex "$c")" "$out/strings/$key.all" | sort | uniq -c | awk '{printf "%s(%d) ", $2, $1}' || true)"
+474:        if: failure()
+486:        if: failure()
+[exit=0]
+
+$ cd /projects/cardflow && grep -n 'EXPECTED_\|test "\$n"\|test "\$m"\|checked != expected\|diff -r' .github/workflows/mobile.yml
+132:      EXPECTED_GOLDEN_OUTPUTS: '3'
+134:      EXPECTED_RANDOM_OUTPUTS: '1200'
+136:      EXPECTED_SCHEMA_CYCLES: '301'
+137:      EXPECTED_SCHEMA_VERIFY: '902'
+173:          test "$n" -eq "$EXPECTED_GOLDEN_OUTPUTS" || { echo "::error::expected $EXPECTED_GOLDEN_OUTPUTS golden outputs from the Python runner, found $n"; exit 1; }
+175:          test "$m" -eq "$EXPECTED_GOLDEN_OUTPUTS" || { echo "::error::expected $EXPECTED_GOLDEN_OUTPUTS golden outputs from the Dart runner, found $m"; exit 1; }
+176:          diff -r build/parity/golden/python build/parity/golden/dart
+177:          echo "golden fixtures: $n cycles/verify outputs byte-identical (expected $EXPECTED_GOLDEN_OUTPUTS)"
+197:          test "$n" -eq "$EXPECTED_RANDOM_OUTPUTS" || { echo "::error::expected $EXPECTED_RANDOM_OUTPUTS dumped outputs, found $n"; exit 1; }
+198:          diff -r build/parity/random/python build/parity/random/dart
+199:          echo "random fixtures: $n cycles/verify outputs byte-identical (expected $EXPECTED_RANDOM_OUTPUTS)"
+231:              "cycles": int(os.environ["EXPECTED_SCHEMA_CYCLES"]),
+232:              "verify": int(os.environ["EXPECTED_SCHEMA_VERIFY"]),
+234:          if checked != expected:
+236:          sys.exit(1 if failed or checked != expected else 0)
+[exit=0]
+
+$ cd /projects/cardflow && grep -n 'read_key\|test "\$bundle_id\|test "\$min_os\|test "\$icon_name\|version=\|build=' .github/workflows/mobile.yml | head -20
+310:          read_key() { /usr/libexec/PlistBuddy -c "Print :$1" "$plist"; }
+311:          bundle_id="$(read_key CFBundleIdentifier)"
+312:          min_os="$(read_key MinimumOSVersion)"
+313:          version="$(read_key CFBundleShortVersionString)"
+314:          build="$(read_key CFBundleVersion)"
+315:          display_name="$(read_key CFBundleDisplayName)"
+316:          echo "CFBundleIdentifier=$bundle_id MinimumOSVersion=$min_os version=$version build=$build"
+317:          test "$bundle_id" = "$BUNDLE_ID" || { echo "::error::CFBundleIdentifier is $bundle_id, expected $BUNDLE_ID"; exit 1; }
+318:          test "$min_os" = "$MIN_IOS" || { echo "::error::MinimumOSVersion is $min_os, expected $MIN_IOS"; exit 1; }
+325:          icon_name="$(read_key CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName 2>/dev/null || true)"
+326:          test "$icon_name" = "AppIcon" || { echo "::error::CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName is '$icon_name', expected AppIcon"; exit 1; }
+[exit=0]
+
+$ rm -rf /tmp/rv1/scan55 && mkdir -p /tmp/rv1/scan55 && gh run download 39268709025 -R YePiXpert/cardflow -n required-reason-scan -D /tmp/rv1/scan55 && sed -n '1,30p;/^== 结论/,$p' /tmp/rv1/scan55/required-reason-scan.txt
+# Required Reason API 扫描（BL-16）：2026-10-19T14:34:15Z，源码 83be815255b14dd31595d2870da0a41d6b909bd9，运行 39268709025
+# 工具：nm = /usr/bin/nm，strings = /usr/bin/strings；Xcode 26.6 Build version 17F113 
+== Runner.app/Runner（主二进制）（292640 字节；自带 PrivacyInfo.xcprivacy：main）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _NSFileCreationDate ；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/App.framework/App（9760336 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u 无；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/Flutter.framework/Flutter（9416112 字节；自带 PrivacyInfo.xcprivacy：yes）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _NSURLContentModificationDateKey _fstat _lstat _stat ；strings 无
+  SystemBootTime：nm -u _sysctlbyname ；strings systemUptime(1) 
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/objective_c.framework/objective_c（203280 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u 无；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/sqlite3mc.framework/sqlite3mc（1899296 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _fstat _lstat _stat ；strings 无
+  SystemBootTime：nm -u _sysctlbyname ；strings 无
+  DiskSpace：nm -u _fstatfs _statfs ；strings 无
+== Runner.app 内的全部隐私清单
+-- ./Frameworks/Flutter.framework/PrivacyInfo.xcprivacy
+{
+== 结论：主二进制或没有自带清单的 framework 命中的类别留在 ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）
+  UserDefaults：App 清单未登记；须由 App 清单承担的命中：无；自带清单的 framework 命中：无 → 删除
+  FileTimestamp：App 清单已登记；须由 App 清单承担的命中：Runner.app/Runner（主二进制） Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+  SystemBootTime：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+  DiskSpace：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：无 → 保留
+[exit=0]
+
+$ cd /projects/cardflow && gh run view 39268709025 --json number,event,headBranch,headSha,conclusion --jq '"\(.number) \(.event) \(.headBranch) \(.headSha[0:7]) \(.conclusion)"'
+55 push ios-v0.0.1 83be815 success
+[exit=0]
+

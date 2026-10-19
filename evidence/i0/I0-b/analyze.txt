@@ -1,9 +1,6 @@
+# 2026-10-19 按审查 R-13 去掉了 flutter 工具打印的宿主运行环境提示（共 16 行），其余内容未改。
 # I-0b 本机静态检查 · 2026-10-18T05:41:43Z · 提交 d69e5a8
 $ cd apps/mobile && flutter --version
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 Flutter 3.47.7 • channel stable • https://github.com/flutter/flutter.git
 Framework • revision abaf9c5237 (10 days ago) • 2026-10-08 09:51:21 -0700
 Engine • hash d8a2d6c768c334d53e16277f837970ffa1e2de81 (revision deb287481e) (10 days ago) • 2026-10-07 17:09:12.000Z
@@ -11,10 +8,6 @@ Tools • Dart 3.13.5 • DevTools 2.60.0
 exit=0
 
 $ flutter pub get --enforce-lockfile
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 Resolving dependencies...
 Downloading packages...
   build 4.0.11 (5.0.0 available)
@@ -29,18 +22,10 @@ Try `flutter pub outdated` for more information.
 exit=0
 
 $ dart format --output=none --set-exit-if-changed .
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 Formatted 64 files (0 changed) in 0.10 seconds.
 exit=0
 
 $ flutter analyze --fatal-infos
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 Resolving dependencies...
 Downloading packages...
   build 4.0.11 (5.0.0 available)

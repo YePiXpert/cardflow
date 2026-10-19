@@ -1,9 +1,6 @@
+# 2026-10-19 按审查 R-13 去掉了 flutter 工具打印的宿主运行环境提示（共 4 行），其余内容未改。
 # 2026-10-18 I-0 审查 R-11：宿主发行版/内核版本与代理环境变量状态已脱敏（不影响 Flutter 版本与工具链结论）
 $ flutter doctor -v   # 2026-10-18T04:09:38Z
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 [✓] Flutter (Channel stable, 3.47.7, on [redacted: 宿主发行版与内核], locale en_US.UTF-8) [26ms]
     • Flutter version 3.47.7 on channel stable at /opt/flutter-sdk
     • Upstream repository https://github.com/flutter/flutter.git

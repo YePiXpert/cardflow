@@ -1,0 +1,99 @@
+# 公开仓库卫生与隔离扫描：邮箱/令牌/IP/端口/宿主信息/Luhn 卡号形态（不回显数字）；提交身份与署名；数据层查询的工作空间过滤
+# 生成时间：2026-10-19T15:15:01Z；仓库 HEAD 13d72c0；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ python3 -I /projects/cardflow/evidence/i1/review-i1/scripts/py/hygiene.py /projects/cardflow apps/mobile evidence/i1 .github | grep -v 'users.noreply.github.com\|@[123]x.png'
+[ipv4] apps/mobile/packages/cardflow_domain/lib/src/protocol/binary64.dart:5: 3.2.2.3
+[ipv4] apps/mobile/packages/cardflow_domain/lib/src/protocol/binary64.dart:150: 3.2.2.3
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:8: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:8: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:9: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:9: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:17: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:17: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:20: 14 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:20: 14 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:23: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:23: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:25: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:25: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:27: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:27: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:30: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:30: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:40: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:40: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:53: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:53: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:68: 14 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:71: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:79: 14 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:79: 14 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:88: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:90: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:90: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/packages/cardflow_domain/test/support/python_float_vectors.dart:164: 15 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/pubspec.lock:475: 13 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/test/data/validation/text_rules_test.dart:20: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/test/data/validation/text_rules_test.dart:21: 16 位数字通过 Luhn（不回显）
+[luhn] apps/mobile/test/data/validation/text_rules_test.dart:55: 16 位数字通过 Luhn（不回显）
+[port] evidence/i1/I1-b/ci-dart-run.txt:35: :22
+[port] evidence/i1/I1-b/git-log.txt:8: :22
+[port] evidence/i1/I1-c/ci-dart-run.txt:10: :22
+[port] evidence/i1/I1-c/ci-ios-run.txt:51: :22
+[port] evidence/i1/I1-c/test.txt:438: :22
+[port] evidence/i1/I1-c/test.txt:439: :22
+[port] evidence/i1/I1-c/test.txt:440: :22
+[port] evidence/i1/I1-c/test.txt:441: :22
+[port] evidence/i1/I1-c/test.txt:442: :22
+[port] evidence/i1/I1-c/test.txt:443: :22
+[port] evidence/i1/I1-c/test.txt:444: :22
+[port] evidence/i1/I1-c/test.txt:445: :22
+[port] evidence/i1/I1-c/test.txt:446: :22
+[port] evidence/i1/I1-c/test.txt:447: :22
+[port] evidence/i1/I1-c/test.txt:448: :22
+[port] evidence/i1/I1-c/test.txt:449: :22
+[port] evidence/i1/I1-c/test.txt:450: :22
+[port] evidence/i1/I1-c/test.txt:451: :22
+[port] evidence/i1/I1-c/test.txt:452: :22
+[port] evidence/i1/I1-c/test.txt:453: :22
+[port] evidence/i1/I1-c/test.txt:454: :22
+[port] evidence/i1/release-0.0.1/app-test.txt:501: :22
+[port] evidence/i1/release-0.0.1/app-test.txt:502: :22
+[port] evidence/i1/release-0.0.1/app-test.txt:503: :22
+files scanned: 327 counts: {'email': 93, 'token': 0, 'ipv4': 2, 'port': 24, 'host': 0, 'secretword': 0, 'luhn': 32}
+[exit=0]
+
+$ cd /projects/cardflow && git log --format='%an <%ae> | %cn <%ce>' | sort | uniq -c
+     93 YePiXpert <YePiXpert@users.noreply.github.com> | YePiXpert <YePiXpert@users.noreply.github.com>
+[exit=0]
+
+$ cd /projects/cardflow && git log --format='%B' | grep -i -c 'claude\|co-authored\|anthropic\|generated with' ; true
+0
+[exit=0]
+
+$ cd /projects/cardflow && git grep -n -i 'claude\|anthropic' -- apps/mobile evidence/i1 .github README.md | grep -v 'git-log.txt' ; true
+[exit=0]
+
+apps/mobile/packages/cardflow_domain/test/protocol_adapter_test.dart:449:          <String, Object?>{'balance_minor': 98765432},
+apps/mobile/packages/cardflow_domain/test/protocol_adapter_test.dart:450:          '98765432',
+[exit=0]
+
+$ python3 -I /projects/cardflow/evidence/i1/review-i1/scripts/py/scan_queries.py /projects/cardflow/apps/mobile/lib/data
+db/app_database.dart:113: await db.customStatement('PRAGMA foreign_keys = ON');
+db/app_database.dart:114: final rows = await db.customSelect('PRAGMA foreign_keys').get();
+db/app_database.dart:128: final rows = await db.customSelect(sql).get();
+db/encryption.dart:151: (sql) => firstValueOf(db.select(sql));
+db/schema.dart:1373: await db.customStatement(statement);
+db/schema.dart:1379: await db.customStatement(statement);
+db/schema.dart:1385: await db.customStatement(statement);
+db/schema.dart:1408: await db.customStatement(LocalSchema.createMetaTable);
+db/schema.dart:1409: await db.customStatement(
+db/schema.dart:1417: await db.customStatement(statement);
+db/schema.dart:1426: return db.customStatement('PRAGMA user_version = $version');
+db/schema.dart:1452: await db.customStatement(
+repositories/workspace_repository.dart:24: await (_db.select(_db.appSettings)
+repositories/workspace_repository.dart:30: return (_db.select(_db.workspaces)
+repositories/workspace_repository.dart:37: (_db.select(_db.workspaces)
+[exit=0]
+

@@ -1,5 +1,5 @@
 # 0.0.1 发版前主会话本机复核（2026-10-19T14:18:03Z，源码 = 工作树：0fdb4d5 + 去掉界面 6 处规格编号，即随后提交的 83be815）
-# 过滤：grep -Ev 去掉 flutter/dart 以 root 运行时打印的宿主提示 4 行与代理状态行；其余为工具原文。
+# 过滤：grep -Ev 去掉 flutter/dart 工具打印的宿主运行环境提示（4 行）与代理状态行；其余为工具原文。（2026-10-19 按审查 R-13 改写本说明）
 $ dart format --output=none --set-exit-if-changed .
 Formatted 230 files (0 changed) in 1.36 seconds.
 $ flutter analyze --fatal-infos

@@ -1,0 +1,107 @@
+# 迁移与外键核对：新建 vs 从 v1/v2/v3 升级的结构（复现 I1-c schema-diff 的哈希）、冻结 SQL 未改、各 IPA 之间库代码未变、外键生效
+# 生成时间：2026-10-19T15:14:46Z；仓库 HEAD 13d72c0；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && CARDFLOW_SCHEMA_DUMP_DIR=/tmp/rv1/schema flutter test test/data/db/schema_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/db/schema_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:00 +1: 迁移（1→2）在事务中：某一步失败时整体回滚，库仍是完整的 v1
+00:00 +2: 迁移（2→3）在事务中：某一步失败时整体回滚，库仍是完整的 v2，数据不变
+00:00 +3: 迁移（3→4）在事务中：某一步失败时整体回滚，库仍是完整的 v3，数据不变
+00:00 +4: 经 openAppDatabase 的迁移失败 → migration_failed，文件仍是 v1，可再次打开重试
+00:00 +5: 重跑 1→4 不报错：迁移已提交而 drift 还没写 user_version 时退出，下次启动结构与数据都不变
+00:00 +6: 重跑 2→4 不报错：迁移已提交而 drift 还没写 user_version 时退出，下次启动结构与数据都不变
+00:00 +7: 重跑 3→4 不报错：迁移已提交而 drift 还没写 user_version 时退出，下次启动结构与数据都不变
+00:00 +8: 旧版 App（schema v1）打开 v4 的库 → schema_too_new，库文件不被改动
+00:00 +9: 旧版 App（schema v2）打开 v4 的库 → schema_too_new，库文件不被改动
+00:00 +10: 旧版 App（schema v3）打开 v4 的库 → schema_too_new，库文件不被改动
+00:00 +11: 缺少某一步 → migration_failed；from > to → schema_too_new（不做任何改动）
+00:00 +12: 登记的迁移步骤：1→2、2→3、3→4；冻结的语句全部带 IF NOT EXISTS
+00:00 +13: (tearDownAll)
+00:00 +13: All tests passed!
+[exit=0]
+
+$ cd /tmp/rv1/schema && sha256sum fresh-v4.txt upgraded-from-v1.txt upgraded-from-v2.txt upgraded-from-v3.txt
+b41dbeb012d6995af193aa0dace37203869aa0eae6d2182ca27546b1246da501  fresh-v4.txt
+b41dbeb012d6995af193aa0dace37203869aa0eae6d2182ca27546b1246da501  upgraded-from-v1.txt
+b41dbeb012d6995af193aa0dace37203869aa0eae6d2182ca27546b1246da501  upgraded-from-v2.txt
+b41dbeb012d6995af193aa0dace37203869aa0eae6d2182ca27546b1246da501  upgraded-from-v3.txt
+[exit=0]
+
+$ cd /tmp/rv1/schema && diff fresh-v4.txt upgraded-from-v1.txt && diff fresh-v4.txt upgraded-from-v2.txt && diff fresh-v4.txt upgraded-from-v3.txt && echo IDENTICAL
+IDENTICAL
+[exit=0]
+
+$ grep -n 'b41dbeb012d6995af193aa0dace37203869aa0eae6d2182ca27546b1246da501' /projects/cardflow/evidence/i1/I1-c/schema-diff.txt | head -1
+48:b41dbeb012d6995af193aa0dace37203869aa0eae6d2182ca27546b1246da501  fresh-v4.txt
+[exit=0]
+
+$ cd /projects/cardflow && for c in f0cc636 201c8da 4c77d44 HEAD; do echo "== $c SchemaV2 / SchemaV3 冻结段的 sha256"; git show $c:apps/mobile/lib/data/db/schema.dart | awk '/^abstract final class SchemaV2/,/^}/' | sha256sum; git show $c:apps/mobile/lib/data/db/schema.dart | awk '/^abstract final class SchemaV3/,/^}/' | sha256sum; done
+== f0cc636 SchemaV2 / SchemaV3 冻结段的 sha256
+79b6e5e86335e4ba7166f02ea20cf5c394c1f9387c0340e72e8c5d2a02a9d491  -
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
+== 201c8da SchemaV2 / SchemaV3 冻结段的 sha256
+79b6e5e86335e4ba7166f02ea20cf5c394c1f9387c0340e72e8c5d2a02a9d491  -
+f2458ae7acefbde38943dce2f5f32fc2b3c02f8399c78a47d65daec975736f5c  -
+== 4c77d44 SchemaV2 / SchemaV3 冻结段的 sha256
+79b6e5e86335e4ba7166f02ea20cf5c394c1f9387c0340e72e8c5d2a02a9d491  -
+f2458ae7acefbde38943dce2f5f32fc2b3c02f8399c78a47d65daec975736f5c  -
+== HEAD SchemaV2 / SchemaV3 冻结段的 sha256
+79b6e5e86335e4ba7166f02ea20cf5c394c1f9387c0340e72e8c5d2a02a9d491  -
+f2458ae7acefbde38943dce2f5f32fc2b3c02f8399c78a47d65daec975736f5c  -
+[exit=0]
+
+$ cd /projects/cardflow && git log --format='%h %ad' --date=short -- apps/mobile/lib/data/db/schema.dart
+4c77d44 2026-10-19
+201c8da 2026-10-18
+f0cc636 2026-10-18
+aa7e9a4 2026-10-18
+03bb5b0 2026-10-18
+[exit=0]
+
+$ cd /projects/cardflow && gh run list --workflow mobile.yml --limit 100 --json databaseId,headSha,event,headBranch,conclusion --jq '.[] | select(.event=="workflow_dispatch" or (.headBranch|startswith("ios-v"))) | "\(.databaseId) \(.headSha[0:7]) \(.event) \(.headBranch) \(.conclusion)"'
+39268709025 83be815 push ios-v0.0.1 success
+39212910838 8149c29 workflow_dispatch main success
+39211270256 6547054 workflow_dispatch main success
+39101728143 4d720c9 workflow_dispatch main success
+39098193527 eaed4a8 workflow_dispatch main success
+[exit=0]
+
+$ cd /projects/cardflow && git diff --stat 6547054 83be815 -- apps/mobile/lib/data/db/ && echo '（6547054..83be815 之间 lib/data/db 无改动）'
+（6547054..83be815 之间 lib/data/db 无改动）
+[exit=0]
+
+$ cd /projects/cardflow && git diff --stat 83be815 13d72c0 -- apps .github packages services && echo '（发版标签之后代码无改动）'
+（发版标签之后代码无改动）
+[exit=0]
+
+$ cd /projects/cardflow && git show 4d720c9:apps/mobile/lib/data/db/schema.dart | sed -n '/^Future<void> createSchema/,/^}$/p'
+Future<void> createSchema(
+  GeneratedDatabase db, {
+  required DateTime createdAt,
+  int version = LocalSchema.currentSchemaVersion,
+}) async {
+  await db.customStatement(LocalSchema.createMetaTable);
+  await db.customStatement(
+    'INSERT INTO meta (id, schema_version, created_at) VALUES (1, ?, ?)',
+    <Object>[version, createdAt.toUtc().toIso8601String()],
+  );
+}
+[exit=0]
+
+$ cd /projects/cardflow && git diff 4d720c9 HEAD --stat -- apps/mobile/lib/data/db/database_key.dart apps/mobile/lib/data/db/encryption.dart
+ apps/mobile/lib/data/db/database_key.dart | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test ../../evidence/i1/review-i1/scripts/migration_fk_probe_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/evidence/i1/review-i1/scripts/migration_fk_probe_test.dart
+00:00 +0: v1 → v4（经 openAppDatabase）：外键开启并生效
+created=false user_version=4 meta=4 foreign_keys=1 foreign_key_check=[] integrity_check=ok
+不存在的工作空间写现金账户：被拒（SqliteException(787): while executing, FOREIGN KEY constraint failed, constraint failed (code 787)）
+真实空间的事件指向演示空间的现金账户：被拒（SqliteException(787): while executing, FOREIGN KEY constraint failed, constraint failed (code 787)）
+删除仍被引用的演示工作空间：被拒（SqliteException(787): while executing, FOREIGN KEY constraint failed, constraint failed (code 787)）
+00:00 +1: All tests passed!
+[exit=0]
+

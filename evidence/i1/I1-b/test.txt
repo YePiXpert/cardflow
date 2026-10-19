@@ -1,6 +1,6 @@
 # test.txt：App 全部测试（真实 sqlite3mc；--reporter expanded）
 # 生成时间：2026-10-18T16:58:01Z；源码提交：b85957e；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
-# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 过滤：输出经 grep -Ev 去掉 flutter 工具打印的宿主运行环境提示（4 行）；其余为工具原文，未删节。（2026-10-19 按审查 R-13 改写本说明，不再写出宿主运行身份；过滤本身未变）
 $ flutter test --reporter expanded
 00:00 +0: loading /projects/cardflow/apps/mobile/test/support/sensitive_text_test.dart
 00:00 +0: /projects/cardflow/apps/mobile/test/support/sensitive_text_test.dart: containsKeyMaterial 审查 R-03 的探针：进入诊断日志（数字已掩码）的原始密钥字面量能被发现

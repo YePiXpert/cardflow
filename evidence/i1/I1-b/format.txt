@@ -1,6 +1,6 @@
 # format.txt：格式检查（dart format 不改动任何文件）
 # 生成时间：2026-10-18T16:58:00Z；源码提交：b85957e；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
-# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 过滤：输出经 grep -Ev 去掉 flutter 工具打印的宿主运行环境提示（4 行）；其余为工具原文，未删节。（2026-10-19 按审查 R-13 改写本说明，不再写出宿主运行身份；过滤本身未变）
 $ dart format --output=none --set-exit-if-changed .
 Formatted 203 files (0 changed) in 1.00 seconds.
 [exit=0]

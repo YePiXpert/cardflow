@@ -1,6 +1,6 @@
 # schema-diff.txt：新建的 v2 与从 v1 升级上来的 v2，sqlite_master（表、列、索引、触发器）对比
 # 生成时间：2026-10-18T15:32:45Z；源码提交：4d0a89f；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
-# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 过滤：输出经 grep -Ev 去掉 flutter 工具打印的宿主运行环境提示（4 行）；其余为工具原文，未删节。（2026-10-19 按审查 R-13 改写本说明，不再写出宿主运行身份；过滤本身未变）
 # 方法：test/data/db/schema_test.dart 的第一个测试在真实 sqlite3mc 上分别新建 v2 库（drift 按 tables.dart 建表）
 # 与建 v1 库再经 openAppDatabase 升级（执行冻结的 SchemaV2.migration），用 schemaDump() 导出两边的结构
 # （user_version、sqlite_master 每行的 type/name/tbl_name/sql、每张表的 table_xinfo、foreign_key_list、

@@ -1,6 +1,6 @@
 # isolation.txt：工作空间隔离测试（演示空间写满全部业务表 → 以真实空间为当前空间运行每个仓库的全部查询，结果必须为空；反向亦然）
 # 生成时间：2026-10-18T15:32:48Z；源码提交：4d0a89f；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
-# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 过滤：输出经 grep -Ev 去掉 flutter 工具打印的宿主运行环境提示（4 行）；其余为工具原文，未删节。（2026-10-19 按审查 R-13 改写本说明，不再写出宿主运行身份；过滤本身未变）
 # CARDFLOW_EVIDENCE=1 时测试逐条打印查询与结果行数。
 $ CARDFLOW_EVIDENCE=1 flutter test test/data/repositories/workspace_isolation_test.dart --reporter expanded
 00:00 +0: loading /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart

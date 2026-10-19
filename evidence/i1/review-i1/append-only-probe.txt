@@ -1,0 +1,14 @@
+# 账单版本追加只读的数据库兜底探针（R-05）：DELETE+同 id 重插、INSERT OR REPLACE
+# 生成时间：2026-10-19T15:27:05Z；仓库 HEAD 43cd136；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && flutter test ../../evidence/i1/review-i1/scripts/append_only_probe_test.dart --reporter expanded 
+00:00 +0: loading /projects/cardflow/evidence/i1/review-i1/scripts/append_only_probe_test.dart
+00:00 +0: A1 同一事务删掉当前版本 v2 并以同一 id、同一版本号重插不同金额
+A1 结果: v1=100000, v2=1；当前版本 id 未变=true；读模型本期应还=1
+00:00 +1: A2 INSERT OR REPLACE 以 v1 的 id 写入一行（版本号 3）
+A2 INSERT OR REPLACE: 成功
+A2 现在的版本: v2=80000, v3=5
+00:00 +2: All tests passed!
+[exit=0]
+

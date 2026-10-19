@@ -1,0 +1,13 @@
+# 日期边界性质探针：周期事项展开、业务日期、截止时点、时刻写法
+# 生成时间：2026-10-19T15:27:11Z；仓库 HEAD 43cd136；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && flutter test ../../evidence/i1/review-i1/scripts/date_props_probe_test.dart --reporter expanded 
+00:00 +0: loading /projects/cardflow/evidence/i1/review-i1/scripts/date_props_probe_test.dart
+00:00 +0: recurringOccurrences 与按天暴力判定一致（20,000 组随机规则）
+recurringOccurrences：20000 组，期次合计 298282，不一致 0
+00:00 +1: businessDateOf / postingDateOf / timestampTextIn 与 DateTime 独立计算一致（200,000 个时刻）
+businessDateOf/postingDateOf/timestampTextIn：200000 个时刻，不一致 0
+00:00 +2: All tests passed!
+[exit=0]
+

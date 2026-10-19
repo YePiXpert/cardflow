@@ -1,0 +1,31 @@
+# 负债四分法与跨期分配探针（R-01、R-02）：P1/P1b 已出账消费转分期；P3/P3b 迟付与旧账单；P4 早于账单日的还款；P2 追加只读（R-05）
+# 生成时间：2026-10-19T15:27:02Z；仓库 HEAD 43cd136；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && flutter test ../../evidence/i1/review-i1/scripts/ledger_probe_test.dart --reporter expanded 
+00:00 +0: loading /projects/cardflow/evidence/i1/review-i1/scripts/ledger_probe_test.dart
+00:00 +0: P1 已出账（已计入录入账单新余额）的消费再转分期：总负债
+P1 转分期前: billedUnpaid=1200000 unbilled=0 futurePrincipal=0 total=1200000
+P1 转分期后（默认首期）: billedUnpaid=1200000 unbilled=0 futurePrincipal=1200000 total=2400000
+P1 各期账单日: 1:2026-11-10:scheduled 2:2026-12-10:scheduled 3:2027-01-10:scheduled 4:2027-02-10:scheduled 5:2027-03-10:scheduled 6:2027-04-10:scheduled 7:2027-05-10:scheduled 8:2027-06-10:scheduled 9:2027-07-10:scheduled 10:2027-08-10:scheduled 11:2027-09-10:scheduled 12:2027-10-10:scheduled
+00:00 +1: P1b 同上，但首期指定为消费本身所在的 10-10 账单
+P1b 转分期后（首期 10-10）: billedUnpaid=1200000 unbilled=0 futurePrincipal=1100000 total=2300000
+00:00 +2: P2 账单版本：直接 DELETE 旧版本、删掉当前版本后重插不同金额（数据库层）
+P2 修正后: v1=100000, v2=80000
+P2 UPDATE v2 金额: 被拒（SqliteException(1811): while executing, statement_versions: append only; insert a new version, constraint failed (code 1811)
+  Causing state）
+P2 DELETE 旧版本 v1: 成功
+P2 同一事务：DELETE 当前 v2 + 以同一 id 重插 v2（新余额 1）: 被拒（SqliteException(1811): while executing, statement_versions: version_no must follow the latest version, constraint failed (code 1811)
+  Causi）
+P2 现在的版本: v2=80000；当前版本 id 未变=true
+P2 读模型本期应还=80000
+00:00 +3: P3b 9 月未还、10 月新余额已含 9 月：按 10 月全额还清（分配到 10 月）后，9 月仍"已逾期"并留在近期到期
+P3b 结果: 10 月=settled 9 月=overdue 9 月剩余应还=100000 总负债=0 近期到期=2026-09-10:overdue:100000
+00:00 +4: P4 账单日之前已经还过的钱（账单新余额里已扣除）登记后分配到这期账单
+P4 结果: 10 月账单状态=settled 剩余应还=0 本期应还=0 总负债=0 近期到期=0（实际仍欠 800）
+00:00 +5: P3 迟付：9 月账单逾期后，10 月账单（新余额含 9 月未还）出账，再登记还 9 月那一笔
+P3 登记前: 9 月状态=overdue 总负债=150000
+P3 银行确认后: 9 月状态=settled 本期应还=150000 总负债=150000
+00:00 +6: All tests passed!
+[exit=0]
+

@@ -1,0 +1,35 @@
+# 界面入口核对（R-16）：仓库已有的交易删除/补入账日、分期作废方法，在界面里有没有入口
+# 生成时间：2026-10-19T15:26:01Z；仓库 HEAD 43cd136；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && grep -n 'Future<void> delete(String id)\|Future<void> markPosted(String id\|Future<void> cancel(String planId)' lib/data/repositories/transaction_repository.dart lib/data/repositories/installment_repository.dart
+lib/data/repositories/transaction_repository.dart:227:  Future<void> markPosted(String id, LocalDate postedOn) async {
+lib/data/repositories/transaction_repository.dart:255:  Future<void> delete(String id) async {
+lib/data/repositories/installment_repository.dart:233:  Future<void> cancel(String planId) async {
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && grep -rn 'transactionRepositoryProvider\|installmentRepositoryProvider' lib/features
+lib/features/statements/statement_forms.dart:659:      final repo = await ref.read(transactionRepositoryProvider.future);
+lib/features/statements/statement_forms.dart:899:      final repo = await ref.read(installmentRepositoryProvider.future);
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && grep -rn '\.cancel(\|markPosted(' lib/features ; true
+lib/features/cash/cash_entry_pages.dart:229:  Future<void> _markPosted(String eventId) async {
+lib/features/cash/cash_entry_pages.dart:233:      await repo.markPosted(eventId);
+lib/features/cash/cash_entry_pages.dart:372:                      : () => unawaited(_markPosted(row.id)),
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && grep -n 'static String newTransaction\|static String newInstallment\|transactions/' lib/app/routes.dart
+148:  static String newTransaction({String? accountId, String? currencyAccountId}) {
+151:      path: '${ledgerBase(accountId)}/transactions/new',
+157:  static String newInstallment(String transactionId, {String? accountId}) =>
+158:      '${ledgerBase(accountId)}/transactions/$transactionId/installment';
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && grep -rn '\.delete(' lib/features
+lib/features/repayments/repayment_pages.dart:862:              await _run(context, (repo) => repo.delete(r.id), '已作废登记', ref);
+lib/features/scenarios/scenario_pages.dart:138:      await repo.delete(item.scenario.row!.id);
+lib/features/cash/cash_entry_pages.dart:256:      await repo.delete(eventId);
+lib/features/cash/cash_page.dart:400:      await repo.delete(transfer.out.id);
+[exit=0]
+

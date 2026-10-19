@@ -1,0 +1,12 @@
+# 演示空间里打开全屏表单 → 横幅「退出演示」→ 保存：写进了哪个空间（R-15）
+# 生成时间：2026-10-19T15:27:30Z；仓库 HEAD 43cd136；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && flutter test ../../evidence/i1/review-i1/scripts/demo_exit_form_probe_test.dart --reporter expanded 
+00:00 +0: loading /projects/cardflow/evidence/i1/review-i1/scripts/demo_exit_form_probe_test.dart
+00:00 +0: 演示空间里打开"新建现金账户"→ 退出演示 → 保存
+退出演示后表单仍在=true
+真实空间的现金账户=[演示里填的账户]；演示空间的现金账户=[工资卡, 定期存款]
+00:01 +1: All tests passed!
+[exit=0]
+

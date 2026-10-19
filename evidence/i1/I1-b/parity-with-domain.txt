@@ -1,6 +1,6 @@
 # parity-with-domain.txt：F-01~F-05/F-07 经仓库映射与领域包直算逐字段一致；审查 §5 交叉规则复刻
 # 生成时间：2026-10-18T16:58:26Z；源码提交：b85957e；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
-# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 过滤：输出经 grep -Ev 去掉 flutter 工具打印的宿主运行环境提示（4 行）；其余为工具原文，未删节。（2026-10-19 按审查 R-13 改写本说明，不再写出宿主运行身份；过滤本身未变）
 # 方法：cash_parity_test.dart 用与领域包测试（packages/cardflow_domain/test/cash_test.dart、checks_test.dart）相同的数值写入
 # 真实 sqlite3mc 库，经仓库 → CashForecastReader → cash_mapping 映射后调用领域包；另用同样的数值直接构造领域对象调用领域包
 # （事件 id 取库里的 UUID）。CARDFLOW_EVIDENCE=1 时每个用例打印两份结果的全部字段（规范化 JSON，含时间线每个点、假设、

@@ -1,0 +1,13 @@
+# 冲正探针（R-03，BL-29）：银行确认 → 冲正之后的状态、剩余应还、近期到期与逾期
+# 生成时间：2026-10-19T15:27:07Z；仓库 HEAD 43cd136；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && flutter test ../../evidence/i1/review-i1/scripts/reversal_probe_test.dart --reporter expanded 
+00:00 +0: loading /projects/cardflow/evidence/i1/review-i1/scripts/reversal_probe_test.dart
+00:00 +0: 冲正后：已结清不回退；剩余应还 > 0；近期到期不再列出；过了到期日也不变"已逾期"
+银行确认后：状态=settled 剩余应还=0 近期到期=0 总负债=0
+冲正后（10-18）：状态=settled 剩余应还=100000 近期到期=0 总负债=100000
+冲正后（11-05，已过 10-28 到期日）：状态=settled 剩余应还=100000 近期到期=0
+00:00 +1: All tests passed!
+[exit=0]
+

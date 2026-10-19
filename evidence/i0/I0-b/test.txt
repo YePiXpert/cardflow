@@ -1,11 +1,8 @@
+# 2026-10-19 按审查 R-13 去掉了 flutter 工具打印的宿主运行环境提示（共 8 行），其余内容未改。
 # I-0b 本机测试 · 2026-10-18T05:41:56Z · 提交 d69e5a8
 # 第 1 部分：全量测试。先删除 .dart_tool/hooks_runner，让 sqlite3 构建钩子重新运行（下载并按包内 sha256 校验 sqlite3mc），
 # 加密库测试用的就是这份真实的库（没有 mock；钩子失败时测试失败，不跳过）。
 $ rm -rf .dart_tool/hooks_runner && flutter test --reporter expanded
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 Resolving dependencies...
 Downloading packages...
   build 4.0.11 (5.0.0 available)
@@ -190,10 +187,6 @@ $ grep -n ... ~/.pub-cache/hosted/pub.dev/sqlite3-3.7.1/lib/src/hook/asset_hashe
 
 # 第 3 部分：加密库与诊断页相关测试逐条列出（-j 1 顺序执行，便于对照简报 §3 的测试清单）
 $ flutter test test/data/db test/features/diagnostics -j 1 --reporter expanded
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 Resolving dependencies...
 Downloading packages...
   build 4.0.11 (5.0.0 available)

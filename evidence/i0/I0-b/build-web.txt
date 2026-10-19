@@ -1,11 +1,8 @@
+# 2026-10-19 按审查 R-13 去掉了 flutter 工具打印的宿主运行环境提示（共 4 行），其余内容未改。
 # I-0b 本机 Web 编译烟雾测试 · 2026-10-18T05:42:17Z · 提交 d69e5a8
 # Web 只作编译检查：加密本地库在 Web 上走条件导入的 database_platform_stub.dart（一律 unsupported_platform），
 # drift_flutter / dart:io 只在原生平台编译。
 $ cd apps/mobile && flutter build web --release
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 Resolving dependencies...
 Downloading packages...
   build 4.0.11 (5.0.0 available)

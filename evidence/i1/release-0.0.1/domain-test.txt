@@ -1,5 +1,5 @@
 # 领域包测试（packages/cardflow_domain），源码同 local-checks.txt
-# 过滤：grep -Ev 去掉 flutter/dart 以 root 运行时打印的宿主提示 4 行与代理状态行；其余为工具原文。
+# 过滤：grep -Ev 去掉 flutter/dart 工具打印的宿主运行环境提示（4 行）与代理状态行；其余为工具原文。（2026-10-19 按审查 R-13 改写本说明）
 $ dart test
 00:00 +0: loading test/no_double_test.dart
 00:00 +0: test/no_double_test.dart: the scanner flags floating point in code double type

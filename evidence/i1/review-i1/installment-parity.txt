@@ -1,0 +1,31 @@
+# 分期模块与 Python money.py 的随机/边界对照（278 例：拆分、费用、月 IRR、复利年化、名义、界面百分数文本）与 IRR 耗时（AOT）
+# 生成时间：2026-10-19T15:16:30Z；仓库 HEAD 13d72c0；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/services/api && uv run --offline python -I /projects/cardflow/evidence/i1/review-i1/scripts/py/installment_cases.py /tmp/rv1/parity/installment_cases.json
+python cases: 278
+[exit=0]
+
+$ sha256sum /tmp/rv1/parity/installment_cases.json
+09548985783b3413dc7c9256850263a4f85a998c502a86d6786ad115c03379a3  /tmp/rv1/parity/installment_cases.json
+[exit=0]
+
+$ cd /tmp/rv1/dart2 && dart pub get --offline > /dev/null && dart compile exe bin/installment_parity.dart -o /tmp/rv1/dart2/installment_parity > /dev/null && /tmp/rv1/dart2/installment_parity /tmp/rv1/parity/installment_cases.json
+cases=278 split_mismatch=0 fee_mismatch=0 irr_over_1e-9=0 max|irr_dart-irr_python|<=1e-27 effective_10dp_mismatch=0 nominal_mismatch=0 percent_text_mismatch=0 elapsed_ms=18393
+[exit=0]
+
+$ cd /tmp/rv1/dart2 && dart compile exe bin/irr_timing.dart -o /tmp/rv1/dart2/irr_timing > /dev/null && /tmp/rv1/dart2/irr_timing && /tmp/rv1/dart2/irr_timing
+periods=3 irr+annualize ms=1 irr~0.008972791006 effective~0.1131494
+periods=6 irr+annualize ms=3 irr~0.010198913244 effective~0.12949097
+periods=12 irr+annualize ms=16 irr~0.010861310225 effective~0.13841051
+periods=24 irr+annualize ms=119 irr~0.011054029235 effective~0.14101767
+periods=36 irr+annualize ms=417 irr~0.010977812245 effective~0.13998593
+periods=60 irr+annualize ms=2426 irr~0.010691946208 effective~0.13612381
+periods=3 irr+annualize ms=3 irr~0.008972791006 effective~0.1131494
+periods=6 irr+annualize ms=10 irr~0.010198913244 effective~0.12949097
+periods=12 irr+annualize ms=40 irr~0.010861310225 effective~0.13841051
+periods=24 irr+annualize ms=116 irr~0.011054029235 effective~0.14101767
+periods=36 irr+annualize ms=424 irr~0.010977812245 effective~0.13998593
+periods=60 irr+annualize ms=2383 irr~0.010691946208 effective~0.13612381
+[exit=0]
+

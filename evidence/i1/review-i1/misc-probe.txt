@@ -1,0 +1,18 @@
+# 其他探针（R-06 修正后状态、R-07 删除交易后的差异项、R-08 删除有交易的子账户）
+# 生成时间：2026-10-19T15:27:09Z；仓库 HEAD 43cd136；审查 R-I1
+# 过滤：flutter/dart 工具打印的宿主运行环境提示（固定 4 行）、含发行版/内核/代理状态字样的行（grep -Ev，脚本见 scripts/filt.sh）；其余为工具原文
+
+$ cd /projects/cardflow/apps/mobile && flutter test ../../evidence/i1/review-i1/scripts/misc_probe_test.dart --reporter expanded 
+00:00 +0: loading /projects/cardflow/evidence/i1/review-i1/scripts/misc_probe_test.dart
+00:00 +0: M1 部分结清后人工修正为已付清的金额：状态与近期到期
+M1 修正后：状态=partially_settled 剩余应还=0 近期到期=partiallySettled:0
+00:00 +1: M2 删除退款交易后，它的"退款待核对"差异项
+M2 删除退款后：未处理差异项=[refund_pending] 交易仍在=false
+00:00 +2: M3 删除已有交易的非主币种子账户
+M3 删除被拒：异常类型=DriftRemoteException；SqliteException(787): while executing statement, FOREIGN KEY constraint failed, constraint failed (code 787)
+00:00 +3: M4 疑似重复的一笔直接「作废登记」（不经差异项处理）后，差异项仍待处理
+M4 作废前：未处理差异项=[duplicate_repayment]
+M4 作废手工那笔后：还款=1 笔；未处理差异项=[duplicate_repayment]
+00:00 +4: All tests passed!
+[exit=0]
+

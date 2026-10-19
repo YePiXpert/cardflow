@@ -1,9 +1,6 @@
+# 2026-10-19 按审查 R-13 去掉了 flutter 工具打印的宿主运行环境提示（共 4 行），其余内容未改。
 # I-0a 本机测试 · 2026-10-18T04:53:54Z · 提交 186ece7
 $ cd apps/mobile && flutter test --reporter expanded
-   Woah! You appear to be trying to run flutter as root.
-   We strongly recommend running the flutter tool without superuser privileges.
-  /
-📎
 00:00 +0: loading /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart
 00:00 +0: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 框架错误：记类型与脱敏后的首行摘要，并继续交给原处理器
 00:00 +1: /projects/cardflow/apps/mobile/test/features/diagnostics/error_hooks_test.dart: 断言错误：记断言说明（脱敏）

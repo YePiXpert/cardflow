@@ -1,6 +1,6 @@
 # append-only.txt：v4 约束与触发器测试（账单版本追加只读：直接 UPDATE 金额列必须被 RAISE(ABORT) 拒绝；状态机、分配合计、linked_repayment_id 等）
 # 生成时间：2026-10-19T14:10:06Z；源码提交：8845348；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
-# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 过滤：输出经 grep -Ev 去掉 flutter 工具打印的宿主运行环境提示（4 行）；其余为工具原文，未删节。（2026-10-19 按审查 R-13 改写本说明，不再写出宿主运行身份；过滤本身未变）
 # 说明：版本号改为 0.0.1 后重跑（源码提交 8845348；上一版证据是 8149c29、App 版本 0.1.0 时生成的）。
 # 方法：test/data/db/ledger_constraints_test.dart 在真实 sqlite3mc 上绕过仓库、直接写 SQL；下面先列出 v4 的账单版本触发器原文，
 # 再运行全部约束测试。
