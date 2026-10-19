@@ -1,7 +1,7 @@
 // 测试辅助：账单与还款页面的禁止项（ui-spec §2"成功"、§3.1、§4.5 与 P-06）——任何地方都不出现
 // "还款成功"，也不用绿色勾：绿色（robust 色 token）只属于 FEASIBLE_ROBUST。
 //
-// [expectNoForbiddenRepaymentUi] 把当前页面从顶滚到底（ListView 只构建可见的子项），每一屏检查：
+// [expectNoForbiddenRepaymentUi] 把当前页面从顶滚到底（[forEachScreen]；ListView 只构建可见的子项），每一屏检查：
 // - 可见文字（RichText，含图标字形与 MoneyText；输入框的内容）不含"还款成功"；
 // - 用到的颜色（文字与文字片段、装饰的底色与边框、Material、ColoredBox）不是浅色或深色主题里的
 //   robust 前景色或底色。图标经 Icon 渲染成 RichText，所以"绿色勾"也在文字片段的颜色里。
@@ -98,12 +98,10 @@ void _checkScreen(WidgetTester tester, String page) {
   }
 }
 
-/// 把当前页面从顶滚到底，每一屏检查禁止的文案与颜色；结束时回到顶部。
-Future<void> expectNoForbiddenRepaymentUi(
-  WidgetTester tester, {
-  required String page,
-}) async {
-  _checkScreen(tester, page);
+/// 把当前页面（第一个纵向滚动区）从顶滚到底，每一屏调用 [check]；结束时回到顶部。ListView 只构建
+/// 可见的子项，所以只查第一屏会漏掉下面的内容。
+Future<void> forEachScreen(WidgetTester tester, void Function() check) async {
+  check();
   final vertical = find.byWidgetPredicate(
     (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
   );
@@ -120,8 +118,14 @@ Future<void> expectNoForbiddenRepaymentUi(
       ),
     );
     await tester.pump();
-    _checkScreen(tester, page);
+    check();
   }
   position.jumpTo(0);
   await tester.pump();
 }
+
+/// 把当前页面从顶滚到底，每一屏检查禁止的文案与颜色。
+Future<void> expectNoForbiddenRepaymentUi(
+  WidgetTester tester, {
+  required String page,
+}) => forEachScreen(tester, () => _checkScreen(tester, page));

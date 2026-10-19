@@ -104,7 +104,7 @@ class _StatementCenterPageState extends ConsumerState<StatementCenterPage> {
             onPressed: () =>
                 context.go(AppRoutes.newTransaction(accountId: fixedAccount)),
           ),
-          const EmptyStateAction(label: '导入', stage: 'I-3 提供'),
+          const EmptyStateAction(label: '导入', stage: '后续版本提供'),
         ],
       );
     }

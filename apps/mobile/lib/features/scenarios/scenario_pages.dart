@@ -42,7 +42,8 @@ String describeScenario(ScenarioView s) {
       '生活支出 ${_percent(p.expenseScale)}%',
       p.sameDayOrder == SameDayOrderChoice.timestamp ? '同日按时刻' : '同日先支出后收入',
       if (p.eventOverrides.isNotEmpty) '覆盖 ${p.eventOverrides.length} 笔收支',
-      if (p.limitChanges.isNotEmpty) '额度变化 ${p.limitChanges.length} 项（I-2 使用）',
+      if (p.limitChanges.isNotEmpty)
+        '额度变化 ${p.limitChanges.length} 项（后续版本的消费规划使用）',
     ].join(' · '),
   };
 }
@@ -364,7 +365,7 @@ class _ScenarioCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const Text('设为决策情景：I-2 提供'),
+              const Text('设为决策情景：后续版本提供'),
               if (item.runs.length > 1)
                 ExpansionTile(
                   tilePadding: EdgeInsets.zero,
@@ -680,7 +681,7 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
             ),
           ),
         SectionTitle(
-          '额度变化（${_limits.length}，I-2 使用）',
+          '额度变化（${_limits.length}，后续版本的消费规划使用）',
           trailing: TextButton(
             onPressed: creditAccounts.isEmpty
                 ? null
@@ -918,7 +919,7 @@ class _LimitDialogState extends State<_LimitDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('额度变化（I-2 使用）'),
+      title: const Text('额度变化（后续版本的消费规划使用）'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,

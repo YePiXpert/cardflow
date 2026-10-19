@@ -55,7 +55,7 @@ Future<void> _save(WidgetTester tester) async {
 Future<WalletView> _wallet(WidgetTester tester) => readWallet(tester);
 
 void main() {
-  testWidgets('首次空白：说明、手工建卡、从账单文件开始（I-3 提供，禁用）、体验演示', (tester) async {
+  testWidgets('首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示', (tester) async {
     await pumpCardFlowApp(tester);
     await goTo(tester, AppRoutes.cards);
     expect(find.text(CardsPage.firstRunMessage), findsOneWidget);
@@ -63,7 +63,7 @@ void main() {
       find.widgetWithText(OutlinedButton, '从账单文件开始'),
     );
     expect(file.onPressed, isNull);
-    expect(find.text('从账单文件开始：I-3 提供'), findsOneWidget);
+    expect(find.text('从账单文件开始：后续版本提供'), findsOneWidget);
     expect(
       tester
           .widget<FilledButton>(find.widgetWithText(FilledButton, '手工建卡'))

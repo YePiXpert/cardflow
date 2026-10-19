@@ -120,7 +120,7 @@ Future<LedgerData> readLedger(WidgetTester tester) =>
     withCurrentScope(tester, (scope) => LedgerReader(scope).load());
 
 void main() {
-  testWidgets('首次空白："还没有正式账单"「录入正式账单」「记一笔」，导入在 I-3', (tester) async {
+  testWidgets('首次空白："还没有正式账单"「录入正式账单」「记一笔」，导入在后续版本提供', (tester) async {
     await pumpCardFlowApp(
       tester,
       seed: (scope) async {
@@ -130,7 +130,7 @@ void main() {
     await goTo(tester, AppRoutes.statements());
     expect(appBarTitle(StatementCenterPage.title), findsOneWidget);
     expect(find.text(StatementCenterPage.firstRunMessage), findsOneWidget);
-    expect(find.text('导入：I-3 提供'), findsOneWidget);
+    expect(find.text('导入：后续版本提供'), findsOneWidget);
     await tester.tap(find.widgetWithText(FilledButton, '录入正式账单'));
     await tester.pumpAndSettle();
     expect(appBarTitle(StatementEntryPage.title), findsOneWidget);

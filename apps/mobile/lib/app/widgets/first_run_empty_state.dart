@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
 
-/// 首次空白态里的一个操作。`onPressed` 为 null 表示该功能尚未开放，[stage] 注明在哪个阶段提供。
+/// 首次空白态里的一个操作。`onPressed` 为 null 表示该功能尚未开放，[stage] 注明何时提供。
 @immutable
 class EmptyStateAction {
   const EmptyStateAction({required this.label, this.onPressed, this.stage});
@@ -10,7 +10,7 @@ class EmptyStateAction {
   final String label;
   final VoidCallback? onPressed;
 
-  /// 未开放时所属的阶段，如"I-3 提供"。
+  /// 未开放时的说明，如"后续版本提供"（界面上不写内部阶段代号）。
   final String? stage;
 }
 

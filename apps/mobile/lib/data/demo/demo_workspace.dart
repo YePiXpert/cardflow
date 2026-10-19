@@ -520,7 +520,7 @@ Future<void> seedDemoLedger(
       allocations: <String, int>{statement.id: 100000},
       initiatedAt: Timestamp.parse('2026-10-15T21:10:00+08:00'),
       expectedDebitOn: LocalDate(2026, 10, 15),
-      evidenceNote: '银行 App 转账截图（附件在 I-3）',
+      evidenceNote: '银行 App 转账截图（附件在后续版本提供）',
     ),
   );
 }

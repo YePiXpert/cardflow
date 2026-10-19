@@ -54,7 +54,7 @@ class OverviewPage extends ConsumerWidget {
                   label: '建卡',
                   onPressed: () => context.go(AppRoutes.newCard),
                 ),
-                const EmptyStateAction(label: '导入', stage: 'I-3 提供'),
+                const EmptyStateAction(label: '导入', stage: '后续版本提供'),
                 EmptyStateAction(
                   label: '体验演示',
                   onPressed: () => unawaited(enterDemoWorkspace(context, ref)),

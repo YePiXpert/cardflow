@@ -55,7 +55,7 @@ class CardsPage extends ConsumerWidget {
               label: '手工建卡',
               onPressed: () => context.go(AppRoutes.newCard),
             ),
-            const EmptyStateAction(label: '从账单文件开始', stage: 'I-3 提供'),
+            const EmptyStateAction(label: '从账单文件开始', stage: '后续版本提供'),
             EmptyStateAction(
               label: '体验演示',
               onPressed: () => unawaited(enterDemoWorkspace(context, ref)),

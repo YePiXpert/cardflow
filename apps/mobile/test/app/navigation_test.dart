@@ -104,7 +104,7 @@ void main() {
       find.widgetWithText(OutlinedButton, '导入'),
     );
     expect(import.onPressed, isNull);
-    expect(find.text('导入：I-3 提供'), findsOneWidget);
+    expect(find.text('导入：后续版本提供'), findsOneWidget);
     final build = tester.widget<FilledButton>(
       find.widgetWithText(FilledButton, '建卡'),
     );

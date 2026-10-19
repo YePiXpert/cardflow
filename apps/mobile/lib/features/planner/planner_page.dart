@@ -28,7 +28,7 @@ class PlannerPage extends StatelessWidget {
           FirstRunEmptyState(
             icon: Icons.event_note_outlined,
             message: firstRunMessage,
-            purpose: '录入计划消费及约束，计算前做数据检查（消费规划在 I-2 提供）。',
+            purpose: '录入计划消费及约束，计算前做数据检查（消费规划在后续版本提供）。',
             actions: <EmptyStateAction>[
               EmptyStateAction(
                 label: '去卡包添加账户',

@@ -209,7 +209,7 @@ class _AccountDetail extends ConsumerWidget {
         const NoticeCard(
           icon: Icons.schedule,
           tone: NoticeTone.unknown,
-          text: '本账户的活动、权益、积分与年费在 I-4 提供。',
+          text: '本账户的活动、权益、积分与年费在后续版本提供。',
         ),
       ],
     );

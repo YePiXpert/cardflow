@@ -904,7 +904,7 @@ class RepaymentDetailPage extends ConsumerWidget {
         if (status == RepaymentStatus.needsReview)
           const NoticeCard(
             icon: Icons.help_outline,
-            text: '已过到期日仍没有银行证据：待核对（提醒不会消失，提醒降级在 I-4）。',
+            text: '已过到期日仍没有银行证据：待核对（提醒不会消失，提醒降级在后续版本提供）。',
           ),
         if (status == RepaymentStatus.userMarkedPaid)
           const NoticeCard(
@@ -993,7 +993,7 @@ class RepaymentDetailPage extends ConsumerWidget {
         ],
         const SectionTitle('证据'),
         LabeledValue(label: '证据备注', value: Text(r.evidenceNote ?? '未填写')),
-        formPadded(const Text('附件（截图、账单文件，≤25 MB）在导入阶段（I-3）提供；现在可以写备注。')),
+        formPadded(const Text('附件（截图、账单文件，≤25 MB）随后续版本的导入功能提供；现在可以写备注。')),
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: Padding(

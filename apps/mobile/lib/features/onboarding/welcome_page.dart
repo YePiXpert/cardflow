@@ -40,8 +40,8 @@ class WelcomePage extends ConsumerStatefulWidget {
   /// 五种开始方式；本期只开放手工建卡与体验演示。
   static const List<StartOption> startOptions = <StartOption>[
     StartOption('手工建卡'),
-    StartOption('从账单文件开始', stage: 'I-3 提供'),
-    StartOption('从备份恢复', stage: 'I-4 提供'),
+    StartOption('从账单文件开始', stage: '后续版本提供'),
+    StartOption('从备份恢复', stage: '后续版本提供'),
     StartOption('体验演示'),
     StartOption('连接服务器', stage: '后续提供（自托管同步）'),
   ];
@@ -148,7 +148,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
           const SizedBox(height: CfSpace.lg),
           Text('建议', style: theme.textTheme.titleMedium),
           const SizedBox(height: CfSpace.xs),
-          Text('在 iPhone 设置里开启锁屏密码；卡序自己的应用锁在 I-4 提供。', style: secondary),
+          Text('在 iPhone 设置里开启锁屏密码；卡序自己的应用锁在后续版本提供。', style: secondary),
           const SizedBox(height: CfSpace.xxs),
           Text('提醒需要通知权限，等用到提醒时再请求。', style: secondary),
           const SizedBox(height: CfSpace.lg),

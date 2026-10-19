@@ -37,7 +37,7 @@ Finder _option(String label) => find.ancestor(
 );
 
 void main() {
-  testWidgets('五种开始方式：手工建卡、体验演示可用；其余禁用并注明所属阶段', (tester) async {
+  testWidgets('五种开始方式：手工建卡、体验演示可用；其余禁用并注明后续提供（不写内部阶段代号）', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.none);
     for (final item in WelcomePage.boundaries) {
       expect(find.text(item), findsOneWidget);
@@ -61,7 +61,7 @@ void main() {
       WelcomePage.startOptions
           .where((o) => o.stage != null)
           .map((o) => o.stage),
-      <String>['I-3 提供', 'I-4 提供', '后续提供（自托管同步）'],
+      <String>['后续版本提供', '后续版本提供', '后续提供（自托管同步）'],
     );
   });
 
