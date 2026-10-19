@@ -17,12 +17,13 @@ import '../../data/repositories/models.dart';
 import '../../data/repositories/providers.dart';
 import '../../data/repositories/repository_errors.dart';
 import '../../data/time/business_tz.dart';
+import 'account_ledger_section.dart';
 import 'card_dialogs.dart';
 import 'card_formatting.dart';
 
-/// P-03 卡片/信用账户详情（最小版，ui-spec P-03）：头部（别名、规则来源、子账户切换）、
-/// 预测账期（未出账）、额度、卡片列表（换卡/补卡、冻结/解冻、销卡）、规则说明。
-/// 本期应还、负债四分法、账单列表、活动与权益区留位（I-1c/I-4）。
+/// P-03 卡片/信用账户详情（ui-spec P-03）：头部（别名、规则来源、子账户切换）、本期（预测账期；有正式账单时
+/// 另有账期、应还、最低还款、还款状态）、「去还款」「登记还款」、负债四分法、最近 3 期与「全部账单」（I-1c）、
+/// 额度（含还款释放说明）、卡片列表（换卡/补卡、冻结/解冻、销卡）、规则说明；活动与权益区留位（I-4）。
 ///
 /// 四态：加载（骨架）、错误（「重试」）、已不存在、成功；"首次空白"即"尚无账单，下为预测账期"。
 class AccountDetailPage extends ConsumerStatefulWidget {
@@ -31,7 +32,7 @@ class AccountDetailPage extends ConsumerStatefulWidget {
   final String accountId;
 
   /// 首次空白（还没有任何账单）的说明。
-  static const String noStatementsNote = '尚无账单，下为预测账期';
+  static const String noStatementsNote = AccountLedgerSection.noStatementsNote;
 
   /// 规则非法时的文案。
   static const String invalidRuleText = '规则非法，无法计算账期';
@@ -180,11 +181,7 @@ class _AccountDetail extends ConsumerWidget {
         ),
         const SectionTitle('本期'),
         _ForecastSection(account: account, sub: sub),
-        const NoticeCard(
-          icon: Icons.schedule,
-          tone: NoticeTone.unknown,
-          text: '本期应还、最低还款、负债四分法与账单列表在 I-1c 提供。',
-        ),
+        AccountLedgerSection(account: account, sub: sub),
         SectionTitle(
           '额度',
           trailing: TextButton(
@@ -268,10 +265,6 @@ class _ForecastSection extends StatelessWidget {
                   text:
                       '入账时间不确定，可能账期：${cycles.map((c) => '${formatDate(c.statementDate)} 出账、${formatDate(c.dueDate)} 到期').join('，或 ')}（保守按最早到期）。',
                 ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: CfSpace.md),
-                child: Text(AccountDetailPage.noStatementsNote),
-              ),
             ],
           ),
           ForecastNoRule() => NoticeCard(

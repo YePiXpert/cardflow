@@ -24,6 +24,7 @@ class FormTextField extends StatelessWidget {
     this.error,
     this.keyboardType = TextInputType.text,
     this.helper,
+    this.onChanged,
   });
 
   final TextEditingController controller;
@@ -31,6 +32,9 @@ class FormTextField extends StatelessWidget {
   final String? error;
   final String? helper;
   final TextInputType keyboardType;
+
+  /// 输入变化时（实时合计、预览用）。
+  final ValueChanged<String>? onChanged;
 
   /// 金额输入的键盘。
   static const TextInputType amountKeyboard = TextInputType.numberWithOptions(
@@ -43,6 +47,7 @@ class FormTextField extends StatelessWidget {
     TextField(
       controller: controller,
       keyboardType: keyboardType,
+      onChanged: onChanged,
       autofillHints: null,
       autocorrect: false,
       enableSuggestions: false,

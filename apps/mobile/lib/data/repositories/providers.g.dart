@@ -1191,3 +1191,281 @@ final class ScenarioBoardProvider
 }
 
 String _$scenarioBoardHash() => r'8676de6feed29d0dcc26d5a2f57d89536e8248ac';
+
+/// 交易仓库（当前工作空间，I-1c）。
+
+@ProviderFor(transactionRepository)
+final transactionRepositoryProvider = TransactionRepositoryProvider._();
+
+/// 交易仓库（当前工作空间，I-1c）。
+
+final class TransactionRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<TransactionRepository>,
+          TransactionRepository,
+          FutureOr<TransactionRepository>
+        >
+    with
+        $FutureModifier<TransactionRepository>,
+        $FutureProvider<TransactionRepository> {
+  /// 交易仓库（当前工作空间，I-1c）。
+  TransactionRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'transactionRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$transactionRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<TransactionRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<TransactionRepository> create(Ref ref) {
+    return transactionRepository(ref);
+  }
+}
+
+String _$transactionRepositoryHash() =>
+    r'90fd2c69655b664a40fb0bc0f48a23f7f7c14748';
+
+/// 账单与账单版本仓库（当前工作空间）。
+
+@ProviderFor(statementRepository)
+final statementRepositoryProvider = StatementRepositoryProvider._();
+
+/// 账单与账单版本仓库（当前工作空间）。
+
+final class StatementRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<StatementRepository>,
+          StatementRepository,
+          FutureOr<StatementRepository>
+        >
+    with
+        $FutureModifier<StatementRepository>,
+        $FutureProvider<StatementRepository> {
+  /// 账单与账单版本仓库（当前工作空间）。
+  StatementRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'statementRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$statementRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<StatementRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<StatementRepository> create(Ref ref) {
+    return statementRepository(ref);
+  }
+}
+
+String _$statementRepositoryHash() =>
+    r'89ddde5153ad75ac6c9d5e183176c94528e8275c';
+
+/// 分期计划仓库（当前工作空间）。
+
+@ProviderFor(installmentRepository)
+final installmentRepositoryProvider = InstallmentRepositoryProvider._();
+
+/// 分期计划仓库（当前工作空间）。
+
+final class InstallmentRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<InstallmentRepository>,
+          InstallmentRepository,
+          FutureOr<InstallmentRepository>
+        >
+    with
+        $FutureModifier<InstallmentRepository>,
+        $FutureProvider<InstallmentRepository> {
+  /// 分期计划仓库（当前工作空间）。
+  InstallmentRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'installmentRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$installmentRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<InstallmentRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<InstallmentRepository> create(Ref ref) {
+    return installmentRepository(ref);
+  }
+}
+
+String _$installmentRepositoryHash() =>
+    r'e243b3d9e5ff33d30c772715be2f3fb61698fd3d';
+
+/// 还款仓库（当前工作空间）。
+
+@ProviderFor(repaymentRepository)
+final repaymentRepositoryProvider = RepaymentRepositoryProvider._();
+
+/// 还款仓库（当前工作空间）。
+
+final class RepaymentRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<RepaymentRepository>,
+          RepaymentRepository,
+          FutureOr<RepaymentRepository>
+        >
+    with
+        $FutureModifier<RepaymentRepository>,
+        $FutureProvider<RepaymentRepository> {
+  /// 还款仓库（当前工作空间）。
+  RepaymentRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'repaymentRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$repaymentRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<RepaymentRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<RepaymentRepository> create(Ref ref) {
+    return repaymentRepository(ref);
+  }
+}
+
+String _$repaymentRepositoryHash() =>
+    r'1ad0abb4ce5665c9468b08a959030a72fd9625ad';
+
+/// 差异项仓库（当前工作空间）。
+
+@ProviderFor(reconciliationRepository)
+final reconciliationRepositoryProvider = ReconciliationRepositoryProvider._();
+
+/// 差异项仓库（当前工作空间）。
+
+final class ReconciliationRepositoryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ReconciliationRepository>,
+          ReconciliationRepository,
+          FutureOr<ReconciliationRepository>
+        >
+    with
+        $FutureModifier<ReconciliationRepository>,
+        $FutureProvider<ReconciliationRepository> {
+  /// 差异项仓库（当前工作空间）。
+  ReconciliationRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'reconciliationRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$reconciliationRepositoryHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<ReconciliationRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ReconciliationRepository> create(Ref ref) {
+    return reconciliationRepository(ref);
+  }
+}
+
+String _$reconciliationRepositoryHash() =>
+    r'c5b9423c34d0c60b5c082c65695169ad9db05d52';
+
+/// 账单、交易、分期、还款与差异项的读模型（P-05/P-06/P-03/P-01）：数据变化时自动重算。
+
+@ProviderFor(ledger)
+final ledgerProvider = LedgerProvider._();
+
+/// 账单、交易、分期、还款与差异项的读模型（P-05/P-06/P-03/P-01）：数据变化时自动重算。
+
+final class LedgerProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<LedgerData>,
+          LedgerData,
+          FutureOr<LedgerData>
+        >
+    with $FutureModifier<LedgerData>, $FutureProvider<LedgerData> {
+  /// 账单、交易、分期、还款与差异项的读模型（P-05/P-06/P-03/P-01）：数据变化时自动重算。
+  LedgerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'ledgerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$ledgerHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<LedgerData> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<LedgerData> create(Ref ref) {
+    return ledger(ref);
+  }
+}
+
+String _$ledgerHash() => r'17803145dfc1d93cd4518f81b5b252f2e91b36d7';

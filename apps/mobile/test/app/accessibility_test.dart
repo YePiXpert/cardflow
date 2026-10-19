@@ -122,6 +122,8 @@ void main() {
         AppRoutes.cash,
         AppRoutes.cashCalendar,
         AppRoutes.scenarios,
+        AppRoutes.statements(),
+        AppRoutes.repayments(),
       ]) {
         await goTo(tester, page);
         await _checkGuidelines(tester, page);
@@ -176,6 +178,8 @@ void main() {
         AppRoutes.cash,
         AppRoutes.cashCalendar,
         AppRoutes.scenarios,
+        AppRoutes.statements(),
+        AppRoutes.repayments(),
       ]) {
         await goTo(tester, page);
         _expectUnclamped(tester, scale, page);

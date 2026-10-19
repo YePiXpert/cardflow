@@ -15,8 +15,10 @@ import '../../data/repositories/providers.dart';
 import '../cards/card_formatting.dart';
 import '../onboarding/workspace_actions.dart';
 import 'cash_pressure_card.dart';
+import 'ledger_overview.dart';
 
-/// P-01 总览（最小版，ui-spec P-01）：顶部空间标识（真实/演示）与"纯本地"；"现金压力"卡（未来 30 天的
+/// P-01 总览（ui-spec P-01）：顶部空间标识（真实/演示）与"纯本地"；待办条（待核对的还款、差异项）与快捷新增
+/// （登记还款、记一笔）、近期到期 14 天与负债四分法（I-1c，`OverviewLedgerSection`）；"现金压力"卡（未来 30 天的
 /// 最低点、首个缺口日、口径切换；陈旧 → "假设分析"；缺快照 → "数据不全：{账户}缺快照，未计入"；
 /// 还没有现金账户 → "数据不全：还没有现金账户"「添加现金账户」）；每个信用账户一行"预测账期（未出账）"
 /// 与到期日。
@@ -87,6 +89,7 @@ class _Overview extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: CfSpace.xl),
       children: <Widget>[
         const RootPageBadges(),
+        const OverviewLedgerSection(),
         const CashPressureCard(),
         const SectionTitle('预测账期（未出账）'),
         for (final account in accounts) _AccountCycleRow(account: account),

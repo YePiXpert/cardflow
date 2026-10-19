@@ -114,6 +114,70 @@ abstract final class AppRoutes {
     ).toString();
   }
 
+  // ---- 账单与还款（I-1c）：P-05/P-06 在总览栈与信用账户详情栈里都有（ui-spec §1.1、§1.2）----
+
+  /// 账单与还款页面所在的栈：总览（[accountId] 为空）或某信用账户详情（P-03）。
+  static String ledgerBase([String? accountId]) =>
+      accountId == null ? overview : account(accountId);
+
+  /// 账单中心（P-05 列表）；从 P-03 进入时只看该账户。
+  static String statements({String? accountId}) =>
+      '${ledgerBase(accountId)}/statements';
+
+  /// 账单详情（P-05）。
+  static String statement(String statementId, {String? accountId}) =>
+      '${statements(accountId: accountId)}/$statementId';
+
+  /// 录入正式账单（全屏）；[currencyAccountId] 预选子账户。
+  static String newStatement({String? accountId, String? currencyAccountId}) {
+    final query = <String, String>{'currency': ?currencyAccountId};
+    return Uri(
+      path: '${statements(accountId: accountId)}/new',
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
+
+  /// 人工修正（全屏）。
+  static String correctStatement(String statementId, {String? accountId}) =>
+      '${statement(statementId, accountId: accountId)}/correct';
+
+  /// 记一笔（全屏）；[currencyAccountId] 预选子账户。
+  static String newTransaction({String? accountId, String? currencyAccountId}) {
+    final query = <String, String>{'currency': ?currencyAccountId};
+    return Uri(
+      path: '${ledgerBase(accountId)}/transactions/new',
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
+
+  /// 把一笔消费转成分期（全屏）。
+  static String newInstallment(String transactionId, {String? accountId}) =>
+      '${ledgerBase(accountId)}/transactions/$transactionId/installment';
+
+  /// 还款与核对（P-06 列表：待核对、全部还款、差异清单）。
+  static String repayments({String? accountId}) =>
+      '${ledgerBase(accountId)}/repayments';
+
+  /// 还款详情（P-06 时间线与动作）。
+  static String repayment(String repaymentId, {String? accountId}) =>
+      '${repayments(accountId: accountId)}/$repaymentId';
+
+  /// 登记还款（P-06 表单，全屏）；[statementId] 预选账单，[currencyAccountId] 预选子账户。
+  static String newRepayment({
+    String? accountId,
+    String? statementId,
+    String? currencyAccountId,
+  }) {
+    final query = <String, String>{
+      'statement': ?statementId,
+      'currency': ?currencyAccountId,
+    };
+    return Uri(
+      path: '${repayments(accountId: accountId)}/new',
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
+
   /// 信用账户设置（P-04）；[section] 为初始分段（见 `AccountSettingsSection`）。
   static String accountSettings(String accountId, {String? section}) {
     final base = '${account(accountId)}/settings';

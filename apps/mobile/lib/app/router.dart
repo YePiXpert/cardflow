@@ -17,8 +17,12 @@ import '../features/onboarding/welcome_page.dart';
 import '../features/overview/overview_page.dart';
 import '../features/planner/planner_page.dart';
 import '../features/promotions/promotions_page.dart';
+import '../features/repayments/repayment_form_page.dart';
+import '../features/repayments/repayment_pages.dart';
 import '../features/scenarios/scenario_pages.dart';
 import '../features/settings/settings_page.dart';
+import '../features/statements/statement_forms.dart';
+import '../features/statements/statement_pages.dart';
 import 'diagnostics/diagnostic_log.dart';
 import 'routes.dart';
 import 'shell/home_shell.dart';
@@ -49,6 +53,112 @@ Page<void> _page(
   fullscreenDialog: fullscreenDialog,
   child: child,
 );
+
+/// 账单与还款（P-05/P-06，I-1c）的子路由：挂在总览（`/overview`）与信用账户详情
+/// （`/cards/accounts/:accountId`）两个栈下（ui-spec §1.1：两个 Tab 的栈内都有 P-05、P-06）。页面拿到
+/// `accountId`（总览栈里为空）用来拼回到同一个栈里的链接；表单是全屏页（根导航器）。
+List<RouteBase> _ledgerRoutes() {
+  String? accountOf(GoRouterState state) => state.pathParameters['accountId'];
+  return <RouteBase>[
+    GoRoute(
+      path: 'statements',
+      pageBuilder: (context, state) =>
+          _page(state, StatementCenterPage(accountId: accountOf(state))),
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'new',
+          parentNavigatorKey: rootNavigatorKey,
+          pageBuilder: (context, state) => _page(
+            state,
+            StatementEntryPage(
+              accountId: accountOf(state),
+              currencyAccountId: state.uri.queryParameters['currency'],
+            ),
+            fullscreenDialog: true,
+          ),
+        ),
+        GoRoute(
+          path: ':statementId',
+          pageBuilder: (context, state) => _page(
+            state,
+            StatementDetailPage(
+              statementId: state.pathParameters['statementId']!,
+              accountId: accountOf(state),
+            ),
+          ),
+          routes: <RouteBase>[
+            GoRoute(
+              path: 'correct',
+              parentNavigatorKey: rootNavigatorKey,
+              pageBuilder: (context, state) => _page(
+                state,
+                StatementCorrectionPage(
+                  statementId: state.pathParameters['statementId']!,
+                  accountId: accountOf(state),
+                ),
+                fullscreenDialog: true,
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+    GoRoute(
+      path: 'transactions/new',
+      parentNavigatorKey: rootNavigatorKey,
+      pageBuilder: (context, state) => _page(
+        state,
+        TransactionFormPage(
+          accountId: accountOf(state),
+          currencyAccountId: state.uri.queryParameters['currency'],
+        ),
+        fullscreenDialog: true,
+      ),
+    ),
+    GoRoute(
+      path: 'transactions/:transactionId/installment',
+      parentNavigatorKey: rootNavigatorKey,
+      pageBuilder: (context, state) => _page(
+        state,
+        InstallmentFormPage(
+          transactionId: state.pathParameters['transactionId']!,
+          accountId: accountOf(state),
+        ),
+        fullscreenDialog: true,
+      ),
+    ),
+    GoRoute(
+      path: 'repayments',
+      pageBuilder: (context, state) =>
+          _page(state, RepaymentCenterPage(accountId: accountOf(state))),
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'new',
+          parentNavigatorKey: rootNavigatorKey,
+          pageBuilder: (context, state) => _page(
+            state,
+            RepaymentFormPage(
+              accountId: accountOf(state),
+              statementId: state.uri.queryParameters['statement'],
+              currencyAccountId: state.uri.queryParameters['currency'],
+            ),
+            fullscreenDialog: true,
+          ),
+        ),
+        GoRoute(
+          path: ':repaymentId',
+          pageBuilder: (context, state) => _page(
+            state,
+            RepaymentDetailPage(
+              repaymentId: state.pathParameters['repaymentId']!,
+              accountId: accountOf(state),
+            ),
+          ),
+        ),
+      ],
+    ),
+  ];
+}
 
 /// 构建路由表：启动页、首次使用页与五个主导航（StatefulShellRoute，切换 Tab 保留栈位置）。
 ///
@@ -94,6 +204,7 @@ GoRouter createAppRouter({
                 path: AppRoutes.overview,
                 pageBuilder: (context, state) =>
                     _page(state, const OverviewPage()),
+                routes: _ledgerRoutes(),
               ),
             ],
           ),
@@ -122,6 +233,7 @@ GoRouter createAppRouter({
                       ),
                     ),
                     routes: <RouteBase>[
+                      ..._ledgerRoutes(),
                       GoRoute(
                         path: 'settings',
                         pageBuilder: (context, state) => _page(

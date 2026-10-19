@@ -60,6 +60,7 @@ void main() {
     (tester) async {
       await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
       expect(find.text('演示'), findsOneWidget);
+      await tester.scrollUntilVisible(find.textContaining('查看资金日历'), 200);
       expect(find.text('现金压力'), findsOneWidget);
       expect(find.textContaining(OverviewPage.noCashAccounts), findsNothing);
       expect(find.text('未来 30 天 · 基准预期 · 人民币（CNY）'), findsOneWidget);
@@ -147,6 +148,7 @@ void main() {
         await createTestCard(scope, alias: '新卡');
       },
     );
+    await tester.scrollUntilVisible(find.text('账期规则未设置'), 200);
     expect(find.text('新卡'), findsOneWidget);
     expect(find.text('账期规则未设置'), findsOneWidget);
   });

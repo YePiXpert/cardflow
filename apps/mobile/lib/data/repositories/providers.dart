@@ -27,10 +27,16 @@ import 'cash_forecast_reader.dart';
 import 'cash_plan_reader.dart';
 import 'credit_account_repository.dart';
 import 'credit_pool_repository.dart';
+import 'installment_repository.dart';
+import 'ledger_reader.dart';
 import 'limit_snapshot_repository.dart';
 import 'models.dart';
+import 'reconciliation_repository.dart';
 import 'recurring_item_repository.dart';
+import 'repayment_repository.dart';
 import 'scenario_repository.dart';
+import 'statement_repository.dart';
+import 'transaction_repository.dart';
 import 'workspace_repository.dart';
 import 'workspace_scope.dart';
 
@@ -270,4 +276,37 @@ Future<ScenarioBoard> scenarioBoard(Ref ref) async {
   ref.watch(localDataRevisionProvider);
   final scope = await ref.watch(workspaceScopeProvider.future);
   return ScenarioBoard.load(scope);
+}
+
+/// 交易仓库（当前工作空间，I-1c）。
+@Riverpod(retry: noDatabaseRetry)
+Future<TransactionRepository> transactionRepository(Ref ref) async =>
+    TransactionRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 账单与账单版本仓库（当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<StatementRepository> statementRepository(Ref ref) async =>
+    StatementRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 分期计划仓库（当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<InstallmentRepository> installmentRepository(Ref ref) async =>
+    InstallmentRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 还款仓库（当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<RepaymentRepository> repaymentRepository(Ref ref) async =>
+    RepaymentRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 差异项仓库（当前工作空间）。
+@Riverpod(retry: noDatabaseRetry)
+Future<ReconciliationRepository> reconciliationRepository(Ref ref) async =>
+    ReconciliationRepository(await ref.watch(workspaceScopeProvider.future));
+
+/// 账单、交易、分期、还款与差异项的读模型（P-05/P-06/P-03/P-01）：数据变化时自动重算。
+@Riverpod(retry: noDatabaseRetry)
+Future<LedgerData> ledger(Ref ref) async {
+  ref.watch(localDataRevisionProvider);
+  final scope = await ref.watch(workspaceScopeProvider.future);
+  return LedgerReader(scope).load();
 }

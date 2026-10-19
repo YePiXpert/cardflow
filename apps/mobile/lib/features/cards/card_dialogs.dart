@@ -192,7 +192,7 @@ class _CloseCardDialogState extends State<_CloseCardDialog> {
           children: <Widget>[
             const Text(
               '影响：这 1 张卡将标为"已销卡"，不能再恢复；信用账户、币种子账户与历史数据都保留。'
-              '如有欠款，销卡后欠款仍显示（账单在 I-1c 提供）。',
+              '如有欠款，销卡后欠款仍显示（账单、交易与还款都不迁移）。',
             ),
             const SizedBox(height: CfSpace.md),
             DateField(

@@ -116,7 +116,7 @@ void main() {
       expect(find.text('2026-11-10'), findsOneWidget);
       expect(find.text('2026-11-28'), findsOneWidget);
       expect(find.text(AccountDetailPage.noStatementsNote), findsOneWidget);
-      expect(find.textContaining('I-1c 提供'), findsOneWidget);
+      expect(find.textContaining('I-1c 提供'), findsNothing);
       expect(find.text('仅示例'), findsOneWidget);
       await _scrollTo(tester, find.text('银行可用（原值）'));
       expect(find.text('银行可用（原值）'), findsOneWidget);
@@ -140,7 +140,9 @@ void main() {
       await pumpCardFlowApp(tester, seed: _bareCard);
       await goTo(tester, AppRoutes.account(await _onlyAccount(tester)));
       expect(find.text('账期规则：未设置'), findsOneWidget);
+      await _scrollTo(tester, find.textContaining('还没有额度快照'));
       expect(find.textContaining('还没有额度快照'), findsOneWidget);
+      await _scrollTo(tester, find.text('去设置'), delta: -200);
       await tester.tap(find.text('去设置'));
       await tester.pumpAndSettle();
       expect(
