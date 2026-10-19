@@ -1,0 +1,38 @@
+# 公测版 0.0.1（构建 55）真机诊断信息：用户在 iPhone 上 我的 › 诊断信息 先运行「数据库基准（10 万行）」再「复制诊断信息」，2026-10-19 发回主会话，原文如下（未删改）。
+# 诊断报告按设计不含金额、正文、卡号与密钥（与发版说明里"发到 GitHub Issues"的反馈方式同一内容）。
+# 结论（主会话）：ADR-001 PoC-1 真机通过——加密库已启用（SQLite3 Multiple Ciphers 2.6.1，chacha20），密钥已生成；10 万行基准 open_ms + count_ms = 9 ms（门槛 < 1000 ms；open_ms 为文件缓存热的新连接，见 BL-08）；
+#       从 app/launch 到 db/opened（新建库、生成密钥、建 v4 结构）176 ms；签名工具未改写 Bundle ID。I-0 退出条件"用户安装成功并回传诊断页"满足。
+卡序 CardFlow 诊断信息
+生成时间：2026-10-19T14:44:18.107061Z
+应用：卡序 0.0.1（构建 55）
+Bundle ID：li.yep.cardflow
+构建类型：release
+源码版本：83be815255b1
+系统：ios Version 27.0 (Build 24A437)
+Dart：3.13.5
+语言区域：zh_Hans_CN
+文字缩放：100%
+外观：深色
+加密库状态：已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）；PRAGMA cipher=chacha20；sqlite3mc_version()=SQLite3 Multiple Ciphers 2.6.1；PRAGMA cipher_version=（空，sqlite3mc 不提供此 PRAGMA）
+数据库密钥：已生成
+数据库基准：rows=100000 write_ms=74 open_ms=0 count_ms=9 file_bytes=6823936 cipher=chacha20 library=SQLite3 Multiple Ciphers 2.6.1
+日志：19 条（上限 500 条，已丢弃 0 条较早记录；时间为 UTC）
+2026-10-19T14:43:46.335293Z I app/launch release
+2026-10-19T14:43:46.360519Z I route/changed /startup
+2026-10-19T14:43:46.511297Z I db/opened created
+2026-10-19T14:43:46.513135Z I route/changed /welcome
+2026-10-19T14:43:50.231051Z I workspace/started real
+2026-10-19T14:43:50.231121Z I workspace/switched real
+2026-10-19T14:43:50.231427Z I route/changed /cards/new
+2026-10-19T14:43:58.971222Z I route/changed /cards
+2026-10-19T14:44:00.379655Z I route/changed /overview
+2026-10-19T14:44:01.355009Z I route/changed /planner
+2026-10-19T14:44:01.873263Z I route/changed /discover
+2026-10-19T14:44:02.380657Z I route/changed /settings
+2026-10-19T14:44:03.822242Z I route/changed /settings/diagnostics
+2026-10-19T14:44:05.050858Z I diagnostics/copied
+2026-10-19T14:44:06.018724Z I diagnostics/copied
+2026-10-19T14:44:15.055990Z I db/benchmark_started
+2026-10-19T14:44:15.160035Z I db/benchmark_done
+2026-10-19T14:44:16.422873Z I db/benchmark_started
+2026-10-19T14:44:16.522977Z I db/benchmark_done

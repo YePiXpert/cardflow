@@ -1,6 +1,6 @@
 # 接续说明（handoff）
 
-> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-19（I-1 交付、公测版 0.0.1 发布后）。
+> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-19（公测版 0.0.1 真机回传、I-1 阶段末审查派发后）。
 
 ## 1. 当前状态
 
@@ -17,6 +17,7 @@
 - 已完成：**I1-b**（本地库 v3：现金账户、余额快照与包含事件、现金事件、周期事项与单期例外、情景与计算版本共 8 张 STRICT 表，冻结 2→3 迁移，13 索引、9 触发器；现金仓库层与领域映射，审查 §5 交叉规则复刻 `checkCashTimelineInputs`；演示空间现金数据（固定今天下基准口径 30 天内一个可见缺口）；P-08、P-07（只做表格视图）、P-09、P-01 现金压力卡；给 I-1c 的还款扣款接口 `planRepaymentDebit`/`confirmRepaymentDebit`/`cancelRepaymentDebit`）。385 项 App 测试；F-01~F-05、F-07 经仓库映射与领域包直算逐字段一致；CI 运行 39147014570 绿；10 个提交（201c8da…da46d65）。证据 `evidence/i1/I1-b/`。偏离见 `apps/mobile/README.md` 的"I-1b 的偏离与约定"一节，主会话 2026-10-19 全部接受并登记（data-model §10.14、BL-22~BL-24）。代理违反"一次一个代理"派了一个只读子审查代理，被用量上限打断、无产出；现金数据层的审查并入 I-1 阶段末审查。
 - 已完成：**I1-c + I1-c2**（本地库 v4：交易、账单与追加只读版本、分期计划与各期、还款与分配、差异项共 8 张表，冻结 3→4 迁移；领域包分期模块 `installment.dart`，与 Python `money.py` 7 组样本对照；P-05 账单中心、P-06 还款登记与核对、P-03 补齐、P-01 近期到期与待办；演示数据补齐；BL-14 CI action 固定 SHA 与产出数断言；BL-16 Required Reason 扫描并删去 UserDefaults 声明；BL-18、BL-21；公测版改动：界面去掉内部阶段代号与规格编号、P-22 与「关于」的公测说明、App 图标、版本 0.0.1）。App 489 项、领域包 279 项测试。提交 4c77d44…83be815，证据 `evidence/i1/I1-c/` 与 `evidence/i1/release-0.0.1/`。I1-c 代理被用户停止过一次，由 I1-c2 新代理接续完成（被用量上限打断一次，续跑完成）。偏离全部接受并登记（data-model §10.14、BL-25~BL-31）。
 - **公测版 0.0.1 已发布**（2026-10-19）：GitHub 预发布版 https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.1 。标签 `ios-v0.0.1` 指向 83be815；构建 #55（运行 39268709025，dart/protocol-parity/ios-unsigned 全绿）；附件 `cardflow-0.0.1-unsigned.ipa`，10,466,921 字节，sha256 `2582c768e05406041913b3188fabd578161110aeb0e4f9ff654d09572fc720b9`（从发布页下载回来复核一致）。版本 0.0.1、构建号 55、Bundle ID、最低 iOS 15.0、图标与 4 个嵌套 framework 的 17 项检查全部通过。发版说明含公测须知、已知问题、安装与反馈。
+- **真机回传（2026-10-19）**：用户装上 0.0.1（构建 55，iOS 27.0），诊断信息显示加密库已启用（SQLite3 Multiple Ciphers 2.6.1，chacha20）、密钥已生成、10 万行基准 open + count = 9 ms、启动到数据库打开 176 ms、Bundle ID 未被改写。ADR-001 PoC-1 真机通过（不回退 sqflite_sqlcipher），I-0 退出条件全部满足。原文 `evidence/i1/device-0.0.1/diagnostics-2026-10-19.txt`。
 - 宣传视频：分支 `promo-video` 的 `docs/90-promo/`（未合入 main，是否合入由用户决定）。
 
 ## 2. 如何判断进行中任务做到哪了
@@ -28,8 +29,8 @@
 
 ## 3. 下一步（按顺序，一次一个代理）
 
-1. **等用户安装公测版 0.0.1 并回传**：我的 › 诊断信息 先点「运行数据库基准（10 万行）」再「复制诊断信息」；加密库状态应为"已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）"、密钥"已生成"、`open_ms + count_ms < 1000`；按发版说明走 UF-1/UF-3/UF-5，记下卡住的地方。若真机加密库不可用，按 ADR-001 回退 sqflite_sqlcipher（只换 drift 的执行器，领域包与数据层接口不变）。
-2. **I-1 阶段末审查**：简报 `briefs/review-i1.md` 已写好（只读，范围 I1-a/b/c 全部，重点数据丢失与迁移、空间隔离、金额日期、追加只读、公测首次体验）。派一个审查代理；blocker/major 修在 0.0.2，其余进 backlog。
+1. **等用户真机走通 UF-1/UF-3/UF-5**（诊断信息已回传且全部达标，见 §1）：建卡与账期、登记还款到银行确认、资金日历与情景对比；记下卡住的地方，连同诊断信息回传。这是 I-1 退出条件里唯一还差的一项。
+2. **I-1 阶段末审查进行中**（2026-10-19 派发，简报 `briefs/review-i1.md`，只读，报告写到 `evidence/i1/review-i1.md` 与 `evidence/i1/review-i1/`，由主会话提交）：范围 I1-a/b/c 全部，重点数据丢失与迁移、空间隔离、金额日期、追加只读、公测首次体验。交回后：blocker/major 写成 0.0.2 的修复简报派一个实现代理，其余进 backlog；修完按 §3 第 4 条发 0.0.2。
 3. **I-2**：第一个任务 I2-0（BL-15 有限搜索漏报 + BL-23 交叉规则改为领域包公开函数），然后消费规划（`ios-first-plan.md` §3）。
 4. 发下一个公测版的步骤：main 上 CI 绿 → `git tag -a ios-v<版本> <提交> -m ...` → 推送标签触发 ios-unsigned → `gh run download` 到新空目录，用 `evidence/i1/I1-c/ipa-inspect.txt` 文末的 inspect_ipa.py 检查 → `gh release create <标签> --verify-tag --prerelease --notes-file ... <ipa>` → 下载回来复核 sha256。版本号改 `apps/mobile/pubspec.yaml` 与 `lib/features/settings/public_beta.dart` 的 `PublicBeta.version`（测试会断言两者一致）。
 
@@ -46,5 +47,5 @@
 
 ## 5. 待用户的事
 
-- 安装公测版 0.0.1（https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.1）并回传诊断信息，见 §3 第 1 条。签名时 Frameworks 目录下 4 个嵌套 framework（App、Flutter、objective_c、sqlite3mc）一并重签。
+- 公测版 0.0.1 已装好并回传诊断信息（全部达标）。还差：按发版说明走通 UF-1/UF-3/UF-5，把卡住的地方与诊断信息一起发回。
 - 以后每个阶段的真机反馈：诊断页导出 + 问题描述；崩溃时附 iPhone"设置 › 隐私与安全性 › 分析与改进"里的崩溃日志。

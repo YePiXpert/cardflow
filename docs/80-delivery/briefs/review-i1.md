@@ -1,6 +1,6 @@
 # 简报 R-I1 · I-1 阶段末审查（只读）
 
-派发：公测版 0.0.1 发布之后。对应 `ios-first-plan.md` §5"审查代理只在阶段结束时跑一次，只修 blocker/major，其余记入 backlog"。本任务**不改代码**，产出审查报告；修复由主会话另行安排（blocker/major 修在下一个公测版 0.0.2）。I1-b 的现金数据层没有单独审查过，本次一并覆盖。
+派发：公测版 0.0.1 发布之后。对应 `ios-first-plan.md` §5"审查代理只在阶段结束时跑一次，只修 blocker/major，其余记入 backlog"。本任务**不改代码**，产出审查报告；修复由主会话另行安排（blocker/major 修在下一个公测版 0.0.2）。I1-b 的现金数据层没有单独审查过，本次一并覆盖。真机情况（2026-10-19）：公测版 0.0.1（构建 55）已在 iOS 27.0 上安装，加密库与 10 万行基准达标（`evidence/i1/device-0.0.1/`）；用户尚未回传 UF-1/3/5 的走通结果。
 
 ## 环境与规则
 - 仓库 /projects/cardflow = `YePiXpert/cardflow`（公开，main）。Flutter 3.47.7 在 /opt/flutter-sdk（`export PATH=/opt/flutter-sdk/bin:$PATH`，含 `dart`）；Python 引擎用 `uv run --offline --project /projects/cardflow/services/api ...`（只读）。
