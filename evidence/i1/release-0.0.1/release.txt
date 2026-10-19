@@ -1,0 +1,9 @@
+# 公测版 0.0.1 的 GitHub 预发布版（主会话，2026-10-19T14:35:40Z）。过滤：无。
+$ gh release view ios-v0.0.1 --json name,tagName,isPrerelease,isDraft,url,publishedAt,targetCommitish,assets
+{"assets":[{"name":"cardflow-0.0.1-unsigned.ipa","size":10466921,"url":"https://github.com/YePiXpert/cardflow/releases/download/ios-v0.0.1/cardflow-0.0.1-unsigned.ipa"}],"isDraft":false,"isPrerelease":true,"name":"卡序 0.0.1（公测版）","publishedAt":"2026-10-19T14:35:32Z","tagName":"ios-v0.0.1","url":"https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.1"}
+$ git ls-remote --tags origin ios-v0.0.1
+d6b8546270377c76721730cafcc8636e0dd31eb6	refs/tags/ios-v0.0.1
+83be815255b14dd31595d2870da0a41d6b909bd9	refs/tags/ios-v0.0.1^{}
+$ gh release download ios-v0.0.1 -p cardflow-0.0.1-unsigned.ipa -D <新建空目录>/verify && sha256sum cardflow-0.0.1-unsigned.ipa
+2582c768e05406041913b3188fabd578161110aeb0e4f9ff654d09572fc720b9  cardflow-0.0.1-unsigned.ipa
+# 期望 sha256（CI 构建产物，见 ipa-inspect.txt）：2582c768e05406041913b3188fabd578161110aeb0e4f9ff654d09572fc720b9

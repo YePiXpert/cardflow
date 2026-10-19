@@ -23,6 +23,8 @@
 
 ## 移动端
 
+**下载公测版**：[Releases](https://github.com/YePiXpert/cardflow/releases)（当前为 0.0.1 公测版，附未签名 IPA 与 sha256）。需要用自己的证书签名后安装，步骤见下文"用自己的证书签名并安装"与发版说明；数据只在本机，删除 App 会永久删除数据。
+
 iOS 优先（`docs/80-delivery/ios-first-plan.md`）。工程在 `apps/mobile/`（Flutter 3.47.7，Bundle ID `li.yep.cardflow`），结构与约定见 `apps/mobile/README.md`。本机（Linux）只做静态分析、测试和 Web 编译检查；iOS 包由 GitHub Actions 的 macOS runner 构建，产出**未签名** IPA，由用户用自己的证书签名后安装。仓库和 CI 不保存任何证书、描述文件或团队 ID。
 
 本机数据加密（I-0b）：App 的本地库用 drift + SQLite3MultipleCiphers（sqlite3 包的构建钩子选 `sqlite3mc`），首次启动生成 32 字节随机密钥存 iOS 钥匙串（仅本机、设备解锁时可读、不同步 iCloud），以原始密钥打开数据库；加密库或密钥检查不通过就拒绝打开并显示错误码，绝不退回明文库。细节、错误码与"加表/迁移"约定见 `apps/mobile/README.md` 的"加密本地库"一节。

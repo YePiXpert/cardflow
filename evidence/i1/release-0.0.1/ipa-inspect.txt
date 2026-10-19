@@ -1,0 +1,92 @@
+# 0.0.1 发版构建的 IPA 检查（主会话，2026-10-19T14:35:09Z）
+# 运行：https://github.com/YePiXpert/cardflow/actions/runs/39268709025（推送标签 ios-v0.0.1 触发，标签指向 83be815，运行序号 #55 = CFBundleVersion）
+# 下载到 /tmp 下新建的空目录（记作 <新建空目录>）；检查脚本 inspect_ipa.py 取自 evidence/i1/I1-c/ipa-inspect.txt 文末（只在内存中解析 IPA，不联网、不写文件）。过滤：无。
+$ gh api repos/YePiXpert/cardflow/actions/runs/39268709025/artifacts --jq '.artifacts[] | {name, size_in_bytes, expires_at}'
+{"expires_at":"2026-11-02T14:34:13Z","name":"cardflow-unsigned-83be815","size_in_bytes":10467093}
+{"expires_at":"2026-11-02T14:34:20Z","name":"required-reason-scan","size_in_bytes":15119}
+$ gh run download 39268709025 -n cardflow-unsigned-83be815 -D <新建空目录>/dl
+$ ls -l cardflow-unsigned-83be815.ipa && sha256sum cardflow-unsigned-83be815.ipa
+-rw-r--r-- 10466921 cardflow-unsigned-83be815.ipa
+2582c768e05406041913b3188fabd578161110aeb0e4f9ff654d09572fc720b9  cardflow-unsigned-83be815.ipa
+$ python3 -I inspect_ipa.py cardflow-unsigned-83be815.ipa 0.0.1 55 apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png
+file: cardflow-unsigned-83be815.ipa
+size_bytes: 10466921
+sha256: 2582c768e05406041913b3188fabd578161110aeb0e4f9ff654d09572fc720b9
+entries: 84
+top_level: ['Payload']
+payload_children: ['Payload/Runner.app']
+Info.plist CFBundleIdentifier: 'li.yep.cardflow'
+Info.plist CFBundleDisplayName: '卡序'
+Info.plist CFBundleName: 'cardflow'
+Info.plist CFBundleShortVersionString: '0.0.1'
+Info.plist CFBundleVersion: '55'
+Info.plist MinimumOSVersion: '15.0'
+Info.plist CFBundleLocalizations: ['zh_CN', 'en']
+Info.plist CFBundleExecutable: 'Runner'
+Info.plist UIDeviceFamily: [1, 2]
+Info.plist DTPlatformName: 'iphoneos'
+Info.plist DTPlatformVersion: '26.5'
+Info.plist DTSDKName: 'iphoneos26.5'
+Info.plist DTXcode: '2660'
+Info.plist DTXcodeBuild: '17F113'
+Info.plist usage descriptions: []
+Info.plist UIBackgroundModes: None
+Info.plist CFBundleIcons: {"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["AppIcon60x60"], "CFBundleIconName": "AppIcon"}}
+Info.plist CFBundleIcons~ipad: {"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["AppIcon60x60", "AppIcon76x76"], "CFBundleIconName": "AppIcon"}}
+embedded.mobileprovision present: False
+Runner.app/_CodeSignature present: False
+entitlement files: []
+Frameworks: ['App.framework', 'Flutter.framework', 'objective_c.framework', 'sqlite3mc.framework']
+Resource bundles: ['flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle', 'package_info_plus_package_info_plus.bundle']
+nested _CodeSignature dirs: ['Payload/Runner.app/Frameworks/App.framework', 'Payload/Runner.app/Frameworks/Flutter.framework', 'Payload/Runner.app/Frameworks/objective_c.framework', 'Payload/Runner.app/Frameworks/sqlite3mc.framework']
+framework App.framework: own PrivacyInfo.xcprivacy = False
+framework Flutter.framework: own PrivacyInfo.xcprivacy = True
+framework objective_c.framework: own PrivacyInfo.xcprivacy = False
+framework sqlite3mc.framework: own PrivacyInfo.xcprivacy = False
+privacy manifest Frameworks/Flutter.framework/PrivacyInfo.xcprivacy: [('FileTimestamp', ['0A2A.1', 'C617.1']), ('SystemBootTime', ['35F9.1'])]
+privacy manifest PrivacyInfo.xcprivacy: [('FileTimestamp', ['C617.1']), ('SystemBootTime', ['35F9.1']), ('DiskSpace', ['E174.1'])]
+privacy manifest flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/PrivacyInfo.xcprivacy: []
+privacy manifest package_info_plus_package_info_plus.bundle/PrivacyInfo.xcprivacy: []
+Assets.car present: True size: 851576
+icon AppIcon60x60@2x.png: 120x120 RGBA bit_depth=8 chunks=['CgBI', 'IHDR', 'iDOT', 'IDAT', 'IDAT', 'IEND'] header_alpha_channel=True size=19460 sha256=ed3a816bcbcdc33713ff2af81f2be83d91be1ce7fc74415497b8982f49970c9f
+icon AppIcon76x76@2x~ipad.png: 152x152 RGBA bit_depth=8 chunks=['CgBI', 'IHDR', 'iDOT', 'IDAT', 'IDAT', 'IEND'] header_alpha_channel=True size=27591 sha256=7be50834ee45751b87a01d4bde2cc23c96a62b3afc22971d3c2555e4f7624a72
+icon AppIcon60x60@2x.png vs source Icon-App-60x60@2x.png: compiled 120x120 min_alpha=255; source 120x120; max_channel_diff=0 differing_pixels=0
+NativeAssetsManifest.json: {"format-version": [1, 0, 0], "native-assets": {"ios_arm64": {"package:objective_c/objective_c.dylib": ["absolute", "objective_c.framework/objective_c"], "package:sqlite3/src/ffi/libsqlite3.g.dart": ["absolute", "sqlite3mc.framework/sqlite3mc"]}}}
+PrivacyInfo NSPrivacyTracking: False
+PrivacyInfo APIs: [('NSPrivacyAccessedAPICategoryFileTimestamp', ['C617.1']), ('NSPrivacyAccessedAPICategorySystemBootTime', ['35F9.1']), ('NSPrivacyAccessedAPICategoryDiskSpace', ['E174.1'])]
+
+Mach-O binaries (cpu 16777228 = arm64):
+  Payload/Runner.app/Runner: cpu=16777228 no LC_CODE_SIGNATURE (unsigned) id_dylib=None
+    Runner LC_LOAD_DYLIB: ['/System/Library/Frameworks/Foundation.framework/Foundation', '/usr/lib/libobjc.A.dylib', '/usr/lib/libSystem.B.dylib', '/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation', '/System/Library/Frameworks/CryptoKit.framework/CryptoKit', '/System/Library/Frameworks/LocalAuthentication.framework/LocalAuthentication', '/System/Library/Frameworks/Security.framework/Security', '/System/Library/Frameworks/UIKit.framework/UIKit', '/usr/lib/libc++.1.dylib', '/usr/lib/swift/libswiftCore.dylib', '/usr/lib/swift/libswiftCoreFoundation.dylib', '/usr/lib/swift/libswiftDispatch.dylib', '@rpath/Flutter.framework/Flutter', '/usr/lib/swift/libswiftFoundation.dylib', '/usr/lib/swift/libswiftUIKit.dylib']
+  Payload/Runner.app/Frameworks/App.framework/App: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/App.framework/App'
+  Payload/Runner.app/Frameworks/Flutter.framework/Flutter: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/Flutter.framework/Flutter'
+  Payload/Runner.app/Frameworks/objective_c.framework/objective_c: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/objective_c.framework/objective_c'
+  Payload/Runner.app/Frameworks/sqlite3mc.framework/sqlite3mc: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/sqlite3mc.framework/sqlite3mc'
+
+SQLite3MultipleCiphers framework: sqlite3mc.framework
+  version string in binary: 'SQLite3 Multiple Ciphers 2.6.1'
+  SQLite source id in binary: '2026-10-09 15:46:58 be8d059e9a49089ab2dce5ed26dd87aaf598fdc5fbe0b107c0dd758464bcd5e3'
+  binary size: 1899296  sha256: 4c4f94697ef5afe5521d585a5f6c53e7f907807c383c0b200e63bc6498a2bcff
+  framework Info.plist: CFBundleExecutable='sqlite3mc' CFBundleIdentifier='io.flutter.flutter.native-assets.sqlite3mc' MinimumOSVersion='15.0'
+  contains 'sqlite3mc_version': True
+  contains 'chacha20': True
+  contains 'sqlcipher': True
+
+CHECK structure Payload/Runner.app only: PASS
+CHECK CFBundleIdentifier == li.yep.cardflow: PASS
+CHECK MinimumOSVersion == 15.0: PASS
+CHECK no embedded.mobileprovision: PASS
+CHECK no entitlement files: PASS
+CHECK no usage descriptions (Info.plist): PASS
+CHECK PrivacyInfo.xcprivacy bundled: PASS
+CHECK CFBundleDisplayName == 卡序: PASS
+CHECK CFBundleShortVersionString == 0.0.1: PASS
+CHECK CFBundleVersion == 55 (run number): PASS
+CHECK CFBundleIcons primary icon name == AppIcon: PASS
+CHECK Assets.car bundled: PASS
+CHECK AppIcon60x60@2x.png fully opaque and matches the repo source icon (pixels, max channel diff <= 2): PASS
+CHECK AppIcon60x60@2x.png differs from the Flutter default icon of the I-0b IPA: PASS
+CHECK frameworks == App, Flutter, objective_c, sqlite3mc: PASS
+CHECK SQLite3MultipleCiphers framework bundled: PASS
+CHECK native assets manifest maps package:sqlite3 to that framework: PASS
+exit=0

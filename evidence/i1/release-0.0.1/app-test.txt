@@ -1,0 +1,526 @@
+# App 全部测试（flutter test），源码同 local-checks.txt
+# 过滤：grep -Ev 去掉 flutter/dart 以 root 运行时打印的宿主提示 4 行与代理状态行；其余为工具原文。
+$ flutter test
+Resolving dependencies...
+Downloading packages...
+  build 4.0.11 (5.0.0 available)
+  build_config 1.3.3 (1.4.0 available)
+  build_runner 2.16.2 (2.17.1 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.3 available)
+Got dependencies!
+6 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart
+00:00 +0: /projects/cardflow/apps/mobile/test/support/sensitive_text_test.dart: containsKeyMaterial 审查 R-03 的探针：进入诊断日志（数字已掩码）的原始密钥字面量能被发现
+00:00 +1: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +2: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +3: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +4: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +5: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +6: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +7: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +8: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +9: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +10: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +11: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +12: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +13: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +14: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +15: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +16: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +17: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +18: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +19: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +20: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +21: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:01 +22: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:01 +23: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:01 +24: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 首次空白："本期还没有还款记录"「登记还款」进入表单
+00:01 +25: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 首次空白："本期还没有还款记录"「登记还款」进入表单
+00:01 +26: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:01 +27: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:01 +28: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:01 +29: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:02 +30: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:02 +31: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认
+00:02 +32: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认
+00:02 +33: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认
+00:02 +34: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认
+00:02 +35: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 切换口径与窗口：已确认 2 个缺口；压力情景（收入推迟 3 天）；180 天基准 2 个缺口；只看一个账户
+00:02 +36: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 切换口径与窗口：已确认 2 个缺口；压力情景（收入推迟 3 天）；180 天基准 2 个缺口；只看一个账户
+00:02 +37: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 切换口径与窗口：已确认 2 个缺口；压力情景（收入推迟 3 天）；180 天基准 2 个缺口；只看一个账户
+00:03 +38: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 多期分配实时合计：分到两期账单，合计 ≠ 还款额时「登记」不可点并提示（F-33），相等后可保存，两期的分配都写入
+00:03 +39: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 多期分配实时合计：分到两期账单，合计 ≠ 还款额时「登记」不可点并提示（F-33），相等后可保存，两期的分配都写入
+00:03 +40: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 清除演示数据：确认框写明影响数量；清除后回到真实空间
+00:03 +40: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:cardflow/data/db/app_database.g.dart:18722:36)
+#4      new AppDatabase._ (package:cardflow/data/db/app_database.dart)
+#5      openAppDatabase (package:cardflow/data/db/app_database.dart:205:28)
+<asynchronous suspension>
+#6      openedDatabase (package:cardflow/data/db/database_providers.dart:50:20)
+<asynchronous suspension>
+#7      ElementWithFuture.handleFuture.<anonymous closure>.<anonymous closure> (package:riverpod/src/core/element.dart:232:17)
+<asynchronous suspension>
+#8      ElementWithFuture.handleFuture.<anonymous closure>.<anonymous closure> (package:riverpod/src/core/element.dart:237:29)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:03 +41: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 清除演示数据：确认框写明影响数量；清除后回到真实空间
+00:03 +42: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 清除演示数据：确认框写明影响数量；清除后回到真实空间
+00:03 +43: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥
+00:03 +44: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +45: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +46: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +47: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +48: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +49: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +50: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:04 +51: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:04 +52: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 首次空白："只有内置口径"「新建」；内置两条在列表里，尚未计算
+00:04 +53: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 首次空白："只有内置口径"「新建」；内置两条在列表里，尚未计算
+00:04 +54: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 首次空白："添加还款用现金账户"，「添加账户」进入添加页；分段标签在顶部
+00:04 +55: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 首次空白："添加还款用现金账户"，「添加账户」进入添加页；分段标签在顶部
+00:04 +56: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 首次空白："添加还款用现金账户"，「添加账户」进入添加页；分段标签在顶部
+00:05 +57: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 首次空白："还没有正式账单"「录入正式账单」「记一笔」，导入在后续版本提供
+00:05 +58: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 首次空白："还没有正式账单"「录入正式账单」「记一笔」，导入在后续版本提供
+00:05 +59: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 首次空白："还没有正式账单"「录入正式账单」「记一笔」，导入在后续版本提供
+00:05 +60: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 首次空白："还没有正式账单"「录入正式账单」「记一笔」，导入在后续版本提供
+00:05 +61: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 首次空白："还没有正式账单"「录入正式账单」「记一笔」，导入在后续版本提供
+00:05 +62: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 首次空白："还没有正式账单"「录入正式账单」「记一笔」，导入在后续版本提供
+00:05 +63: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 演示：内置不可修改；压力情景参数与 v1；「重算」生成 v2（旧版保留）并可与上一版对比
+00:05 +64: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 演示：内置不可修改；压力情景参数与 v1；「重算」生成 v2（旧版保留）并可与上一版对比
+00:05 +65: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 成功（演示）：账户、可用性（受限资金不计入）、收支计划、周期事项（单期例外）、调拨
+00:05 +66: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 成功（演示）：账户、可用性（受限资金不计入）、收支计划、周期事项（单期例外）、调拨
+00:05 +67: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 输入变化后"已过期"：新增一笔收支，已计算的版本都标"已过期"
+00:05 +68: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 输入变化后"已过期"：新增一笔收支，已计算的版本都标"已过期"
+00:06 +69: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 添加账户：理财默认不可当日还款；填了余额却没填实际时点不能保存；保存后建账户与快照
+00:06 +70: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 添加账户：理财默认不可当日还款；填了余额却没填实际时点不能保存；保存后建账户与快照
+00:06 +71: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 加载与错误
+00:06 +72: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 加载与错误
+00:06 +73: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 加载与错误
+00:06 +74: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 记录新快照：当天已有收支时逐条询问"余额是否已包含"，答完才能保存；答"已包含"的写进包含关系
+00:06 +75: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 交易：本期账期里的消费（已转分期）；10-14 的退款在下一期（可能账期之外），列在账单中心的交易里不出现在 10-10
+00:06 +76: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 交易：本期账期里的消费（已转分期）；10-14 的退款在下一期（可能账期之外），列在账单中心的交易里不出现在 10-10
+00:06 +77: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 内置情景不可修改
+00:06 +78: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 新增收支：必须选层级（确定/预计），没有概率字段；保存后正负由类型决定
+00:06 +79: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 新增收支：必须选层级（确定/预计），没有概率字段；保存后正负由类型决定
+00:07 +80: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 不在当前空间的账户："已不存在"，可回到卡包
+00:07 +81: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 不在当前空间的账户："已不存在"，可回到卡包
+00:07 +82: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 人工修正：理由必填；保存生成 v3、原值保留
+00:07 +83: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 周期事项详情：跳过一期不影响其他各期，可以恢复
+00:07 +84: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 成功（卡 A）：预测账期（未出账）、系统估计、本期账单（演示 10-10）、额度、两张卡
+00:07 +85: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 成功（卡 A）：预测账期（未出账）、系统估计、本期账单（演示 10-10）、额度、两张卡
+00:07 +86: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 新增调拨：两端须是不同账户（仓库校验的文案显示在页面上）
+00:07 +87: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:07 +88: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +89: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +90: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +91: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +92: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +93: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +94: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +95: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +96: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 首次空白：说明、手工建卡、从账单文件开始（后续版本提供，禁用）、体验演示
+00:08 +97: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 转分期：预览每期本金与费用、名义与实际年化；保存后计划进入分期区
+00:08 +98: /projects/cardflow/apps/mobile/test/features/statements/statement_pages_test.dart: 转分期：预览每期本金与费用、名义与实际年化；保存后计划进入分期区
+00:08 +99: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:08 +100: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:08 +101: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +102: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +103: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +104: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +105: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +106: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +107: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +108: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +109: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +110: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +111: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +112: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +113: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:08 +114: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:09 +115: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:09 +116: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:09 +117: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0
+00:09 +118: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +119: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +120: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +121: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +122: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +123: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +124: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +125: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +126: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +127: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +128: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +129: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +130: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +131: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +132: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 首次空白："还没有信用账户"、空间标识"真实"与"纯本地"；建卡进入新建卡片
+00:09 +133: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 新建卡片：生成账户与 CNY 子账户，回到卡包并提示"已添加 › 设置账期"
+00:09 +134: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 新建卡片：生成账户与 CNY 子账户，回到卡包并提示"已添加 › 设置账期"
+00:10 +135: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 首次空白与 3 期预览：账单日 31、账单后 20 天（F-16 月末截断）
+00:10 +136: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 首次空白与 3 期预览：账单日 31、账单后 20 天（F-16 月末截断）
+00:10 +137: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +138: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +139: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +140: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +141: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +142: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +143: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +144: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +145: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭
+00:10 +146: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 成功（演示）：空间标识"演示"；现金压力（基准 30 天最低点与首个缺口日，可切到已确认）；每个账户一行预测账期（与回归样本一致）
+00:10 +147: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 成功（演示）：空间标识"演示"；现金压力（基准 30 天最低点与首个缺口日，可切到已确认）；每个账户一行预测账期（与回归样本一致）
+00:10 +148: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 F-12：账单日当天入账的归属开关改变第一期
+00:10 +149: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 F-12：账单日当天入账的归属开关改变第一期
+00:10 +150: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +151: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +152: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +153: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +154: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +155: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +156: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +157: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +158: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +159: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +160: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +161: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +162: /projects/cardflow/apps/mobile/test/features/cards/cards_page_test.dart: 末四位须恰好 4 位数字；附卡须指定主卡
+00:10 +163: /projects/cardflow/apps/mobile/test/features/overview/overview_page_test.dart: 有卡、没有现金账户：数据不全：还没有现金账户「添加现金账户」→ 添加页
+00:10 +164: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 到期不晚于账单日：提示且不能保存；工作日与顺延开关禁用
+00:10 +165: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 到期不晚于账单日：提示且不能保存；工作日与顺延开关禁用
+00:11 +166: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 到期不晚于账单日：提示且不能保存；工作日与顺延开关禁用
+00:11 +167: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 到期不晚于账单日：提示且不能保存；工作日与顺延开关禁用
+00:11 +168: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 到期不晚于账单日：提示且不能保存；工作日与顺延开关禁用
+00:11 +169: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 到期不晚于账单日：提示且不能保存；工作日与顺延开关禁用
+00:11 +170: /projects/cardflow/apps/mobile/test/data/db/cash_constraints_test.dart: 现金事件：归属列不可改；已发生不能退回；删除后不再改动；跨空间/跨账户的关联被复合外键拒绝
+00:11 +171: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +172: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +173: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +174: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +175: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +176: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +177: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +178: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +179: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +180: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览
+00:11 +181: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +182: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +183: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +184: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +185: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +186: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +187: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +188: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +189: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +190: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +191: /projects/cardflow/apps/mobile/test/data/db/schema_test.dart: 新建的 v4 与 v1、v2、v3 升级上来的 v4：sqlite_master（表、列、索引、触发器）完全一致；v2、v3 的数据原样保留
+00:11 +192: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:11 +193: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:11 +194: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +195: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +196: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +197: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +198: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +199: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +200: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +201: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +202: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +203: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +204: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +205: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +206: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +207: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +208: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +209: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +210: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +211: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +212: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +213: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）
+00:12 +214: /projects/cardflow/apps/mobile/test/data/db/constraints_test.dart: 币种 CHECK 恰好是领域包 minorDigits 的 13 种（审查 §4 第 8 条）
+00:12 +215: /projects/cardflow/apps/mobile/test/data/db/constraints_test.dart: 币种 CHECK 恰好是领域包 minorDigits 的 13 种（审查 §4 第 8 条）
+00:12 +216: /projects/cardflow/apps/mobile/test/data/db/constraints_test.dart: 币种 CHECK 恰好是领域包 minorDigits 的 13 种（审查 §4 第 8 条）
+00:12 +217: /projects/cardflow/apps/mobile/test/data/db/constraints_test.dart: 币种 CHECK 恰好是领域包 minorDigits 的 13 种（审查 §4 第 8 条）
+00:12 +218: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +219: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +220: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +221: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +222: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +223: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +224: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +225: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +226: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +227: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +228: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 额度快照：临时额度须到期日、专项须用途；可负的银行可用；记录后进入历史
+00:12 +229: /projects/cardflow/apps/mobile/test/data/db/ledger_constraints_test.dart: 账单版本追加只读（R-STMT-07） 更正 = 新版本：版本号紧接最新（不跳号、不复用），人工修正理由必填，v1 不能是修正
+00:12 +230: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:12 +231: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:12 +232: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:12 +233: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:12 +234: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:12 +235: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:12 +236: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:13 +237: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:13 +238: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 币种子账户：增加美元、删除美元（须确认）；主子账户不可删
+00:13 +239: /projects/cardflow/apps/mobile/test/data/db/ledger_constraints_test.dart: cash_events.linked_repayment_id（简报 §6 第 2 条）：插入与改写只能指向同一空间的还款；还款在仍有未删除的现金事件指向它时不能删除或作废
+00:13 +240: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 演示空间：合成数据、固定今天；退出回到真实空间；两空间的读模型互不可见
+00:13 +241: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 演示空间：合成数据、固定今天；退出回到真实空间；两空间的读模型互不可见
+00:13 +242: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 演示空间：合成数据、固定今天；退出回到真实空间；两空间的读模型互不可见
+00:13 +243: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 演示空间：合成数据、固定今天；退出回到真实空间；两空间的读模型互不可见
+00:13 +244: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 演示空间：合成数据、固定今天；退出回到真实空间；两空间的读模型互不可见
+00:13 +245: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 演示空间：合成数据、固定今天；退出回到真实空间；两空间的读模型互不可见
+00:13 +246: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 演示空间：合成数据、固定今天；退出回到真实空间；两空间的读模型互不可见
+00:13 +247: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 演示空间：合成数据、固定今天；退出回到真实空间；两空间的读模型互不可见
+00:13 +248: /projects/cardflow/apps/mobile/test/data/repositories/billing_rule_repository_test.dart: F-19：规则在库里的截止时点决定入账日（同一业务日、截止前后两笔差 1 天）
+00:13 +249: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 写入后读模型自动重算（不需要手动刷新）
+00:13 +250: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 写入后读模型自动重算（不需要手动刷新）
+00:13 +251: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +252: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +253: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +254: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +255: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +256: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +257: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +258: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +259: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +260: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +261: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-30 负债四分法：一笔 12 期分期的归属 未来分期本金只计未出账各期的本金（不含费用）；当期账单只计当期本金 + 费用；原消费不进未出账；总负债 = 已出账未还 + 未出账 + 未来分期本金
+00:13 +262: /projects/cardflow/apps/mobile/test/data/repositories/providers_test.dart: 清除演示数据：在演示空间里清除 → 回到真实空间；没有真实空间 → 没有当前工作空间
+00:13 +263: /projects/cardflow/apps/mobile/test/data/repositories/cash_cross_rules_test.dart: 读模型在交给领域包之前做同样的检查：去掉数据库兜底后写入的违规包含关系被拦下
+00:13 +264: /projects/cardflow/apps/mobile/test/data/repositories/cash_cross_rules_test.dart: 读模型在交给领域包之前做同样的检查：去掉数据库兜底后写入的违规包含关系被拦下
+00:13 +265: /projects/cardflow/apps/mobile/test/data/repositories/cash_cross_rules_test.dart: 读模型在交给领域包之前做同样的检查：去掉数据库兜底后写入的违规包含关系被拦下
+00:13 +266: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-36/F-37 分期拆分与成本（领域包 installment.dart） F-37：月费率 1.5% → 名义 18%、实际年化按 IRR 复利；首期一次收取的费用在第 1 期
+00:13 +267: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: F-36/F-37 分期拆分与成本（领域包 installment.dart） 校验：只有消费能转分期、不能重复转；期数 1–60；费率 0 ≤ r < 1；首期账单日须是规则的账单日；没有规则时无法排期；全部未出账的计划可以作废，原消费回到未出账
+00:13 +268: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: workspaceDataTables 覆盖 sqlite_master 里所有带 workspace_id 的表
+00:14 +269: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: workspaceDataTables 覆盖 sqlite_master 里所有带 workspace_id 的表
+00:14 +270: /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart: 交易与账期归属 记一笔的校验（G1~G3）：符号按类型、交易时间不晚于现在、入账日不早于交易日且不晚于今天、卡片须属于该账户、商户 G2/G5
+00:14 +271: /projects/cardflow/apps/mobile/test/data/repositories/card_repository_test.dart: 建卡：同时生成信用账户与 CNY 主子账户，卡片 draft → active
+00:14 +272: /projects/cardflow/apps/mobile/test/data/repositories/card_repository_test.dart: 建卡：同时生成信用账户与 CNY 主子账户，卡片 draft → active
+00:14 +273: /projects/cardflow/apps/mobile/test/data/repositories/card_repository_test.dart: 建卡：同时生成信用账户与 CNY 主子账户，卡片 draft → active
+00:14 +274: /projects/cardflow/apps/mobile/test/data/repositories/card_repository_test.dart: 建卡：同时生成信用账户与 CNY 主子账户，卡片 draft → active
+00:14 +275: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +276: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +277: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +278: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +279: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +280: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +281: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +282: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +283: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +284: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +285: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +286: /projects/cardflow/apps/mobile/test/data/repositories/workspace_isolation_test.dart: 演示空间写满全部表 → 以真实空间为当前空间，每个仓库的全部查询都为空
+00:14 +287: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:14 +288: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:14 +289: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:14 +290: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:14 +291: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:14 +292: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:14 +293: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:14 +294: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:14 +295: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:15 +296: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:15 +297: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 状态机（PRD §6.3）：每个状态 × 每个动作，只有登记的转移成功，其余抛 IllegalRepaymentTransitionException、状态不变
+00:15 +298: /projects/cardflow/apps/mobile/test/data/repositories/cash_repository_test.dart: 余额快照 G3：余额日期不晚于今天，实际时点不晚于现在、不早于余额日期；余额可为负；最新快照
+00:15 +299: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 新库没有工作空间；真实/演示各最多一个；当前指针可设可清
+00:15 +300: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 新库没有工作空间；真实/演示各最多一个；当前指针可设可清
+00:15 +301: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 新库没有工作空间；真实/演示各最多一个；当前指针可设可清
+00:15 +302: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 新库没有工作空间；真实/演示各最多一个；当前指针可设可清
+00:15 +303: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 F-33：一笔还款分配到两期账单，分配和等于还款额；超过还款额、跨账户、已结清的账单都被拒
+00:15 +304: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 F-33：一笔还款分配到两期账单，分配和等于还款额；超过还款额、跨账户、已结清的账单都被拒
+00:15 +305: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +306: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +307: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +308: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +309: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +310: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +311: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +312: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +313: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +314: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +315: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +316: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +317: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 再次进入演示不会重复生成
+00:15 +318: /projects/cardflow/apps/mobile/test/data/repositories/repayment_test.dart: 今天 10-18 F-06：分期在窗口外的到期期次进入资金日历的尾部责任（来源 installment），窗口变大时移入窗口
+00:15 +319: /projects/cardflow/apps/mobile/test/data/repositories/scenario_test.dart: 压力情景的校验边界 收入比例 0%–100%、支出比例 100%–1000%，至多 10 位小数，存规范十进制文本
+00:15 +320: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 卡 A/B/C 属于三个不同银行；A 的主卡与附属卡同一信用账户（F-21）
+00:15 +321: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 卡 A/B/C 属于三个不同银行；A 的主卡与附属卡同一信用账户（F-21）
+00:15 +322: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 卡 A/B/C 属于三个不同银行；A 的主卡与附属卡同一信用账户（F-21）
+00:15 +323: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 卡 A/B/C 属于三个不同银行；A 的主卡与附属卡同一信用账户（F-21）
+00:15 +324: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 卡 A/B/C 属于三个不同银行；A 的主卡与附属卡同一信用账户（F-21）
+00:15 +325: /projects/cardflow/apps/mobile/test/data/repositories/scenario_test.dart: 压力情景的校验边界 按时刻排序须所有收支都有时刻
+00:15 +326: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 账期与回归样本一致（交易日 10-16 当天入账）
+00:15 +327: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 账期与回归样本一致（交易日 10-16 当天入账）
+00:15 +328: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 账期与回归样本一致（交易日 10-16 当天入账）
+00:15 +329: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 账期与回归样本一致（交易日 10-16 当天入账）
+00:15 +330: /projects/cardflow/apps/mobile/test/data/repositories/scenario_test.dart: 重算、版本与对比 「重算」生成新版本（区间 今天 至 今天 + 180 天），旧版本保留；内置情景第一次计算时写库
+00:15 +331: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 新建即展开到今天 + 180 天（2027-04-16）；重复展开不写库；每期的金额、类别与期键
+00:15 +332: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 新建即展开到今天 + 180 天（2027-04-16）；重复展开不写库；每期的金额、类别与期键
+00:15 +333: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 新建即展开到今天 + 180 天（2027-04-16）；重复展开不写库；每期的金额、类别与期键
+00:15 +334: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） B 与 D：同一银行的两个独立授信（F-22）共享池（F-23），D 超限（F-26），B 有临时额度（F-27）
+00:15 +335: /projects/cardflow/apps/mobile/test/data/repositories/scenario_test.dart: 重算、版本与对比 删除压力情景连同它的全部版本
+00:16 +336: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 早于最新快照日的期已反映在余额里，不再展开
+00:16 +337: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） 现金：工资卡计入、受限的定期存款不计入；基准口径 30 天内一个可见缺口（11-01 余额 300 低于储备 2,000）；已确认与压力口径更差；快照包含、周期事项与覆盖、调拨、压力情景与计算版本都有
+00:16 +338: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 单期跳过/覆盖/恢复只影响那一期；跳过的期不会被重新展开
+00:16 +339: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: F-26：负可用原值原样保存，容量截为 0，读模型标"超限"
+00:16 +340: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: F-26：负可用原值原样保存，容量截为 0，读模型标"超限"
+00:16 +341: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: F-26：负可用原值原样保存，容量截为 0，读模型标"超限"
+00:16 +342: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: F-26：负可用原值原样保存，容量截为 0，读模型标"超限"
+00:16 +343: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） A 8,000、C 6,000 与回归样本的可用额一致；演示空间不判陈旧
+00:16 +344: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） A 8,000、C 6,000 与回归样本的可用额一致；演示空间不判陈旧
+00:16 +345: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 演示数据（固定今天 2026-10-16） A 8,000、C 6,000 与回归样本的可用额一致；演示空间不判陈旧
+00:16 +346: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: F-25：已含预授权时不再扣减；未含时扣减一次（同一账户两张卡也只扣一次）
+00:16 +347: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 情景覆盖指向的单期被跳过后"未生效"，不交给领域包
+00:16 +348: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 清除演示数据：演示空间的全部行与工作空间本身都删除，真实空间不受影响
+00:16 +349: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 清除演示数据：演示空间的全部行与工作空间本身都删除，真实空间不受影响
+00:16 +350: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 清除演示数据：演示空间的全部行与工作空间本身都删除，真实空间不受影响
+00:16 +351: /projects/cardflow/apps/mobile/test/data/repositories/workspace_test.dart: 清除演示数据：演示空间的全部行与工作空间本身都删除，真实空间不受影响
+00:16 +352: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:16 +353: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:16 +354: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:16 +355: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:16 +356: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、标记为已包含的事件被跳过
+00:16 +357: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 同日只有日期：先支出后收入，捕捉当日最低点并记假设
+00:16 +358: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 情景按时刻排序且当日事件都有时刻：按时刻（无假设）
+00:16 +359: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 情景按时刻排序且当日事件都有时刻：按时刻（无假设）
+00:16 +360: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 情景按时刻排序且当日事件都有时刻：按时刻（无假设）
+00:16 +361: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 情景按时刻排序且当日事件都有时刻：按时刻（无假设）
+00:16 +362: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 情景按时刻排序且当日事件都有时刻：按时刻（无假设）
+00:16 +363: /projects/cardflow/apps/mobile/test/data/validation/text_rules_test.dart: 末四位 恰好 4 位数字（全角会被换成半角）
+00:16 +364: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-01/F-02 已确认口径与收入延迟情景 F-01：内置"已确认"口径排除全部预计收入
+00:16 +365: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-01/F-02 已确认口径与收入延迟情景 F-01：内置"已确认"口径排除全部预计收入
+00:16 +366: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-01/F-02 已确认口径与收入延迟情景 F-02：压力情景（收入延迟 3 天、收入减半）的日终余额按期望变化
+00:16 +367: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-05：列出全部缺口点与距零/距储备两种缺口，最低点与首个低于零的点
+00:16 +368: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-03：两账户隔离，另一个账户的余额从不抵补本账户的扣款
+00:16 +369: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-07：快照 14 天前 → STALE_SNAPSHOT（与领域包直算一致）、"假设分析"；不补零；缺快照的账户不计入
+00:16 +370: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +371: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +372: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +373: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +374: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +375: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +376: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +377: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +378: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:17 +379: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +380: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +381: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +382: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +383: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +384: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +385: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +386: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +387: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +388: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +389: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +390: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +391: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +392: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +393: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +394: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +395: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +396: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +397: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +398: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +399: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +399: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: lib/ 全部 Dart 源码的字符串字面量（注释除外）都不含阶段代号与规格编号
+扫描了 130 个文件，含阶段代号的字符串字面量：0 处
+00:18 +400: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +401: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +402: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:18 +403: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:19 +404: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:19 +405: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:19 +406: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:19 +407: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:19 +408: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:19 +409: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:19 +410: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +411: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +412: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +413: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +414: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +415: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +416: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +417: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +418: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +419: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +420: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +421: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +422: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +423: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +424: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +425: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +426: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +427: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +428: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +429: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +430: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +431: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +432: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +433: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +434: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +435: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +436: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +437: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +438: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:20 +439: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +440: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +441: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +442: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +443: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +444: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +445: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +446: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +447: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +448: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +449: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +450: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +451: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +452: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +453: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +454: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +455: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +456: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +457: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +458: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +459: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +460: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +461: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +462: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:21 +463: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:21 +464: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:22 +465: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:22 +466: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:22 +467: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+检查了演示空间的 46 个页面
+00:23 +468: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:24 +469: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:24 +470: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:24 +471: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:24 +472: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:24 +473: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:24 +474: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 公测说明与「关于」 「关于」：我的 › 关于卡序；名称、公测版标识、版本与构建号（与诊断页同一来源）、公测说明、源码地址可选中并可复制、反馈方式与「打开诊断信息」
+00:24 +475: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 首次空白与首次使用页（Brightness.light）满足同样的要求
+00:24 +476: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 首次空白与首次使用页（Brightness.light）满足同样的要求
+00:24 +477: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 首次空白与首次使用页（Brightness.light）满足同样的要求
+00:24 +478: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 公测说明与「关于」 "我的"页有「关于卡序」入口
+00:25 +479: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 公测说明与「关于」 "我的"页有「关于卡序」入口
+00:25 +480: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 启动页（打不开：wrong_key）满足同样的要求
+00:25 +481: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22）
+00:26 +482: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：首次空白、首次使用页与启动页
+00:26 +483: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：P-22 首次使用页
+00:26 +484: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：启动页（打开中）
+00:26 +485: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22）
+00:27 +486: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：首次空白、首次使用页与启动页
+00:27 +487: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：P-22 首次使用页
+00:27 +488: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：启动页（打开中）
+00:27 +489: All tests passed!
