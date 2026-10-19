@@ -1,0 +1,11 @@
+# analyze.txt：静态分析（App 与领域包，--fatal-infos，要求零问题）
+# 生成时间：2026-10-19T06:57:25Z；源码提交：8149c29；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
+# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+$ flutter analyze --fatal-infos
+Analyzing mobile...                                             
+No issues found! (ran in 1.3s)
+[exit=0]
+$ (cd packages/cardflow_domain && dart analyze --fatal-infos)
+Analyzing cardflow_domain...
+No issues found!
+[exit=0]

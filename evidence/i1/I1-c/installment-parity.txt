@@ -1,0 +1,88 @@
+# installment-parity.txt：领域包分期模块（apps/mobile/packages/cardflow_domain/lib/src/installment.dart）与 Python money.py 对照
+# 生成时间：2026-10-19T06:59:05Z；源码提交：8149c29（installment.dart 与 test/installment_test.dart 在 5af9a89 提交，之后未改：见文末 git log）
+# 过滤：dart 命令的输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 自带的 dart 以 root 运行时打印的宿主提示 4 行）；Python 输出未过滤。其余为工具原文，未删节。
+# 方法：用下面的 Python 脚本（只读调用 services/api/cardflow/planner/engine/money.py 的 split_installments、
+# installment_cash_flows、irr_monthly、annualize）算 7 组样本（F-36、F-37、尾差加首期、单期、3 组带种子的随机样本），
+# 输出原文与 Dart 测试 test/installment_test.dart 的 _pythonSamples 期望值相同；Dart 测试断言拆分与各期费用逐期相等、
+# 月 IRR 相差 < 10^-9、名义与复利年化（按每期费率与按 IRR 两组）相等到 10 位小数。
+# IRR 的符号约定：月 0 放款为负、各期还款为正（Python 代码的实际行为；docstring 写反了，见简报 I1-c §6 第 1 条）。
+$ cat installment_parity.py
+# 分期拆分与成本的 Python 对照样本（services/api/cardflow/planner/engine/money.py，只读调用）。
+# 每个样本输出一行 JSON：拆分、各期 (期号, 本金, 费用)、月 IRR（放款为负、各期还款为正）、
+# annualize(每期费率) 与 annualize(月 IRR)。Decimal 一律以 str() 输出。
+import json
+import random
+from decimal import Decimal
+
+from cardflow.planner.engine.money import (
+    annualize,
+    installment_cash_flows,
+    irr_monthly,
+    split_installments,
+)
+
+samples = [
+    ("F-36", 1000000, 12, "0.006", "last"),
+    ("F-37", 100000, 12, "0.015", "last"),
+    ("remainder_first", 1000000, 7, "0.0075", "first"),
+    ("single_period", 12345, 1, "0.02", "last"),
+]
+rng = random.Random(20261019)
+for i in range(3):
+    principal = rng.randint(1000, 10**9)
+    periods = rng.randint(2, 36)
+    rate = str(Decimal(rng.randint(1, 200)) / Decimal(10000))
+    remainder = rng.choice(["last", "first"])
+    samples.append((f"random_{i + 1}", principal, periods, rate, remainder))
+
+for name, principal, periods, rate, remainder in samples:
+    split = split_installments(principal, periods, remainder)
+    flows = installment_cash_flows(principal, periods, rate, remainder)
+    irr = irr_monthly([(0, -principal)] + [(k, p + f) for k, p, f in flows])
+    a_rate = annualize(Decimal(rate))
+    a_irr = annualize(irr)
+    print(json.dumps({
+        "name": name,
+        "principal": principal,
+        "periods": periods,
+        "rate": rate,
+        "remainder": remainder,
+        "split": split,
+        "flows": [list(f) for f in flows],
+        "irr": str(irr),
+        "rate_nominal_x12": str(a_rate["nominal_x12"]),
+        "rate_effective_compound": str(a_rate["effective_compound"]),
+        "irr_nominal_x12": str(a_irr["nominal_x12"]),
+        "irr_effective_compound": str(a_irr["effective_compound"]),
+    }, ensure_ascii=False))
+[exit=0]
+$ cd services/api && uv run --offline python -c "$(cat installment_parity.py)"
+{"name": "F-36", "principal": 1000000, "periods": 12, "rate": "0.006", "remainder": "last", "split": [83333, 83333, 83333, 83333, 83333, 83333, 83333, 83333, 83333, 83333, 83333, 83337], "flows": [[1, 83333, 6000], [2, 83333, 6000], [3, 83333, 6000], [4, 83333, 6000], [5, 83333, 6000], [6, 83333, 6000], [7, 83333, 6000], [8, 83333, 6000], [9, 83333, 6000], [10, 83333, 6000], [11, 83333, 6000], [12, 83337, 6000]], "irr": "0.01086181902837779489345848560", "rate_nominal_x12": "0.072", "rate_effective_compound": "0.074424167721924686943008243", "irr_nominal_x12": "0.1303418283405335387215018272", "irr_effective_compound": "0.138417383893314980008194717"}
+{"name": "F-37", "principal": 100000, "periods": 12, "rate": "0.015", "remainder": "last", "split": [8333, 8333, 8333, 8333, 8333, 8333, 8333, 8333, 8333, 8333, 8333, 8337], "flows": [[1, 8333, 1500], [2, 8333, 1500], [3, 8333, 1500], [4, 8333, 1500], [5, 8333, 1500], [6, 8333, 1500], [7, 8333, 1500], [8, 8333, 1500], [9, 8333, 1500], [10, 8333, 1500], [11, 8333, 1500], [12, 8337, 1500]], "irr": "0.02642954649809325928799808026", "rate_nominal_x12": "0.180", "rate_effective_compound": "0.195618171461535251561290098", "irr_nominal_x12": "0.3171545579771191114559769631", "irr_effective_compound": "0.367570551074909809392344426"}
+{"name": "remainder_first", "principal": 1000000, "periods": 7, "rate": "0.0075", "remainder": "first", "split": [142858, 142857, 142857, 142857, 142857, 142857, 142857], "flows": [[1, 142858, 7500], [2, 142857, 7500], [3, 142857, 7500], [4, 142857, 7500], [5, 142857, 7500], [6, 142857, 7500], [7, 142857, 7500]], "irr": "0.01295819657161700888536870480", "rate_nominal_x12": "0.0900", "rate_effective_compound": "0.093806897670983062965455549", "irr_nominal_x12": "0.1554983588594041066244244576", "irr_effective_compound": "0.167073682249124266689761507"}
+{"name": "single_period", "principal": 12345, "periods": 1, "rate": "0.02", "remainder": "last", "split": [12345], "flows": [[1, 12345, 247]], "irr": "0.02000810044546597055159509182", "rate_nominal_x12": "0.24", "rate_effective_compound": "0.268241794562545318301696", "irr_nominal_x12": "0.2400972053455916466191411018", "irr_effective_compound": "0.268362662471175737936194786"}
+{"name": "random_1", "principal": 632318231, "periods": 22, "rate": "0.0186", "remainder": "last", "split": [28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741738, 28741733], "flows": [[1, 28741738, 11761119], [2, 28741738, 11761119], [3, 28741738, 11761119], [4, 28741738, 11761119], [5, 28741738, 11761119], [6, 28741738, 11761119], [7, 28741738, 11761119], [8, 28741738, 11761119], [9, 28741738, 11761119], [10, 28741738, 11761119], [11, 28741738, 11761119], [12, 28741738, 11761119], [13, 28741738, 11761119], [14, 28741738, 11761119], [15, 28741738, 11761119], [16, 28741738, 11761119], [17, 28741738, 11761119], [18, 28741738, 11761119], [19, 28741738, 11761119], [20, 28741738, 11761119], [21, 28741738, 11761119], [22, 28741733, 11761119]], "irr": "0.03206806092066472047008574008", "rate_nominal_x12": "0.2232", "rate_effective_compound": "0.247510076069336884946148903", "irr_nominal_x12": "0.3848167310479766456410288810", "irr_effective_compound": "0.460494949344681955178530830"}
+{"name": "random_2", "principal": 227575824, "periods": 32, "rate": "0.0139", "remainder": "first", "split": [7111729, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745, 7111745], "flows": [[1, 7111729, 3163304], [2, 7111745, 3163304], [3, 7111745, 3163304], [4, 7111745, 3163304], [5, 7111745, 3163304], [6, 7111745, 3163304], [7, 7111745, 3163304], [8, 7111745, 3163304], [9, 7111745, 3163304], [10, 7111745, 3163304], [11, 7111745, 3163304], [12, 7111745, 3163304], [13, 7111745, 3163304], [14, 7111745, 3163304], [15, 7111745, 3163304], [16, 7111745, 3163304], [17, 7111745, 3163304], [18, 7111745, 3163304], [19, 7111745, 3163304], [20, 7111745, 3163304], [21, 7111745, 3163304], [22, 7111745, 3163304], [23, 7111745, 3163304], [24, 7111745, 3163304], [25, 7111745, 3163304], [26, 7111745, 3163304], [27, 7111745, 3163304], [28, 7111745, 3163304], [29, 7111745, 3163304], [30, 7111745, 3163304], [31, 7111745, 3163304], [32, 7111745, 3163304]], "irr": "0.02403599143917745095677673816", "rate_nominal_x12": "0.1668", "rate_effective_compound": "0.180161592285670767723358656", "irr_nominal_x12": "0.2884318972701294114813208579", "irr_effective_compound": "0.329788738885538647040424689"}
+{"name": "random_3", "principal": 286486519, "periods": 3, "rate": "0.009", "remainder": "last", "split": [95495506, 95495506, 95495507], "flows": [[1, 95495506, 2578379], [2, 95495506, 2578379], [3, 95495507, 2578379]], "irr": "0.01344019160615061991848051548", "rate_nominal_x12": "0.108", "rate_effective_compound": "0.113509674956668989037907206", "irr_nominal_x12": "0.1612822992738074390217661858", "irr_effective_compound": "0.173755081947654890855739540"}
+[exit=0]
+$ (cd apps/mobile/packages/cardflow_domain && dart test test/installment_test.dart --reporter expanded)
+00:00 +0: loading test/installment_test.dart
+00:00 +0: splitInstallments 性质：随机本金/期数守恒，除尾差那一期外各期相等（Python test_installment_split_conserves_principal，200 例）
+00:00 +1: splitInstallments F-36：12 期拆分守恒，尾差在末期；尾差可为负（加到首期时首期变小）
+00:00 +2: splitInstallments 期数 ≤ 0 抛错（Python：periods must be >= 1）
+00:00 +3: installmentCashFlows 每期费用 = applyRate(本金总额, 每期费率, HALF_UP)，每期相同（建行口径）
+00:00 +4: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +5: irrMonthly 与 annualize 符号约定以 Python 代码为准：月 0 放款为负、各期还款为正；反过来（Python docstring 的写法）抛"无正 IRR"
+00:00 +6: irrMonthly 与 annualize 有理数二分：结果是精确的二进分数，精度到 tol
+00:00 +7: Python 对照（money.py 的实际输出，见文件头） F-36：本金 1000000、12 期、每期费率 0.006、尾差 last
+00:00 +8: Python 对照（money.py 的实际输出，见文件头） F-37：本金 100000、12 期、每期费率 0.015、尾差 last
+00:00 +9: Python 对照（money.py 的实际输出，见文件头） remainder_first：本金 1000000、7 期、每期费率 0.0075、尾差 first
+00:00 +10: Python 对照（money.py 的实际输出，见文件头） single_period：本金 12345、1 期、每期费率 0.02、尾差 last
+00:00 +11: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +12: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +13: Python 对照（money.py 的实际输出，见文件头） random_3：本金 286486519、3 期、每期费率 0.009、尾差 last
+00:00 +14: All tests passed!
+[exit=0]
+$ git log --oneline -- apps/mobile/packages/cardflow_domain/lib/src/installment.dart apps/mobile/packages/cardflow_domain/test/installment_test.dart
+5af9a89 领域包分期模块 installment.dart（主会话裁决，简报 §6 第 1 条）：splitInstallments（每期 
+[exit=0]

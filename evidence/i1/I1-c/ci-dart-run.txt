@@ -1,0 +1,62 @@
+# ci-dart-run.txt：CI（.github/workflows/mobile.yml）在 I-1c（含 I1-c2 续做）期间的 push 运行，以及最后一次代码提交的运行详情
+# 生成时间：2026-10-19T06:59:07Z；本地源码提交：8149c29
+# 过滤：job 日志只保留各步骤的结论行（grep -E），并经 grep -Ev 'Runner Image|Operating System|Image:|Version:|Included Software|Image Release|Azure Region|Ubuntu|Linux|kernel|proxy|Proxy' 去掉 runner 的发行版/镜像/内核/代理信息行；其余为 gh 原文。
+# 范围：I-1c 第一个提交 4c77d44 起（I-1c 代理 6 个提交、主会话 4e98efc，I1-c2 的提交）；只改 docs/ 的提交不触发本工作流。
+$ gh run list --workflow mobile.yml --event push --limit 16
+completed	success	移动端隐私清单（BL-16 扫描结论，第 1 次 iOS 构建 39211270256 的 required-reason-scan）：删…	mobile	main	push	39212413760	3m59s	2026-10-19T06:52:10Z
+completed	success	文档：apps/mobile README 补 I-1c 与公测版——v4 表清单与新建/从 v1、v2、v3 升级的结构比较、约束与触发…	mobile	main	push	39210865953	4m6s	2026-10-19T06:36:11Z
+completed	success	CI（BL-16 与公测版图标检查）：ios-unsigned 在上传 IPA 后加 Required Reason API 扫描——对 …	mobile	main	push	39209490262	4m52s	2026-10-19T06:22:00Z
+completed	success	CI（BL-14）：mobile.yml 的 4 个第三方 action 固定到 40 位提交 SHA，行尾注释版本号（actions/c…	mobile	main	push	39208985524	4m27s	2026-10-19T06:16:42Z
+completed	success	移动端公测版：P-22 首次使用页底部与新增的「关于」显示同一段公测说明（"公测版 0.1.0：数据只保存在这台 iPhone 的加密数据…	mobile	main	push	39208320472	3m48s	2026-10-19T06:09:46Z
+completed	success	移动端公测版：界面文字不再出现内部阶段代号——"I-3 提供""I-4 提供""消费规划在 I-2 提供""I-2 使用""提醒降级在 I…	mobile	main	push	39207888503	4m22s	2026-10-19T06:05:07Z
+completed	success	移动端测试：P-05/P-06 组件测试补齐——列表、详情与登记表单的加载与错误态（错误码、「重新加载」/「重试」）；P-06 列表成功态…	mobile	main	push	39207285699	4m18s	2026-10-19T05:58:24Z
+completed	success	移动端公测版准备：App 图标改为卡序自己的图标（三张错落的卡、前卡带芯片与序字；15 个尺寸，RGB 无透明通道，替换 Flutter …	mobile	main	push	39206239114	4m24s	2026-10-19T05:46:01Z
+completed	success	移动端 BL-21 与 BL-18：P-04 还没有规则时不再预填"10 日 / 当月 28 日"，账单日与到期日（或账单后天数）必须按银…	mobile	main	push	39203902539	4m16s	2026-10-19T05:18:57Z
+completed	success	移动端演示数据补齐账单与还款：卡 A 的交易（家电城 10,000 转 12 期分期、每期费率 0.6%、第 1 期在 10-10 账单；…	mobile	main	push	39203522626	4m5s	2026-10-19T05:14:39Z
+completed	success	移动端 P-05 账单中心与 P-06 还款登记与核对、P-03 补齐、P-01 近期到期与待办：P-05 列表（筛选账户/状态/币种/月…	mobile	main	push	39202820051	3m23s	2026-10-19T05:06:28Z
+completed	success	移动端账单与还款数据层：交易（记一笔：按类型定符号、G1~G3、卡片须属于该信用账户、指纹；退款 → 退款待核对、银行还款入账无登记 → …	mobile	main	push	39201349380	3m12s	2026-10-19T04:48:46Z
+completed	success	领域包分期模块 installment.dart（主会话裁决，简报 §6 第 1 条）：splitInstallments（每期 HALF…	mobile	main	push	39200024171	3m45s	2026-10-19T04:32:57Z
+completed	success	本地库 v4：drift 表 DSL 定义交易、账单、账单版本、分期计划与各期、还款、还款分配、差异项 8 张表；冻结的 3→4 迁移 S…	mobile	main	push	39199658178	3m13s	2026-10-19T04:28:41Z
+completed	success	移动端 P-08：陈旧或缺快照的账户行直接给出「记录新快照」（ui-spec P-08 九态余额陈旧）	mobile	main	push	39147014570	4m36s	2026-10-18T16:52:52Z
+completed	cancelled	移动端现金事件：已发生的收支日期不能改到今天之后（G3）；还款或计划生成的事件（层级为计划）不在 P-08 修改，仓库拒绝并说明	mobile	main	push	39146907482	2m36s	2026-10-18T16:51:25Z
+[exit=0]
+
+$ gh run view 39212413760 --json headSha,status,conclusion,event,displayTitle,url,createdAt,updatedAt --jq '.'
+{"conclusion":"success","createdAt":"2026-10-19T06:52:10Z","displayTitle":"移动端隐私清单（BL-16 扫描结论，第 1 次 iOS 构建 39211270256 的 required-reason-scan）：删…","event":"push","headSha":"8149c29d8db8e8a226336a90e809b4ad208bea66","status":"completed","updatedAt":"2026-10-19T06:56:09Z","url":"https://github.com/YePiXpert/cardflow/actions/runs/39212413760"}
+[exit=0]
+
+$ gh run view 39212413760 --json jobs --jq '.jobs[] | {name, conclusion, steps: [.steps[] | {name, conclusion}]}'
+{"conclusion":"success","name":"protocol-parity (Python engine vs Dart domain)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884"},{"conclusion":"success","name":"Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"uv sync --locked (services/api)"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"Golden fixtures -- Python runner --dump"},{"conclusion":"success","name":"Golden fixtures -- Dart runner --dump"},{"conclusion":"success","name":"Golden fixtures -- outputs byte-identical"},{"conclusion":"success","name":"Random fixtures (300, seed 20261018) -- generate"},{"conclusion":"success","name":"Random fixtures -- both runners --dump, outputs byte-identical"},{"conclusion":"success","name":"Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)"},{"conclusion":"skipped","name":"Upload parity outputs"},{"conclusion":"success","name":"Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Post Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884"},{"conclusion":"success","name":"Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"success","name":"dart (format · analyze · test · web build)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"flutter --version"},{"conclusion":"success","name":"flutter pub get"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"dart format"},{"conclusion":"success","name":"dart format (cardflow_domain)"},{"conclusion":"success","name":"flutter analyze"},{"conclusion":"success","name":"dart analyze (cardflow_domain)"},{"conclusion":"success","name":"flutter test"},{"conclusion":"success","name":"dart test (cardflow_domain, incl. the no-double scan)"},{"conclusion":"success","name":"flutter build web (compile smoke test)"},{"conclusion":"success","name":"Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"skipped","name":"ios-unsigned (IPA without codesign)","steps":[]}
+[exit=0]
+
+$ gh run view --job 117928555488 --log | grep -E 'Formatted [0-9]+ files|No issues found|tests passed|All tests passed|Built build/web|##\[error\]' | grep -Ev '<上面的过滤>'
+dart (format · analyze · test · web build)	dart format	2026-10-19T06:52:53.2030054Z Formatted 230 files (0 changed) in 1.73 seconds.
+dart (format · analyze · test · web build)	dart format (cardflow_domain)	2026-10-19T06:52:53.4113700Z Formatted 46 files (0 changed) in 0.17 seconds.
+dart (format · analyze · test · web build)	flutter analyze	2026-10-19T06:53:11.2049274Z No issues found! (ran in 16.9s)
+dart (format · analyze · test · web build)	dart analyze (cardflow_domain)	2026-10-19T06:53:12.3471299Z No issues found!
+dart (format · analyze · test · web build)	flutter test	2026-10-19T06:54:59.1470008Z 🎉 483 tests passed.
+dart (format · analyze · test · web build)	dart test (cardflow_domain, incl. the no-double scan)	2026-10-19T06:55:07.3411022Z 00:02 +279: All tests passed!
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-19T06:56:05.9344123Z ✓ Built build/web
+[exit=0]
+
+$ gh run view --job 117928555148 --log | grep -E 'golden fixtures:|random fixtures:|validated [0-9]+ Dart outputs|summary:|##\[error\]' | grep -Ev '<上面的过滤>'
+protocol-parity (Python engine vs Dart domain)	Golden fixtures -- Python runner --dump	2026-10-19T06:52:43.4549696Z summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+protocol-parity (Python engine vs Dart domain)	Golden fixtures -- Dart runner --dump	2026-10-19T06:52:43.9702771Z summary: 1 fixture(s): 1 passed, 0 failed, 0 invalid -> exit 0
+protocol-parity (Python engine vs Dart domain)	Golden fixtures -- outputs byte-identical	2026-10-19T06:52:43.9967493Z [36;1mecho "golden fixtures: $n cycles/verify outputs byte-identical (expected $EXPECTED_GOLDEN_OUTPUTS)"[0m
+protocol-parity (Python engine vs Dart domain)	Golden fixtures -- outputs byte-identical	2026-10-19T06:52:44.0203510Z golden fixtures: 3 cycles/verify outputs byte-identical (expected 3)
+protocol-parity (Python engine vs Dart domain)	Random fixtures -- both runners --dump, outputs byte-identical	2026-10-19T06:52:44.5805414Z [36;1mecho "random fixtures: $n cycles/verify outputs byte-identical (expected $EXPECTED_RANDOM_OUTPUTS)"[0m
+protocol-parity (Python engine vs Dart domain)	Random fixtures -- both runners --dump, outputs byte-identical	2026-10-19T06:52:54.1611953Z summary: 300 fixture(s): 300 passed, 0 failed, 0 invalid -> exit 0
+protocol-parity (Python engine vs Dart domain)	Random fixtures -- both runners --dump, outputs byte-identical	2026-10-19T06:52:55.4716791Z summary: 300 fixture(s): 300 passed, 0 failed, 0 invalid -> exit 0
+protocol-parity (Python engine vs Dart domain)	Random fixtures -- both runners --dump, outputs byte-identical	2026-10-19T06:52:55.5089134Z random fixtures: 1200 cycles/verify outputs byte-identical (expected 1200)
+protocol-parity (Python engine vs Dart domain)	Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)	2026-10-19T06:53:01.0809432Z validated 1203 Dart outputs: {'cycles': 301, 'verify': 902}; 0 invalid
+[exit=0]
+
+$ gh run view --job 117928555148 --log | grep -E 'uses: |Download action repository' | grep -Ev '<上面的过滤>'   # 固定 SHA 后实际下载的 action
+protocol-parity (Python engine vs Dart domain)	Set up job	2026-10-19T06:52:14.6163152Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+protocol-parity (Python engine vs Dart domain)	Set up job	2026-10-19T06:52:14.7330076Z Download action repository 'astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884' (SHA:1c37ad07a6a961277cf70c0d37d6f313000f5884)
+protocol-parity (Python engine vs Dart domain)	Set up job	2026-10-19T06:52:15.3176198Z Download action repository 'subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+protocol-parity (Python engine vs Dart domain)	Set up job	2026-10-19T06:52:15.5405852Z Download action repository 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+protocol-parity (Python engine vs Dart domain)	Set up job	2026-10-19T06:52:16.2782711Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+[exit=0]

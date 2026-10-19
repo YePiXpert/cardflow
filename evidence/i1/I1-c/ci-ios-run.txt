@@ -1,0 +1,208 @@
+# ci-ios-run.txt：本任务的 iOS 构建（ios-unsigned，workflow_dispatch，简报上限 2 次；实际 2 次）
+# 生成时间：2026-10-19T07:12:01Z；本地源码提交：8149c29
+# 过滤：gh 输出与 job 日志经 grep -Ev 'Runner Image|Operating System|Image:|Version:|Included Software|Image Release|Azure Region|Ubuntu|Linux|kernel|proxy|Proxy|ProductName|ProductVersion|BuildVersion|macOS|Darwin|\[36;1m'——去掉 runner 的发行版/镜像/内核/代理与系统版本信息行，以及 runner 回显的步骤脚本行（含 [36;1m 的行，即 workflow 里的命令原文，不是输出）；job 日志只保留各步骤的结果行（grep -E）。其余为 gh 原文。
+# 第 1 次：源码 6547054（全部代码、CI 与文档提交之后），产出 required-reason-scan → UserDefaults 无命中 → 改 PrivacyInfo（8149c29）。
+# 第 2 次：源码 8149c29（删除 UserDefaults 之后），交付的 IPA 是这一次的 cardflow-unsigned-8149c29。
+
+## 第 1 次 iOS 构建：运行 39211270256（源码 6547054，Required Reason 扫描结论要求改 PrivacyInfo）
+# URL：https://github.com/YePiXpert/cardflow/actions/runs/39211270256
+
+$ gh run view 39211270256
+
+✓ main mobile · 39211270256
+Triggered via workflow_dispatch about 31 minutes ago
+
+JOBS
+✓ protocol-parity (Python engine vs Dart domain) in 59s (ID 117924976143)
+✓ dart (format · analyze · test · web build) in 4m13s (ID 117924976382)
+✓ ios-unsigned (IPA without codesign) in 4m6s (ID 117926274245)
+
+ANNOTATIONS
+protocol-parity (Python engine vs Dart domain): .github#1
+
+dart (format · analyze · test · web build): .github#1
+
+ios-unsigned (IPA without codesign): .github#1
+
+
+ARTIFACTS
+required-reason-scan
+cardflow-unsigned-6547054
+
+For more information about a job, try: gh run view --job=<job-id>
+View this run on GitHub: https://github.com/YePiXpert/cardflow/actions/runs/39211270256
+[exit=0]
+
+$ gh run view 39211270256 --json headSha,status,conclusion,event,displayTitle,url,number,createdAt,updatedAt --jq '.'
+{"conclusion":"success","createdAt":"2026-10-19T06:40:27Z","displayTitle":"mobile","event":"workflow_dispatch","headSha":"65470549290865861fc04bff388419013398c815","number":50,"status":"completed","updatedAt":"2026-10-19T06:49:02Z","url":"https://github.com/YePiXpert/cardflow/actions/runs/39211270256"}
+[exit=0]
+
+$ gh run view 39211270256 --json jobs --jq '.jobs[] | {name, conclusion, steps: [.steps[] | {name, conclusion}]}'
+{"conclusion":"success","name":"protocol-parity (Python engine vs Dart domain)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884"},{"conclusion":"success","name":"Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"uv sync --locked (services/api)"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"Golden fixtures -- Python runner --dump"},{"conclusion":"success","name":"Golden fixtures -- Dart runner --dump"},{"conclusion":"success","name":"Golden fixtures -- outputs byte-identical"},{"conclusion":"success","name":"Random fixtures (300, seed 20261018) -- generate"},{"conclusion":"success","name":"Random fixtures -- both runners --dump, outputs byte-identical"},{"conclusion":"success","name":"Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)"},{"conclusion":"skipped","name":"Upload parity outputs"},{"conclusion":"success","name":"Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Post Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884"},{"conclusion":"success","name":"Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"success","name":"dart (format · analyze · test · web build)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"flutter --version"},{"conclusion":"success","name":"flutter pub get"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"dart format"},{"conclusion":"success","name":"dart format (cardflow_domain)"},{"conclusion":"success","name":"flutter analyze"},{"conclusion":"success","name":"dart analyze (cardflow_domain)"},{"conclusion":"success","name":"flutter test"},{"conclusion":"success","name":"dart test (cardflow_domain, incl. the no-double scan)"},{"conclusion":"success","name":"flutter build web (compile smoke test)"},{"conclusion":"success","name":"Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"success","name":"ios-unsigned (IPA without codesign)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Toolchain versions"},{"conclusion":"success","name":"flutter pub get"},{"conclusion":"success","name":"Lint iOS property lists"},{"conclusion":"success","name":"flutter build ios --release --no-codesign"},{"conclusion":"success","name":"Package unsigned IPA"},{"conclusion":"success","name":"Verify IPA"},{"conclusion":"success","name":"Upload unsigned IPA"},{"conclusion":"success","name":"Required Reason API scan (BL-16)"},{"conclusion":"success","name":"Upload Required Reason API scan"},{"conclusion":"skipped","name":"Collect Xcode logs"},{"conclusion":"skipped","name":"Upload build logs"},{"conclusion":"success","name":"Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Complete job"}]}
+[exit=0]
+
+$ gh run view --job 117924976382 --log | grep -E 'Formatted [0-9]+ files|No issues found|tests passed|All tests passed|Built build/web|##\[error\]' | grep -Ev '<过滤>'
+dart (format · analyze · test · web build)	dart format	2026-10-19T06:40:57.8914006Z Formatted 230 files (0 changed) in 2.09 seconds.
+dart (format · analyze · test · web build)	dart format (cardflow_domain)	2026-10-19T06:40:58.1633785Z Formatted 46 files (0 changed) in 0.23 seconds.
+dart (format · analyze · test · web build)	flutter analyze	2026-10-19T06:41:18.9356325Z No issues found! (ran in 19.7s)
+dart (format · analyze · test · web build)	dart analyze (cardflow_domain)	2026-10-19T06:41:20.3186506Z No issues found!
+dart (format · analyze · test · web build)	flutter test	2026-10-19T06:43:22.1620300Z 🎉 483 tests passed.
+dart (format · analyze · test · web build)	dart test (cardflow_domain, incl. the no-double scan)	2026-10-19T06:43:32.6964715Z 00:03 +279: All tests passed!
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-19T06:44:42.7125484Z ✓ Built build/web
+[exit=0]
+
+$ gh run view --job 117926274245 --log | grep -E '<Verify IPA、上传与扫描的结果行>' | grep -Ev '<过滤>'
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.4187620Z CFBundleIdentifier=li.yep.cardflow MinimumOSVersion=15.0 version=0.1.0 build=50
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.4344920Z App.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.4349160Z Flutter.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.4382230Z objective_c.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.4382740Z sqlite3mc.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.4497130Z CFBundleIcons primary icon: AppIcon; Assets.car: 851576 bytes
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.5271350Z SQLite3MultipleCiphers framework: sqlite3mc.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.5386520Z  23624176                     84 files
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T06:48:35.7239770Z IPA cardflow-unsigned-6547054.ipa size=10466891 sha256=36871b6093b3ac11f3e87cd4b0ee35ee094ef95cfb94856b9473fd32a2402d91
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-19T06:48:37.3972210Z Artifact cardflow-unsigned-6547054 has been successfully uploaded! Final size is 10467063 bytes. Artifact ID is 12167519935
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-19T06:48:37.3975310Z Artifact download URL: https://github.com/YePiXpert/cardflow/actions/runs/39211270256/artifacts/12167519935
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.1289660Z == Runner.app/Runner（主二进制）（292640 字节；自带 PrivacyInfo.xcprivacy：main）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.1690890Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.1951300Z   FileTimestamp：nm -u _NSFileCreationDate ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.2168990Z   SystemBootTime：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.2502060Z   DiskSpace：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.5943790Z == Frameworks/App.framework/App（9760336 字节；自带 PrivacyInfo.xcprivacy：no）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.6290300Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.7506320Z   FileTimestamp：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.8226960Z   SystemBootTime：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:40.9482850Z   DiskSpace：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.2717570Z == Frameworks/Flutter.framework/Flutter（9416112 字节；自带 PrivacyInfo.xcprivacy：yes）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.3155680Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.3975910Z   FileTimestamp：nm -u _NSURLContentModificationDateKey _fstat _lstat _stat ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.4890180Z   SystemBootTime：nm -u _sysctlbyname ；strings systemUptime(1) 
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.6202550Z   DiskSpace：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.7296300Z == Frameworks/objective_c.framework/objective_c（203280 字节；自带 PrivacyInfo.xcprivacy：no）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.7485560Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.7715170Z   FileTimestamp：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.7890590Z   SystemBootTime：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.8153480Z   DiskSpace：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.9280690Z == Frameworks/sqlite3mc.framework/sqlite3mc（1899296 字节；自带 PrivacyInfo.xcprivacy：no）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.9463550Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.9716280Z   FileTimestamp：nm -u _fstat _lstat _stat ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:41.9897000Z   SystemBootTime：nm -u _sysctlbyname ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:42.0117280Z   DiskSpace：nm -u _fstatfs _statfs ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:42.0164060Z == Runner.app 内的全部隐私清单
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:42.0980010Z == 结论：主二进制或没有自带清单的 framework 命中的类别留在 ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:42.1094810Z   UserDefaults：App 清单已登记；须由 App 清单承担的命中：无；自带清单的 framework 命中：无 → 删除
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:42.1247970Z   FileTimestamp：App 清单已登记；须由 App 清单承担的命中：Runner.app/Runner（主二进制） Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:42.1355390Z   SystemBootTime：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T06:48:42.1537990Z   DiskSpace：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：无 → 保留
+ios-unsigned (IPA without codesign)	Upload Required Reason API scan	2026-10-19T06:48:43.0420870Z Artifact required-reason-scan has been successfully uploaded! Final size is 15131 bytes. Artifact ID is 12167962605
+ios-unsigned (IPA without codesign)	Upload Required Reason API scan	2026-10-19T06:48:43.0432010Z Artifact download URL: https://github.com/YePiXpert/cardflow/actions/runs/39211270256/artifacts/12167962605
+[exit=0]
+
+$ gh api repos/YePiXpert/cardflow/actions/runs/39211270256/artifacts --jq '.artifacts[] | {id, name, size_in_bytes, digest, created_at, expires_at, workflow_run: .workflow_run.head_sha}'
+{"created_at":"2026-10-19T06:48:43Z","digest":"sha256:1f40e8aaaf490e90e8ff0b479a240778a9d0f554036c7ab17d46ee7a8ec7f4d0","expires_at":"2026-11-02T06:48:42Z","id":12167962605,"name":"required-reason-scan","size_in_bytes":15131,"workflow_run":"65470549290865861fc04bff388419013398c815"}
+{"created_at":"2026-10-19T06:48:37Z","digest":"sha256:4668b9a9921e61785daa0a3ea876a8a3ec50a3d1340f0f71f14a15d234569aa1","expires_at":"2026-11-02T06:48:36Z","id":12167519935,"name":"cardflow-unsigned-6547054","size_in_bytes":10467063,"workflow_run":"65470549290865861fc04bff388419013398c815"}
+[exit=0]
+
+## 第 2 次 iOS 构建：运行 39212910838（源码 8149c29，交付的 IPA）
+# URL：https://github.com/YePiXpert/cardflow/actions/runs/39212910838
+
+$ gh run view 39212910838
+
+✓ main mobile · 39212910838
+Triggered via workflow_dispatch about 15 minutes ago
+
+JOBS
+✓ dart (format · analyze · test · web build) in 3m13s (ID 117930099744)
+✓ protocol-parity (Python engine vs Dart domain) in 46s (ID 117930099984)
+✓ ios-unsigned (IPA without codesign) in 5m38s (ID 117931115537)
+
+ANNOTATIONS
+dart (format · analyze · test · web build): .github#1
+
+protocol-parity (Python engine vs Dart domain): .github#1
+
+ios-unsigned (IPA without codesign): .github#1
+
+
+ARTIFACTS
+required-reason-scan
+cardflow-unsigned-8149c29
+
+For more information about a job, try: gh run view --job=<job-id>
+View this run on GitHub: https://github.com/YePiXpert/cardflow/actions/runs/39212910838
+[exit=0]
+
+$ gh run view 39212910838 --json headSha,status,conclusion,event,displayTitle,url,number,createdAt,updatedAt --jq '.'
+{"conclusion":"success","createdAt":"2026-10-19T06:57:11Z","displayTitle":"mobile","event":"workflow_dispatch","headSha":"8149c29d8db8e8a226336a90e809b4ad208bea66","number":52,"status":"completed","updatedAt":"2026-10-19T07:06:18Z","url":"https://github.com/YePiXpert/cardflow/actions/runs/39212910838"}
+[exit=0]
+
+$ gh run view 39212910838 --json jobs --jq '.jobs[] | {name, conclusion, steps: [.steps[] | {name, conclusion}]}'
+{"conclusion":"success","name":"dart (format · analyze · test · web build)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"flutter --version"},{"conclusion":"success","name":"flutter pub get"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"dart format"},{"conclusion":"success","name":"dart format (cardflow_domain)"},{"conclusion":"success","name":"flutter analyze"},{"conclusion":"success","name":"dart analyze (cardflow_domain)"},{"conclusion":"success","name":"flutter test"},{"conclusion":"success","name":"dart test (cardflow_domain, incl. the no-double scan)"},{"conclusion":"success","name":"flutter build web (compile smoke test)"},{"conclusion":"success","name":"Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"success","name":"protocol-parity (Python engine vs Dart domain)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884"},{"conclusion":"success","name":"Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"uv sync --locked (services/api)"},{"conclusion":"success","name":"dart pub get (cardflow_domain)"},{"conclusion":"success","name":"Golden fixtures -- Python runner --dump"},{"conclusion":"success","name":"Golden fixtures -- Dart runner --dump"},{"conclusion":"success","name":"Golden fixtures -- outputs byte-identical"},{"conclusion":"success","name":"Random fixtures (300, seed 20261018) -- generate"},{"conclusion":"success","name":"Random fixtures -- both runners --dump, outputs byte-identical"},{"conclusion":"success","name":"Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)"},{"conclusion":"skipped","name":"Upload parity outputs"},{"conclusion":"success","name":"Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Post Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884"},{"conclusion":"success","name":"Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Complete job"}]}
+{"conclusion":"success","name":"ios-unsigned (IPA without codesign)","steps":[{"conclusion":"success","name":"Set up job"},{"conclusion":"success","name":"Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Toolchain versions"},{"conclusion":"success","name":"flutter pub get"},{"conclusion":"success","name":"Lint iOS property lists"},{"conclusion":"success","name":"flutter build ios --release --no-codesign"},{"conclusion":"success","name":"Package unsigned IPA"},{"conclusion":"success","name":"Verify IPA"},{"conclusion":"success","name":"Upload unsigned IPA"},{"conclusion":"success","name":"Required Reason API scan (BL-16)"},{"conclusion":"success","name":"Upload Required Reason API scan"},{"conclusion":"skipped","name":"Collect Xcode logs"},{"conclusion":"skipped","name":"Upload build logs"},{"conclusion":"success","name":"Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2"},{"conclusion":"success","name":"Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"},{"conclusion":"success","name":"Complete job"}]}
+[exit=0]
+
+$ gh run view --job 117930099744 --log | grep -E 'Formatted [0-9]+ files|No issues found|tests passed|All tests passed|Built build/web|##\[error\]' | grep -Ev '<过滤>'
+dart (format · analyze · test · web build)	dart format	2026-10-19T06:57:55.4145839Z Formatted 230 files (0 changed) in 1.25 seconds.
+dart (format · analyze · test · web build)	dart format (cardflow_domain)	2026-10-19T06:57:55.7742938Z Formatted 46 files (0 changed) in 0.12 seconds.
+dart (format · analyze · test · web build)	flutter analyze	2026-10-19T06:58:09.4251584Z No issues found! (ran in 12.6s)
+dart (format · analyze · test · web build)	dart analyze (cardflow_domain)	2026-10-19T06:58:10.2452845Z No issues found!
+dart (format · analyze · test · web build)	flutter test	2026-10-19T06:59:32.7234989Z 🎉 483 tests passed.
+dart (format · analyze · test · web build)	dart test (cardflow_domain, incl. the no-double scan)	2026-10-19T06:59:38.8918086Z 00:01 +279: All tests passed!
+dart (format · analyze · test · web build)	flutter build web (compile smoke test)	2026-10-19T07:00:24.9059641Z ✓ Built build/web
+[exit=0]
+
+$ gh run view --job 117931115537 --log | grep -E '<Verify IPA、上传与扫描的结果行>' | grep -Ev '<过滤>'
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.5291740Z CFBundleIdentifier=li.yep.cardflow MinimumOSVersion=15.0 version=0.1.0 build=52
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.5356600Z App.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.5362120Z Flutter.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.5367150Z objective_c.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.5367540Z sqlite3mc.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.5512860Z CFBundleIcons primary icon: AppIcon; Assets.car: 851576 bytes
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.6191080Z SQLite3MultipleCiphers framework: sqlite3mc.framework
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.6285040Z  23624325                     84 files
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-19T07:06:01.8090920Z IPA cardflow-unsigned-8149c29.ipa size=10467004 sha256=381db592e677053a0373054723956cf55ddee20b7d9badb0323e28a4f44d46dd
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-19T07:06:04.8653390Z Artifact cardflow-unsigned-8149c29 has been successfully uploaded! Final size is 10467176 bytes. Artifact ID is 12168329099
+ios-unsigned (IPA without codesign)	Upload unsigned IPA	2026-10-19T07:06:04.8689660Z Artifact download URL: https://github.com/YePiXpert/cardflow/actions/runs/39212910838/artifacts/12168329099
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.1348040Z == Runner.app/Runner（主二进制）（292640 字节；自带 PrivacyInfo.xcprivacy：main）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.1571390Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.1733950Z   FileTimestamp：nm -u _NSFileCreationDate ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.1880540Z   SystemBootTime：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.2013590Z   DiskSpace：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.4467480Z == Frameworks/App.framework/App（9760336 字节；自带 PrivacyInfo.xcprivacy：no）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.4770480Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.5782590Z   FileTimestamp：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.6399260Z   SystemBootTime：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.7301480Z   DiskSpace：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.9393100Z == Frameworks/Flutter.framework/Flutter（9416112 字节；自带 PrivacyInfo.xcprivacy：yes）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:08.9583460Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.0298570Z   FileTimestamp：nm -u _NSURLContentModificationDateKey _fstat _lstat _stat ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.0704930Z   SystemBootTime：nm -u _sysctlbyname ；strings systemUptime(1) 
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.1381780Z   DiskSpace：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.1970620Z == Frameworks/objective_c.framework/objective_c（203280 字节；自带 PrivacyInfo.xcprivacy：no）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.2099180Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.2229930Z   FileTimestamp：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.2360090Z   SystemBootTime：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.2491280Z   DiskSpace：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.3405140Z == Frameworks/sqlite3mc.framework/sqlite3mc（1899296 字节；自带 PrivacyInfo.xcprivacy：no）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.3553260Z   UserDefaults：nm -u 无；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.3834770Z   FileTimestamp：nm -u _fstat _lstat _stat ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.4035220Z   SystemBootTime：nm -u _sysctlbyname ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.4272580Z   DiskSpace：nm -u _fstatfs _statfs ；strings 无
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.4307490Z == Runner.app 内的全部隐私清单
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.5003100Z == 结论：主二进制或没有自带清单的 framework 命中的类别留在 ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.5097140Z   UserDefaults：App 清单未登记；须由 App 清单承担的命中：无；自带清单的 framework 命中：无 → 删除
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.5199840Z   FileTimestamp：App 清单已登记；须由 App 清单承担的命中：Runner.app/Runner（主二进制） Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.5286440Z   SystemBootTime：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+ios-unsigned (IPA without codesign)	Required Reason API scan (BL-16)	2026-10-19T07:06:09.5380170Z   DiskSpace：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：无 → 保留
+ios-unsigned (IPA without codesign)	Upload Required Reason API scan	2026-10-19T07:06:11.0013110Z Artifact required-reason-scan has been successfully uploaded! Final size is 15117 bytes. Artifact ID is 12168856758
+ios-unsigned (IPA without codesign)	Upload Required Reason API scan	2026-10-19T07:06:11.0023140Z Artifact download URL: https://github.com/YePiXpert/cardflow/actions/runs/39212910838/artifacts/12168856758
+[exit=0]
+
+$ gh api repos/YePiXpert/cardflow/actions/runs/39212910838/artifacts --jq '.artifacts[] | {id, name, size_in_bytes, digest, created_at, expires_at, workflow_run: .workflow_run.head_sha}'
+{"created_at":"2026-10-19T07:06:10Z","digest":"sha256:f4c4661cc23c290e5402c93dd71d4ee5416510613e5c14761bac0349463b31c7","expires_at":"2026-11-02T07:06:09Z","id":12168856758,"name":"required-reason-scan","size_in_bytes":15117,"workflow_run":"8149c29d8db8e8a226336a90e809b4ad208bea66"}
+{"created_at":"2026-10-19T07:06:04Z","digest":"sha256:0c09c3e623ef13f27bc8ec8748a3be2399c368d0d33e5f3fe4f7bb6ecf7362af","expires_at":"2026-11-02T07:06:02Z","id":12168329099,"name":"cardflow-unsigned-8149c29","size_in_bytes":10467176,"workflow_run":"8149c29d8db8e8a226336a90e809b4ad208bea66"}
+[exit=0]
+

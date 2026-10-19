@@ -1,0 +1,102 @@
+# ci-pins.txt：.github/workflows/mobile.yml 的 4 个第三方 action 固定到 40 位提交 SHA（BL-14，简报 I1-c §6 第 7 条）
+# 生成时间：2026-10-19T07:13:08Z；本地源码提交：8149c29（固定 SHA 的改动在 a001763，Required Reason 扫描步骤在 1a17b08 加了第 4 个 upload-artifact）
+# 过滤：无；以下为 gh api 原文（JSON 一行一个对象）。
+# 方法：1) 查 workflow 原来引用的标签：gh api repos/<owner>/<repo>/git/ref/tags/<tag>；object.type 为 commit 即提交 SHA，
+#        为 tag（带注释的标签）时再 gh api repos/<owner>/<repo>/git/tags/<sha> 解引用到提交；
+#       2) 行尾注释的精确版本号：同一主版本下指向同一提交的版本标签（matching-refs；带注释的标签逐个解引用）。
+
+## actions/checkout@v7
+$ gh api repos/actions/checkout/git/ref/tags/v7
+{"ref":"refs/tags/v7","node_id":"MDM6UmVmMTk3ODE0NjI5OnJlZnMvdGFncy92Nw==","url":"https://api.github.com/repos/actions/checkout/git/refs/tags/v7","object":{"sha":"3d3c42e5aac5ba805825da76410c181273ba90b1","type":"commit","url":"https://api.github.com/repos/actions/checkout/git/commits/3d3c42e5aac5ba805825da76410c181273ba90b1"}}[exit=0]
+# object.type = commit：已是提交，无需解引用
+# 提交 SHA：3d3c42e5aac5ba805825da76410c181273ba90b1
+$ gh api repos/actions/checkout/git/matching-refs/tags/v7 --jq '.[] | "\(.ref) \(.object.type) \(.object.sha)"'
+refs/tags/v7 commit 3d3c42e5aac5ba805825da76410c181273ba90b1
+refs/tags/v7.0.0 commit 9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+refs/tags/v7.0.1 commit 3d3c42e5aac5ba805825da76410c181273ba90b1
+[exit=0]
+# 指向同一提交的版本标签：v7.0.1 → uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+## subosito/flutter-action@v2
+$ gh api repos/subosito/flutter-action/git/ref/tags/v2
+{"ref":"refs/tags/v2","node_id":"MDM6UmVmMjAyMTE2NTYwOnJlZnMvdGFncy92Mg==","url":"https://api.github.com/repos/subosito/flutter-action/git/refs/tags/v2","object":{"sha":"1a449444c387b1966244ae4d4f8c696479add0b2","type":"commit","url":"https://api.github.com/repos/subosito/flutter-action/git/commits/1a449444c387b1966244ae4d4f8c696479add0b2"}}[exit=0]
+# object.type = commit：已是提交，无需解引用
+# 提交 SHA：1a449444c387b1966244ae4d4f8c696479add0b2
+$ gh api repos/subosito/flutter-action/git/matching-refs/tags/v2 --jq '.[] | "\(.ref) \(.object.type) \(.object.sha)"'
+refs/tags/v2 commit 1a449444c387b1966244ae4d4f8c696479add0b2
+refs/tags/v2.0.1 tag 4476f57cc96e88b355b76e98f2efb932d5e89c65
+refs/tags/v2.0.2 tag 4eb30ab7a75eb2d54a032e3790dc457714bdc359
+refs/tags/v2.0.3 tag 21234d938a1363685c2e0b143c6630b1e2c73512
+refs/tags/v2.0.4 tag e405f5735637b167bbbff96e49cf82099bc35e06
+refs/tags/v2.1.0 tag 8f7d13171be474e23b781f1bc08907023f9e8697
+refs/tags/v2.10.0 tag 9cf4c286b0ba4ba2d5e9286ae0e170b5405f2c3e
+refs/tags/v2.11.0 tag 638eebb12910abaeac846806cf4f0e8fb98fae4f
+refs/tags/v2.12.0 tag 6292cfc21e60a8e80b17aa5c8c44be81236112f8
+refs/tags/v2.13.0 tag 7ee4a40c781aa1f0820effc3e80b7186f39e9ea1
+refs/tags/v2.14.0 tag 7814e4f6c70abd7a5641333f613efa098fe34381
+refs/tags/v2.15.0 commit 3d804929922b667a63a229bc59037807f969e885
+refs/tags/v2.16.0 commit 44ac965b96f18d999802d4b807e3256d5a3f9fa1
+refs/tags/v2.17.0 commit 74af56c5ed2697ba4621264652728e8d217e53d3
+refs/tags/v2.18.0 commit f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+refs/tags/v2.19.0 commit e938fdf56512cc96ef2f93601a5a40bde3801046
+refs/tags/v2.2.0 tag 0c281f1e59f7d14c7b22e329ffb841ee57121666
+refs/tags/v2.2.1 tag 837bb685804290f90369e4781f92b11686b48411
+refs/tags/v2.20.0 commit 395322a6cded4e9ed503aebd4cc1965625f8e59a
+refs/tags/v2.21.0 commit fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
+refs/tags/v2.22.0 commit 0ca7a949e71ae44c8e688a51c5e7e93b2c87e295
+refs/tags/v2.23.0 commit 1a449444c387b1966244ae4d4f8c696479add0b2
+refs/tags/v2.3.0 tag 6d34cd945385ec4f39e86842c1020b174899d2f3
+refs/tags/v2.4.0 tag 2fb73e25c9488eb544b9b14b2ce00c4c2baf789e
+refs/tags/v2.5.0 tag 8a837898eadc7fd84ac44f406db9b331b5f31f36
+refs/tags/v2.6.0 tag 8743712f04619b0fd8014322d52ada910988a1b3
+refs/tags/v2.6.1 tag 74801188a94db33114993ec98dd7f671dbea8039
+refs/tags/v2.6.2 tag ab706492bc06ce663d4850eab16fe4b2676584cb
+refs/tags/v2.7.0 tag 15acbeee20fce526a426a6af4235bd0d3214fbda
+refs/tags/v2.7.1 tag f7cbc22afd928b9a9fad1126fec6c9684d1d07de
+refs/tags/v2.8.0 tag 051d80c5bb3aedb8aa4e52c0b6c2ba54afc91a08
+refs/tags/v2.9.0 tag 1bb71f5ac2761c1ca7c1a841d7a6090e7bf0cb74
+refs/tags/v2.9.1 tag 9a48871cbeff8679f6337339dc79b806ad9a9a13
+[exit=0]
+# 指向同一提交的版本标签：v2.23.0 → uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+
+## astral-sh/setup-uv@v10.3.0
+$ gh api repos/astral-sh/setup-uv/git/ref/tags/v10.3.0
+{"ref":"refs/tags/v10.3.0","node_id":"REF_kwDOMnghHrFyZWZzL3RhZ3MvdjEwLjMuMA","url":"https://api.github.com/repos/astral-sh/setup-uv/git/refs/tags/v10.3.0","object":{"sha":"1c37ad07a6a961277cf70c0d37d6f313000f5884","type":"commit","url":"https://api.github.com/repos/astral-sh/setup-uv/git/commits/1c37ad07a6a961277cf70c0d37d6f313000f5884"}}[exit=0]
+# object.type = commit：已是提交，无需解引用
+# 提交 SHA：1c37ad07a6a961277cf70c0d37d6f313000f5884
+$ gh api repos/astral-sh/setup-uv/git/matching-refs/tags/v10 --jq '.[] | "\(.ref) \(.object.type) \(.object.sha)"'
+refs/tags/v10.0.0 commit ae62891fec2bb8e7d6c99fc78c9fec3a63790f8d
+refs/tags/v10.0.1 commit 20cfd1bf945f4377ade1205e4dbc17946fc9a30d
+refs/tags/v10.1.0 commit bec219d24cd3e171d82865faccec33120bb574f4
+refs/tags/v10.2.0 commit c18668ad3cf93ea998bef934396af7bb5c839dc7
+refs/tags/v10.3.0 commit 1c37ad07a6a961277cf70c0d37d6f313000f5884
+[exit=0]
+# 指向同一提交的版本标签：v10.3.0 → uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+
+## actions/upload-artifact@v7
+$ gh api repos/actions/upload-artifact/git/ref/tags/v7
+{"ref":"refs/tags/v7","node_id":"MDM6UmVmMTkyNjI1OTU1OnJlZnMvdGFncy92Nw==","url":"https://api.github.com/repos/actions/upload-artifact/git/refs/tags/v7","object":{"sha":"cf430e030ddbb5b0abf93d22962f4752f3646cd9","type":"commit","url":"https://api.github.com/repos/actions/upload-artifact/git/commits/cf430e030ddbb5b0abf93d22962f4752f3646cd9"}}[exit=0]
+# object.type = commit：已是提交，无需解引用
+# 提交 SHA：cf430e030ddbb5b0abf93d22962f4752f3646cd9
+$ gh api repos/actions/upload-artifact/git/matching-refs/tags/v7 --jq '.[] | "\(.ref) \(.object.type) \(.object.sha)"'
+refs/tags/v7 commit cf430e030ddbb5b0abf93d22962f4752f3646cd9
+refs/tags/v7.0.0 commit bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+refs/tags/v7.0.1 commit 043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+refs/tags/v7.0.2 commit cf430e030ddbb5b0abf93d22962f4752f3646cd9
+[exit=0]
+# 指向同一提交的版本标签：v7.0.2 → uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+
+## 固定后的 workflow
+$ grep -n 'uses:' .github/workflows/mobile.yml
+79:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+81:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+139:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+141:      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+147:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+241:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+255:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+257:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+365:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+466:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+487:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+[exit=0]

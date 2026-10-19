@@ -1,0 +1,70 @@
+# public-beta.txt：公测版 0.1.0 的界面约束——阶段代号防回归、P-22 与「关于」的公测说明（原文、版本号、文案与版本显示）
+# 生成时间：2026-10-19T06:58:07Z；源码提交：8149c29；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
+# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 方法：test/app/public_beta_test.dart（扫描 lib/ 全部字符串字面量 + 逐页渲染检查；公测说明与关于页的组件测试）；
+# 另列出 lib/ 里仍含 I-数字 的行（应只有注释，界面文字不含）。
+$ flutter test test/app/public_beta_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/app/public_beta_test.dart
+00:00 +0: 阶段代号防回归：扫描器自检 单引号
+00:00 +1: 阶段代号防回归：扫描器自检 双引号
+00:00 +2: 阶段代号防回归：扫描器自检 三引号跨行
+00:00 +3: 阶段代号防回归：扫描器自检 原始字符串
+00:00 +4: 阶段代号防回归：扫描器自检 内插里的字符串
+00:00 +5: 阶段代号防回归：扫描器自检 内插之后的文字
+00:00 +6: 阶段代号防回归：扫描器自检 紧跟在注释后的字符串
+00:00 +7: 阶段代号防回归：扫描器自检 行注释
+00:00 +8: 阶段代号防回归：扫描器自检 文档注释
+00:00 +9: 阶段代号防回归：扫描器自检 嵌套块注释
+00:00 +10: 阶段代号防回归：扫描器自检 注释在代码行尾
+00:00 +11: 阶段代号防回归：扫描器自检 内插的变量名
+00:00 +12: 阶段代号防回归：扫描器自检 原始字符串里的正则
+00:00 +13: 阶段代号防回归：扫描器自检 行号与内容
+00:00 +14: lib/ 全部 Dart 源码的字符串字面量（注释除外）都不含阶段代号 I-数字
+扫描了 130 个文件，含阶段代号的字符串字面量：0 处
+00:00 +15: 演示空间的全部页面（每页滚到底）没有文字匹配 I-数字
+检查了演示空间的 46 个页面
+00:04 +16: 真实空间的首次空白页与"我的"各页没有文字匹配 I-数字
+00:05 +17: P-22 首次使用页（没有工作空间）没有文字匹配 I-数字
+00:05 +18: 公测说明与「关于」 说明原文与简报一致；版本号与 pubspec.yaml 的版本名一致
+00:05 +19: 公测说明与「关于」 P-22 首次使用页（没有工作空间）：底部最后一节是公测说明
+00:05 +20: 公测说明与「关于」 从"我的"进入的欢迎页同样在底部显示公测说明
+00:05 +21: 公测说明与「关于」 「关于」：我的 › 关于卡序；名称、公测版标识、版本与构建号（与诊断页同一来源）、公测说明、源码地址可选中并可复制、反馈方式与「打开诊断信息」
+00:05 +22: 公测说明与「关于」 「关于」的版本读取中：显示"读取中…"，公测说明照常显示
+00:05 +23: 公测说明与「关于」 「关于」的版本读取失败：显示错误类型
+00:05 +24: 公测说明与「关于」 "我的"页有「关于卡序」入口
+00:06 +25: All tests passed!
+[exit=0]
+$ grep -rnE 'I-[0-9]' lib --include=*.dart | grep -v '\.g\.dart' | grep -vE '^[^:]+:[0-9]+:\s*(///|//)' || echo '（没有：含 I-数字 的行全是注释）'
+（没有：含 I-数字 的行全是注释）
+[exit=0]
+$ grep -rn 'publicBetaNote\|PublicBeta.note' lib --include=*.dart
+lib/features/settings/public_beta.dart:41:    text: PublicBeta.note,
+lib/features/settings/about_page.dart:73:          const SectionTitle(PublicBeta.noteTitle),
+lib/features/onboarding/welcome_page.dart:181:          Text(PublicBeta.noteTitle, style: theme.textTheme.titleMedium),
+[exit=0]
+$ sed -n '/abstract final class PublicBeta/,/^}/p' lib/features/settings/public_beta.dart
+abstract final class PublicBeta {
+  /// App 名称（与诊断报告的标题一致）。
+  static const String appName = '卡序 CardFlow';
+
+  /// 公测版本号：与 `pubspec.yaml` 的版本名一致（测试核对；构建号由 CI 的运行序号给出）。
+  static const String version = '0.1.0';
+
+  /// "公测版"标识。
+  static const String badge = '公测版';
+
+  /// 公测说明的标题。
+  static const String noteTitle = '公测说明';
+
+  /// 公测说明：数据只在本机、删除即永久丢失、还没有备份与导出。
+  static const String note =
+      '公测版 $version：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。'
+      '删除 App 或「重置本地数据」会永久删除全部数据；目前还没有备份与导出，后续版本提供。';
+
+  /// 源码地址（纯文本，可选中复制；App 内不打开浏览器）。
+  static const String sourceAddress = 'github.com/YePiXpert/cardflow';
+
+  /// 反馈方式。
+  static const String feedback = '我的 › 诊断信息 › 复制诊断信息，附上问题描述发到 GitHub Issues';
+}
+[exit=0]

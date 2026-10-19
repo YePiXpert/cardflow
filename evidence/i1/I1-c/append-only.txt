@@ -1,0 +1,34 @@
+# append-only.txt：v4 约束与触发器测试（账单版本追加只读：直接 UPDATE 金额列必须被 RAISE(ABORT) 拒绝；状态机、分配合计、linked_repayment_id 等）
+# 生成时间：2026-10-19T06:58:05Z；源码提交：8149c29；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
+# 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 方法：test/data/db/ledger_constraints_test.dart 在真实 sqlite3mc 上绕过仓库、直接写 SQL；下面先列出 v4 的账单版本触发器原文，
+# 再运行全部约束测试。
+$ awk '/CREATE TRIGGER IF NOT EXISTS statement_versions_append_only/,/END/' lib/data/db/schema.dart
+CREATE TRIGGER IF NOT EXISTS statement_versions_append_only
+BEFORE UPDATE ON statement_versions
+BEGIN SELECT RAISE(ABORT, 'statement_versions: append only; insert a new version'); END''',
+[exit=0]
+$ awk '/CREATE TRIGGER IF NOT EXISTS statement_versions_sequence/,/END/' lib/data/db/schema.dart
+CREATE TRIGGER IF NOT EXISTS statement_versions_sequence
+BEFORE INSERT ON statement_versions
+WHEN NEW.version_no <> 1 + COALESCE((
+  SELECT MAX(v.version_no) FROM statement_versions AS v
+  WHERE v.statement_id = NEW.statement_id
+), 0)
+BEGIN SELECT RAISE(ABORT, 'statement_versions: version_no must follow the latest version'); END''',
+[exit=0]
+$ flutter test test/data/db/ledger_constraints_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/db/ledger_constraints_test.dart
+00:00 +0: 账单版本追加只读（R-STMT-07） 直接 UPDATE 任何金额列、到期日或其他列都被触发器拒绝（RAISE(ABORT)）；行不变
+00:00 +1: 账单版本追加只读（R-STMT-07） 更正 = 新版本：版本号紧接最新（不跳号、不复用），人工修正理由必填，v1 不能是修正
+00:00 +2: 账单版本追加只读（R-STMT-07） 当前版本只能前移；到期日须晚于账单日；贷方余额与正的新余额不能并存；最低还款不超过新余额
+00:00 +3: 账单：同一币种子账户同一账单日只有一份（F-21）；状态机（PRD §6.2）；账单日与归属不可改
+00:00 +4: 交易：按类型定符号、非零有界；卡片须属于该子账户的信用账户；币种与子账户一致；归属与类型不可改
+00:00 +5: 分期：条款不可改、状态只能从进行中离开；各期只改状态（未出账 → 已出账 → 已结清）、期号不超过期数
+00:00 +6: 还款 状态机（PRD §6.3）：每个状态到其余 8 个状态，只有登记的转移被接受
+00:00 +7: 还款 状态要求的时点；金额、方式、归属与币种不可改；现金账户的币种须与还款一致；跨空间的现金账户被拒
+00:00 +8: 还款 分配：Σ ≤ 还款额（触发器兜底）；分配行不改只删了重写；还款与账单须同一币种子账户
+00:00 +9: cash_events.linked_repayment_id（简报 §6 第 2 条）：插入与改写只能指向同一空间的还款；还款在仍有未删除的现金事件指向它时不能删除或作废
+00:00 +10: 差异项：类型、refs 为 JSON 对象、同类同引用一条；只有未处理的能处理一次，不重开
+00:00 +11: All tests passed!
+[exit=0]

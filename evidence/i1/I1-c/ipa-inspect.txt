@@ -1,0 +1,695 @@
+# ipa-inspect.txt：交付的未签名 IPA 检查（第 2 次 iOS 构建）；文中另附第 1 次构建的 IPA 检查（同样全部通过，因 Required Reason 扫描结论改了 PrivacyInfo 而未交付）
+# 生成时间：2026-10-19T07:12:52Z
+# 运行：https://github.com/YePiXpert/cardflow/actions/runs/39212910838 （workflow_dispatch，main @ 8149c29，第 2 次 iOS 构建，成功；运行序号 #52 = CFBundleVersion；ios-unsigned job 117931115537）
+# artifact 页面 URL：https://github.com/YePiXpert/cardflow/actions/runs/39212910838/artifacts/12168329099
+# artifact API 下载 URL（需登录）：https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12168329099/zip
+# 方法：本机没有 unzip，用 python3 -m zipfile -l 代替 unzip -l；Info.plist、隐私清单、图标等用 python（plistlib、zipfile）在内存中解析，不解压到磁盘。
+#       下载放在 /tmp 下新建的空目录（mktemp -d），记作 <新建空目录>。inspect_ipa.py 在 I-0b 的同名脚本上增加了版本、构建号、图标
+#       （CFBundleIcons、Assets.car；把编译进包的 60pt@2x 图标——Xcode 产出的 Apple CgBI PNG——解码后与仓库源图逐像素比较、检查全不透明，
+#       并确认它不是 I-0b 包里的 Flutter 默认图标）、各 framework 自带隐私清单与包内全部隐私清单的检查，全文附在文末。
+# 过滤：无。
+
+$ gh api repos/YePiXpert/cardflow/actions/runs/39212910838/artifacts --jq '.artifacts[]'
+{"archive_download_url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12168856758/zip","created_at":"2026-10-19T07:06:10Z","digest":"sha256:f4c4661cc23c290e5402c93dd71d4ee5416510613e5c14761bac0349463b31c7","expired":false,"expires_at":"2026-11-02T07:06:09Z","id":12168856758,"name":"required-reason-scan","node_id":"MDg6QXJ0aWZhY3QxMjE2ODg1Njc1OA==","size_in_bytes":15117,"updated_at":"2026-10-19T07:06:10Z","url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12168856758","workflow_run":{"head_branch":"main","head_repository_id":1423968341,"head_sha":"8149c29d8db8e8a226336a90e809b4ad208bea66","id":39212910838,"repository_id":1423968341}}
+{"archive_download_url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12168329099/zip","created_at":"2026-10-19T07:06:04Z","digest":"sha256:0c09c3e623ef13f27bc8ec8748a3be2399c368d0d33e5f3fe4f7bb6ecf7362af","expired":false,"expires_at":"2026-11-02T07:06:02Z","id":12168329099,"name":"cardflow-unsigned-8149c29","node_id":"MDg6QXJ0aWZhY3QxMjE2ODMyOTA5OQ==","size_in_bytes":10467176,"updated_at":"2026-10-19T07:06:04Z","url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12168329099","workflow_run":{"head_branch":"main","head_repository_id":1423968341,"head_sha":"8149c29d8db8e8a226336a90e809b4ad208bea66","id":39212910838,"repository_id":1423968341}}
+[exit=0]
+
+$ gh run download 39212910838 -R YePiXpert/cardflow -n cardflow-unsigned-8149c29 -D <新建空目录>
+[exit=0]
+
+$ ls -l cardflow-unsigned-8149c29.ipa && sha256sum cardflow-unsigned-8149c29.ipa
+-rw-r--r-- 1 root root 10467004 Oct 19 08:11 cardflow-unsigned-8149c29.ipa
+381db592e677053a0373054723956cf55ddee20b7d9badb0323e28a4f44d46dd  cardflow-unsigned-8149c29.ipa
+[exit=0]
+
+$ python3 -I -m zipfile -l cardflow-unsigned-8149c29.ipa
+File Name                                             Modified             Size
+Payload/                                       2026-10-19 07:06:00            0
+Payload/Runner.app/                            2026-10-19 07:06:00            0
+Payload/Runner.app/flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/ 2026-10-19 07:06:00            0
+Payload/Runner.app/flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/PrivacyInfo.xcprivacy 2026-10-19 07:06:00          372
+Payload/Runner.app/flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/Info.plist 2026-10-19 07:06:00          769
+Payload/Runner.app/AppIcon60x60@2x.png         2026-10-19 07:06:00        19460
+Payload/Runner.app/Runner                      2026-10-19 07:06:00       292640
+Payload/Runner.app/Base.lproj/                 2026-10-19 07:06:00            0
+Payload/Runner.app/Base.lproj/Main.storyboardc/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Base.lproj/Main.storyboardc/UIViewController-BYZ-38-t0r.nib 2026-10-19 07:06:00          951
+Payload/Runner.app/Base.lproj/Main.storyboardc/BYZ-38-t0r-view-8bC-Xf-vdC.nib 2026-10-19 07:06:00         1835
+Payload/Runner.app/Base.lproj/Main.storyboardc/Info.plist 2026-10-19 07:06:00          258
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib 2026-10-19 07:06:00         2281
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib 2026-10-19 07:06:00          924
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/Info.plist 2026-10-19 07:06:00          258
+Payload/Runner.app/Assets.car                  2026-10-19 07:06:00       851576
+Payload/Runner.app/AppFrameworkInfo.plist      2026-10-19 07:06:00          347
+Payload/Runner.app/AppIcon76x76@2x~ipad.png    2026-10-19 07:06:00        27591
+Payload/Runner.app/PrivacyInfo.xcprivacy       2026-10-19 07:06:00         1902
+Payload/Runner.app/Frameworks/                 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/objective_c.framework/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/objective_c.framework/_CodeSignature/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/objective_c.framework/_CodeSignature/CodeResources 2026-10-19 07:06:00         1798
+Payload/Runner.app/Frameworks/objective_c.framework/objective_c 2026-10-19 07:06:00       203280
+Payload/Runner.app/Frameworks/objective_c.framework/Info.plist 2026-10-19 07:06:00          791
+Payload/Runner.app/Frameworks/Flutter.framework/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/Flutter.framework/_CodeSignature/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/Flutter.framework/_CodeSignature/CodeResources 2026-10-19 07:06:00         7070
+Payload/Runner.app/Frameworks/Flutter.framework/icudtl.dat 2026-10-19 07:06:00       864880
+Payload/Runner.app/Frameworks/Flutter.framework/Flutter 2026-10-19 07:06:00      9416112
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterSceneDelegate.h 2026-10-19 07:06:00          893
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterEngine.h 2026-10-19 07:06:00        21724
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterChannels.h 2026-10-19 07:06:00        18414
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPlugin.h 2026-10-19 07:06:00        19326
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterAppDelegate.h 2026-10-19 07:06:00         2283
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterTexture.h 2026-10-19 07:06:00         2263
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterEngineGroup.h 2026-10-19 07:06:00         4755
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPlatformViews.h 2026-10-19 07:06:00         1966
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterHeadlessDartRunner.h 2026-10-19 07:06:00         3927
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterCodecs.h 2026-10-19 07:06:00        15290
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/Flutter.h 2026-10-19 07:06:00          921
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterViewController.h 2026-10-19 07:06:00        10734
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterMacros.h 2026-10-19 07:06:00         1823
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterDartProject.h 2026-10-19 07:06:00         3914
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterHourFormat.h 2026-10-19 07:06:00          536
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPluginAppLifeCycleDelegate.h 2026-10-19 07:06:00         5318
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterBinaryMessenger.h 2026-10-19 07:06:00         3761
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterCallbackCache.h 2026-10-19 07:06:00         1724
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterSceneLifeCycle.h 2026-10-19 07:06:00         8387
+Payload/Runner.app/Frameworks/Flutter.framework/PrivacyInfo.xcprivacy 2026-10-19 07:06:00          845
+Payload/Runner.app/Frameworks/Flutter.framework/Modules/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/Flutter.framework/Modules/module.modulemap 2026-10-19 07:06:00           95
+Payload/Runner.app/Frameworks/Flutter.framework/Info.plist 2026-10-19 07:06:00         1078
+Payload/Runner.app/Frameworks/App.framework/   2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/App.framework/_CodeSignature/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/App.framework/_CodeSignature/CodeResources 2026-10-19 07:06:00         3924
+Payload/Runner.app/Frameworks/App.framework/App 2026-10-19 07:06:00      9760336
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/NOTICES.Z 2026-10-19 07:06:00       104822
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/NativeAssetsManifest.json 2026-10-19 07:06:00          236
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/FontManifest.json 2026-10-19 07:06:00           82
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/shaders/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/shaders/ink_sparkle.frag 2026-10-19 07:06:00         4960
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/ink_sparkle.frag 2026-10-19 07:06:00         4960
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/stretch_effect.frag 2026-10-19 07:06:00         4408
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/AssetManifest.bin 2026-10-19 07:06:00          107
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/fonts/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/fonts/MaterialIcons-Regular.otf 2026-10-19 07:06:00         9852
+Payload/Runner.app/Frameworks/App.framework/Info.plist 2026-10-19 07:06:00          754
+Payload/Runner.app/Frameworks/sqlite3mc.framework/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/sqlite3mc.framework/_CodeSignature/ 2026-10-19 07:06:00            0
+Payload/Runner.app/Frameworks/sqlite3mc.framework/_CodeSignature/CodeResources 2026-10-19 07:06:00         1798
+Payload/Runner.app/Frameworks/sqlite3mc.framework/sqlite3mc 2026-10-19 07:06:00      1899296
+Payload/Runner.app/Frameworks/sqlite3mc.framework/Info.plist 2026-10-19 07:06:00          785
+Payload/Runner.app/Info.plist                  2026-10-19 07:06:00         1830
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/ 2026-10-19 07:06:00            0
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/PrivacyInfo.xcprivacy 2026-10-19 07:06:00          373
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/Info.plist 2026-10-19 07:06:00          722
+Payload/Runner.app/PkgInfo                     2026-10-19 07:06:00            8
+[exit=0]
+
+$ python3 -I inspect_ipa.py cardflow-unsigned-8149c29.ipa 0.1.0 52 apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png   # 脚本全文附在文末
+file: cardflow-unsigned-8149c29.ipa
+size_bytes: 10467004
+sha256: 381db592e677053a0373054723956cf55ddee20b7d9badb0323e28a4f44d46dd
+entries: 84
+top_level: ['Payload']
+payload_children: ['Payload/Runner.app']
+Info.plist CFBundleIdentifier: 'li.yep.cardflow'
+Info.plist CFBundleDisplayName: '卡序'
+Info.plist CFBundleName: 'cardflow'
+Info.plist CFBundleShortVersionString: '0.1.0'
+Info.plist CFBundleVersion: '52'
+Info.plist MinimumOSVersion: '15.0'
+Info.plist CFBundleLocalizations: ['zh_CN', 'en']
+Info.plist CFBundleExecutable: 'Runner'
+Info.plist UIDeviceFamily: [1, 2]
+Info.plist DTPlatformName: 'iphoneos'
+Info.plist DTPlatformVersion: '26.5'
+Info.plist DTSDKName: 'iphoneos26.5'
+Info.plist DTXcode: '2660'
+Info.plist DTXcodeBuild: '17F113'
+Info.plist usage descriptions: []
+Info.plist UIBackgroundModes: None
+Info.plist CFBundleIcons: {"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["AppIcon60x60"], "CFBundleIconName": "AppIcon"}}
+Info.plist CFBundleIcons~ipad: {"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["AppIcon60x60", "AppIcon76x76"], "CFBundleIconName": "AppIcon"}}
+embedded.mobileprovision present: False
+Runner.app/_CodeSignature present: False
+entitlement files: []
+Frameworks: ['App.framework', 'Flutter.framework', 'objective_c.framework', 'sqlite3mc.framework']
+Resource bundles: ['flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle', 'package_info_plus_package_info_plus.bundle']
+nested _CodeSignature dirs: ['Payload/Runner.app/Frameworks/App.framework', 'Payload/Runner.app/Frameworks/Flutter.framework', 'Payload/Runner.app/Frameworks/objective_c.framework', 'Payload/Runner.app/Frameworks/sqlite3mc.framework']
+framework App.framework: own PrivacyInfo.xcprivacy = False
+framework Flutter.framework: own PrivacyInfo.xcprivacy = True
+framework objective_c.framework: own PrivacyInfo.xcprivacy = False
+framework sqlite3mc.framework: own PrivacyInfo.xcprivacy = False
+privacy manifest Frameworks/Flutter.framework/PrivacyInfo.xcprivacy: [('FileTimestamp', ['0A2A.1', 'C617.1']), ('SystemBootTime', ['35F9.1'])]
+privacy manifest PrivacyInfo.xcprivacy: [('FileTimestamp', ['C617.1']), ('SystemBootTime', ['35F9.1']), ('DiskSpace', ['E174.1'])]
+privacy manifest flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/PrivacyInfo.xcprivacy: []
+privacy manifest package_info_plus_package_info_plus.bundle/PrivacyInfo.xcprivacy: []
+Assets.car present: True size: 851576
+icon AppIcon60x60@2x.png: 120x120 RGBA bit_depth=8 chunks=['CgBI', 'IHDR', 'iDOT', 'IDAT', 'IDAT', 'IEND'] header_alpha_channel=True size=19460 sha256=ed3a816bcbcdc33713ff2af81f2be83d91be1ce7fc74415497b8982f49970c9f
+icon AppIcon76x76@2x~ipad.png: 152x152 RGBA bit_depth=8 chunks=['CgBI', 'IHDR', 'iDOT', 'IDAT', 'IDAT', 'IEND'] header_alpha_channel=True size=27591 sha256=7be50834ee45751b87a01d4bde2cc23c96a62b3afc22971d3c2555e4f7624a72
+icon AppIcon60x60@2x.png vs source Icon-App-60x60@2x.png: compiled 120x120 min_alpha=255; source 120x120; max_channel_diff=0 differing_pixels=0
+NativeAssetsManifest.json: {"format-version": [1, 0, 0], "native-assets": {"ios_arm64": {"package:objective_c/objective_c.dylib": ["absolute", "objective_c.framework/objective_c"], "package:sqlite3/src/ffi/libsqlite3.g.dart": ["absolute", "sqlite3mc.framework/sqlite3mc"]}}}
+PrivacyInfo NSPrivacyTracking: False
+PrivacyInfo APIs: [('NSPrivacyAccessedAPICategoryFileTimestamp', ['C617.1']), ('NSPrivacyAccessedAPICategorySystemBootTime', ['35F9.1']), ('NSPrivacyAccessedAPICategoryDiskSpace', ['E174.1'])]
+
+Mach-O binaries (cpu 16777228 = arm64):
+  Payload/Runner.app/Runner: cpu=16777228 no LC_CODE_SIGNATURE (unsigned) id_dylib=None
+    Runner LC_LOAD_DYLIB: ['/System/Library/Frameworks/Foundation.framework/Foundation', '/usr/lib/libobjc.A.dylib', '/usr/lib/libSystem.B.dylib', '/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation', '/System/Library/Frameworks/CryptoKit.framework/CryptoKit', '/System/Library/Frameworks/LocalAuthentication.framework/LocalAuthentication', '/System/Library/Frameworks/Security.framework/Security', '/System/Library/Frameworks/UIKit.framework/UIKit', '/usr/lib/libc++.1.dylib', '/usr/lib/swift/libswiftCore.dylib', '/usr/lib/swift/libswiftCoreFoundation.dylib', '/usr/lib/swift/libswiftDispatch.dylib', '@rpath/Flutter.framework/Flutter', '/usr/lib/swift/libswiftFoundation.dylib', '/usr/lib/swift/libswiftUIKit.dylib']
+  Payload/Runner.app/Frameworks/App.framework/App: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/App.framework/App'
+  Payload/Runner.app/Frameworks/Flutter.framework/Flutter: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/Flutter.framework/Flutter'
+  Payload/Runner.app/Frameworks/objective_c.framework/objective_c: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/objective_c.framework/objective_c'
+  Payload/Runner.app/Frameworks/sqlite3mc.framework/sqlite3mc: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/sqlite3mc.framework/sqlite3mc'
+
+SQLite3MultipleCiphers framework: sqlite3mc.framework
+  version string in binary: 'SQLite3 Multiple Ciphers 2.6.1'
+  SQLite source id in binary: '2026-10-09 15:46:58 be8d059e9a49089ab2dce5ed26dd87aaf598fdc5fbe0b107c0dd758464bcd5e3'
+  binary size: 1899296  sha256: 4c4f94697ef5afe5521d585a5f6c53e7f907807c383c0b200e63bc6498a2bcff
+  framework Info.plist: CFBundleExecutable='sqlite3mc' CFBundleIdentifier='io.flutter.flutter.native-assets.sqlite3mc' MinimumOSVersion='15.0'
+  contains 'sqlite3mc_version': True
+  contains 'chacha20': True
+  contains 'sqlcipher': True
+
+CHECK structure Payload/Runner.app only: PASS
+CHECK CFBundleIdentifier == li.yep.cardflow: PASS
+CHECK MinimumOSVersion == 15.0: PASS
+CHECK no embedded.mobileprovision: PASS
+CHECK no entitlement files: PASS
+CHECK no usage descriptions (Info.plist): PASS
+CHECK PrivacyInfo.xcprivacy bundled: PASS
+CHECK CFBundleDisplayName == 卡序: PASS
+CHECK CFBundleShortVersionString == 0.1.0: PASS
+CHECK CFBundleVersion == 52 (run number): PASS
+CHECK CFBundleIcons primary icon name == AppIcon: PASS
+CHECK Assets.car bundled: PASS
+CHECK AppIcon60x60@2x.png fully opaque and matches the repo source icon (pixels, max channel diff <= 2): PASS
+CHECK AppIcon60x60@2x.png differs from the Flutter default icon of the I-0b IPA: PASS
+CHECK frameworks == App, Flutter, objective_c, sqlite3mc: PASS
+CHECK SQLite3MultipleCiphers framework bundled: PASS
+CHECK native assets manifest maps package:sqlite3 to that framework: PASS
+exit=0
+
+## 第 1 次构建的 IPA（运行 39211270256，main @ 6547054；artifact https://github.com/YePiXpert/cardflow/actions/runs/39211270256/artifacts/12167519935）
+
+$ gh api repos/YePiXpert/cardflow/actions/runs/39211270256/artifacts --jq '.artifacts[]'
+{"archive_download_url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12167962605/zip","created_at":"2026-10-19T06:48:43Z","digest":"sha256:1f40e8aaaf490e90e8ff0b479a240778a9d0f554036c7ab17d46ee7a8ec7f4d0","expired":false,"expires_at":"2026-11-02T06:48:42Z","id":12167962605,"name":"required-reason-scan","node_id":"MDg6QXJ0aWZhY3QxMjE2Nzk2MjYwNQ==","size_in_bytes":15131,"updated_at":"2026-10-19T06:48:43Z","url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12167962605","workflow_run":{"head_branch":"main","head_repository_id":1423968341,"head_sha":"65470549290865861fc04bff388419013398c815","id":39211270256,"repository_id":1423968341}}
+{"archive_download_url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12167519935/zip","created_at":"2026-10-19T06:48:37Z","digest":"sha256:4668b9a9921e61785daa0a3ea876a8a3ec50a3d1340f0f71f14a15d234569aa1","expired":false,"expires_at":"2026-11-02T06:48:36Z","id":12167519935,"name":"cardflow-unsigned-6547054","node_id":"MDg6QXJ0aWZhY3QxMjE2NzUxOTkzNQ==","size_in_bytes":10467063,"updated_at":"2026-10-19T06:48:37Z","url":"https://api.github.com/repos/YePiXpert/cardflow/actions/artifacts/12167519935","workflow_run":{"head_branch":"main","head_repository_id":1423968341,"head_sha":"65470549290865861fc04bff388419013398c815","id":39211270256,"repository_id":1423968341}}
+[exit=0]
+
+$ gh run download 39211270256 -R YePiXpert/cardflow -n cardflow-unsigned-6547054 -D <新建空目录>
+[exit=0]
+
+$ ls -l cardflow-unsigned-6547054.ipa && sha256sum cardflow-unsigned-6547054.ipa
+-rw-r--r-- 1 root root 10466891 Oct 19 08:11 cardflow-unsigned-6547054.ipa
+36871b6093b3ac11f3e87cd4b0ee35ee094ef95cfb94856b9473fd32a2402d91  cardflow-unsigned-6547054.ipa
+[exit=0]
+
+$ python3 -I -m zipfile -l cardflow-unsigned-6547054.ipa
+File Name                                             Modified             Size
+Payload/                                       2026-10-19 06:48:34            0
+Payload/Runner.app/                            2026-10-19 06:48:34            0
+Payload/Runner.app/flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/ 2026-10-19 06:48:34            0
+Payload/Runner.app/flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/PrivacyInfo.xcprivacy 2026-10-19 06:48:34          372
+Payload/Runner.app/flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/Info.plist 2026-10-19 06:48:34          769
+Payload/Runner.app/AppIcon60x60@2x.png         2026-10-19 06:48:34        19460
+Payload/Runner.app/Runner                      2026-10-19 06:48:34       292640
+Payload/Runner.app/Base.lproj/                 2026-10-19 06:48:34            0
+Payload/Runner.app/Base.lproj/Main.storyboardc/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Base.lproj/Main.storyboardc/UIViewController-BYZ-38-t0r.nib 2026-10-19 06:48:34          951
+Payload/Runner.app/Base.lproj/Main.storyboardc/BYZ-38-t0r-view-8bC-Xf-vdC.nib 2026-10-19 06:48:34         1835
+Payload/Runner.app/Base.lproj/Main.storyboardc/Info.plist 2026-10-19 06:48:34          258
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/01J-lp-oVM-view-Ze5-6b-2t3.nib 2026-10-19 06:48:34         2281
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/UIViewController-01J-lp-oVM.nib 2026-10-19 06:48:34          924
+Payload/Runner.app/Base.lproj/LaunchScreen.storyboardc/Info.plist 2026-10-19 06:48:34          258
+Payload/Runner.app/Assets.car                  2026-10-19 06:48:34       851576
+Payload/Runner.app/AppFrameworkInfo.plist      2026-10-19 06:48:34          347
+Payload/Runner.app/AppIcon76x76@2x~ipad.png    2026-10-19 06:48:34        27591
+Payload/Runner.app/PrivacyInfo.xcprivacy       2026-10-19 06:48:34         1753
+Payload/Runner.app/Frameworks/                 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/objective_c.framework/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/objective_c.framework/_CodeSignature/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/objective_c.framework/_CodeSignature/CodeResources 2026-10-19 06:48:34         1798
+Payload/Runner.app/Frameworks/objective_c.framework/objective_c 2026-10-19 06:48:34       203280
+Payload/Runner.app/Frameworks/objective_c.framework/Info.plist 2026-10-19 06:48:34          791
+Payload/Runner.app/Frameworks/Flutter.framework/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/Flutter.framework/_CodeSignature/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/Flutter.framework/_CodeSignature/CodeResources 2026-10-19 06:48:34         7070
+Payload/Runner.app/Frameworks/Flutter.framework/icudtl.dat 2026-10-19 06:48:34       864880
+Payload/Runner.app/Frameworks/Flutter.framework/Flutter 2026-10-19 06:48:34      9416112
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterSceneDelegate.h 2026-10-19 06:48:34          893
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterEngine.h 2026-10-19 06:48:34        21724
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterChannels.h 2026-10-19 06:48:34        18414
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPlugin.h 2026-10-19 06:48:34        19326
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterAppDelegate.h 2026-10-19 06:48:34         2283
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterTexture.h 2026-10-19 06:48:34         2263
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterEngineGroup.h 2026-10-19 06:48:34         4755
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPlatformViews.h 2026-10-19 06:48:34         1966
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterHeadlessDartRunner.h 2026-10-19 06:48:34         3927
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterCodecs.h 2026-10-19 06:48:34        15290
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/Flutter.h 2026-10-19 06:48:34          921
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterViewController.h 2026-10-19 06:48:34        10734
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterMacros.h 2026-10-19 06:48:34         1823
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterDartProject.h 2026-10-19 06:48:34         3914
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterHourFormat.h 2026-10-19 06:48:34          536
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterPluginAppLifeCycleDelegate.h 2026-10-19 06:48:34         5318
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterBinaryMessenger.h 2026-10-19 06:48:34         3761
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterCallbackCache.h 2026-10-19 06:48:34         1724
+Payload/Runner.app/Frameworks/Flutter.framework/Headers/FlutterSceneLifeCycle.h 2026-10-19 06:48:34         8387
+Payload/Runner.app/Frameworks/Flutter.framework/PrivacyInfo.xcprivacy 2026-10-19 06:48:34          845
+Payload/Runner.app/Frameworks/Flutter.framework/Modules/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/Flutter.framework/Modules/module.modulemap 2026-10-19 06:48:34           95
+Payload/Runner.app/Frameworks/Flutter.framework/Info.plist 2026-10-19 06:48:34         1078
+Payload/Runner.app/Frameworks/App.framework/   2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/App.framework/_CodeSignature/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/App.framework/_CodeSignature/CodeResources 2026-10-19 06:48:34         3924
+Payload/Runner.app/Frameworks/App.framework/App 2026-10-19 06:48:34      9760336
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/NOTICES.Z 2026-10-19 06:48:34       104822
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/NativeAssetsManifest.json 2026-10-19 06:48:34          236
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/FontManifest.json 2026-10-19 06:48:34           82
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/shaders/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/packages/material_ui/shaders/ink_sparkle.frag 2026-10-19 06:48:34         4960
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/ink_sparkle.frag 2026-10-19 06:48:34         4960
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/shaders/stretch_effect.frag 2026-10-19 06:48:34         4408
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/AssetManifest.bin 2026-10-19 06:48:34          107
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/fonts/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/App.framework/flutter_assets/fonts/MaterialIcons-Regular.otf 2026-10-19 06:48:34         9852
+Payload/Runner.app/Frameworks/App.framework/Info.plist 2026-10-19 06:48:34          754
+Payload/Runner.app/Frameworks/sqlite3mc.framework/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/sqlite3mc.framework/_CodeSignature/ 2026-10-19 06:48:34            0
+Payload/Runner.app/Frameworks/sqlite3mc.framework/_CodeSignature/CodeResources 2026-10-19 06:48:34         1798
+Payload/Runner.app/Frameworks/sqlite3mc.framework/sqlite3mc 2026-10-19 06:48:34      1899296
+Payload/Runner.app/Frameworks/sqlite3mc.framework/Info.plist 2026-10-19 06:48:34          785
+Payload/Runner.app/Info.plist                  2026-10-19 06:48:34         1830
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/ 2026-10-19 06:48:34            0
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/PrivacyInfo.xcprivacy 2026-10-19 06:48:34          373
+Payload/Runner.app/package_info_plus_package_info_plus.bundle/Info.plist 2026-10-19 06:48:34          722
+Payload/Runner.app/PkgInfo                     2026-10-19 06:48:34            8
+[exit=0]
+
+$ python3 -I inspect_ipa.py cardflow-unsigned-6547054.ipa 0.1.0 50 apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png   # 脚本全文附在文末
+file: cardflow-unsigned-6547054.ipa
+size_bytes: 10466891
+sha256: 36871b6093b3ac11f3e87cd4b0ee35ee094ef95cfb94856b9473fd32a2402d91
+entries: 84
+top_level: ['Payload']
+payload_children: ['Payload/Runner.app']
+Info.plist CFBundleIdentifier: 'li.yep.cardflow'
+Info.plist CFBundleDisplayName: '卡序'
+Info.plist CFBundleName: 'cardflow'
+Info.plist CFBundleShortVersionString: '0.1.0'
+Info.plist CFBundleVersion: '50'
+Info.plist MinimumOSVersion: '15.0'
+Info.plist CFBundleLocalizations: ['zh_CN', 'en']
+Info.plist CFBundleExecutable: 'Runner'
+Info.plist UIDeviceFamily: [1, 2]
+Info.plist DTPlatformName: 'iphoneos'
+Info.plist DTPlatformVersion: '26.5'
+Info.plist DTSDKName: 'iphoneos26.5'
+Info.plist DTXcode: '2660'
+Info.plist DTXcodeBuild: '17F113'
+Info.plist usage descriptions: []
+Info.plist UIBackgroundModes: None
+Info.plist CFBundleIcons: {"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["AppIcon60x60"], "CFBundleIconName": "AppIcon"}}
+Info.plist CFBundleIcons~ipad: {"CFBundlePrimaryIcon": {"CFBundleIconFiles": ["AppIcon60x60", "AppIcon76x76"], "CFBundleIconName": "AppIcon"}}
+embedded.mobileprovision present: False
+Runner.app/_CodeSignature present: False
+entitlement files: []
+Frameworks: ['App.framework', 'Flutter.framework', 'objective_c.framework', 'sqlite3mc.framework']
+Resource bundles: ['flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle', 'package_info_plus_package_info_plus.bundle']
+nested _CodeSignature dirs: ['Payload/Runner.app/Frameworks/App.framework', 'Payload/Runner.app/Frameworks/Flutter.framework', 'Payload/Runner.app/Frameworks/objective_c.framework', 'Payload/Runner.app/Frameworks/sqlite3mc.framework']
+framework App.framework: own PrivacyInfo.xcprivacy = False
+framework Flutter.framework: own PrivacyInfo.xcprivacy = True
+framework objective_c.framework: own PrivacyInfo.xcprivacy = False
+framework sqlite3mc.framework: own PrivacyInfo.xcprivacy = False
+privacy manifest Frameworks/Flutter.framework/PrivacyInfo.xcprivacy: [('FileTimestamp', ['0A2A.1', 'C617.1']), ('SystemBootTime', ['35F9.1'])]
+privacy manifest PrivacyInfo.xcprivacy: [('UserDefaults', ['CA92.1']), ('FileTimestamp', ['C617.1']), ('SystemBootTime', ['35F9.1']), ('DiskSpace', ['E174.1'])]
+privacy manifest flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/PrivacyInfo.xcprivacy: []
+privacy manifest package_info_plus_package_info_plus.bundle/PrivacyInfo.xcprivacy: []
+Assets.car present: True size: 851576
+icon AppIcon60x60@2x.png: 120x120 RGBA bit_depth=8 chunks=['CgBI', 'IHDR', 'iDOT', 'IDAT', 'IDAT', 'IEND'] header_alpha_channel=True size=19460 sha256=ed3a816bcbcdc33713ff2af81f2be83d91be1ce7fc74415497b8982f49970c9f
+icon AppIcon76x76@2x~ipad.png: 152x152 RGBA bit_depth=8 chunks=['CgBI', 'IHDR', 'iDOT', 'IDAT', 'IDAT', 'IEND'] header_alpha_channel=True size=27591 sha256=7be50834ee45751b87a01d4bde2cc23c96a62b3afc22971d3c2555e4f7624a72
+icon AppIcon60x60@2x.png vs source Icon-App-60x60@2x.png: compiled 120x120 min_alpha=255; source 120x120; max_channel_diff=0 differing_pixels=0
+NativeAssetsManifest.json: {"format-version": [1, 0, 0], "native-assets": {"ios_arm64": {"package:objective_c/objective_c.dylib": ["absolute", "objective_c.framework/objective_c"], "package:sqlite3/src/ffi/libsqlite3.g.dart": ["absolute", "sqlite3mc.framework/sqlite3mc"]}}}
+PrivacyInfo NSPrivacyTracking: False
+PrivacyInfo APIs: [('NSPrivacyAccessedAPICategoryUserDefaults', ['CA92.1']), ('NSPrivacyAccessedAPICategoryFileTimestamp', ['C617.1']), ('NSPrivacyAccessedAPICategorySystemBootTime', ['35F9.1']), ('NSPrivacyAccessedAPICategoryDiskSpace', ['E174.1'])]
+
+Mach-O binaries (cpu 16777228 = arm64):
+  Payload/Runner.app/Runner: cpu=16777228 no LC_CODE_SIGNATURE (unsigned) id_dylib=None
+    Runner LC_LOAD_DYLIB: ['/System/Library/Frameworks/Foundation.framework/Foundation', '/usr/lib/libobjc.A.dylib', '/usr/lib/libSystem.B.dylib', '/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation', '/System/Library/Frameworks/CryptoKit.framework/CryptoKit', '/System/Library/Frameworks/LocalAuthentication.framework/LocalAuthentication', '/System/Library/Frameworks/Security.framework/Security', '/System/Library/Frameworks/UIKit.framework/UIKit', '/usr/lib/libc++.1.dylib', '/usr/lib/swift/libswiftCore.dylib', '/usr/lib/swift/libswiftCoreFoundation.dylib', '/usr/lib/swift/libswiftDispatch.dylib', '@rpath/Flutter.framework/Flutter', '/usr/lib/swift/libswiftFoundation.dylib', '/usr/lib/swift/libswiftUIKit.dylib']
+  Payload/Runner.app/Frameworks/App.framework/App: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/App.framework/App'
+  Payload/Runner.app/Frameworks/Flutter.framework/Flutter: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/Flutter.framework/Flutter'
+  Payload/Runner.app/Frameworks/objective_c.framework/objective_c: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/objective_c.framework/objective_c'
+  Payload/Runner.app/Frameworks/sqlite3mc.framework/sqlite3mc: cpu=16777228 signed: adhoc=True cms_signature=False team_id=None id_dylib='@rpath/sqlite3mc.framework/sqlite3mc'
+
+SQLite3MultipleCiphers framework: sqlite3mc.framework
+  version string in binary: 'SQLite3 Multiple Ciphers 2.6.1'
+  SQLite source id in binary: '2026-10-09 15:46:58 be8d059e9a49089ab2dce5ed26dd87aaf598fdc5fbe0b107c0dd758464bcd5e3'
+  binary size: 1899296  sha256: 4c4f94697ef5afe5521d585a5f6c53e7f907807c383c0b200e63bc6498a2bcff
+  framework Info.plist: CFBundleExecutable='sqlite3mc' CFBundleIdentifier='io.flutter.flutter.native-assets.sqlite3mc' MinimumOSVersion='15.0'
+  contains 'sqlite3mc_version': True
+  contains 'chacha20': True
+  contains 'sqlcipher': True
+
+CHECK structure Payload/Runner.app only: PASS
+CHECK CFBundleIdentifier == li.yep.cardflow: PASS
+CHECK MinimumOSVersion == 15.0: PASS
+CHECK no embedded.mobileprovision: PASS
+CHECK no entitlement files: PASS
+CHECK no usage descriptions (Info.plist): PASS
+CHECK PrivacyInfo.xcprivacy bundled: PASS
+CHECK CFBundleDisplayName == 卡序: PASS
+CHECK CFBundleShortVersionString == 0.1.0: PASS
+CHECK CFBundleVersion == 50 (run number): PASS
+CHECK CFBundleIcons primary icon name == AppIcon: PASS
+CHECK Assets.car bundled: PASS
+CHECK AppIcon60x60@2x.png fully opaque and matches the repo source icon (pixels, max channel diff <= 2): PASS
+CHECK AppIcon60x60@2x.png differs from the Flutter default icon of the I-0b IPA: PASS
+CHECK frameworks == App, Flutter, objective_c, sqlite3mc: PASS
+CHECK SQLite3MultipleCiphers framework bundled: PASS
+CHECK native assets manifest maps package:sqlite3 to that framework: PASS
+exit=0
+
+# 结论：交付的 cardflow-unsigned-8149c29.ipa 结构为 Payload/Runner.app；Bundle ID li.yep.cardflow、MinimumOSVersion 15.0、版本 0.1.0、
+# 构建号 = 运行序号（52）；CFBundleIcons 主图标 AppIcon、Assets.car 在包内，60pt@2x 图标与仓库源图逐像素一致（差 0）、全不透明，不是 Flutter 默认图标；4 个嵌套 framework
+# （App、Flutter、objective_c、sqlite3mc）只有临时签名、无团队 ID，主程序未签名，无 embedded.mobileprovision、无 entitlement、无用途说明；
+# 隐私清单为 FileTimestamp、SystemBootTime、DiskSpace 三类（UserDefaults 已按 BL-16 删除）；加密库是 SQLite3 Multiple Ciphers 2.6.1。
+
+----- inspect_ipa.py -----
+"""Inspect an unsigned IPA in memory (no extraction): structure, Info.plist (version, build, icons),
+frameworks and their own privacy manifests, all privacy manifests in the bundle, app icon files and
+Assets.car, SQLite3MultipleCiphers framework, native-assets manifest, signing leftovers, Mach-O
+signature state. Usage: inspect_ipa.py IPA EXPECTED_VERSION EXPECTED_BUILD [SOURCE_ICON_60x60@2x.png]"""
+import hashlib
+import io
+import json
+import plistlib
+import re
+import struct
+import sys
+import zipfile
+import zlib
+
+LC_CODE_SIGNATURE = 0x1d
+LC_ID_DYLIB = 0xd
+LC_LOAD_DYLIB = 0xc
+
+path = sys.argv[1]
+expected_version = sys.argv[2]
+expected_build = sys.argv[3]
+data = open(path, 'rb').read()
+print(f'file: {path.rsplit("/", 1)[-1]}')
+print(f'size_bytes: {len(data)}')
+print(f'sha256: {hashlib.sha256(data).hexdigest()}')
+
+zf = zipfile.ZipFile(io.BytesIO(data))
+names = zf.namelist()
+print(f'entries: {len(names)}')
+top = sorted({n.split('/')[0] for n in names})
+print(f'top_level: {top}')
+apps = sorted({'Payload/' + n.split('/')[1] for n in names if n.startswith('Payload/') and n.split('/')[1]})
+print(f'payload_children: {apps}')
+
+info = plistlib.loads(zf.read('Payload/Runner.app/Info.plist'))
+for k in ['CFBundleIdentifier', 'CFBundleDisplayName', 'CFBundleName', 'CFBundleShortVersionString',
+          'CFBundleVersion', 'MinimumOSVersion', 'CFBundleLocalizations', 'CFBundleExecutable',
+          'UIDeviceFamily', 'DTPlatformName', 'DTPlatformVersion', 'DTSDKName', 'DTXcode', 'DTXcodeBuild']:
+    print(f'Info.plist {k}: {info.get(k)!r}')
+usage = sorted(k for k in info if k.endswith('UsageDescription'))
+print('Info.plist usage descriptions:', usage)
+print('Info.plist UIBackgroundModes:', info.get('UIBackgroundModes'))
+icons = info.get('CFBundleIcons') or {}
+primary = icons.get('CFBundlePrimaryIcon') or {}
+print('Info.plist CFBundleIcons:', json.dumps(icons, ensure_ascii=False, sort_keys=True))
+print('Info.plist CFBundleIcons~ipad:', json.dumps(info.get('CFBundleIcons~ipad'), ensure_ascii=False, sort_keys=True))
+
+
+def exists(prefix):
+    return any(n == prefix or n.startswith(prefix + '/') for n in names)
+
+
+print('embedded.mobileprovision present:', exists('Payload/Runner.app/embedded.mobileprovision'))
+print('Runner.app/_CodeSignature present:', exists('Payload/Runner.app/_CodeSignature'))
+entitlements = [n for n in names if n.endswith(('.entitlements', '.xcent'))]
+print('entitlement files:', entitlements)
+frameworks = sorted({n.split('/')[3] for n in names
+                     if n.startswith('Payload/Runner.app/Frameworks/') and n.count('/') >= 4})
+print('Frameworks:', frameworks)
+bundles = sorted({n.split('/')[2] for n in names if n.startswith('Payload/Runner.app/') and n.split('/')[2].endswith('.bundle')})
+print('Resource bundles:', bundles)
+print('nested _CodeSignature dirs:', sorted({n.split('/_CodeSignature/')[0] for n in names if '/_CodeSignature/' in n}))
+for fw in frameworks:
+    own = f'Payload/Runner.app/Frameworks/{fw}/PrivacyInfo.xcprivacy' in names
+    print(f'framework {fw}: own PrivacyInfo.xcprivacy = {own}')
+
+
+def apis(entry):
+    p = plistlib.loads(zf.read(entry))
+    return [(a['NSPrivacyAccessedAPIType'].replace('NSPrivacyAccessedAPICategory', ''),
+             a['NSPrivacyAccessedAPITypeReasons']) for a in p.get('NSPrivacyAccessedAPITypes', [])]
+
+
+for entry in sorted(n for n in names if n.endswith('/PrivacyInfo.xcprivacy')):
+    print(f'privacy manifest {entry[len("Payload/Runner.app/"):]}: {apis(entry)}')
+
+assets_car = 'Payload/Runner.app/Assets.car'
+print('Assets.car present:', assets_car in names, 'size:', zf.getinfo(assets_car).file_size if assets_car in names else None)
+icon_pngs = sorted(n for n in names if n.startswith('Payload/Runner.app/AppIcon') and n.endswith('.png'))
+
+
+
+def png_chunks(png):
+    """[(chunk type, data)]；Xcode 的 actool 产出的图标是 Apple 的 CgBI 变体（IHDR 之前多一个 CgBI 块）。"""
+    off, out = 8, []
+    while off + 8 <= len(png):
+        length, kind = struct.unpack('>I4s', png[off:off + 8])
+        out.append((kind.decode('latin-1'), png[off + 8:off + 8 + length]))
+        off += 12 + length
+    return out
+
+
+def png_info(png):
+    if png[:8] != b'\x89PNG\r\n\x1a\n':
+        return None
+    chunks = png_chunks(png)
+    ihdr = dict(chunks).get('IHDR')
+    if ihdr is None:
+        return None
+    w, h, depth, color = struct.unpack('>IIBB', ihdr[:10])
+    names = [k for k, _ in chunks]
+    return {'w': w, 'h': h, 'depth': depth, 'color': color, 'chunks': names}
+
+
+for n in icon_pngs:
+    png = zf.read(n)
+    info_png = png_info(png)
+    if info_png is None:
+        print(f'icon {n}: not a PNG')
+        continue
+    kind = {0: 'gray', 2: 'RGB', 3: 'palette', 4: 'gray+alpha', 6: 'RGBA'}.get(info_png['color'], info_png['color'])
+    print(f'icon {n[len("Payload/Runner.app/"):]}: {info_png["w"]}x{info_png["h"]} {kind} bit_depth={info_png["depth"]} '
+          f'chunks={info_png["chunks"]} header_alpha_channel={info_png["color"] in (4, 6)} size={len(png)} '
+          f'sha256={hashlib.sha256(png).hexdigest()}')
+
+def png_pixels(png):
+    """解码 8 位 RGB/RGBA PNG 与 Apple 的 CgBI 变体（IDAT 为无 zlib 头的 deflate，像素 BGRA、预乘 alpha），
+    返回 (宽, 高, [(r, g, b, a), ...])。只支持本工程图标用到的格式（8 位、颜色类型 2 或 6、无隔行）。"""
+    chunks = png_chunks(png)
+    names = [k for k, _ in chunks]
+    w, h, depth, color, _, _, interlace = struct.unpack('>IIBBBBB', dict(chunks)['IHDR'][:13])
+    assert depth == 8 and color in (2, 6) and interlace == 0, (depth, color, interlace)
+    data = b''.join(d for k, d in chunks if k == 'IDAT')
+    raw = zlib.decompressobj(-15).decompress(data) if 'CgBI' in names else zlib.decompress(data)
+    bpp = 4 if color == 6 else 3
+    stride = w * bpp
+    rows, prev, off = [], bytearray(stride), 0
+    for _ in range(h):
+        ftype, line = raw[off], bytearray(raw[off + 1:off + 1 + stride])
+        off += 1 + stride
+        for i in range(stride):
+            a = line[i - bpp] if i >= bpp else 0
+            b = prev[i]
+            c = prev[i - bpp] if i >= bpp else 0
+            if ftype == 1:
+                line[i] = (line[i] + a) & 0xFF
+            elif ftype == 2:
+                line[i] = (line[i] + b) & 0xFF
+            elif ftype == 3:
+                line[i] = (line[i] + (a + b) // 2) & 0xFF
+            elif ftype == 4:
+                pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
+                line[i] = (line[i] + (a if pa <= pb and pa <= pc else b if pb <= pc else c)) & 0xFF
+        rows.append(bytes(line))
+        prev = line
+    pixels = []
+    for line in rows:
+        for x in range(w):
+            px = line[x * bpp:(x + 1) * bpp]
+            if 'CgBI' in names:
+                bl, g, r, a = px
+            elif bpp == 4:
+                r, g, bl, a = px
+            else:
+                r, g, bl, a = px[0], px[1], px[2], 255
+            pixels.append((r, g, bl, a))
+    return w, h, pixels
+
+
+# 编译进 IPA 的 60pt@2x 图标与仓库里的源图标（ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png，
+# 由命令行第 4 个参数给出路径）逐像素比较：全部不透明（alpha = 255），RGB 与源图一致（CgBI 是预乘 alpha，alpha = 255 时与原值相同）。
+icon_matches_source = None
+if len(sys.argv) > 4 and 'Payload/Runner.app/AppIcon60x60@2x.png' in names:
+    cw, ch, cpx = png_pixels(zf.read('Payload/Runner.app/AppIcon60x60@2x.png'))
+    sw, sh, spx = png_pixels(open(sys.argv[4], 'rb').read())
+    alpha_min = min(p[3] for p in cpx)
+    diff = [max(abs(x - y) for x, y in zip(c[:3], s[:3])) for c, s in zip(cpx, spx)] if (cw, ch) == (sw, sh) else None
+    print(f'icon AppIcon60x60@2x.png vs source Icon-App-60x60@2x.png: compiled {cw}x{ch} min_alpha={alpha_min}; source {sw}x{sh}; '
+          f'max_channel_diff={max(diff) if diff else None} differing_pixels={sum(1 for d in diff if d) if diff else None}')
+    icon_matches_source = diff is not None and alpha_min == 255 and max(diff) <= 2
+
+
+manifest_name = 'Payload/Runner.app/Frameworks/App.framework/flutter_assets/NativeAssetsManifest.json'
+manifest = json.loads(zf.read(manifest_name)) if manifest_name in names else None
+print('NativeAssetsManifest.json:', json.dumps(manifest, ensure_ascii=False, sort_keys=True))
+
+privacy = 'Payload/Runner.app/PrivacyInfo.xcprivacy'
+if privacy in names:
+    p = plistlib.loads(zf.read(privacy))
+    print('PrivacyInfo NSPrivacyTracking:', p.get('NSPrivacyTracking'))
+    print('PrivacyInfo APIs:', [(a['NSPrivacyAccessedAPIType'], a['NSPrivacyAccessedAPITypeReasons'])
+                                 for a in p.get('NSPrivacyAccessedAPITypes', [])])
+
+
+def thin_slices(b):
+    magic = struct.unpack('>I', b[:4])[0]
+    if magic in (0xcafebabe, 0xcafebabf):
+        n = struct.unpack('>I', b[4:8])[0]
+        out = []
+        for i in range(n):
+            if magic == 0xcafebabe:
+                cputype, _, off, size, _ = struct.unpack('>iiIII', b[8 + i * 20: 28 + i * 20])
+            else:
+                cputype, _, off, size, _, _ = struct.unpack('>iiQQII', b[8 + i * 32: 40 + i * 32])
+            out.append(b[off:off + size])
+        return out
+    return [b]
+
+
+def macho(b):
+    """Return (cputype, signature description, id_dylib, load_dylibs)."""
+    magic = struct.unpack('<I', b[:4])[0]
+    if magic not in (0xfeedfacf, 0xfeedface):
+        return None
+    is64 = magic == 0xfeedfacf
+    cputype, _, _, ncmds, _, _ = struct.unpack('<iiIIII', b[4:28])
+    off = 32 if is64 else 28
+    sig = 'no LC_CODE_SIGNATURE (unsigned)'
+    id_dylib = None
+    loads = []
+    for _ in range(ncmds):
+        cmd, cmdsize = struct.unpack('<II', b[off:off + 8])
+        if cmd in (LC_ID_DYLIB, LC_LOAD_DYLIB):
+            name_off = struct.unpack('<I', b[off + 8:off + 12])[0]
+            raw = b[off + name_off:off + cmdsize]
+            name = raw[:raw.index(b'\0')].decode()
+            if cmd == LC_ID_DYLIB:
+                id_dylib = name
+            else:
+                loads.append(name)
+        if cmd == LC_CODE_SIGNATURE:
+            dataoff, datasize = struct.unpack('<II', b[off + 8:off + 16])
+            blob = b[dataoff:dataoff + datasize]
+            sb_magic, _, count = struct.unpack('>III', blob[:12])
+            has_cms = False
+            flags = team = None
+            for i in range(count):
+                _, boff = struct.unpack('>II', blob[12 + i * 8: 20 + i * 8])
+                bmagic, blen = struct.unpack('>II', blob[boff:boff + 8])
+                if bmagic == 0xfade0b01 and blen > 8:
+                    has_cms = True
+                if bmagic == 0xfade0c02:
+                    cd = blob[boff:boff + blen]
+                    version, flags = struct.unpack('>II', cd[8:16])
+                    if version >= 0x20200:
+                        team_off = struct.unpack('>I', cd[48:52])[0]
+                        if team_off:
+                            team = cd[team_off:cd.index(b'\0', team_off)].decode()
+            adhoc = bool(flags is not None and flags & 0x2)
+            sig = f'signed: adhoc={adhoc} cms_signature={has_cms} team_id={team!r}'
+        off += cmdsize
+    return cputype, sig, id_dylib, loads
+
+
+print()
+print('Mach-O binaries (cpu 16777228 = arm64):')
+binaries = ['Payload/Runner.app/Runner'] + [
+    f'Payload/Runner.app/Frameworks/{fw}/{fw[:-len(".framework")]}' for fw in frameworks]
+for name in binaries:
+    if name not in names:
+        print(f'  {name}: MISSING')
+        continue
+    for sl in thin_slices(zf.read(name)):
+        cpu, sig, id_dylib, loads = macho(sl)
+        print(f'  {name}: cpu={cpu} {sig} id_dylib={id_dylib!r}')
+        if name.endswith('/Runner'):
+            print(f'    Runner LC_LOAD_DYLIB: {loads}')
+
+print()
+cipher_fw = None
+for fw in frameworks:
+    if fw in ('App.framework', 'Flutter.framework'):
+        continue
+    binary = zf.read(f'Payload/Runner.app/Frameworks/{fw}/{fw[:-len(".framework")]}')
+    m = re.search(rb'SQLite3 Multiple Ciphers [0-9][0-9.]*', binary)
+    if m:
+        cipher_fw = fw
+        bname = f'Payload/Runner.app/Frameworks/{fw}/{fw[:-len(".framework")]}'
+        print(f'SQLite3MultipleCiphers framework: {fw}')
+        print(f'  version string in binary: {m.group(0).decode()!r}')
+        sv = re.search(rb'20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9a-f]{64}', binary)
+        print(f'  SQLite source id in binary: {sv.group(0).decode() if sv else None!r}')
+        print(f'  binary size: {len(binary)}  sha256: {hashlib.sha256(binary).hexdigest()}')
+        fw_info = plistlib.loads(zf.read(f'Payload/Runner.app/Frameworks/{fw}/Info.plist'))
+        print(f'  framework Info.plist: CFBundleExecutable={fw_info.get("CFBundleExecutable")!r} '
+              f'CFBundleIdentifier={fw_info.get("CFBundleIdentifier")!r} MinimumOSVersion={fw_info.get("MinimumOSVersion")!r}')
+        for marker in (b'sqlite3mc_version', b'chacha20', b'sqlcipher'):
+            print(f'  contains {marker.decode()!r}: {marker in binary}')
+print()
+checks = {
+    'structure Payload/Runner.app only': top == ['Payload'] and apps == ['Payload/Runner.app'],
+    'CFBundleIdentifier == li.yep.cardflow': info.get('CFBundleIdentifier') == 'li.yep.cardflow',
+    'MinimumOSVersion == 15.0': info.get('MinimumOSVersion') == '15.0',
+    'no embedded.mobileprovision': not exists('Payload/Runner.app/embedded.mobileprovision'),
+    'no entitlement files': not entitlements,
+    'no usage descriptions (Info.plist)': not usage,
+    'PrivacyInfo.xcprivacy bundled': privacy in names,
+    'CFBundleDisplayName == 卡序': info.get('CFBundleDisplayName') == '卡序',
+    f'CFBundleShortVersionString == {expected_version}': info.get('CFBundleShortVersionString') == expected_version,
+    f'CFBundleVersion == {expected_build} (run number)': info.get('CFBundleVersion') == expected_build,
+    'CFBundleIcons primary icon name == AppIcon': primary.get('CFBundleIconName') == 'AppIcon',
+    'Assets.car bundled': assets_car in names,
+    'AppIcon60x60@2x.png fully opaque and matches the repo source icon (pixels, max channel diff <= 2)':
+        icon_matches_source is True,
+    # I-0b 的 IPA（4d720c9，Flutter 默认图标）里同名文件的 sha256：换了图标就必须不同。
+    'AppIcon60x60@2x.png differs from the Flutter default icon of the I-0b IPA':
+        'Payload/Runner.app/AppIcon60x60@2x.png' in names and hashlib.sha256(
+            zf.read('Payload/Runner.app/AppIcon60x60@2x.png')).hexdigest()
+        != '9d328d1d45f386375e28736159b4ffa53c4930e3962016dbf98b029a4e80121c',
+    'frameworks == App, Flutter, objective_c, sqlite3mc': frameworks == [
+        'App.framework', 'Flutter.framework', 'objective_c.framework', 'sqlite3mc.framework'],
+    'SQLite3MultipleCiphers framework bundled': cipher_fw is not None,
+    'native assets manifest maps package:sqlite3 to that framework':
+        bool(manifest) and cipher_fw is not None and cipher_fw in json.dumps(manifest),
+}
+for k, v in checks.items():
+    print(f'CHECK {k}: {"PASS" if v else "FAIL"}')
+sys.exit(0 if all(checks.values()) else 1)

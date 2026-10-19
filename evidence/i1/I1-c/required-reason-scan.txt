@@ -1,0 +1,417 @@
+# required-reason-scan.txt：Required Reason API 扫描（BL-16，简报 I1-c §6 第 8 条）与 ios/Runner/PrivacyInfo.xcprivacy 的结论
+# 生成时间：2026-10-19T07:12:38Z；本地源码提交：8149c29
+# 来源：ios-unsigned 的"Required Reason API scan (BL-16)"步骤，artifact required-reason-scan——第 1 次构建运行 39211270256（源码 6547054），
+#       第 2 次构建运行 39212910838（源码 8149c29，交付）。下文"原文"是 artifact 里 required-reason-scan.txt 与 hits.tsv 的全文（cat），
+#       另附本机对两次 IPA 的只读核对（python3 -I，内存中解析，不解压）。过滤：无。
+#
+# 结论（规则：主二进制或没有自带清单的 framework 命中的类别保留在 App 清单，其余删除，理由码不变）：
+# - UserDefaults（CA92.1）：主二进制、App/objective_c/sqlite3mc/Flutter 都没有 _OBJC_CLASS_$_NSUserDefaults 或 NSUserDefaults 字样 → 删除（8149c29）。
+# - FileTimestamp（C617.1）：主二进制导入 _NSFileCreationDate（二进制里有 installTime/updateTime 字样，应是 package_info_plus 读安装时间），
+#   sqlite3mc（没有自带清单）导入 _stat/_fstat/_lstat → 保留。
+# - SystemBootTime（35F9.1）：sqlite3mc 导入 _sysctlbyname，扫描规则算命中 → 保留。补充核对：sqlite3mc 里唯一的 sysctl 名称字符串是 hw.ncpu，
+#   没有 kern.boottime、systemUptime、mach_absolute_time——它不是在读开机时间，这一条属多报；按扫描规则与"多报不影响安装"（BL-16）保守保留，
+#   是否删除请主会话裁决（删除要再构建一次）。
+# - DiskSpace（E174.1）：sqlite3mc 导入 _statfs/_fstatfs → 保留（用途未逐行核实，按规则保留）。
+# - 自带清单：Flutter.framework 有（FileTimestamp 0A2A.1、C617.1；SystemBootTime 35F9.1），它的命中由它自己的清单承担；App.framework、
+#   objective_c.framework、sqlite3mc.framework 没有；资源包 flutter_secure_storage_darwin、package_info_plus 自带清单（API 列表为空）。
+# - PrivacyInfo 有改动：8149c29 删除 UserDefaults，保留其余三类（理由码不变）；交付的是第 2 次构建的 IPA。第 2 次扫描与第 1 次的命中相同，
+#   App 清单只剩三类，结论一致（UserDefaults 未登记、仍无命中）。
+
+## 第 1 次构建（运行 39211270256，源码 6547054）的扫描原文
+$ cat required-reason-scan.txt
+# Required Reason API 扫描（BL-16）：2026-10-19T06:48:37Z，源码 65470549290865861fc04bff388419013398c815，运行 39211270256
+# 工具：nm = /usr/bin/nm，strings = /usr/bin/strings；Xcode 26.6 Build version 17F113 
+== Runner.app/Runner（主二进制）（292640 字节；自带 PrivacyInfo.xcprivacy：main）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _NSFileCreationDate ；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/App.framework/App（9760336 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u 无；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/Flutter.framework/Flutter（9416112 字节；自带 PrivacyInfo.xcprivacy：yes）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _NSURLContentModificationDateKey _fstat _lstat _stat ；strings 无
+  SystemBootTime：nm -u _sysctlbyname ；strings systemUptime(1) 
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/objective_c.framework/objective_c（203280 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u 无；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/sqlite3mc.framework/sqlite3mc（1899296 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _fstat _lstat _stat ；strings 无
+  SystemBootTime：nm -u _sysctlbyname ；strings 无
+  DiskSpace：nm -u _fstatfs _statfs ；strings 无
+== Runner.app 内的全部隐私清单
+-- ./Frameworks/Flutter.framework/PrivacyInfo.xcprivacy
+{
+  "NSPrivacyAccessedAPITypes" => [
+    0 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryFileTimestamp"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "0A2A.1"
+        1 => "C617.1"
+      ]
+    }
+    1 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategorySystemBootTime"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "35F9.1"
+      ]
+    }
+  ]
+  "NSPrivacyCollectedDataTypes" => [
+  ]
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+  ]
+}
+-- ./PrivacyInfo.xcprivacy
+{
+  "NSPrivacyAccessedAPITypes" => [
+    0 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryUserDefaults"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "CA92.1"
+      ]
+    }
+    1 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryFileTimestamp"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "C617.1"
+      ]
+    }
+    2 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategorySystemBootTime"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "35F9.1"
+      ]
+    }
+    3 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryDiskSpace"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "E174.1"
+      ]
+    }
+  ]
+  "NSPrivacyCollectedDataTypes" => [
+  ]
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+  ]
+}
+-- ./flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/PrivacyInfo.xcprivacy
+{
+  "NSPrivacyAccessedAPITypes" => [
+  ]
+  "NSPrivacyCollectedDataTypes" => [
+  ]
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+  ]
+}
+-- ./package_info_plus_package_info_plus.bundle/PrivacyInfo.xcprivacy
+{
+  "NSPrivacyAccessedAPITypes" => [
+  ]
+  "NSPrivacyCollectedDataTypes" => [
+  ]
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+  ]
+}
+== 结论：主二进制或没有自带清单的 framework 命中的类别留在 ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）
+  UserDefaults：App 清单已登记；须由 App 清单承担的命中：无；自带清单的 framework 命中：无 → 删除
+  FileTimestamp：App 清单已登记；须由 App 清单承担的命中：Runner.app/Runner（主二进制） Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+  SystemBootTime：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+  DiskSpace：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：无 → 保留
+[exit=0]
+$ cat hits.tsv
+Runner.app/Runner（主二进制）	main	FileTimestamp
+Frameworks/Flutter.framework/Flutter	yes	FileTimestamp
+Frameworks/Flutter.framework/Flutter	yes	SystemBootTime
+Frameworks/sqlite3mc.framework/sqlite3mc	no	FileTimestamp
+Frameworks/sqlite3mc.framework/sqlite3mc	no	SystemBootTime
+Frameworks/sqlite3mc.framework/sqlite3mc	no	DiskSpace
+[exit=0]
+
+## 第 2 次构建（运行 39212910838，源码 8149c29，交付）的扫描原文
+$ cat required-reason-scan.txt
+# Required Reason API 扫描（BL-16）：2026-10-19T07:06:05Z，源码 8149c29d8db8e8a226336a90e809b4ad208bea66，运行 39212910838
+# 工具：nm = /usr/bin/nm，strings = /usr/bin/strings；Xcode 26.6 Build version 17F113 
+== Runner.app/Runner（主二进制）（292640 字节；自带 PrivacyInfo.xcprivacy：main）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _NSFileCreationDate ；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/App.framework/App（9760336 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u 无；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/Flutter.framework/Flutter（9416112 字节；自带 PrivacyInfo.xcprivacy：yes）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _NSURLContentModificationDateKey _fstat _lstat _stat ；strings 无
+  SystemBootTime：nm -u _sysctlbyname ；strings systemUptime(1) 
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/objective_c.framework/objective_c（203280 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u 无；strings 无
+  SystemBootTime：nm -u 无；strings 无
+  DiskSpace：nm -u 无；strings 无
+== Frameworks/sqlite3mc.framework/sqlite3mc（1899296 字节；自带 PrivacyInfo.xcprivacy：no）
+  UserDefaults：nm -u 无；strings 无
+  FileTimestamp：nm -u _fstat _lstat _stat ；strings 无
+  SystemBootTime：nm -u _sysctlbyname ；strings 无
+  DiskSpace：nm -u _fstatfs _statfs ；strings 无
+== Runner.app 内的全部隐私清单
+-- ./Frameworks/Flutter.framework/PrivacyInfo.xcprivacy
+{
+  "NSPrivacyAccessedAPITypes" => [
+    0 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryFileTimestamp"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "0A2A.1"
+        1 => "C617.1"
+      ]
+    }
+    1 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategorySystemBootTime"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "35F9.1"
+      ]
+    }
+  ]
+  "NSPrivacyCollectedDataTypes" => [
+  ]
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+  ]
+}
+-- ./PrivacyInfo.xcprivacy
+{
+  "NSPrivacyAccessedAPITypes" => [
+    0 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryFileTimestamp"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "C617.1"
+      ]
+    }
+    1 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategorySystemBootTime"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "35F9.1"
+      ]
+    }
+    2 => {
+      "NSPrivacyAccessedAPIType" => "NSPrivacyAccessedAPICategoryDiskSpace"
+      "NSPrivacyAccessedAPITypeReasons" => [
+        0 => "E174.1"
+      ]
+    }
+  ]
+  "NSPrivacyCollectedDataTypes" => [
+  ]
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+  ]
+}
+-- ./flutter_secure_storage_darwin_flutter_secure_storage_darwin.bundle/PrivacyInfo.xcprivacy
+{
+  "NSPrivacyAccessedAPITypes" => [
+  ]
+  "NSPrivacyCollectedDataTypes" => [
+  ]
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+  ]
+}
+-- ./package_info_plus_package_info_plus.bundle/PrivacyInfo.xcprivacy
+{
+  "NSPrivacyAccessedAPITypes" => [
+  ]
+  "NSPrivacyCollectedDataTypes" => [
+  ]
+  "NSPrivacyTracking" => false
+  "NSPrivacyTrackingDomains" => [
+  ]
+}
+== 结论：主二进制或没有自带清单的 framework 命中的类别留在 ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）
+  UserDefaults：App 清单未登记；须由 App 清单承担的命中：无；自带清单的 framework 命中：无 → 删除
+  FileTimestamp：App 清单已登记；须由 App 清单承担的命中：Runner.app/Runner（主二进制） Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+  SystemBootTime：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 保留
+  DiskSpace：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3mc.framework/sqlite3mc ；自带清单的 framework 命中：无 → 保留
+[exit=0]
+$ cat hits.tsv
+Runner.app/Runner（主二进制）	main	FileTimestamp
+Frameworks/Flutter.framework/Flutter	yes	FileTimestamp
+Frameworks/Flutter.framework/Flutter	yes	SystemBootTime
+Frameworks/sqlite3mc.framework/sqlite3mc	no	FileTimestamp
+Frameworks/sqlite3mc.framework/sqlite3mc	no	SystemBootTime
+Frameworks/sqlite3mc.framework/sqlite3mc	no	DiskSpace
+[exit=0]
+
+## 本机补充核对（只读）：sysctl 名称字符串与相关字样
+$ cat sysctl_names.py
+"""对 IPA 里的二进制做只读核对（内存中解析，不解压）：sysctl 名称字符串、开机时间与磁盘空间相关字样、
+主二进制里 NSFileCreationDate 的上下文字样（哪个插件在读文件时间戳）。用法：sysctl_names.py IPA"""
+import re
+import sys
+import zipfile
+
+zf = zipfile.ZipFile(sys.argv[1])
+binaries = [
+    'Payload/Runner.app/Runner',
+    'Payload/Runner.app/Frameworks/App.framework/App',
+    'Payload/Runner.app/Frameworks/objective_c.framework/objective_c',
+    'Payload/Runner.app/Frameworks/sqlite3mc.framework/sqlite3mc',
+]
+for name in binaries:
+    b = zf.read(name)
+    names = sorted({m.group(0).decode() for m in re.finditer(
+        rb'(?<![A-Za-z0-9_.])(?:hw|kern|machdep|vm|net|sysctl)\.[A-Za-z0-9_.]{2,60}', b)})
+    print(f'{name[len("Payload/Runner.app/"):]}: sysctl 名称字符串 = {names}')
+    for kw in (b'kern.boottime', b'systemUptime', b'mach_absolute_time', b'statfs', b'NSUserDefaults',
+               b'NSFileCreationDate', b'installTime', b'updateTime'):
+        print(f'  含 {kw.decode()!r}: {kw in b}')
+[exit=0]
+$ python3 -I sysctl_names.py cardflow-unsigned-6547054.ipa
+Runner: sysctl 名称字符串 = []
+  含 'kern.boottime': False
+  含 'systemUptime': False
+  含 'mach_absolute_time': False
+  含 'statfs': False
+  含 'NSUserDefaults': False
+  含 'NSFileCreationDate': True
+  含 'installTime': True
+  含 'updateTime': True
+Frameworks/App.framework/App: sysctl 名称字符串 = []
+  含 'kern.boottime': False
+  含 'systemUptime': False
+  含 'mach_absolute_time': False
+  含 'statfs': False
+  含 'NSUserDefaults': False
+  含 'NSFileCreationDate': False
+  含 'installTime': True
+  含 'updateTime': True
+Frameworks/objective_c.framework/objective_c: sysctl 名称字符串 = []
+  含 'kern.boottime': False
+  含 'systemUptime': False
+  含 'mach_absolute_time': False
+  含 'statfs': False
+  含 'NSUserDefaults': False
+  含 'NSFileCreationDate': False
+  含 'installTime': False
+  含 'updateTime': False
+Frameworks/sqlite3mc.framework/sqlite3mc: sysctl 名称字符串 = ['hw.ncpu']
+  含 'kern.boottime': False
+  含 'systemUptime': False
+  含 'mach_absolute_time': False
+  含 'statfs': True
+  含 'NSUserDefaults': False
+  含 'NSFileCreationDate': False
+  含 'installTime': False
+  含 'updateTime': False
+[exit=0]
+$ python3 -I sysctl_names.py cardflow-unsigned-8149c29.ipa
+Runner: sysctl 名称字符串 = []
+  含 'kern.boottime': False
+  含 'systemUptime': False
+  含 'mach_absolute_time': False
+  含 'statfs': False
+  含 'NSUserDefaults': False
+  含 'NSFileCreationDate': True
+  含 'installTime': True
+  含 'updateTime': True
+Frameworks/App.framework/App: sysctl 名称字符串 = []
+  含 'kern.boottime': False
+  含 'systemUptime': False
+  含 'mach_absolute_time': False
+  含 'statfs': False
+  含 'NSUserDefaults': False
+  含 'NSFileCreationDate': False
+  含 'installTime': True
+  含 'updateTime': True
+Frameworks/objective_c.framework/objective_c: sysctl 名称字符串 = []
+  含 'kern.boottime': False
+  含 'systemUptime': False
+  含 'mach_absolute_time': False
+  含 'statfs': False
+  含 'NSUserDefaults': False
+  含 'NSFileCreationDate': False
+  含 'installTime': False
+  含 'updateTime': False
+Frameworks/sqlite3mc.framework/sqlite3mc: sysctl 名称字符串 = ['hw.ncpu']
+  含 'kern.boottime': False
+  含 'systemUptime': False
+  含 'mach_absolute_time': False
+  含 'statfs': True
+  含 'NSUserDefaults': False
+  含 'NSFileCreationDate': False
+  含 'installTime': False
+  含 'updateTime': False
+[exit=0]
+
+## 改动后的 App 清单
+$ git show 8149c29 --stat --format='%h %s' | cut -c1-120
+8149c29 移动端隐私清单（BL-16 扫描结论，第 1 次 iOS 构建 39211270256 的 required-reason-scan）：删�
+
+ apps/mobile/README.md                        |  7 +++++++
+ apps/mobile/ios/Runner/PrivacyInfo.xcprivacy | 21 +++++++--------------
+ apps/mobile/test/ios/ios_config_test.dart    |  9 +++++++--
+ 3 files changed, 21 insertions(+), 16 deletions(-)
+$ cat apps/mobile/ios/Runner/PrivacyInfo.xcprivacy
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  卡序 App 自身的隐私清单。不跟踪、不收集数据（数据只在本机）。
+  Required Reason API 按 BL-16 的二进制扫描结论登记（CI ios-unsigned 的 Required Reason API 扫描，
+  结论见 evidence/i1/I1-c/required-reason-scan.txt）：只登记主二进制或没有自带清单的 framework 用到的类别。
+    FileTimestamp  C617.1  主二进制（NSFileCreationDate，读 App 容器内文件的时间戳）；sqlite3mc（stat/fstat/lstat）
+    SystemBootTime 35F9.1  sqlite3mc（sysctlbyname，实读 hw.ncpu、未见 kern.boottime；按扫描规则保守保留）
+    DiskSpace      E174.1  sqlite3mc（statfs/fstatfs）
+  UserDefaults（CA92.1）：主二进制与各 framework 都没有用到，已删除。
+  Flutter 引擎（Flutter.framework）与各插件（资源包）自带各自的隐私清单，不在此重复。
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategorySystemBootTime</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>35F9.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>E174.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
+[exit=0]

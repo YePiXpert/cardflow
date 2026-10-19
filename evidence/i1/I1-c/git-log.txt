@@ -1,0 +1,78 @@
+# git-log.txt：I-1c 的提交（5c4f811 之后，均已推送到 origin/main：I-1c 代理 6 个、主会话 4 个（图标与版本、简报与接续说明、执行记录）、I1-c2 续做），及署名扫描
+# 生成时间：2026-10-19T07:13:34Z；本地 HEAD：8149c29（本文件随后的证据提交不在列表中）
+# 过滤：无；以下为 git 原文。扫描用的正则把模型/厂商名里的一个字母写成字符类，避免证据里出现这些名字本身。
+$ git log --date=iso-strict --format='%h %ad %an <%ae>%n    %s%n    trailers:[%(trailers:only,separator=; )]' 5c4f811..HEAD
+8149c29 2026-10-19T07:52:06+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端隐私清单（BL-16 扫描结论，第 1 次 iOS 构建 39211270256 的 required-reason-scan）：删除没有任何命中的 UserDefaults（CA92.1）；保留 FileTimestamp（C617.1：主二进制导入 NSFileCreationDate，sqlite3mc 导入 stat/fstat/lstat）、SystemBootTime（35F9.1：sqlite3mc 导入 sysctlbyname，实读 hw.ncpu、未见 kern.boottime，按扫描规则保守保留）、DiskSpace（E174.1：sqlite3mc 导入 statfs/fstatfs），理由码不变；Flutter.framework 与插件资源包自带清单不重复；清单注释写明来源；iOS 配置测试改为按结论断言三类登记、UserDefaults 不在清单里；README 补隐私清单结论与 SystemBootTime 的保守保留
+    trailers:[]
+6547054 2026-10-19T07:20:49+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    文档：apps/mobile README 补 I-1c 与公测版——v4 表清单与新建/从 v1、v2、v3 升级的结构比较、约束与触发器（账单版本追加只读、状态机、分配合计、linked_repayment_id）；账单、分期与还款一节：交易与账期归属（可能账期）、账单与版本、负债四分法（含 12 期分期的归属例子）、分期算法与取整（拆分尾差、HALF_UP 费用、各期账单日、名义与实际年化）、还款状态机（每条转移的动作与条件、双侧时间、额度释放）、差异项（生成条件、处理结果、生命周期）、页面与演示数据；公测版 0.1.0 一节（图标检查、阶段代号防回归、公测说明、关于页）；I-1c 的偏离与约定；领域层补 installment 模块；账单的数据层到领域对象映射；给 I-2 的接口（组装 ModelInputs/协议文档的来源、plan_reservations 挂在哪里、测试工厂）；仓库与 provider、目录、隔离查询数（237）与欢迎页说明更新。根 README 移动端一行状态改为"I-1 已交付（公测版 0.1.0 beta 1）"，描述补账单、分期、还款
+    trailers:[]
+1a17b08 2026-10-19T07:17:01+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    CI（BL-16 与公测版图标检查）：ios-unsigned 在上传 IPA 后加 Required Reason API 扫描——对 Runner.app 主二进制与 Frameworks/ 下每个二进制用 nm -u（导入符号）与 strings（ObjC 选择器、常量名、sysctl 名）查 UserDefaults、FileTimestamp、SystemBootTime、DiskSpace 四类 API，逐个二进制列出命中，查每个 framework 是否自带 PrivacyInfo.xcprivacy 并列出包内全部隐私清单，按"主二进制或没有自带清单的 framework 命中的类别保留在 App 清单"给出每类的保留/删除结论（只报告，不判失败），上传为 artifact required-reason-scan；Verify IPA 增加检查：构建出的 Info.plist 有 CFBundleIcons（主图标名 AppIcon）且 Runner.app/Assets.car 存在，并写进运行摘要
+    trailers:[]
+a001763 2026-10-19T07:09:58+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    CI（BL-14）：mobile.yml 的 4 个第三方 action 固定到 40 位提交 SHA，行尾注释版本号（actions/checkout v7.0.1、subosito/flutter-action v2.23.0、astral-sh/setup-uv v10.3.0、actions/upload-artifact v7.0.2，均为原标签当前指向的提交，行为不变）；protocol-parity 的产出数写死并注明来源：golden 两端各 3 个（regression_2026-10-16_10000.v1.json 的 1 个 cycles + 2 个 verify）、随机 1200 个、Schema 校验 cycles 301 + verify 902，不等即失败
+    trailers:[]
+e68cc41 2026-10-19T07:05:58+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端公测版：P-22 首次使用页底部与新增的「关于」显示同一段公测说明（"公测版 0.1.0：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。删除 App 或「重置本地数据」会永久删除全部数据；目前还没有备份与导出，后续版本提供。"）；「关于」（我的 › 关于卡序，/settings/about）：名称"卡序 CardFlow"、"公测版"标识、版本与构建号（与诊断页同一来源 package_info_plus）、源码地址 github.com/YePiXpert/cardflow（可选中的纯文本 + 复制，不打开浏览器、不加依赖）、反馈方式"我的 › 诊断信息 › 复制诊断信息，附上问题描述发到 GitHub Issues"与「打开诊断信息」；NoticeCard 可设外边距；测试：说明原文逐字与简报一致、版本号与 pubspec.yaml 一致、P-22 最后一节是说明、关于页文案与版本（含读取中/读取失败）、复制到剪贴板、"我的"入口；「关于」加入可访问性页面清单
+    trailers:[]
+76344a9 2026-10-19T07:01:56+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端公测版：界面文字不再出现内部阶段代号——"I-3 提供""I-4 提供""消费规划在 I-2 提供""I-2 使用""提醒降级在 I-4""导入阶段（I-3）"等改为"后续版本提供"一类说法（欢迎页开始方式与应用锁建议、总览/卡包/账单中心的首次空白、规划页、情景的额度变化与设为决策情景、信用账户详情的活动与权益、还款详情的待核对提示与附件说明、演示数据的证据备注），对应测试断言一起改；防回归测试 test/app/public_beta_test.dart：扫描 lib/ 全部字符串字面量（注释除外，扫描器带正反例自检），并逐页打开演示空间全部页面、真实空间首次空白页与 P-22，每页滚到底检查渲染文字不匹配 I-数字
+    trailers:[]
+2a7243c 2026-10-19T06:58:21+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端测试：P-05/P-06 组件测试补齐——列表、详情与登记表单的加载与错误态（错误码、「重新加载」/「重试」）；P-06 列表成功态（待核对、差异清单、全部还款的行）；多期分配实时合计（两期各分一部分，合计 ≠ 还款额时「登记」不可点并提示，相等后保存且两期分配都写入）；9 种还款状态与已结清、已逾期账单下，还款详情、还款与核对、账单中心与详情、信用账户详情、总览整页滚动检查没有"还款成功"、没有 robust（绿色）色 token；检查辅助 test/support/forbidden_ui.dart 带自检（能发现文案、绿色文字、绿色勾图标、绿色底色、滚动后才构建的违规，干净页面不误报）
+    trailers:[]
+89477a1 2026-10-19T06:47:21+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    文档：执行记录补 2026-10-19（I1-c 停止、宣传视频、公测版安排）
+    trailers:[]
+bf13d97 2026-10-19T06:47:08+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    文档：I1-c2 简报（I1-c 剩余项与公测版 0.1.0 beta 1 准备）；接续说明与执行记录
+    trailers:[]
+4e98efc 2026-10-19T06:45:58+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端公测版准备：App 图标改为卡序自己的图标（三张错落的卡、前卡带芯片与序字；15 个尺寸，RGB 无透明通道，替换 Flutter 默认图标）；版本号 0.1.0（构建号仍由 CI 的运行序号给出）
+    trailers:[]
+c5331c1 2026-10-19T06:38:00+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    接续说明：I1-c 代理被停止时的进度（已推送的 6 个提交、未做项、重新派发要求）
+    trailers:[]
+6486fbf 2026-10-19T06:18:54+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端 BL-21 与 BL-18：P-04 还没有规则时不再预填"10 日 / 当月 28 日"，账单日与到期日（或账单后天数）必须按银行账单选择，示例只作提示文字，没选全时没有 3 期预览、不能保存（保存时的校验不变）；iOS 配置测试遍历 ios/ 时排除不入库的本地签名配置 *.local.xcconfig，加带该文件的临时目录用例（入库文件里的团队 ID 仍被拦下）
+    trailers:[]
+ceebeb1 2026-10-19T06:14:35+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端演示数据补齐账单与还款：卡 A 的交易（家电城 10,000 转 12 期分期、每期费率 0.6%、第 1 期在 10-10 账单；超市消费；超市退货进入退款待核对；附属卡入账日未知的机票）、10-10 账单 v1 手工录入与 v2 人工修正（最低还款额，修正留痕）、10-15 自动扣款 1,000（现金已扣）与同日手工登记的 1,000（已登记、待银行确认）→ 疑似重复差异项；两笔扣款在工资卡快照日之前，资金日历数字不变；情景计算版本移到全部演示数据写完之后（不一开始就过期）；清除演示数据的确认写明交易、账单、分期、还款数量；P-05/P-06 全部页面（总览栈与卡包栈）加入 2/3 倍字号与对比度检查；还款详情的操作移到时间线之前
+    trailers:[]
+2cee4b4 2026-10-19T06:06:24+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端 P-05 账单中心与 P-06 还款登记与核对、P-03 补齐、P-01 近期到期与待办：P-05 列表（筛选账户/状态/币种/月；剩余应还、到期、状态、确认层级、版本数、差异数）与详情（版本切换、原值可查；要素 R-STMT-01 带来源与版本，来源未含的项显示来源未含此项；负债四分法；本期交易、可能账期、退款待核对、「转分期」；分期每期本金/费用、尾差、名义与实际年化并列；还款分配；差异清单）；录入正式账单（v1）、人工修正（新版本、理由必填）、记一笔（类型、方向、交易时间与精度、入账日可空、卡片、商户、分类）、转分期（实时预览）；P-06 表单（多期分配实时合计，≠ 还款额禁止保存；超应还提示；受限账户警告；预计扣款日生成计划扣款）、时间线（已登记 › 处理中 › 现金已扣 › 银行已入账 › 银行确认；失败；用户已标记；待核对；冲正）与按状态的动作、核对区逐项处理（疑似重复、金额不符、未匹配、退款待核对）；账单与还款页挂在总览栈与信用账户详情栈；P-03 本期（账期、应还、最低还款、还款状态）、「去还款：查看操作说明」「登记还款」、负债四分法、最近 3 期与「全部账单」、还款释放说明；P-01 待办条、快捷新增、近期到期 14 天、负债四分法；文案无还款成功、无绿色；组件测试与首次空白页的可访问性检查
+    trailers:[]
+b161f62 2026-10-19T05:48:42+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端账单与还款数据层：交易（记一笔：按类型定符号、G1~G3、卡片须属于该信用账户、指纹；退款 → 退款待核对、银行还款入账无登记 → 未匹配的还款）；账单与版本（录入 = v1、同账户同账单日只一份 F-21、人工修正 = 新版本且理由必填、原值可查、已结清不再修正）；分期（领域包拆分与费用、各期账单日按规则逐期推出且已出账单优先、首期一次收取的约定、只在全部未出账时可作废）；还款（PRD §6.3 全部转移在仓库实现、非法转移拒绝；双侧时间：预计扣款日生成计划现金事件、确认扣款按实际时点转确定、负债按入账日核销；结清/部分结清只由银行确认触发；「我已还款」不结清；到期无证据 → 待核对；作废登记连带作废计划扣款）；差异项（疑似重复 F-32 处理前负债只核销一次、金额不符、退款待核对 F-34、未匹配，只处理一次）；读模型：账单余额、负债四分法 F-30（已出账未还 + 未出账 + 未来分期本金，费用单列）、可能账期 F-15、分期成本名义与实际年化 F-37、额度释放 F-28（时滞未知不释放）；资金日历尾部责任接入分期各期 F-06；P-08 不能直接确认或删除还款生成的事件；测试与隔离测试覆盖新仓库
+    trailers:[]
+5af9a89 2026-10-19T05:32:54+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    领域包分期模块 installment.dart（主会话裁决，简报 §6 第 1 条）：splitInstallments（每期 HALF_UP(本金/期数)、尾差加末期或首期、期数 ≤0 抛错、守恒）、installmentCashFlows（每期费用 = applyRate(本金总额, 每期费率, 取整)，建行口径）、irrMonthly（Rational 在 [0,1] 上二分，至多 200 次、tol 默认 10^-12；符号以 Python 代码为准：月 0 放款为负、各期还款为正）、annualize（名义 ×12 与复利 (1+r)^12−1）；只用 int/BigInt/Rational，从包入口导出；测试：移植 Python 拆分守恒性质（200 例）、F-36、F-37、符号约定、7 组 Python money.py 对照样本（拆分与费用逐期相等、月 IRR 差 <1e-9、年化相等到 10 位小数）
+    trailers:[]
+4c77d44 2026-10-19T05:28:38+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    本地库 v4：drift 表 DSL 定义交易、账单、账单版本、分期计划与各期、还款、还款分配、差异项 8 张表；冻结的 3→4 迁移 SQL、14 个索引（含父表上补的 (workspace_id, id, currency) 唯一键）与 20 个触发器（IF NOT EXISTS，只做 expand）：账单版本追加只读（禁止 UPDATE、版本号紧接、修正须理由）、账单与还款状态机、分期条款不可改、分配合计不超过还款额、差异项只处理一次；v3 现金事件 linked_repayment_id 用触发器约束到同一空间的还款，还款仍有未删除的现金事件指向时不能删除或作废；新建与从 v1、v2、v3 升级结构一致且旧数据不变、3→4 回滚与重跑、旧版 App 报 schema_too_new；约束测试；清除演示数据按新表删除顺序；隔离测试覆盖新表
+    trailers:[]
+[exit=0]
+
+$ git rev-parse HEAD origin/main
+8149c29d8db8e8a226336a90e809b4ad208bea66
+8149c29d8db8e8a226336a90e809b4ad208bea66
+[exit=0]
+
+$ git log 5c4f811..HEAD --format='%an <%ae> | %cn <%ce>' | sort | uniq -c
+     17 YePiXpert <YePiXpert@users.noreply.github.com> | YePiXpert <YePiXpert@users.noreply.github.com>
+[exit=0]
+
+$ git log 5c4f811..HEAD --format='%B' | grep -ciE 'cl[a]ude|anthr[o]pic|co-auth[o]red-by|generat[e]d with'
+0
+[exit=1]（grep 退出码 1 = 没有匹配）
+
+$ grep -rniE 'cl[a]ude|anthr[o]pic|generat[e]d with' --exclude=git-log.txt apps/mobile/lib apps/mobile/test apps/mobile/README.md README.md .github/workflows/mobile.yml evidence/i1/I1-c | wc -l
+0
+[exit=0]
+
+$ git status --short
+?? evidence/i1/I1-c/
+[exit=0]
+
