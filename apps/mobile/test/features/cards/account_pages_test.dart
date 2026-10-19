@@ -263,6 +263,12 @@ void main() {
       await _scrollTo(tester, find.text('账单后 N 天'), page: _section);
       await tester.tap(find.text('账单后 N 天'));
       await tester.pumpAndSettle();
+      await _scrollTo(
+        tester,
+        find.widgetWithText(DropdownButtonFormField<int>, '账单日后天数（自然日）'),
+        page: _section,
+      );
+      await _pickDropdown(tester, '账单日后天数（自然日）', '20 天');
       await _scrollTo(tester, find.text('第 2 期'), page: _section);
       // 测试时钟：2026-10-18。
       expect(find.text('账单日 2026-10-31 → 到期 2026-11-20'), findsOneWidget);
@@ -274,6 +280,12 @@ void main() {
       await pumpCardFlowApp(tester, seed: _bareCard);
       await openSettings(tester);
       await _pickDropdown(tester, '每月账单日', '18 日');
+      await _scrollTo(
+        tester,
+        find.widgetWithText(DropdownButtonFormField<int>, '到期日'),
+        page: _section,
+      );
+      await _pickDropdown(tester, '到期日', '28 日');
       await _scrollTo(tester, find.text('第 1 期'), page: _section);
       expect(find.text('账单日 2026-10-18 → 到期 2026-10-28'), findsOneWidget);
       final inclusive = find.widgetWithText(SwitchListTile, '账单日当天入账计入本期');
@@ -311,9 +323,54 @@ void main() {
       expect(rollover.onChanged, isNull);
     });
 
+    testWidgets('BL-21：还没有规则时不预填账单日与到期日（示例只作提示文字），没选全不能保存、没有预览', (
+      tester,
+    ) async {
+      await pumpCardFlowApp(tester, seed: _bareCard);
+      await openSettings(tester);
+      expect(find.text('按账单选择，如 10 日'), findsOneWidget);
+      expect(find.text('10 日'), findsNothing, reason: '不预填');
+      await _scrollTo(
+        tester,
+        find.text('请按银行账单选择账单日与到期日，选好后显示 3 期预览。'),
+        page: _section,
+      );
+      expect(find.text('第 1 期'), findsNothing);
+      final save = find.widgetWithText(FilledButton, '保存为用户声明');
+      await _scrollTo(tester, save, page: _section);
+      expect(tester.widget<FilledButton>(save).onPressed, isNull);
+      // 只选了账单日：仍不能保存。
+      await _scrollTo(
+        tester,
+        find.widgetWithText(DropdownButtonFormField<int>, '每月账单日'),
+        page: _section,
+        delta: -200,
+      );
+      await _pickDropdown(tester, '每月账单日', '10 日');
+      await _scrollTo(tester, save, page: _section);
+      expect(tester.widget<FilledButton>(save).onPressed, isNull);
+      await _scrollTo(
+        tester,
+        find.widgetWithText(DropdownButtonFormField<int>, '到期日'),
+        page: _section,
+        delta: -200,
+      );
+      await _pickDropdown(tester, '到期日', '28 日');
+      await _scrollTo(tester, save, page: _section);
+      expect(tester.widget<FilledButton>(save).onPressed, isNotNull);
+      expect(find.text('账单日 2026-11-10 → 到期 2026-11-28'), findsOneWidget);
+    });
+
     testWidgets('保存 → 第 1 版（全部历史）；再从某日起保存 → 第 2 版，旧版已失效（F-14）', (tester) async {
       await pumpCardFlowApp(tester, seed: _bareCard);
       await openSettings(tester);
+      await _pickDropdown(tester, '每月账单日', '10 日');
+      await _scrollTo(
+        tester,
+        find.widgetWithText(DropdownButtonFormField<int>, '到期日'),
+        page: _section,
+      );
+      await _pickDropdown(tester, '到期日', '28 日');
       final save = find.widgetWithText(FilledButton, '保存为用户声明');
       await _scrollTo(tester, save, page: _section);
       await tester.tap(save);

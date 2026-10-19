@@ -24,6 +24,9 @@ import 'card_formatting.dart';
 ///
 /// 校验：到期须晚于账单日（阻止保存）；工作日与顺延需要已核验日历，本阶段没有，始终禁用并说明；
 /// 时区默认 Asia/Shanghai，只能选固定偏移时区。保存 = 新版本，旧版封口（F-14）。
+///
+/// 还没有规则时不预填账单日与到期日（BL-21）：必须由用户按银行账单选择，示例只作提示文字；没选全时
+/// 没有预览、不能保存。
 class RuleEditorSection extends ConsumerStatefulWidget {
   const RuleEditorSection({super.key, required this.account});
 
@@ -40,12 +43,12 @@ class RuleEditorSection extends ConsumerStatefulWidget {
 }
 
 class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
-  late int _statementDay;
+  int? _statementDay;
   late bool _inclusive;
   late DueKind _dueKind;
-  late int _dueDay;
+  int? _dueDay;
   late int _monthOffset;
-  late int _dueDays;
+  int? _dueDays;
   late int _delayMin;
   late int _delayMax;
   late String _zoneId;
@@ -72,14 +75,14 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
   void initState() {
     super.initState();
     final current = _current;
-    _statementDay = current?.statementDay ?? 10;
+    _statementDay = current?.statementDay;
     _inclusive = current?.statementDayInclusive ?? true;
     _dueKind = current?.dueKind == DueKind.daysAfterStatement.code
         ? DueKind.daysAfterStatement
         : DueKind.fixedDay;
-    _dueDay = current?.dueDay ?? 28;
+    _dueDay = current?.dueDay;
     _monthOffset = current?.dueMonthOffset ?? 0;
-    _dueDays = current?.dueDays ?? 20;
+    _dueDays = current?.dueDays;
     _delayMin = current?.postingDelayMinDays ?? 0;
     _delayMax = current?.postingDelayMaxDays ?? 0;
     _zoneId = widget.account.account.businessTz;
@@ -98,19 +101,36 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
     super.dispose();
   }
 
-  BillingRuleDraft get _draft => BillingRuleDraft(
-    statementDay: _statementDay,
-    due: _dueKind == DueKind.fixedDay
-        ? DueRule.fixedDay(day: _dueDay, monthOffset: _monthOffset)
-        : DueRule.daysAfterStatement(days: _dueDays),
-    statementDayInclusive: _inclusive,
-    cutoffTime: _useCutoff ? _cutoff.text.trim() : null,
-    postingDelayMinDays: _delayMin,
-    postingDelayMaxDays: _delayMax,
-    exceptions: _exceptions.text,
-  );
+  /// 没选全账单日与到期日时为 null（不预填，BL-21）。
+  BillingRuleDraft? get _draft {
+    final statementDay = _statementDay;
+    final dueDay = _dueDay;
+    final dueDays = _dueDays;
+    if (statementDay == null ||
+        (_dueKind == DueKind.fixedDay ? dueDay == null : dueDays == null)) {
+      return null;
+    }
+    return BillingRuleDraft(
+      statementDay: statementDay,
+      due: _dueKind == DueKind.fixedDay
+          ? DueRule.fixedDay(day: dueDay!, monthOffset: _monthOffset)
+          : DueRule.daysAfterStatement(days: dueDays!),
+      statementDayInclusive: _inclusive,
+      cutoffTime: _useCutoff ? _cutoff.text.trim() : null,
+      postingDelayMinDays: _delayMin,
+      postingDelayMaxDays: _delayMax,
+      exceptions: _exceptions.text,
+    );
+  }
+
+  /// 没选全时的提示。
+  static const String _incomplete = '请按银行账单选择账单日与到期日';
 
   Future<void> _save() async {
+    final draft = _draft;
+    if (draft == null) {
+      return;
+    }
     setState(() {
       _saving = true;
       _saveError = null;
@@ -120,7 +140,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
       final rules = await ref.read(billingRuleRepositoryProvider.future);
       await rules.saveVersion(
         RuleSubject.creditAccount(widget.account.id),
-        _draft,
+        draft,
         effect: _current == null || _correction
             ? const RuleCorrection()
             : RuleEffectiveFrom(_effectiveFrom),
@@ -149,9 +169,12 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
       color: colors.textSecondary,
     );
     final today = widget.account.today;
-    final problem = billingRuleDraftProblem(_draft);
+    final draft = _draft;
+    final problem = draft == null
+        ? _incomplete
+        : billingRuleDraftProblem(draft);
     final preview = problem == null
-        ? previewCycles(_draft.toDomain(), today)
+        ? previewCycles(draft!.toDomain(), today)
         : const <Cycle>[];
     final current = _current;
     final currentFrom = parseOptionalDate(current?.effectiveFrom);
@@ -194,6 +217,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
           DropdownButtonFormField<int>(
             isExpanded: true,
             initialValue: _statementDay,
+            hint: const Text('按账单选择，如 10 日'),
             decoration: const InputDecoration(
               labelText: '每月账单日',
               border: OutlineInputBorder(),
@@ -202,10 +226,10 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
               for (var day = 1; day <= 31; day++)
                 DropdownMenuItem<int>(value: day, child: Text('$day 日')),
             ],
-            onChanged: (value) => setState(() => _statementDay = value!),
+            onChanged: (value) => setState(() => _statementDay = value),
           ),
         ),
-        if (_statementDay >= 29)
+        if ((_statementDay ?? 0) >= 29)
           const NoticeCard(
             icon: Icons.info_outline,
             tone: NoticeTone.unknown,
@@ -260,6 +284,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
             DropdownButtonFormField<int>(
               isExpanded: true,
               initialValue: _dueDay,
+              hint: const Text('按账单选择，如 28 日'),
               decoration: const InputDecoration(
                 labelText: '到期日',
                 border: OutlineInputBorder(),
@@ -268,7 +293,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
                 for (var day = 1; day <= 31; day++)
                   DropdownMenuItem<int>(value: day, child: Text('$day 日')),
               ],
-              onChanged: (value) => setState(() => _dueDay = value!),
+              onChanged: (value) => setState(() => _dueDay = value),
             ),
           ),
         ] else ...<Widget>[
@@ -276,6 +301,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
             DropdownButtonFormField<int>(
               isExpanded: true,
               initialValue: _dueDays,
+              hint: const Text('按账单选择，如 20 天'),
               decoration: const InputDecoration(
                 labelText: '账单日后天数（自然日）',
                 border: OutlineInputBorder(),
@@ -284,7 +310,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
                 for (var days = 1; days <= 60; days++)
                   DropdownMenuItem<int>(value: days, child: Text('$days 天')),
               ],
-              onChanged: (value) => setState(() => _dueDays = value!),
+              onChanged: (value) => setState(() => _dueDays = value),
             ),
           ),
           const SwitchListTile(
@@ -432,7 +458,12 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
             ),
         ],
         const SectionTitle('3 期预览'),
-        if (problem != null)
+        if (problem == _incomplete)
+          const NoticeCard(
+            icon: Icons.checklist,
+            text: '$_incomplete，选好后显示 3 期预览。',
+          )
+        else if (problem != null)
           NoticeCard(
             icon: Icons.error_outline,
             tone: NoticeTone.danger,

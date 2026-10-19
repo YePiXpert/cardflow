@@ -9,16 +9,18 @@ const String pbxprojPath = 'ios/Runner.xcodeproj/project.pbxproj';
 
 String read(String path) => File(path).readAsStringSync();
 
-/// 只看纳入版本控制的 iOS 文件（跳过 ephemeral、Pods、.symlinks 等生成目录）。
-Iterable<File> trackedIosFiles() sync* {
+/// 只看纳入版本控制的 iOS 文件（跳过 ephemeral、Pods、.symlinks 等生成目录，以及不入库的本地签名配置
+/// `*.local.xcconfig`——在 Mac 上自行签名时团队 ID 写在那里，BL-18）。
+Iterable<File> trackedIosFiles([String root = 'ios']) sync* {
   const skipped = <String>['/ephemeral/', '/Pods/', '/.symlinks/', '/build/'];
-  for (final entity in Directory('ios').listSync(recursive: true)) {
+  for (final entity in Directory(root).listSync(recursive: true)) {
     if (entity is! File) {
       continue;
     }
     final path = entity.path.replaceAll(r'\', '/');
     if (skipped.any(path.contains) ||
         path.endsWith('Generated.xcconfig') ||
+        path.endsWith('.local.xcconfig') ||
         path.endsWith('flutter_export_environment.sh') ||
         path.contains('GeneratedPluginRegistrant')) {
       continue;
@@ -142,6 +144,27 @@ void main() {
         expect(text, isNot(contains('CODE_SIGN_ENTITLEMENTS')), reason: path);
       }
     });
+  });
+
+  test('本地签名配置 *.local.xcconfig 不算入库文件（BL-18：有它的 Mac 上不误报）', () {
+    final root = Directory.systemTemp.createTempSync('cardflow_ios_test_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    Directory('${root.path}/Flutter').createSync();
+    File('${root.path}/Flutter/CardFlow.local.xcconfig')
+        .writeAsStringSync('DEVELOPMENT_TEAM = ABCDE12345\n');
+    File('${root.path}/Flutter/CardFlow.xcconfig')
+        .writeAsStringSync('DEVELOPMENT_TEAM =\n');
+    final names = trackedIosFiles(root.path)
+        .map((f) => f.path.replaceAll(r'\', '/').split('/').last)
+        .toList();
+    expect(names, <String>['CardFlow.xcconfig']);
+    // 入库的文件里出现团队 ID 仍然会被上面的检查拦下（正例）。
+    File('${root.path}/Flutter/Release.xcconfig')
+        .writeAsStringSync('DEVELOPMENT_TEAM = ABCDE12345\n');
+    expect(
+      trackedIosFiles(root.path).map((f) => f.readAsStringSync()),
+      contains('DEVELOPMENT_TEAM = ABCDE12345\n'),
+    );
   });
 
   group('最低系统版本', () {
