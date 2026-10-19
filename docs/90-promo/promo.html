@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>卡序 CardFlow · 项目说明视频</title>
+<style>
+:root{
+  --bg:#0B1D3A; --text:#E6E8EB; --muted:#A8AEB6; --accent:#8AB4F8; --accent2:#1F5BB8;
+  --amber:#F2C14E; --danger:#FF8F85; --purple:#CBB7FF;
+  --pText:#1A1C1E; --pMuted:#575C63; --pSurface:#FFFFFF; --pCanvas:#F5F6F8; --pAction:#1F5BB8; --pBorder:#E3E6EA;
+  --pAmber:#7A4D00; --pAmberBg:#FFF2D1; --pDanger:#B3261E; --pDangerBg:#FCE8E6; --pBank:#1C4FA0; --pBankBg:#E6EEFA;
+  --pUnknown:#4B5059; --pUnknownBg:#ECEEF1;
+}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:var(--bg);color:var(--text);
+  font-family:"WenQuanYi Micro Hei","Noto Sans CJK SC",sans-serif;}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;
+  background:radial-gradient(1400px 900px at 28% 38%,#15305e 0%,#0B1D3A 48%,#060f24 100%);}
+#stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.022) 0 2px,transparent 2px 30px);}
+.scene{position:absolute;inset:0;opacity:0;display:none}
+.scene.on{display:block}
+[data-in]{opacity:0}
+.num{font-family:"DejaVu Sans Mono","WenQuanYi Micro Hei Mono",monospace;font-variant-numeric:tabular-nums}
+
+/* chrome */
+#wm{position:absolute;left:64px;top:42px;font-size:26px;color:var(--muted);letter-spacing:2px;opacity:0;z-index:5}
+#chip{position:absolute;right:64px;top:38px;font-size:24px;color:var(--accent);border:1px solid rgba(138,180,248,.45);
+  padding:8px 20px;border-radius:999px;opacity:0;z-index:5}
+#prog{position:absolute;left:0;bottom:0;height:6px;background:var(--accent);width:0;z-index:5}
+
+/* copy column */
+.copy{position:absolute;left:730px;top:150px;width:1060px}
+.copy h2{font-size:64px;margin:0 0 30px;font-weight:700;letter-spacing:1px;line-height:1.2}
+.copy h2 small{display:block;font-size:30px;color:var(--muted);font-weight:400;margin-top:10px;letter-spacing:0}
+.copy ul{margin:0;padding:0}
+.copy li{list-style:none;position:relative;padding-left:42px;font-size:38px;line-height:1.5;margin:0 0 26px}
+.copy li::before{content:"";position:absolute;left:0;top:23px;width:16px;height:16px;border-radius:4px;background:var(--accent)}
+.copy li em{font-style:normal;color:var(--accent)}
+.copy li b{color:var(--amber);font-weight:400}
+.copy.tight li{font-size:35px;margin-bottom:20px;line-height:1.45}
+.copy.tight li::before{top:20px}
+
+/* title scene */
+#s0 .title{position:absolute;left:170px;top:300px;font-size:176px;font-weight:700;letter-spacing:10px;line-height:1}
+#s0 .title-en{position:absolute;left:178px;top:498px;font-size:78px;color:var(--accent);letter-spacing:7px}
+#s0 .tag{position:absolute;left:182px;top:640px;font-size:46px}
+#s0 .sub{position:absolute;left:184px;top:730px;font-size:30px;color:var(--muted);letter-spacing:1px}
+.fan{position:absolute;left:1180px;top:400px;width:360px;height:225px}
+.fcard{position:absolute;left:0;top:0;width:360px;height:225px;border-radius:22px;box-sizing:border-box;
+  box-shadow:0 30px 60px rgba(0,0,0,.45);color:#fff;transform-origin:50% 130%;opacity:0}
+.fcard .bank{position:absolute;left:26px;top:22px;font-size:22px;font-weight:700;letter-spacing:1px}
+.fcard .net{position:absolute;right:26px;top:22px;font-size:18px;opacity:.8}
+.fcard .chipx{position:absolute;left:26px;top:86px;width:52px;height:38px;border-radius:8px;background:linear-gradient(135deg,#f3d27a,#b8891f)}
+.fcard .pan{position:absolute;left:26px;bottom:24px;font-size:27px;letter-spacing:4px;font-family:"DejaVu Sans Mono",monospace}
+.c1{background:linear-gradient(135deg,#2a5bd7,#163a8c)}
+.c2{background:linear-gradient(135deg,#6a3fb5,#3a1f73)}
+.c3{background:linear-gradient(135deg,#1f8a8a,#115252)}
+.glow{position:absolute;left:1050px;top:250px;width:640px;height:520px;border-radius:50%;
+  background:radial-gradient(circle,rgba(138,180,248,.22) 0%,rgba(138,180,248,0) 70%)}
+
+/* problem scene */
+#s1 .copy{left:150px;width:1000px}
+.notes{position:absolute;left:1200px;top:180px;width:640px;height:760px}
+.note{position:absolute;padding:18px 28px;border-radius:16px;font-size:30px;background:#1b2b4d;border:1px solid #2d4477;
+  color:var(--text);box-shadow:0 20px 40px rgba(0,0,0,.35);white-space:nowrap}
+.note.a{background:#3a2b07;border-color:#6b5112;color:#F2C14E}
+.note.d{background:#3d1512;border-color:#6e2a24;color:#FF8F85}
+
+/* phone */
+.phone{position:absolute;left:176px;top:112px;width:390px;height:844px;background:#0E1116;border-radius:54px;padding:12px;
+  box-shadow:0 40px 100px rgba(0,0,0,.55),0 0 0 2px #2a2f36;transform:scale(.98);transform-origin:top left}
+.screen{position:relative;width:390px;height:844px;border-radius:44px;background:var(--pCanvas);color:var(--pText);overflow:hidden;
+  font-family:"Liberation Sans","WenQuanYi Micro Hei",sans-serif;font-size:15px}
+.sb{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-weight:700;font-size:15px}
+.ab{height:48px;display:flex;align-items:center;padding:0 18px;font-size:20px;font-weight:700}
+.ct{position:absolute;top:96px;left:0;right:0;bottom:74px;overflow:hidden}
+.panel{position:absolute;inset:0;padding:4px 14px}
+.tb{position:absolute;left:0;right:0;bottom:0;height:74px;background:var(--pSurface);border-top:1px solid var(--pBorder);
+  display:flex;justify-content:space-around;align-items:center;padding-bottom:10px;font-size:12px;color:var(--pMuted)}
+.tb .on{color:var(--pAction);font-weight:700}
+.card{background:var(--pSurface);border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.row{display:flex;justify-content:space-between;align-items:center}
+.k{color:var(--pMuted);font-size:13px}
+.v{font-weight:700}
+.t1{font-size:16px;font-weight:700}
+.sm{font-size:12px;color:var(--pMuted)}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--pBankBg);color:var(--pBank);margin-left:6px;vertical-align:middle;font-weight:400}
+.pill.amber{background:var(--pAmberBg);color:var(--pAmber)}
+.pill.danger{background:var(--pDangerBg);color:var(--pDanger)}
+.pill.unknown{background:var(--pUnknownBg);color:var(--pUnknown)}
+.big{font-size:28px;font-weight:700;letter-spacing:-.5px}
+.danger{color:var(--pDanger)} .amberT{color:var(--pAmber)} .bankT{color:var(--pBank)}
+.chips{display:flex;gap:6px;margin:4px 0 10px}
+.chips span{font-size:12px;padding:5px 10px;border-radius:999px;background:var(--pSurface);border:1px solid var(--pBorder);color:var(--pMuted)}
+.chips span.on{background:var(--pAction);border-color:var(--pAction);color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{color:var(--pMuted);font-weight:400;text-align:right;padding:4px 6px;border-bottom:1px solid var(--pBorder)}
+.tbl td{text-align:right;padding:6px 6px;border-bottom:1px solid #EEF0F2;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl tr.gap td{background:var(--pDangerBg);color:var(--pDanger);font-weight:700}
+.tbl td .note2{display:block;font-size:11px;color:var(--pMuted);font-weight:400}
+.tap{position:absolute;left:150px;top:46px;width:64px;height:64px;border-radius:50%;background:rgba(31,91,184,.35);transform:scale(0);opacity:0;pointer-events:none}
+.bar{height:10px;border-radius:5px;background:#E6E8EB;overflow:hidden;display:flex;margin:6px 0 4px}
+.bar i{display:block;height:100%;width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid2 .cell{background:var(--pCanvas);border-radius:10px;padding:8px 10px}
+.grid2 .cell .k{font-size:12px}
+.grid2 .cell .v{font-size:16px}
+.steps{margin:6px 0 0 6px;border-left:2px solid var(--pBorder);padding-left:16px}
+.step{position:relative;padding:0 0 14px}
+.step::before{content:"";position:absolute;left:-25px;top:4px;width:12px;height:12px;border-radius:50%;background:#C9CED6}
+.step.done::before{background:var(--pAction)}
+.step.bank::before{background:var(--pBank);box-shadow:0 0 0 3px var(--pBankBg)}
+.step .t1{font-size:15px}
+.stamp{display:inline-block;border:2px solid var(--pBank);color:var(--pBank);border-radius:6px;padding:1px 6px;font-size:11px;font-weight:700;margin-left:6px;transform:rotate(-4deg)}
+.warn{background:var(--pAmberBg);color:var(--pAmber);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.45}
+.warn b{display:block;font-size:14px;margin-bottom:2px}
+.btns{display:flex;gap:8px;margin-top:8px}
+.btns span{flex:1;text-align:center;font-size:12px;padding:6px 0;border-radius:8px;border:1px solid var(--pAmber);color:var(--pAmber)}
+.cand{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #EEF0F2}
+.cand .nm{width:70px;font-weight:700;font-size:14px}
+.cand .bx{flex:1}
+.cand .bx .bar{margin:4px 0 2px}
+.cand .fr{font-size:11px;color:var(--pMuted)}
+.result{background:#E6EEFA;border-radius:12px;padding:10px 12px;margin-top:10px}
+.result .t1{color:var(--pBank)}
+.result p{margin:4px 0;font-size:13px;line-height:1.4}
+.result .tagx{display:inline-block;background:var(--pBank);color:#fff;font-size:11px;padding:2px 8px;border-radius:999px;margin-right:4px}
+.result .tagx.un{background:var(--pUnknownBg);color:var(--pUnknown)}
+
+/* trust grid */
+#s6 h2{position:absolute;left:160px;top:140px;font-size:64px;margin:0;letter-spacing:1px}
+#s6 .lead{position:absolute;left:162px;top:232px;font-size:30px;color:var(--muted)}
+.grid{position:absolute;left:160px;top:320px;width:1600px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.tile{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:30px 32px 26px;min-height:240px;box-sizing:border-box}
+.tile svg{width:54px;height:54px;margin-bottom:16px;stroke:var(--accent);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tile h3{margin:0 0 10px;font-size:36px;font-weight:700}
+.tile p{margin:0;font-size:26px;line-height:1.5;color:var(--muted)}
+
+/* end */
+#s7 .wm2{position:absolute;left:0;right:0;top:330px;text-align:center;font-size:150px;font-weight:700;letter-spacing:10px;line-height:1}
+#s7 .en{position:absolute;left:0;right:0;top:500px;text-align:center;font-size:64px;color:var(--accent);letter-spacing:6px}
+#s7 .l1{position:absolute;left:0;right:0;top:640px;text-align:center;font-size:36px}
+#s7 .l2{position:absolute;left:0;right:0;top:720px;text-align:center;font-size:42px;color:var(--accent);font-family:"DejaVu Sans Mono",monospace;letter-spacing:1px}
+#s7 .l3{position:absolute;left:0;right:0;top:820px;text-align:center;font-size:26px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="stage">
+<div id="wm">卡序 CardFlow</div>
+<div id="chip"></div>
+<div id="prog"></div>
+
+<!-- 0 · 片头 -->
+<section class="scene" id="s0">
+  <div class="glow"></div>
+  <div class="fan">
+    <div class="fcard c3"><span class="bank">北辰银行</span><span class="net">CREDIT</span><span class="chipx"></span><span class="pan">···· 4410</span></div>
+    <div class="fcard c2"><span class="bank">长江银行</span><span class="net">CREDIT</span><span class="chipx"></span><span class="pan">···· 8821</span></div>
+    <div class="fcard c1"><span class="bank">星海银行</span><span class="net">CREDIT</span><span class="chipx"></span><span class="pan">···· 1234</span></div>
+  </div>
+  <div class="title" data-in="700" data-dur="900">卡序</div>
+  <div class="title-en" data-in="1100" data-dur="900">CardFlow</div>
+  <div class="tag" data-in="2000">多张信用卡，一条看得清的账与现金流</div>
+  <div class="sub" data-in="2800">iOS App · 纯本地 · 加密 · 开源开发中</div>
+</section>
+
+<!-- 1 · 问题 -->
+<section class="scene" id="s1">
+  <div class="copy">
+    <h2 data-in="300">卡一多，问题就来了</h2>
+    <ul>
+      <li data-in="1300">每张卡的账单日、到期日都不一样，<em>记不住</em></li>
+      <li data-in="3800">临时额度哪天到期？名下共享的额度还剩多少？</li>
+      <li data-in="6300">11-15 要还 ¥12,480——<em>那天工资到账了吗</em>？</li>
+      <li data-in="8800">"每期费率 0.6%"的分期，一年到底是<em>多少钱</em>？</li>
+    </ul>
+  </div>
+  <div class="notes">
+    <div class="note" data-in="1500" style="left:0;top:40px">账单日 5 日</div>
+    <div class="note" data-in="2000" style="left:320px;top:120px">到期 25 日</div>
+    <div class="note a" data-in="4000" style="left:40px;top:270px">临时额度 11-30 到期</div>
+    <div class="note" data-in="4500" style="left:330px;top:350px">共享额度 ¥50,000？</div>
+    <div class="note d" data-in="6500" style="left:10px;top:500px">还 ¥12,480 · 11-15</div>
+    <div class="note a" data-in="9000" style="left:300px;top:600px">分期 0.6% / 月</div>
+  </div>
+</section>
+
+<!-- 2 · 卡包与账期 -->
+<section class="scene" id="s2">
+  <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+    <div class="ab">卡包</div>
+    <div class="ct">
+      <div class="panel" data-in="300" data-out="6500" data-fx="none">
+        <div class="card" data-in="500">
+          <div class="row"><span class="t1">星海银行 · 白金卡<span class="pill">用户声明</span></span><span class="sm">···· 1234</span></div>
+          <div class="row" style="margin-top:6px"><span class="k">账单日 5 日 · 到期 25 日</span><span class="k">快照 2 天前</span></div>
+          <div class="row" style="margin-top:6px"><span class="k">可用容量</span><span class="v">¥18,500</span></div>
+        </div>
+        <div class="card" data-in="800">
+          <div class="row"><span class="t1">长江银行 · 标准卡<span class="pill amber">快照 9 天前</span></span><span class="sm">···· 8821</span></div>
+          <div class="row" style="margin-top:6px"><span class="k">账单日 12 日 · 到期 30 日</span><span class="k">共享池 ¥50,000</span></div>
+          <div class="row" style="margin-top:6px"><span class="k">可用容量</span><span class="v">¥6,200</span></div>
+        </div>
+        <div class="card" data-in="1100">
+          <div class="row"><span class="t1">北辰银行 · 美元子账户<span class="pill">USD</span></span><span class="sm">···· 4410</span></div>
+          <div class="row" style="margin-top:6px"><span class="k">账单日 20 日 · 账单后 20 天到期</span><span class="k amberT">临额 11-30 到期</span></div>
+          <div class="row" style="margin-top:6px"><span class="k">可用容量</span><span class="v">$1,240</span></div>
+        </div>
+        <div class="card" data-in="1300">
+          <div class="row"><span class="t1">授信池 · 长江名下共享</span><span class="sm">上限 ¥50,000</span></div>
+          <div class="row" style="margin-top:6px"><span class="k">成员 2 个账户 · 池内已用 ¥43,800</span><span class="v">池可用 ¥6,200</span></div>
+        </div>
+        <div class="card" data-in="1500" style="color:var(--pMuted);font-size:13px">已停用 / 已换卡（2）<span style="float:right">展开 ▾</span></div>
+        <div class="card" data-in="1700" style="text-align:center;color:var(--pAction);font-weight:700">＋ 新建卡片</div>
+        <div class="tap" id="tap"></div>
+      </div>
+      <div class="panel" data-in="6800" data-fx="none">
+        <div class="card" data-in="6900">
+          <div class="row"><span class="t1">星海银行 · 白金卡</span><span class="pill">用户声明</span></div>
+          <div class="k" style="margin-top:4px">CNY 主子账户 · 卡 ···· 1234（主）· ···· 5678（附属）</div>
+        </div>
+        <div class="card" data-in="7300">
+          <div class="k">预测账期（未出账）</div>
+          <div class="big" style="margin-top:4px">11-05 出账 → 11-25 到期</div>
+          <div class="sm" style="margin-top:4px">之后：12-05 → 12-25 · 01-05 → 01-25</div>
+        </div>
+        <div class="card" data-in="7700">
+          <div class="row"><span class="k">额度构成</span><span class="sm">固定 ¥50,000 + 临时 ¥20,000（11-30 到期）</span></div>
+          <div class="bar"><i id="limFixed" style="background:#1F5BB8"></i><i id="limTemp" style="background:#F2C14E"></i></div>
+          <div class="row" style="margin-top:8px"><span class="k">已用 ¥51,500 · 银行可用原值 ¥18,500</span><span class="sm">已含预授权</span></div>
+          <div class="bar"><i id="limAvail" style="background:#8AB4F8"></i></div>
+          <div class="row"><span class="k">可用容量</span><span class="v">¥18,500</span></div>
+        </div>
+        <div class="card" data-in="8100">
+          <div class="k">账期规则 · 版本 2（2026-09-01 起）</div>
+          <div style="font-size:13px;margin-top:4px;line-height:1.5">账单日 5 日，当天计入本期 · 到期 25 日<br>入账延迟 0–3 天 · 截止 22:00（Asia/Shanghai）</div>
+        </div>
+        <div class="card" data-in="8500">
+          <div class="k" style="margin-bottom:6px">卡片</div>
+          <div class="row"><span>···· 1234 · 主卡<span class="pill unknown">使用中</span></span><span class="sm">有效期 28/09</span></div>
+          <div class="row" style="margin-top:6px"><span>···· 5678 · 附属卡<span class="pill unknown">使用中</span></span><span class="sm">有效期 27/03</span></div>
+          <div class="row" style="margin-top:6px"><span class="sm">···· 0099 · 已换卡（2026-03）</span><span class="sm">旧卡交易仍归本账户</span></div>
+        </div>
+        <div class="chips" data-in="8900" style="margin:0"><span class="on">更新额度</span><span>换卡 / 补卡</span><span>冻结</span><span>销卡</span></div>
+      </div>
+    </div>
+    <div class="tb"><span>总览</span><span class="on">卡包</span><span>规划</span><span>我的</span></div>
+  </div></div>
+  <div class="copy">
+    <h2 data-in="300">卡包与账期</h2>
+    <ul>
+      <li data-in="1200">卡片 › 信用账户 › 币种子账户 › 共享授信池：按银行的<em>真实结构</em>建模</li>
+      <li data-in="4200">账单日、到期日、入账延迟、截止时点都带版本；<em>改规则不改旧账单</em></li>
+      <li data-in="7400">下一期什么时候出账、什么时候到期：自动推算，附三期预览</li>
+      <li data-in="10800">只记末四位；任何完整卡号都<em>拒绝保存</em></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 3 · 现金与资金日历 -->
+<section class="scene" id="s3">
+  <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+    <div class="ab" id="s3ab">资金日历</div>
+    <div class="ct">
+      <div class="panel" data-in="300" data-out="10500" data-fx="none">
+        <div class="chips"><span class="on">30 天</span><span>全部账户</span><span class="on">基准预期</span><span>情景 ▾</span></div>
+        <div class="card" data-in="700">
+          <div class="row"><span class="k">窗口内最低点</span><span class="k">缺口 <b class="danger">1</b> 处</span></div>
+          <div class="row"><span class="big danger" id="minPt">−¥0</span><span class="sm">11-15 · 工资卡</span></div>
+          <div class="row" style="margin-top:4px"><span class="k">距储备 −¥8,200（储备 ¥5,000）</span><span class="sm">快照 11-08 · 1 天前</span></div>
+        </div>
+        <div class="card" style="padding:8px 10px">
+          <table class="tbl">
+            <tr><th>日期</th><th>流出</th><th>流入</th><th>当日最低</th></tr>
+            <tr data-in="1200" data-fx="none"><td>11-10</td><td>−2,300</td><td>—</td><td>15,200</td></tr>
+            <tr data-in="1450" data-fx="none"><td>11-12</td><td>−1,000</td><td>—</td><td>14,200</td></tr>
+            <tr data-in="1700" data-fx="none"><td>11-14<span class="note2">房租（周期）</span></td><td>−4,800</td><td>—</td><td>9,400</td></tr>
+            <tr class="gap" id="gapRow" data-in="1950" data-fx="none"><td>11-15 ▲<span class="note2" style="color:#B3261E">信用卡还款 ×2</span></td><td>−12,600</td><td>—</td><td>−3,200</td></tr>
+            <tr data-in="2200" data-fx="none"><td>11-16<span class="note2">工资（预计）</span></td><td>—</td><td>+21,000</td><td>17,800</td></tr>
+            <tr data-in="2450" data-fx="none"><td>11-20</td><td>−3,500</td><td>—</td><td>14,300</td></tr>
+            <tr data-in="2700" data-fx="none"><td>11-25<span class="note2">还款 · 星海</span></td><td>−8,900</td><td>—</td><td>5,400</td></tr>
+          </table>
+        </div>
+        <div class="card" data-in="3200" style="font-size:12px;color:var(--pMuted);line-height:1.5">
+          假设：同日先支出后收入 · 11-08 快照已包含当天早餐 · 定存账户（受限）未计入<br>
+          尾部责任（窗口外）：分期余 11 期 ¥9,167
+        </div>
+      </div>
+      <div class="panel" data-in="10800" data-fx="none">
+        <div class="card" data-in="10900">
+          <div class="row"><span class="t1">已确认<span class="pill unknown">内置</span></span><span class="sm">不含预计收入</span></div>
+        </div>
+        <div class="card" data-in="11100">
+          <div class="row"><span class="t1">基准预期<span class="pill unknown">内置</span></span><span class="sm">决策情景</span></div>
+        </div>
+        <div class="card" data-in="11300" style="border:1px solid var(--pAmberBg)">
+          <div class="row"><span class="t1">工资晚 3 天 · 支出 ×1.2<span class="pill amber">压力</span></span><span class="sm">v3 · 刚算</span></div>
+          <div class="k" style="margin-top:4px">收入延迟 3 天 · 收入 100% · 支出 120% · 先支出后收入</div>
+        </div>
+        <div class="card" data-in="12300">
+          <div class="row"><span class="k">对比 · 基准预期 → 压力 v3</span><span class="sm">30 天</span></div>
+          <table class="tbl" style="margin-top:4px">
+            <tr><th></th><th>基准</th><th>压力 v3</th></tr>
+            <tr><td>最低点</td><td>−3,200</td><td class="danger">−9,600</td></tr>
+            <tr><td>首个缺口</td><td>11-15</td><td class="danger">11-14</td></tr>
+            <tr><td>缺口数</td><td>1</td><td class="danger">2</td></tr>
+            <tr><td>工资卡 / 零钱</td><td>−3,200 / 1,900</td><td class="danger">−9,600 / 1,500</td></tr>
+          </table>
+          <div class="sm" style="margin-top:6px">每次「重算」生成新版本（v1、v2 保留，可并排看）；输入变了标"过期"</div>
+        </div>
+      </div>
+    </div>
+    <div class="tb"><span>总览</span><span>卡包</span><span class="on">规划</span><span>我的</span></div>
+  </div></div>
+  <div class="copy tight">
+    <h2 data-in="300">现金与资金日历</h2>
+    <ul>
+      <li data-in="1000">现金账户、余额快照、收支计划、周期事项、调拨——排进<em>同一条时间线</em></li>
+      <li data-in="4000">逐账户计算，账户之间不互抵；"先支出后收入"这类保守假设<em>写在明处</em></li>
+      <li data-in="7000">缺口提前看到：哪一天、差多少、由哪几笔造成</li>
+      <li data-in="10800">压力情景：工资晚几天、支出放大，缺口怎么变；每次计算留版本，可并排对比</li>
+      <li data-in="14500">快照超过 7 天只标"假设分析"：<em>不补零、不装作知道</em></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 4 · 账单、分期、还款 -->
+<section class="scene" id="s4">
+  <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+    <div class="ab">账单 · 星海银行</div>
+    <div class="ct">
+      <div class="panel" data-in="300" data-out="8300" data-fx="none">
+        <div class="card" data-in="500">
+          <div class="row"><span class="t1">10-10 账单</span><span class="sm">到期 10-28</span></div>
+          <div class="chips" style="margin:8px 0 0"><span>v1 手工录入 10-11</span><span class="on">v2 人工修正 10-12</span></div>
+          <div class="sm" style="margin-top:6px">v2：最低还款 ¥1,284 → ¥1,248 · 理由：按账单 PDF 核对 · 原值可查</div>
+        </div>
+        <div class="card" data-in="900">
+          <div class="row"><span class="k">新增账单</span><span class="v">¥12,480</span></div>
+          <div class="row" style="margin-top:4px"><span class="k">最低还款</span><span class="v">¥1,248</span></div>
+          <div class="row" style="margin-top:4px"><span class="k">还款状态</span><span class="pill unknown" style="margin:0">已登记，待银行确认</span></div>
+        </div>
+        <div class="card" data-in="1500">
+          <div class="k" style="margin-bottom:6px">负债四分法（不重复相加）</div>
+          <div class="grid2">
+            <div class="cell"><div class="k">已出账未还</div><div class="v">¥12,480</div></div>
+            <div class="cell"><div class="k">未出账</div><div class="v">¥3,160</div></div>
+            <div class="cell"><div class="k">本期应还</div><div class="v">¥12,480</div></div>
+            <div class="cell"><div class="k">未来分期本金</div><div class="v">¥9,167</div></div>
+          </div>
+        </div>
+        <div class="card" data-in="4200">
+          <div class="row"><span class="t1">分期 · 家电城 ¥10,000</span><span class="sm">12 期 · 已还 1/12</span></div>
+          <div class="k" style="margin-top:4px">每期本金 ¥833.33 + 费用 ¥60.00 · 每期费率 0.6% · 尾差末期</div>
+          <div class="grid2" style="margin-top:8px">
+            <div class="cell"><div class="k">名义年化（×12）</div><div class="v">7.2%</div></div>
+            <div class="cell" style="background:var(--pAmberBg)"><div class="k amberT">实际年化（现金流 IRR）</div><div class="v amberT" id="irr">7.2%</div></div>
+          </div>
+        </div>
+        <div class="card" data-in="5600">
+          <div class="k" style="margin-bottom:4px">本期交易</div>
+          <div class="row"><span>家电城 · 分期第 1 期</span><span class="v">¥893.33</span></div>
+          <div class="row" style="margin-top:4px"><span>超市退货 · 退款<span class="pill amber">待核对</span></span><span class="v">−¥329.00</span></div>
+          <div class="row" style="margin-top:4px"><span>机票 · 入账日未知<span class="pill unknown">可能账期 10-10 / 11-10</span></span><span class="v">¥2,180</span></div>
+        </div>
+        <div class="chips" data-in="6000" style="margin:0"><span class="on">登记还款</span><span>人工修正</span><span>录入账单</span><span>记一笔</span></div>
+      </div>
+      <div class="panel" data-in="8600" data-fx="none">
+        <div class="card" data-in="8700">
+          <div class="row"><span class="t1">还款 ¥12,480 · 10-10 账单</span><span class="sm">工资卡 · 手机银行</span></div>
+          <div class="steps" style="margin-top:10px">
+            <div class="step done" data-in="9000"><div class="t1">已登记</div><div class="sm">10-26 09:12 · 发起转账</div></div>
+            <div class="step done" data-in="10000"><div class="t1">现金已扣</div><div class="sm">10-26 10:05 · 工资卡 −¥12,480（现金时间线按此日生效）</div></div>
+            <div class="step done" data-in="11000"><div class="t1">银行已入账</div><div class="sm">10-27 · 负债按此日核销</div></div>
+            <div class="step bank" data-in="12200"><div class="t1">银行确认<span class="stamp">银行确认</span></div><div class="sm">10-28 · 账单结清（只有这一步才算）</div></div>
+          </div>
+          <div class="sm" style="margin-top:2px">不会出现"还款成功"四个字，也没有绿色的勾。</div>
+        </div>
+        <div class="card" data-in="13400">
+          <div class="row"><span class="k">分配到账单</span><span class="sm">合计须等于还款额</span></div>
+          <div class="row" style="margin-top:4px"><span>10-10 账单</span><span class="v">¥12,480</span></div>
+          <div class="row" style="margin-top:4px"><span class="sm">合计 ¥12,480 = 还款额 ¥12,480</span><span class="pill" style="margin:0">可保存</span></div>
+        </div>
+        <div class="warn" data-in="14200">
+          <b>疑似重复 · 待处理</b>
+          10-15 两笔 ¥1,000：一笔自动扣款、一笔手工登记。负债只核销一次，直到你处理。
+          <div class="btns"><span>只保留一笔</span><span>两笔都是真的</span></div>
+        </div>
+        <div class="card" data-in="15200" style="font-size:12px;color:var(--pMuted);line-height:1.5">退款 ¥329 · 超市退货：规则未知，<span class="amberT">待核对</span>，应还不变 · 贷方余额 ¥0</div>
+      </div>
+    </div>
+    <div class="tb"><span class="on">总览</span><span>卡包</span><span>规划</span><span>我的</span></div>
+  </div></div>
+  <div class="copy tight">
+    <h2 data-in="300">账单、分期、还款</h2>
+    <ul>
+      <li data-in="1000">正式账单的每个版本都保留原值；人工修正<em>必须写理由</em></li>
+      <li data-in="4200">分期成本并列显示：名义年化 vs 按现金流 IRR 算的实际年化——<em>不把月费率 ×12 叫"实际"</em></li>
+      <li data-in="8600">还款不是"点一下就成功"：登记、扣款、入账、银行确认，每一步有时间、有证据</li>
+      <li data-in="13000">同日同额两笔 → 疑似重复，负债只核销一次；退款待核对；贷方余额单列</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5 · 消费规划 -->
+<section class="scene" id="s5">
+  <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+    <div class="ab">消费规划</div>
+    <div class="ct">
+      <div class="panel" data-fx="none" data-in="200">
+        <div class="card" data-in="400">
+          <div class="row"><span class="k">计划消费</span><span class="big">¥10,000</span></div>
+          <div class="row" style="margin-top:4px"><span class="k">11-03 · 刷卡 · 最多 2 张</span><span class="sm">还款现金：基准预期</span></div>
+        </div>
+        <div class="card" data-in="900">
+          <div class="k" style="margin-bottom:4px">候选（按免息期、额度余量、还款日现金）</div>
+          <div class="cand"><span class="nm">星海</span><div class="bx"><div class="row"><span class="sm">可用 ¥18,500</span><span class="sm">免息至 12-25</span></div><div class="bar"><i class="cb" data-w="0.92" style="background:#1F5BB8"></i></div></div></div>
+          <div class="cand"><span class="nm">长江</span><div class="bx"><div class="row"><span class="sm">可用 ¥6,200</span><span class="sm">免息至 12-30</span></div><div class="bar"><i class="cb" data-w="0.31" style="background:#1F5BB8"></i></div></div></div>
+          <div class="cand" style="border:0"><span class="nm">北辰</span><div class="bx"><div class="row"><span class="sm">可用 ¥4,000</span><span class="sm amberT">临额 11-30 到期</span></div><div class="bar"><i class="cb" data-w="0.2" style="background:#F2C14E"></i></div></div></div>
+        </div>
+        <div class="result" data-in="5000">
+          <div class="row"><span class="t1">方案 A · 可行</span><span><span class="tagx">已验证</span><span class="tagx un">未证明最优</span></span></div>
+          <p><b>星海 ¥8,000</b> → 12-05 出账 · 12-25 还<br><b>长江 ¥2,000</b> → 12-12 出账 · 12-30 还</p>
+          <p>还款日现金（基准预期）：够。若工资晚 3 天：12-25 差 ¥1,200 ——<span class="amberT">有条件可行</span></p>
+          <p class="sm">解释：避开 11-30 到期的临时额度；分两张卡把还款摊到两个日期。</p>
+        </div>
+        <div class="card" data-in="8500" style="font-size:12px;color:var(--pMuted);line-height:1.5">找不到方案时直说：<b style="color:var(--pText)">本地未找到（不是证明无解）</b>。采纳方案 = 预留额度与现金，录入真实交易后核销。</div>
+        <div class="card" data-in="9500">
+          <div class="k" style="margin-bottom:4px">假设清单</div>
+          <div class="sm" style="line-height:1.5">星海按规则 v2 推算账期 · 长江快照 9 天前，按"假设分析" · 北辰临额 11-30 到期后容量按 ¥0 · 还款现金按基准预期</div>
+        </div>
+        <div class="chips" data-in="10200" style="margin:0"><span class="on">采纳并预留</span><span>保存方案</span><span>换一种分法</span></div>
+      </div>
+    </div>
+    <div class="tb"><span>总览</span><span>卡包</span><span class="on">规划</span><span>我的</span></div>
+  </div></div>
+  <div class="copy">
+    <h2 data-in="300">这笔消费刷哪张卡？<small>I-2 阶段 · 开发中</small></h2>
+    <ul>
+      <li data-in="1200">按最长免息期、额度余量、还款日的现金承受力，给出<em>分卡分额</em>方案</li>
+      <li data-in="4800">每个方案都经过验证器，附假设清单；不说"推荐"，只说<em>"可行"与为什么</em></li>
+      <li data-in="8800">本地有限搜索保证可行、<em>不声称最优</em>——界面永远写明</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6 · 可信 -->
+<section class="scene" id="s6">
+  <h2 data-in="300">可复现 · 可解释 · 可审计</h2>
+  <div class="lead" data-in="700">不是推荐卡片的营销工具，也不是支付工具：是一本你自己能查账的本子</div>
+  <div class="grid">
+    <div class="tile" data-in="1200"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5"/><circle cx="12" cy="18" r="1"/></svg><h3>纯本地</h3><p>数据只在你的 iPhone；没有账号、没有服务器、不联网也能用</p></div>
+    <div class="tile" data-in="1650"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><h3>加密存储</h3><p>SQLite3 Multiple Ciphers · ChaCha20；密钥放在系统钥匙串，打不开就停，不降级</p></div>
+    <div class="tile" data-in="2100"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/><path d="M3 3l18 18"/></svg><h3>不碰卡号</h3><p>只记末四位；任何完整卡号都拒绝保存；不采集任何数据</p></div>
+    <div class="tile" data-in="2550"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg><h3>结论可解释</h3><p>假设、数据问题、确认层级全部显示；没有"安全"二字，也没有绿勾</p></div>
+    <div class="tile" data-in="3000"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 12l3 3 7-7"/></svg><h3>规格先行</h3><p>38 组验收样例（F-01～F-38）；Dart 领域包与 Python 引擎逐字节一致</p></div>
+    <div class="tile" data-in="3450"><svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="9" r="2"/><path d="M6 7v10M18 11c0 3-4 3-8 4"/></svg><h3>公开构建</h3><p>代码在 GitHub；CI 自动出未签名 IPA，自己签名安装</p></div>
+  </div>
+</section>
+
+<!-- 7 · 片尾 -->
+<section class="scene" id="s7">
+  <div class="glow" style="left:640px;top:200px"></div>
+  <div class="wm2" data-in="300" data-dur="900">卡序</div>
+  <div class="en" data-in="700" data-dur="900">CardFlow</div>
+  <div class="l1" data-in="1500">iOS App · 开发中（2026-10，阶段 I-1：卡片、账期、现金流、账单与还款）</div>
+  <div class="l2" data-in="2200">github.com/YePiXpert/cardflow</div>
+  <div class="l3" data-in="2900">视频中的界面为示意，数据为演示数据</div>
+</section>
+</div>
+
+<script>
+const SCENES=[
+  {id:'s0',start:0,end:7000,label:''},
+  {id:'s1',start:7000,end:19000,label:'01 · 为什么'},
+  {id:'s2',start:19000,end:35000,label:'02 · 卡包与账期'},
+  {id:'s3',start:35000,end:55000,label:'03 · 现金与资金日历'},
+  {id:'s4',start:55000,end:72000,label:'04 · 账单、分期、还款'},
+  {id:'s5',start:72000,end:86000,label:'05 · 消费规划（开发中）'},
+  {id:'s6',start:86000,end:98000,label:'06 · 隐私与可信'},
+  {id:'s7',start:98000,end:106000,label:''},
+];
+window.TOTAL_MS=SCENES[SCENES.length-1].end;
+window.SCENE_STARTS=SCENES.map(s=>s.start);
+const XF=500;
+const c01=x=>x<0?0:x>1?1:x;
+const eo=x=>1-Math.pow(1-x,3);
+const P=(t,s,d)=>c01((t-s)/d);
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+
+function reveal(root,t){
+  root.querySelectorAll('[data-in]').forEach(el=>{
+    const s=+el.dataset.in, d=+(el.dataset.dur||650);
+    const p=eo(P(t,s,d));
+    let o=p;
+    if(el.dataset.out){o*=1-P(t,+el.dataset.out,400);}
+    const fx=el.dataset.fx||'up';
+    let tr='';
+    if(fx==='up') tr=`translateY(${(1-p)*26}px)`;
+    el.style.opacity=o;
+    if(tr) el.style.transform=tr;
+  });
+}
+const hooks={
+  s0(t){
+    const cards=document.querySelectorAll('#s0 .fcard');
+    cards.forEach((c,i)=>{
+      const p=eo(P(t,300,1500));
+      const rot=(-16+16*i)*p, tx=(-150+150*i)*p, ty=Math.abs(i-1)*14*p+4*Math.sin(t/900+i);
+      c.style.transform=`translate(${tx}px,${ty}px) rotate(${rot}deg)`;
+      c.style.opacity=eo(P(t,100+i*120,500));
+    });
+  },
+  s1(t){
+    document.querySelectorAll('#s1 .note').forEach((n,i)=>{
+      const base=[-4,3,-2,5,2,-5][i];
+      n.style.transform=`rotate(${base+2.2*Math.sin(t/700+i)}deg) translateY(${8*Math.sin(t/950+i*1.3)}px)`;
+    });
+  },
+  s2(t){
+    const tp=P(t,5800,650), tap=document.getElementById('tap');
+    tap.style.transform=`scale(${0.2+1.6*tp})`;
+    tap.style.opacity=(tp>0&&tp<1)?(1-tp):0;
+    const p=eo(P(t,7900,900));
+    document.getElementById('limFixed').style.width=(71.4*p)+'%';
+    document.getElementById('limTemp').style.width=(28.6*p)+'%';
+    document.getElementById('limAvail').style.width=(26.4*p)+'%';
+  },
+  s3(t){
+    document.getElementById('minPt').textContent='−¥'+fmt(3200*eo(P(t,900,900)));
+    const g=document.getElementById('gapRow');
+    const k=P(t,2200,1)*(0.5+0.5*Math.sin(t/260));
+    g.style.boxShadow=`inset 0 0 0 2px rgba(179,38,30,${0.25*k})`;
+    document.getElementById('s3ab').textContent=t<10650?'资金日历':'情景与假设对比';
+  },
+  s4(t){
+    const v=7.2+6.6*eo(P(t,5000,1100));
+    document.getElementById('irr').textContent=v.toFixed(1)+'%';
+  },
+  s5(t){
+    document.querySelectorAll('#s5 .cb').forEach((b,i)=>{
+      b.style.width=(100*(+b.dataset.w)*eo(P(t,1300+i*200,800)))+'%';
+    });
+  },
+};
+window.seek=function(ms){
+  let cur=null;
+  for(const s of SCENES){
+    const el=document.getElementById(s.id);
+    const on=ms>=s.start&&ms<s.end;
+    el.classList.toggle('on',on);
+    if(!on) continue;
+    cur=s;
+    const t=ms-s.start;
+    const fi=eo(P(t,0,XF)), fo=1-P(t,(s.end-s.start)-XF,XF);
+    el.style.opacity=Math.min(fi,fo);
+    reveal(el,t);
+    if(hooks[s.id]) hooks[s.id](t);
+  }
+  const chip=document.getElementById('chip'), wm=document.getElementById('wm');
+  chip.textContent=cur?cur.label:'';
+  chip.style.opacity=(cur&&cur.label)?1:0;
+  wm.style.opacity=(cur&&cur.label)?1:0;
+  document.getElementById('prog').style.width=(ms/window.TOTAL_MS*1920)+'px';
+};
+seek(0);
+</script>
+</body>
+</html>
