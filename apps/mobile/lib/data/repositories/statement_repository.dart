@@ -9,6 +9,7 @@ import '../time/clock.dart';
 import '../validation/text_rules.dart';
 import 'credit_pool_repository.dart' show maxAmountMinor;
 import 'ledger_models.dart';
+import 'ledger_reader.dart';
 import 'repository_errors.dart';
 import 'workspace_scope.dart';
 
@@ -207,7 +208,9 @@ final class StatementRepository {
   }
 
   /// 人工修正：生成新版本（来源"人工修正"，理由必填，原值保留可查，R-STMT-07）；可同时更正到期日。
-  /// 已出账的账单变为"已修正"，其余状态不变（结清只由银行确认触发）；已结清的账单不能再修正。
+  /// 存储状态：已出账的变为"已修正"，其余不变（动作记录）。有效状态为"已还清"（银行确认的还款足额）的
+  /// 账单不能再修正（看有效状态，不看存储状态：冲正后剩余应还 > 0 的又可以修正）；修正后有效状态由读模型
+  /// 重新推导。
   Future<StatementVersionRow> correct(
     String statementId, {
     required StatementFigures figures,
@@ -229,8 +232,11 @@ final class StatementRepository {
       return await _db.transaction(() async {
         final statement = await require(statementId);
         final status = StatementStatus.of(statement.status);
-        if (status.isSettled) {
-          throw const ConflictException('已结清的账单不能再修正；银行另有调整时请录入下一期账单');
+        final standing = (await LedgerReader(
+          _scope,
+        ).load()).statusOf(statementId);
+        if (standing == EffectiveStatementStatus.paid) {
+          throw const ConflictException('已还清的账单不能再修正；银行另有调整时请录入下一期账单');
         }
         final due = dueDate ?? LocalDate.parse(statement.dueDate);
         if (due <= LocalDate.parse(statement.statementDate)) {
@@ -278,8 +284,8 @@ final class StatementRepository {
     }
   }
 
-  /// 改账单状态（状态机 PRD §6.2；不允许的转移不写、返回 false）。由还款的银行确认（结清、部分结清）与
-  /// 读模型的逾期判断调用。
+  /// 改账单的存储状态（状态机 PRD §6.2，动作记录；不允许的转移不写、返回 false）。由还款的银行确认（结清、
+  /// 部分结清）调用；逾期等有效状态由读模型推导，不写库。
   Future<bool> moveStatus(String statementId, StatementStatus to) async {
     final statement = await require(statementId);
     final from = StatementStatus.of(statement.status);

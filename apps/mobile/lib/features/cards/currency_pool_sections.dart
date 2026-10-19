@@ -71,7 +71,7 @@ class _CurrencyAccountsSectionState
                       final confirmed = await confirmAction(
                         context,
                         title: '删除${currencyLabel(sub.currency)}子账户？',
-                        message: '影响：删除这 1 个子账户。已有额度快照或账期规则的子账户不能删除（不会丢数据）。',
+                        message: '影响：删除这 1 个子账户。已有额度快照、账期规则、交易、账单、还款或分期的子账户不能删除（不会丢数据）。',
                         confirmLabel: '删除',
                         destructive: true,
                       );

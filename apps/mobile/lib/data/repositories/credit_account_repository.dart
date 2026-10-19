@@ -230,9 +230,18 @@ final class CreditAccountRepository {
     });
   }
 
-  /// 删除币种子账户：主子账户不可删；已有额度快照或账期规则的不可删（不丢数据）；
-  /// 账户所在授信池用这个币种时须先移出授信池。
-  Future<void> removeCurrencyAccount(String currencyAccountId) =>
+  /// 删除币种子账户：主子账户不可删；已有额度快照、账期规则、交易、账单、还款或分期的不可删（不丢数据；
+  /// 含已删除/作废的记录——它们仍引用这个子账户，审查 R-08）；账户所在授信池用这个币种时须先移出授信池。
+  /// 异常一律包装为 [RepositoryException]。
+  Future<void> removeCurrencyAccount(String currencyAccountId) async {
+    try {
+      await _removeCurrencyAccount(currencyAccountId);
+    } on Object catch (error, stack) {
+      rethrowAsRepositoryException(error, stack);
+    }
+  }
+
+  Future<void> _removeCurrencyAccount(String currencyAccountId) =>
       _db.transaction(() async {
         final row = await currencyAccountById(currencyAccountId);
         if (row == null) {
@@ -259,6 +268,20 @@ final class CreditAccountRepository {
         if (snapshots.isNotEmpty || rules.isNotEmpty) {
           throw const ConflictException('该子账户已有额度快照或账期规则，不能删除');
         }
+        final records = <String>[
+          for (final (table, what) in const <(String, String)>[
+            ('transactions', '交易'),
+            ('statements', '账单'),
+            ('repayments', '还款'),
+            ('installment_plans', '分期'),
+          ])
+            if (await _referencedBy(table, currencyAccountId)) what,
+        ];
+        if (records.isNotEmpty) {
+          throw ConflictException(
+            '该子账户已有${records.join('、')}记录，不能删除（删除会丢失这些记录）',
+          );
+        }
         final account = await require(row.creditAccountId);
         final poolId = account.poolId;
         if (poolId != null) {
@@ -272,6 +295,21 @@ final class CreditAccountRepository {
             ))
             .go();
       });
+
+  /// [table] 里是否有行（含已删除/作废的）引用这个币种子账户。
+  Future<bool> _referencedBy(String table, String currencyAccountId) async {
+    final row = await _db
+        .customSelect(
+          'SELECT EXISTS (SELECT 1 FROM $table WHERE workspace_id = ? '
+          'AND currency_account_id = ?) AS used',
+          variables: <Variable<Object>>[
+            Variable<String>(_ws),
+            Variable<String>(currencyAccountId),
+          ],
+        )
+        .getSingle();
+    return row.read<int>('used') == 1;
+  }
 
   // ---- 授信池成员 ----
 

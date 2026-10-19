@@ -6,12 +6,19 @@
 //   0.0.1 已存的分配到旧账单的还款照常读出、金额按入账日期；P3b 10 月按 1,500 还清 → 10 月"已还清"，9 月
 //   不在近期到期；P4 09-25 的还款早于 10 月账单日 → 10 月剩余应还仍 800、"待还"、在近期到期里。
 // - R-03：冲正后（10-18）剩余应还 1,000、"待还"、在近期到期里；11-05 → "已逾期"。
-// - R-06：M1 部分还款后人工修正为已还的金额 → "已还清"，不在近期到期。
+// - R-06：M1 部分还款后人工修正为已还的金额 → "已还清"，不在近期到期；"已还清"的不能再修正、冲正后又可以。
+// - R-07：M2 删除退款交易、M4 直接作废疑似重复中的一笔 → 引用它们的差异项由系统标为已处理并写明原因。
+// - R-08：M3 删除已有交易的非主币种子账户 → 给出说明（ConflictException），不抛未包装的异常。
+// - F-33（裁决调整）：还款只分配到本期，分到已并入下一期的旧账单被拒；本期已还清也可以再分配（多还）。
 import 'package:cardflow/data/db/app_database.dart';
+import 'package:cardflow/data/repositories/credit_account_repository.dart';
 import 'package:cardflow/data/repositories/ledger_models.dart';
 import 'package:cardflow/data/repositories/ledger_reader.dart';
+import 'package:cardflow/data/repositories/reconciliation_repository.dart';
 import 'package:cardflow/data/repositories/repayment_repository.dart';
+import 'package:cardflow/data/repositories/repository_errors.dart';
 import 'package:cardflow/data/repositories/statement_repository.dart';
+import 'package:cardflow/data/repositories/transaction_repository.dart';
 import 'package:cardflow/data/repositories/workspace_scope.dart';
 import 'package:cardflow/data/time/clock.dart';
 import 'package:cardflow_domain/cardflow_domain.dart';
@@ -254,6 +261,187 @@ void main() {
       expect(data.statusOf(s.id), EffectiveStatementStatus.paid);
       expect(data.balances[s.id]!.remaining, 0);
       expect(data.upcoming(), isEmpty);
+
+      // "已还清"（有效状态）不能再修正；冲正后剩余应还 > 0，又可以修正（看有效状态，不看存储状态）。
+      final again = await expectRepositoryError<ConflictException>(
+        () => StatementRepository(scope).correct(
+          s.id,
+          figures: const StatementFigures(newBalanceMinor: 70000),
+          reason: '再改一次',
+        ),
+      );
+      expect(again.message, contains('已还清的账单不能再修正'));
+      await RepaymentRepository(scope).reverse(r.id);
+      await StatementRepository(scope).correct(
+        s.id,
+        figures: const StatementFigures(newBalanceMinor: 80000),
+        reason: '冲正后按银行账单重录',
+      );
+      data = await LedgerReader(scope).load();
+      expect(data.versions[s.id], hasLength(3));
+      expect(data.statusOf(s.id), EffectiveStatementStatus.due);
+    });
+  });
+
+  group('R-07 删除与作废后由系统处理差异项', () {
+    test('M2 删除一笔退款交易 → 它的"退款待核对"由系统标为已处理（处理者系统、写明"引用的交易已删除"），'
+        '不再计入待办', () async {
+      final refund = await addTestTransaction(
+        scope,
+        sub,
+        type: TxnType.refund,
+        amount: -5000,
+      );
+      var data = await LedgerReader(scope).load();
+      expect(data.openItems.map((i) => i.kind), <String>['refund_pending']);
+      await TransactionRepository(scope).delete(refund.id);
+      data = await LedgerReader(scope).load();
+      expect(data.transaction(refund.id), isNull);
+      expect(data.openItems, isEmpty);
+      final item = data.items.single;
+      expect(
+        (item.status, item.resolution, item.resolvedBy),
+        ('resolved', 'dismissed', 'system'),
+      );
+      expect(data.systemCloseReason(item), '引用的交易已删除');
+    });
+
+    test('M4 同日同额的自动扣款与手工还款（疑似重复）→ 在还款详情直接「作废登记」手工那笔 → 差异项由系统标为已处理'
+        '（写明"引用的还款登记已作废"）；按差异项"同一笔"作废时仍记为本机用户的处理', () async {
+      final s = await recordTestStatement(scope, sub, newBalance: 100000);
+      Future<RepaymentRow> register(RepaymentMethod method, LocalDate on) =>
+          registerTestRepayment(
+            scope,
+            currencyAccountId: sub,
+            cashAccountId: cash,
+            amount: 100000,
+            statementId: s.id,
+            method: method,
+            expectedDebitOn: on,
+          );
+      await register(RepaymentMethod.autoDebit, d(2026, 10, 15));
+      final manual = await register(RepaymentMethod.manual, d(2026, 10, 15));
+      var data = await LedgerReader(scope).load();
+      expect(data.openItems.map((i) => i.kind), <String>[
+        'duplicate_repayment',
+      ]);
+      await RepaymentRepository(scope).delete(manual.id);
+      data = await LedgerReader(scope).load();
+      expect(data.repayments, hasLength(1));
+      expect(data.openItems, isEmpty);
+      final closed = data.items.single;
+      expect(closed.resolvedBy, 'system');
+      expect(data.systemCloseReason(closed), '引用的还款登记已作废');
+
+      // 另一组：经差异项处理"同一笔"（用户的判断），不被系统的处理覆盖。
+      await register(RepaymentMethod.autoDebit, d(2026, 10, 25));
+      final manual2 = await register(RepaymentMethod.manual, d(2026, 10, 25));
+      final open = (await ReconciliationRepository(
+        scope,
+      ).list(status: ReconciliationStatus.open)).single;
+      await RepaymentRepository(scope)
+          .resolveDuplicate(open.id, voidRepaymentId: manual2.id);
+      final resolved = (await ReconciliationRepository(scope).byId(open.id))!;
+      expect(
+        (resolved.status, resolved.resolution, resolved.resolvedBy),
+        ('resolved', 'same_payment', 'user'),
+      );
+    });
+  });
+
+  group('R-08 删除币种子账户', () {
+    test('M3 USD 子账户已有一笔交易 → 删除被拒并说明（ConflictException，不是未包装的数据库异常）；'
+        '交易删除（tombstone）后仍被引用，照样拒绝；没有任何记录的可以删除', () async {
+      final card = await createTestCard(scope, bank: '中国银行', last4: '2001');
+      final accounts = CreditAccountRepository(scope);
+      final usd = await accounts.addCurrencyAccount(
+        card.creditAccountId,
+        'USD',
+      );
+      final txn = await addTestTransaction(scope, usd.id, amount: 1000);
+      final refused = await expectRepositoryError<ConflictException>(
+        () => accounts.removeCurrencyAccount(usd.id),
+      );
+      expect(refused.message, contains('交易'));
+      await TransactionRepository(scope).delete(txn.id);
+      await expectRepositoryError<ConflictException>(
+        () => accounts.removeCurrencyAccount(usd.id),
+      );
+      final eur = await accounts.addCurrencyAccount(
+        card.creditAccountId,
+        'EUR',
+      );
+      await accounts.removeCurrencyAccount(eur.id);
+      expect(
+        (await accounts.currencyAccounts(card.creditAccountId))
+            .map((c) => c.currency),
+        containsAll(<String>['CNY', 'USD']),
+      );
+      expect(
+        (await accounts.currencyAccounts(card.creditAccountId))
+            .map((c) => c.currency),
+        isNot(contains('EUR')),
+      );
+    });
+
+    test('有账单的子账户同样拒绝，说明写出是哪类记录', () async {
+      final card = await createTestCard(scope, bank: '中国银行', last4: '2002');
+      final accounts = CreditAccountRepository(scope);
+      final usd = await accounts.addCurrencyAccount(
+        card.creditAccountId,
+        'USD',
+      );
+      await recordTestStatement(scope, usd.id, newBalance: 100, minDue: 10);
+      final refused = await expectRepositoryError<ConflictException>(
+        () => accounts.removeCurrencyAccount(usd.id),
+      );
+      expect(refused.message, '该子账户已有账单记录，不能删除（删除会丢失这些记录）');
+    });
+  });
+
+  group('F-33 还款只分配到本期', () {
+    test('分到已并入下一期的 9 月账单被拒；分到本期（10 月）可以，本期已还清后再分配也可以（多还形成贷方余额）', () async {
+      final sep = await september();
+      final oct = await recordTestStatement(scope, sub, newBalance: 150000);
+      final old = await expectRepositoryError<ValidationException>(
+        () => registerTestRepayment(
+          scope,
+          currencyAccountId: sub,
+          cashAccountId: cash,
+          amount: 100000,
+          statementId: sep.id,
+        ),
+      );
+      expect(
+        (old.field, old.message),
+        ('allocations', '只能分配到本期账单：更早的账单已并入下一期'),
+      );
+      final full = await registerTestRepayment(
+        scope,
+        currencyAccountId: sub,
+        cashAccountId: cash,
+        amount: 150000,
+        statementId: oct.id,
+        expectedDebitOn: d(2026, 10, 12),
+      );
+      await confirm(full.id, '2026-10-12');
+      expect(
+        (await LedgerReader(scope).load()).statusOf(oct.id),
+        EffectiveStatementStatus.paid,
+      );
+      final extra = await registerTestRepayment(
+        scope,
+        currencyAccountId: sub,
+        cashAccountId: cash,
+        amount: 20000,
+        statementId: oct.id,
+        expectedDebitOn: d(2026, 10, 14),
+      );
+      await confirm(extra.id, '2026-10-14');
+      final data = await LedgerReader(scope).load();
+      expect(data.balances[oct.id]!.creditBalance, 20000);
+      expect(data.liabilities[sub]!.billedUnpaid, -20000);
+      expect(data.statusOf(oct.id), EffectiveStatementStatus.paid);
     });
   });
 }

@@ -184,7 +184,11 @@ class RepaymentCenterPage extends ConsumerWidget {
           RepaymentTile(data: data, repayment: r, accountId: accountId),
         if (closed.isNotEmpty) ...<Widget>[
           SectionTitle('已处理的差异（${closed.length}）'),
-          for (final item in closed) ReconciliationSummaryTile(item: item),
+          for (final item in closed)
+            ReconciliationSummaryTile(
+              item: item,
+              systemReason: data.systemCloseReason(item),
+            ),
         ],
       ],
     );
@@ -833,7 +837,7 @@ class RepaymentDetailPage extends ConsumerWidget {
             final ok = await confirmAction(
               context,
               title: '银行冲正了这笔还款？',
-              message: '冲正后这笔还款不再核销负债；已结清的账单状态不变，剩余应还按实际重新计算。',
+              message: '冲正后这笔还款不再核销负债；账单的剩余应还与状态按实际重新计算（还欠着的会重新进入近期到期与逾期提醒）。',
               confirmLabel: '冲正',
               destructive: true,
             );
@@ -854,7 +858,7 @@ class RepaymentDetailPage extends ConsumerWidget {
             final ok = await confirmAction(
               context,
               title: '作废这笔登记？',
-              message: '影响：这 1 笔还款登记与它在资金日历里的计划扣款一并作废，不可撤销。',
+              message: '影响：这 1 笔还款登记与它在资金日历里的计划扣款一并作废，不可撤销；引用它的未处理差异项由系统标为已处理。',
               confirmLabel: '作废',
               destructive: true,
             );
@@ -987,6 +991,7 @@ class RepaymentDetailPage extends ConsumerWidget {
           for (final item in items)
             ReconciliationSummaryTile(
               item: item,
+              systemReason: data.systemCloseReason(item),
               onTap: () =>
                   context.go(AppRoutes.repayments(accountId: accountId)),
             ),

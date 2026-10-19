@@ -1,6 +1,6 @@
 // 还款登记与核对（UF-3，I-1c 数据层；真实 sqlite3mc）：状态机 PRD §6.3 全部转移（仓库层）、F-31 双侧时间
 // （现金按扣款日、负债按入账日）、F-28 额度释放（入账前不释放、时滞未知不释放）、F-32 疑似重复（处理前负债
-// 只核销一次）、F-33 分配守恒、结清只由银行确认触发、「我已还款」不结清、到期无证据 → 待核对、逾期、
+// 只核销一次）、F-33 分配守恒（只分配到本期）、结清只由银行确认触发、「我已还款」不结清、到期无证据 → 待核对、逾期、
 // 金额不符、未匹配的还款、作废登记；F-06 分期尾部责任进入资金日历。
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/mapping/ledger_mapping.dart';
@@ -215,7 +215,8 @@ void main() {
       },
     );
 
-    test('F-33：一笔还款分配到两期账单，分配和等于还款额；超过还款额、跨账户、已结清的账单都被拒', () async {
+    test('F-33（2026-10-19 裁决调整）：同一币种子账户的还款只分配到本期；分到已并入下一期的旧账单、超过还款额、'
+        '跨账户的都被拒；本期已还清后可以再分配（多还）；有效状态"已还清"的账单不能再修正', () async {
       final earlier = await recordTestStatement(
         scope,
         sub,
@@ -223,17 +224,22 @@ void main() {
         dueDate: d(2026, 9, 28),
         newBalance: 50000,
       );
-      final row = await register(
-        amount: 150000,
-        allocations: <String, int>{earlier.id: 50000, statement.id: 100000},
+      final old = await expectRepositoryError<ValidationException>(
+        () => register(
+          amount: 150000,
+          allocations: <String, int>{earlier.id: 50000, statement.id: 100000},
+        ),
       );
+      expect(old.field, 'allocations');
+      final row = await register(amount: 100000);
       final allocations = await RepaymentRepository(scope)
           .allocationsOf(row.id);
-      expect(allocations.fold<int>(0, (a, x) => a + x.amountMinor), 150000);
+      expect(allocations.single.statementId, statement.id);
+      expect(allocations.fold<int>(0, (a, x) => a + x.amountMinor), 100000);
       final over = await expectRepositoryError<ValidationException>(
         () => register(
           amount: 1000,
-          allocations: <String, int>{statement.id: 600, earlier.id: 401},
+          allocations: <String, int>{statement.id: 1001},
         ),
       );
       expect(over.field, 'allocations');
@@ -253,21 +259,26 @@ void main() {
         () =>
             register(amount: 100, allocations: <String, int>{foreign.id: 100}),
       );
-      // 银行确认后结清：两期都足额。
+      // 银行确认后本期"已还清"（存储状态记为已结清）。
       final repo = RepaymentRepository(scope);
       await repo.confirmDebit(row.id, t('2026-10-18T09:00:00+08:00'));
       await repo.markCreditPosted(row.id, t('2026-10-18T10:00:00+08:00'));
       await repo.confirmByBank(row.id, t('2026-10-18T11:00:00+08:00'));
       final statements = StatementRepository(scope);
-      expect((await statements.byId(earlier.id))!.status, 'settled');
       expect((await statements.byId(statement.id))!.status, 'settled');
-      await expectRepositoryError<ValidationException>(
-        () => register(
-          amount: 100,
-          allocations: <String, int>{statement.id: 100},
-        ),
+      var data = await LedgerReader(scope).load();
+      expect(data.statusOf(statement.id), EffectiveStatementStatus.paid);
+      expect(data.statusOf(earlier.id), EffectiveStatementStatus.merged);
+      // 本期已还清也可以再登记（多还的形成贷方余额；界面在保存前要求确认）。
+      final extra = await register(
+        amount: 100,
+        allocations: <String, int>{statement.id: 100},
       );
-      // 已结清的账单不能再修正。
+      expect(
+        (await repo.allocationsOf(extra.id)).single.statementId,
+        statement.id,
+      );
+      // 有效状态"已还清"的账单不能再修正。
       await expectRepositoryError<ConflictException>(
         () => statements.correct(
           statement.id,
@@ -275,6 +286,8 @@ void main() {
           reason: '试图修正',
         ),
       );
+      data = await LedgerReader(scope).load();
+      expect(data.versions[statement.id], hasLength(1));
     });
 
     test('部分还款经银行确认 → 部分结清；「银行已入账」只核销负债、不结清', () async {

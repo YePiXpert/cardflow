@@ -7,12 +7,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/confirm_dialog.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
 import '../../data/mapping/cash_mapping.dart' show cashTimeZone;
-import '../../data/mapping/ledger_mapping.dart' show StatementBalance;
 import '../../data/repositories/cash_models.dart';
 import '../../data/repositories/ledger_models.dart';
 import '../../data/repositories/ledger_reader.dart';
@@ -26,10 +26,13 @@ import '../cash/cash_form_fields.dart';
 import '../statements/ledger_formatting.dart';
 import '../statements/statement_forms.dart';
 
-/// P-06「登记还款」表单：账单（多期分配，实时合计）、金额、现金账户、方式、发起时间、预计扣款日、证据备注。
+/// P-06「登记还款」表单：本期账单的分配（实时合计）、金额、现金账户、方式、发起时间、预计扣款日、证据备注。
 ///
-/// 校验（ui-spec P-06）：分配合计 ≠ 还款额时禁止保存（F-33）；超过所选账单的剩余应还时提示溢缴或分到他期；
-/// 受限账户警告（R-CASH-01）；时点不晚于现在（G3）。保存后的文案是"已登记（待银行确认）"，没有"还款成功"。
+/// 分配（PRD §6.2 的 2026-10-19 裁决段）：同一币种子账户的还款只分配到"本期"（最近一期账单；更早的已并入
+/// 下一期）；默认分到本期并预填本期剩余应还。校验（ui-spec P-06）：分配合计 ≠ 还款额时禁止保存（F-33）；
+/// 超过本期剩余应还时提示并在保存前要求确认（多还的形成贷方余额）；预计扣款日不晚于本期账单日时提示"已反映
+/// 在本期账单里的还款不再扣减"；受限账户警告（R-CASH-01）；时点不晚于现在（G3）。保存后的文案是"已登记
+/// （待银行确认）"，没有"还款成功"。
 class RepaymentFormPage extends ConsumerStatefulWidget {
   const RepaymentFormPage({
     super.key,
@@ -49,6 +52,9 @@ class RepaymentFormPage extends ConsumerStatefulWidget {
 
   /// 分配合计与还款额不相等时的提示。
   static const String allocationMismatch = '分配合计须等于还款额，否则不能保存';
+
+  /// 还款额超过本期剩余应还时的确认框标题。
+  static const String overpayTitle = '还款额超过本期剩余应还？';
 
   @override
   ConsumerState<RepaymentFormPage> createState() => _RepaymentFormPageState();
@@ -99,15 +105,22 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
         statement?.currencyAccountId ??
         widget.currencyAccountId ??
         CurrencyAccountField.choices(data, widget.accountId).firstOrNull?.id;
-    if (statement != null) {
-      final remaining = data.balances[statement.id]?.remaining ?? 0;
-      if (remaining > 0) {
-        final currency =
-            data.currencyAccounts[statement.currencyAccountId]!.currency;
-        _amount.text = amountText(remaining, currency);
-        _allocation(statement.id).text = amountText(remaining, currency);
-      }
+    _prefillCurrent(data);
+  }
+
+  /// 默认分到本期并预填本期剩余应还（PRD §6.2 裁决段）；本期没有要还的时只留空。
+  void _prefillCurrent(LedgerData data) {
+    final sub = _sub;
+    final current = sub == null ? null : data.currentStatementOf(sub);
+    if (current == null || current.remaining <= 0) {
+      return;
     }
+    final currency = data.currencyAccounts[sub]!.currency;
+    _amount.text = amountText(current.remaining, currency);
+    _allocation(current.statement.id).text = amountText(
+      current.remaining,
+      currency,
+    );
   }
 
   /// 还款额与分配（解析失败的项为 null）。
@@ -161,6 +174,19 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
     });
     if (errors.isNotEmpty) {
       return;
+    }
+    // 超过本期剩余应还：先确认（多还的形成贷方余额，PRD §6.2 裁决段）。
+    final current = data.currentStatementOf(sub);
+    if (current != null && amount! > current.remaining) {
+      final confirmed = await confirmAction(
+        context,
+        title: RepaymentFormPage.overpayTitle,
+        message: '多出的部分会成为贷方余额（溢缴款），抵扣以后的账单。确认这笔就是要多还，再登记。',
+        confirmLabel: '仍要登记',
+      );
+      if (!confirmed || !mounted) {
+        return;
+      }
     }
     final initiated = time == null
         ? null
@@ -252,11 +278,10 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
     final sub = _sub!;
     final currency = data.currencyAccounts[sub]!.currency;
     final today = data.cashToday;
-    final statements = <StatementBalance>[
-      for (final s in data.statementsOf(sub))
-        if (data.balances[s.id] case final b?)
-          if (!b.storedStatus.isSettled) b,
-    ];
+    // 只分配到本期（PRD §6.2 裁决段）；更早的账单已并入它。
+    final current = data.currentStatementOf(sub);
+    final merged = data.statementsOf(sub).length - (current == null ? 0 : 1);
+    final expected = _expected ?? today;
     final cashChoices = <CashAccountRow>[
       for (final a in activeCash)
         if (a.currency == currency) a,
@@ -270,14 +295,8 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
     final sum = parsed.allocations.values.fold<int>(0, (a, b) => a + b);
     final amount = parsed.amount;
     final mismatch = parsed.allocationError || amount == null || sum != amount;
-    final remainingOfAllocated = <int>[
-      for (final b in statements)
-        if (parsed.allocations.containsKey(b.statement.id)) b.remaining,
-    ].fold<int>(0, (a, b) => a + b);
     final over =
-        amount != null &&
-        parsed.allocations.isNotEmpty &&
-        amount > remainingOfAllocated;
+        current != null && amount != null && amount > current.remaining;
     return ListView(
       padding: const EdgeInsets.only(bottom: CfSpace.xl),
       children: <Widget>[
@@ -291,6 +310,7 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
             for (final c in _allocations.values) {
               c.clear();
             }
+            _prefillCurrent(data);
           }),
         ),
         FormTextField(
@@ -300,22 +320,36 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
           keyboardType: FormTextField.amountKeyboard,
           onChanged: (_) => setState(() {}),
         ),
-        const SectionTitle('分配到账单'),
-        if (statements.isEmpty)
-          formPadded(const Text('这个账户还没有未结清的正式账单：先「录入正式账单」，再把还款分配到它。')),
-        for (final b in statements) ...<Widget>[
+        const SectionTitle('分配到本期账单'),
+        if (current == null)
+          formPadded(const Text('这个账户还没有正式账单：先「录入正式账单」，还款分配到本期账单。'))
+        else ...<Widget>[
           LedgerAmountRow(
             label:
-                '${b.statement.statementDate} 账单 · 到期 ${b.statement.dueDate} · 剩余应还',
-            minor: b.remaining,
+                '本期 ${current.statement.statementDate} 账单 · 到期 ${current.statement.dueDate} · 剩余应还',
+            minor: current.remaining,
             currency: currency,
           ),
           FormTextField(
-            controller: _allocation(b.statement.id),
-            label: '分到这期（${b.statement.statementDate}）',
+            controller: _allocation(current.statement.id),
+            label: '分到本期（${current.statement.statementDate}）',
             keyboardType: FormTextField.amountKeyboard,
             onChanged: (_) => setState(() {}),
           ),
+          if (merged > 0)
+            const NoticeCard(
+              icon: Icons.merge_type,
+              tone: NoticeTone.unknown,
+              text: '更早的账单已并入本期（本期新增账单已含它们没还的部分），还款只分配到本期。',
+            ),
+          if (expected <= current.statementDate)
+            NoticeCard(
+              icon: Icons.event_busy_outlined,
+              tone: NoticeTone.unknown,
+              text:
+                  '预计扣款日不晚于本期账单日（${current.statement.statementDate}）：银行在账单日及以前入账的还款'
+                  '已反映在本期的新增账单里，不会再从剩余应还里扣减。',
+            ),
         ],
         LedgerAmountRow(label: '分配合计', minor: sum, currency: currency),
         LedgerAmountRow(label: '还款额', minor: amount, currency: currency),
@@ -329,7 +363,7 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
         if (over)
           const NoticeCard(
             icon: Icons.info_outline,
-            text: '还款额超过所选账单的剩余应还：多出的部分会成为溢缴款，或分到其他期。',
+            text: '还款额超过本期剩余应还：多出的部分会成为贷方余额（溢缴款），保存前需要确认。',
           ),
         ChoiceWrap<String>(
           label: '从哪个现金账户扣款（同币种）',

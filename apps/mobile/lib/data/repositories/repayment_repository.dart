@@ -39,7 +39,8 @@ final class RepaymentDraft {
   final int amountMinor;
   final RepaymentMethod method;
 
-  /// 分配到各期账单（账单 id → 金额）：仓库要求 Σ ≤ 还款额，界面要求 Σ = 还款额（F-33）。
+  /// 分配到账单（账单 id → 金额）：只能分配到这个子账户的本期账单（最近一期，PRD §6.2 裁决段）；仓库要求
+  /// Σ ≤ 还款额，界面要求 Σ = 还款额（F-33）。
   final Map<String, int> allocations;
 
   /// 从哪个现金账户扣款（同币种、未停用）。
@@ -60,8 +61,9 @@ final class RepaymentDraft {
 ///
 /// 双侧时间（R-STMT-04、F-31）：现金侧经 I-1b 的接口生成/确认 `cash_events`（`linked_repayment_id`）——
 /// 预计扣款日生成"计划"事件，确认扣款时按实际扣款时点变为确定、已发生；负债侧按 `credit_posted_at` 的
-/// 日期核销（读模型 `paidOnStatement`）；额度释放按"银行入账后 + 释放时滞"，时滞未知时不释放（F-28）。
-/// 结清/部分结清只由银行确认触发；「我已还款」只到 `user_marked_paid`，不结清（R-STMT-03）。
+/// 日期核销（读模型按入账日期计算本期剩余应还，不按分配，PRD §6.2 裁决段）；额度释放按"银行入账后 + 释放
+/// 时滞"，时滞未知时不释放（F-28）。存储状态的结清/部分结清只由银行确认触发（动作记录）；「我已还款」只到
+/// `user_marked_paid`，不结清（R-STMT-03）。还款只分配到本期账单。
 ///
 /// 差异项：同一天、同一子账户、同金额的一笔自动扣款与一笔手工还款 → 疑似重复（F-32，处理前负债只核销
 /// 一次）；扣款或入账的金额与登记的不同 → 金额不符。
@@ -183,6 +185,11 @@ final class RepaymentRepository {
             throw const ValidationException('cashAccount', '现金账户的币种须与还款相同');
           }
         }
+        // 同一币种子账户的还款只分配到"本期"（最近一期账单；更早的已并入下一期，PRD §6.2 裁决段）。本期
+        // 已还清也可以再分配（多还的形成贷方余额；界面要求先确认）。
+        final current = draft.allocations.isEmpty
+            ? null
+            : await _currentStatement(sub.id);
         for (final statementId in draft.allocations.keys) {
           final statement =
               await (_db.select(_db.statements)..where(
@@ -192,8 +199,11 @@ final class RepaymentRepository {
           if (statement == null || statement.currencyAccountId != sub.id) {
             throw const ValidationException('allocations', '只能分配到这个账户的账单');
           }
-          if (StatementStatus.of(statement.status).isSettled) {
-            throw const ValidationException('allocations', '这期账单已结清');
+          if (statement.id != current?.id) {
+            throw const ValidationException(
+              'allocations',
+              '只能分配到本期账单：更早的账单已并入下一期',
+            );
           }
         }
         final now = _scope.clock.nowText(cashTimeZone);
@@ -472,7 +482,7 @@ final class RepaymentRepository {
   });
 
   /// 作废这笔登记（tombstone）：只有已登记、失败、用户已标记、待核对且现金还没扣的可以作废；计划扣款
-  /// 一并作废。
+  /// 一并作废；引用它的未处理差异项（疑似重复、金额不符）由系统标为已处理（审查 R-07）。
   Future<void> delete(String id) => _guarded(() => _delete(id));
 
   Future<void> _delete(String id) async {
@@ -501,6 +511,7 @@ final class RepaymentRepository {
         updatedAt: Value(now),
       ),
     );
+    await ReconciliationRepository(_scope).closeBySystem(repaymentId: id);
   }
 
   /// 证据备注（≤200 字，G2）；空白 = 清除。
@@ -533,8 +544,9 @@ final class RepaymentRepository {
         if (!referencedRepayments(item).contains(voidRepaymentId)) {
           throw const ValidationException('repayment', '只能作废这一组里的登记');
         }
-        await _delete(voidRepaymentId);
+        // 先由用户处理这一项，再作废（作废会让系统处理引用这笔的其余差异项）；同一个事务，失败一起回滚。
         await items.resolve(itemId, ReconciliationResolution.samePayment);
+        await _delete(voidRepaymentId);
       });
 
   // ---- 内部 ----
@@ -566,6 +578,18 @@ final class RepaymentRepository {
       ),
     );
   }
+
+  /// 某币种子账户的本期账单（账单日最近的一期）。
+  Future<StatementRow?> _currentStatement(String currencyAccountId) =>
+      (_db.select(_db.statements)
+            ..where(
+              (s) =>
+                  s.workspaceId.equals(_ws) &
+                  s.currencyAccountId.equals(currencyAccountId),
+            )
+            ..orderBy([(s) => OrderingTerm.desc(s.statementDate)])
+            ..limit(1))
+          .getSingleOrNull();
 
   Future<List<StatementRow>> _allocatedStatements(String repaymentId) async {
     final allocations = await allocationsOf(repaymentId);

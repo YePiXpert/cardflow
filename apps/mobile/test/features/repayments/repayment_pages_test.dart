@@ -1,5 +1,6 @@
 // P-06 还款登记与核对（ui-spec P-06）：四态（首次空白、加载、错误、成功；列表、详情与登记表单）；登记表单：
-// 多期分配实时合计，合计 ≠ 还款额时禁止保存（F-33）、超应还提示、受限账户警告；保存后"已登记（待银行确认）"；
+// 只分配到本期（默认预填剩余应还）、实时合计，合计 ≠ 还款额时禁止保存（F-33）、超过剩余应还时保存前确认、受限账户
+// 警告；保存后"已登记（待银行确认）"；
 // 时间线与动作（确认扣款、我已还款）；核对区处理疑似重复；每种还款状态下 P-06、P-05、P-03、P-01 都不出现
 // "还款成功"与绿色（robust 色 token，test/support/forbidden_ui.dart）。
 import 'dart:async';
@@ -122,8 +123,8 @@ void main() {
     await expectNoForbiddenRepaymentUi(tester, page: '还款与核对');
   });
 
-  testWidgets('多期分配实时合计：分到两期账单，合计 ≠ 还款额时「登记」不可点并提示（F-33），'
-      '相等后可保存，两期的分配都写入', (tester) async {
+  testWidgets('只分配到本期（F-33 按裁决调整）：表单只列本期账单、默认分到本期并预填剩余应还，更早的账单写"已并入本期"；'
+      '合计 ≠ 还款额时「登记」不可点并提示，相等后可保存，分配写到本期', (tester) async {
     late String early;
     late String late_;
     await pumpCardFlowApp(
@@ -163,39 +164,46 @@ void main() {
       );
     }
 
-    await tester.enterText(_field('还款额'), '800');
+    // 默认分到本期并预填本期剩余应还 500。
+    expect(tester.widget<TextField>(_field('还款额')).controller!.text, '500.00');
+    await _scrollTo(tester, _field('分到本期（2026-10-10）'));
+    expect(
+      tester.widget<TextField>(_field('分到本期（2026-10-10）')).controller!.text,
+      '500.00',
+    );
+    expect(
+      find.textContaining('（2026-09-10）'),
+      findsNothing,
+      reason: '旧账单不能分配',
+    );
+    await _scrollTo(tester, find.textContaining('更早的账单已并入本期'));
+
+    await _scrollTo(tester, _field('还款额'), delta: -200);
+    await tester.enterText(_field('还款额'), '400');
     await tester.pumpAndSettle();
-    // 账单新的在前：先 10-10，再 09-10。
-    await _scrollTo(tester, _field('分到这期（2026-10-10）'));
-    await tester.enterText(_field('分到这期（2026-10-10）'), '400');
-    await tester.pumpAndSettle();
-    await _scrollTo(tester, _field('分到这期（2026-09-10）'));
-    await tester.enterText(_field('分到这期（2026-09-10）'), '300');
-    await tester.pumpAndSettle();
-    await _scrollTo(tester, find.text('分配合计'));
-    expect(find.text('¥700.00'), findsOneWidget, reason: '分配合计');
     await _scrollTo(tester, find.text(RepaymentFormPage.allocationMismatch));
     await expectSaveEnabled(enabled: false);
-
-    await _scrollTo(tester, _field('分到这期（2026-10-10）'), delta: -200);
-    await tester.enterText(_field('分到这期（2026-10-10）'), '500');
+    await _scrollTo(tester, _field('分到本期（2026-10-10）'), delta: -200);
+    await tester.enterText(_field('分到本期（2026-10-10）'), '400');
     await tester.pumpAndSettle();
     expect(find.text(RepaymentFormPage.allocationMismatch), findsNothing);
     await expectSaveEnabled(enabled: true);
     await _tap(tester, find.widgetWithText(ChoiceChip, '工资卡（CNY）'));
     await _tap(tester, save);
+    expect(find.text(RepaymentFormPage.overpayTitle), findsNothing);
     expect(find.text(RepaymentFormPage.savedMessage), findsWidgets);
 
     final data = await readLedger(tester);
     final repayment = data.repayments.single;
-    expect(repayment.amountMinor, 80000);
+    expect(repayment.amountMinor, 40000);
     expect(
       <String, int>{
         for (final a in data.allocationsOf(repayment.id))
           a.statementId: a.amountMinor,
       },
-      <String, int>{early: 30000, late_: 50000},
+      <String, int>{late_: 40000},
     );
+    expect(data.statusOf(early), EffectiveStatementStatus.merged);
   });
 
   testWidgets('每种还款状态（9 种）与已还一部分、已还清、已逾期、已入账（待银行确认）、已并入下一期的账单：还款详情、'
@@ -251,8 +259,8 @@ void main() {
     expect(find.text(RepaymentStatus.bankConfirmed.label), findsWidgets);
   });
 
-  testWidgets('登记还款：从账单进入预填剩余应还；分配合计 ≠ 还款额时禁止保存（F-33）；超应还提示；须选现金账户；'
-      '保存 → "已登记（待银行确认）"，没有"还款成功"、没有绿色', (tester) async {
+  testWidgets('登记还款：从账单进入预填剩余应还；分配合计 ≠ 还款额时禁止保存（F-33）；超过本期剩余应还时提示并在保存前'
+      '要求确认；须选现金账户；保存 → "已登记（待银行确认）"，没有"还款成功"、没有绿色', (tester) async {
     await pumpCardFlowApp(tester, seed: seedLedger);
     final statement = (await readLedger(tester)).statements.single;
     await goTo(tester, AppRoutes.statement(statement.id));
@@ -266,19 +274,28 @@ void main() {
     final save = find.widgetWithText(FilledButton, '登记');
     await _scrollTo(tester, save);
     expect(tester.widget<FilledButton>(save).onPressed, isNull);
-    // 分到这期 2,000（超过剩余应还）：合计相等，可以保存，并提示溢缴。
-    await _scrollTo(tester, _field('分到这期（2026-10-10）'), delta: -200);
-    await tester.enterText(_field('分到这期（2026-10-10）'), '2000');
+    // 分到本期 2,000（超过剩余应还）：合计相等，可以保存，并提示多还的形成贷方余额。
+    await _scrollTo(tester, _field('分到本期（2026-10-10）'), delta: -200);
+    await tester.enterText(_field('分到本期（2026-10-10）'), '2000');
     await tester.pumpAndSettle();
-    await _scrollTo(tester, find.textContaining('多出的部分会成为溢缴款'));
+    await _scrollTo(tester, find.textContaining('多出的部分会成为贷方余额'));
     await _scrollTo(tester, save);
     expect(tester.widget<FilledButton>(save).onPressed, isNotNull);
     await tester.tap(save);
     await tester.pumpAndSettle();
     expect(find.text('请选择扣款的现金账户'), findsOneWidget);
     await _tap(tester, find.widgetWithText(ChoiceChip, '工资卡（CNY）'));
+    // 超过本期剩余应还：保存前要求确认；取消则不保存。
     await _tap(tester, save);
+    expect(find.text(RepaymentFormPage.overpayTitle), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, '取消'));
+    await tester.pumpAndSettle();
+    expect((await readLedger(tester)).repayments, hasLength(2));
+    await _tap(tester, save);
+    await tester.tap(find.widgetWithText(FilledButton, '仍要登记'));
+    await tester.pumpAndSettle();
     expect(find.text(RepaymentFormPage.savedMessage), findsWidgets);
+    expect((await readLedger(tester)).repayments, hasLength(3));
     expect(appBarTitle(RepaymentDetailPage.title), findsOneWidget);
     expect(find.text('已登记（待银行确认）'), findsWidgets);
     expect(find.textContaining('还款成功'), findsNothing);

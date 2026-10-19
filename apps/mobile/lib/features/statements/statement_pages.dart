@@ -398,7 +398,9 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
     final sourceText =
         '来源：${source.label} · v${selected.versionNo}'
         '${selected.reason == null ? '' : '（理由：${selected.reason}）'}';
-    final settled = StatementStatus.of(s.status).isSettled;
+    // 还款只分配到本期（更早的已并入下一期）；有效状态"已还清"的不能再修正（PRD §6.2 裁决段）。
+    final canRegister = balance.isCurrent;
+    final canCorrect = balance.status != EffectiveStatementStatus.paid;
     final transactions = data.transactionsOf(s.id);
     final plans = data.plansOf(s.currencyAccountId);
     final repayments = data.repaymentsOn(s.id);
@@ -447,7 +449,7 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
             spacing: CfSpace.xs,
             runSpacing: CfSpace.xs,
             children: <Widget>[
-              if (!settled)
+              if (canRegister)
                 FilledButton(
                   onPressed: () => context.go(
                     AppRoutes.newRepayment(
@@ -457,7 +459,7 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
                   ),
                   child: const Text('登记还款'),
                 ),
-              if (!settled)
+              if (canCorrect)
                 OutlinedButton(
                   onPressed: () => context.go(
                     AppRoutes.correctStatement(
@@ -479,6 +481,11 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
             ],
           ),
         ),
+        if (!canCorrect)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
+            child: Text('已还清的账单不能再修正；银行另有调整时请录入下一期账单。', style: secondary),
+          ),
         SectionTitle('账单要素（v${selected.versionNo}）'),
         if (versions.length > 1)
           Padding(
@@ -698,6 +705,7 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
         for (final item in items)
           ReconciliationSummaryTile(
             item: item,
+            systemReason: data.systemCloseReason(item),
             onTap: () =>
                 context.go(AppRoutes.repayments(accountId: widget.accountId)),
           ),
@@ -893,12 +901,21 @@ class InstallmentPlanCard extends StatelessWidget {
   }
 }
 
-/// 差异项的摘要行：类型、来源、建议动作、状态、处理结果与处理者（R-STMT-09）。
+/// 差异项的摘要行：类型、来源、建议动作、状态、处理结果与处理者（R-STMT-09）。系统处理的（引用的交易被删除、
+/// 还款登记被作废，审查 R-07）写明原因 [systemReason]。
 class ReconciliationSummaryTile extends StatelessWidget {
-  const ReconciliationSummaryTile({super.key, required this.item, this.onTap});
+  const ReconciliationSummaryTile({
+    super.key,
+    required this.item,
+    this.onTap,
+    this.systemReason,
+  });
 
   final ReconciliationItemRow item;
   final VoidCallback? onTap;
+
+  /// 系统处理的原因（`LedgerData.systemCloseReason`）。
+  final String? systemReason;
 
   @override
   Widget build(BuildContext context) {
@@ -915,7 +932,8 @@ class ReconciliationSummaryTile extends StatelessWidget {
             Text('建议：${kind.suggestion}')
           else
             Text(
-              '结果：${ReconciliationResolution.of(item.resolution!).label} · 处理者：${ResolvedBy.of(item.resolvedBy!).label} · ${timestampText(item.resolvedAt!)}',
+              '结果：${systemReason == null ? ReconciliationResolution.of(item.resolution!).label : '系统处理（$systemReason）'}'
+              ' · 处理者：${ResolvedBy.of(item.resolvedBy!).label} · ${timestampText(item.resolvedAt!)}',
             ),
           Padding(
             padding: const EdgeInsets.only(top: CfSpace.xxs),

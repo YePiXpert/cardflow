@@ -464,7 +464,7 @@ Future<void> _enrich(WorkspaceScope scope) async {
 }
 
 /// v4 的表各写一行（经仓库）：9 月的交易与账单（避开演示数据的 10 月账单）、6 期分期、一笔还款（带计划
-/// 扣款）与分配、一笔退款（退款待核对）。
+/// 扣款）与分配（分到本期账单）、一笔退款（退款待核对）。
 Future<void> _enrichLedger(WorkspaceScope scope, String creditAccountId) async {
   final sub = (await primaryCurrencyAccount(scope, creditAccountId)).id;
   final card = (await CardRepository(
@@ -492,12 +492,17 @@ Future<void> _enrichLedger(WorkspaceScope scope, String creditAccountId) async {
       firstStatementOn: LocalDate(2026, 9, 10),
     ),
   );
+  // 还款只分配到本期（这个子账户最近一期账单；9 月的已并入下一期）。
+  final current = (await StatementRepository(
+    scope,
+  ).list(currencyAccountId: sub)).first;
+  expect(current.statementDate.compareTo(statement.statementDate) >= 0, isTrue);
   await registerTestRepayment(
     scope,
     currencyAccountId: sub,
     cashAccountId: cash.id,
     amount: 100000,
-    statementId: statement.id,
+    statementId: current.id,
     expectedDebitOn: LocalDate(2026, 9, 25),
   );
   await addTestTransaction(

@@ -151,7 +151,9 @@ final class ReconciliationRepository {
           throw const ConflictException('这一项已处理过');
         }
         final kind = ReconciliationKind.of(row.kind);
+        // 系统处理（引用对象已删除/作废）不是对差异的判断，不受"该类型可用的结果"限制。
         if (status == ReconciliationStatus.resolved &&
+            by == ResolvedBy.user &&
             !ReconciliationResolution.choicesFor(kind).contains(resolution)) {
           throw const ValidationException('resolution', '这一类差异不能这样处理');
         }
@@ -172,6 +174,34 @@ final class ReconciliationRepository {
     } on Object catch (error, stack) {
       rethrowAsRepositoryException(error, stack);
     }
+  }
+
+  /// 引用的交易被删除、还款登记被作废之后，由系统把引用它的**未处理**差异项标为已处理（审查 R-07）：状态
+  /// "已处理"、处理者"系统"、结果代码 `dismissed`（表里没有原因列、结果代码只有 7 种；原因由界面按引用对象的
+  /// 状态写明，见 `LedgerData.systemCloseReason`）。只在调用方的事务里用；返回处理的条数。
+  Future<int> closeBySystem({
+    String? transactionId,
+    String? repaymentId,
+  }) async {
+    var closed = 0;
+    for (final row in await list(status: ReconciliationStatus.open)) {
+      final hit =
+          (transactionId != null &&
+              referencedTransaction(row) == transactionId) ||
+          (repaymentId != null &&
+              referencedRepayments(row).contains(repaymentId));
+      if (!hit) {
+        continue;
+      }
+      await _close(
+        row.id,
+        ReconciliationStatus.resolved,
+        ReconciliationResolution.dismissed,
+        ResolvedBy.system,
+      );
+      closed++;
+    }
+    return closed;
   }
 
   /// 未处理的疑似重复还款（F-32：负债只核销一次，直到用户处理）。

@@ -251,7 +251,8 @@ final class TransactionRepository {
     }
   }
 
-  /// 删除一笔交易（tombstone，不可撤销）。已转分期（计划未作废）的不能删除。
+  /// 删除一笔交易（tombstone，不可撤销）。已转分期（计划未作废）的不能删除。引用它的未处理差异项（退款待
+  /// 核对、未匹配的还款）由系统标为已处理（审查 R-07）。
   Future<void> delete(String id) async {
     try {
       await _db.transaction(() async {
@@ -279,6 +280,7 @@ final class TransactionRepository {
             updatedAt: Value(now),
           ),
         );
+        await ReconciliationRepository(_scope).closeBySystem(transactionId: id);
       });
     } on Object catch (error, stack) {
       rethrowAsRepositoryException(error, stack);

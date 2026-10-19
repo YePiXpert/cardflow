@@ -381,6 +381,22 @@ final class LedgerData {
     return dates.any((d) => d <= date) && dates.any((d) => d > date);
   }
 
+  /// 系统处理的差异项的原因（审查 R-07：引用的交易被删除、还款登记被作废后由系统标为已处理）。不是系统
+  /// 处理的为 null。删除与作废都不可撤销，所以按引用对象现在的状态就能写明原因。
+  String? systemCloseReason(ReconciliationItemRow item) {
+    if (item.resolvedBy != ResolvedBy.system.code) {
+      return null;
+    }
+    final txnId = referencedTransaction(item);
+    if (txnId != null && transaction(txnId) == null) {
+      return '引用的交易已删除';
+    }
+    if (referencedRepayments(item).any((id) => repayment(id) == null)) {
+      return '引用的还款登记已作废';
+    }
+    return '引用的记录已变更';
+  }
+
   /// 未处理的差异项。
   List<ReconciliationItemRow> get openItems => <ReconciliationItemRow>[
     for (final i in items)
