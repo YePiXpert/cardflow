@@ -1,7 +1,8 @@
-// P-05 账单中心（ui-spec P-05）：四态（首次空白、加载、错误、成功）；列表行（剩余应还、到期、状态、确认层级、
-// 版本数、差异数）与筛选；详情：版本切换（原值可查）、要素带来源与版本、来源未含的项显示"来源未含此项"而不是 0、
-// 负债四分法、交易（退款待核对、可能账期）、分期（每期本金/费用、尾差、名义与实际年化并列）、还款分配、差异清单；
-// 贷方余额（F-38）；人工修正生成新版本；记一笔；录入正式账单的校验；已不存在。
+// P-05 账单中心（ui-spec P-05）：四态（首次空白、加载、错误、成功；列表与详情）；列表行（剩余应还、到期、状态、
+// 确认层级、版本数、差异数）与筛选；详情：版本切换（原值可查）、要素带来源与版本、来源未含的项显示"来源未含此项"
+// 而不是 0、负债四分法、交易（退款待核对、可能账期）、分期（每期本金/费用、尾差、名义与实际年化并列）、还款分配、
+// 差异清单；列表与详情整页没有"还款成功"、没有绿色（robust 色 token）；贷方余额（F-38）；人工修正生成新版本；
+// 记一笔；录入正式账单的校验；已不存在。
 import 'dart:async';
 
 import 'package:cardflow/app/routes.dart';
@@ -22,6 +23,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../data/repositories/repository_test_support.dart';
+import '../../support/forbidden_ui.dart';
 import '../../test_helpers.dart';
 
 Finder _field(String label) => find.widgetWithText(TextField, label);
@@ -161,8 +163,35 @@ void main() {
     expect(find.text('重新加载'), findsOneWidget);
   });
 
+  testWidgets('详情页：加载是骨架', (tester) async {
+    final pending = Completer<LedgerData>();
+    await pumpCardFlowApp(
+      tester,
+      overrides: <Override>[
+        ledgerProvider.overrideWith((ref) => pending.future),
+      ],
+    );
+    await goTo(tester, AppRoutes.statement('any'));
+    expect(find.byType(LoadingSkeleton), findsOneWidget);
+  });
+
+  testWidgets('详情页：读取失败显示错误码与「重新加载」', (tester) async {
+    await pumpCardFlowApp(
+      tester,
+      overrides: <Override>[
+        ledgerProvider.overrideWith(
+          (ref) => Future<LedgerData>.error(StateError('x')),
+        ),
+      ],
+    );
+    await goTo(tester, AppRoutes.statement('any'));
+    expect(find.text('账单读取失败'), findsOneWidget);
+    expect(find.text('错误码：StateError'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, '重新加载'), findsOneWidget);
+  });
+
   testWidgets('成功：列表行（剩余应还、到期、已修正、确认层级、2 个版本、差异 1）→ 详情：版本切换与原值、来源与版本、'
-      '"来源未含此项"、负债四分法、交易与退款待核对、分期成本并列', (tester) async {
+      '"来源未含此项"、负债四分法、交易与退款待核对、分期成本并列；整页没有"还款成功"、没有绿色', (tester) async {
     await pumpCardFlowApp(tester, seed: seedLedger);
     await goTo(tester, AppRoutes.statements());
     expect(find.text('卡 A · 2026-10-10 账单'), findsOneWidget);
@@ -177,6 +206,7 @@ void main() {
     await tester.tap(find.widgetWithText(ChoiceChip, '已修正'));
     await tester.pumpAndSettle();
     expect(find.text('卡 A · 2026-10-10 账单'), findsOneWidget);
+    await expectNoForbiddenRepaymentUi(tester, page: '账单中心');
 
     await tester.tap(find.text('卡 A · 2026-10-10 账单'));
     await tester.pumpAndSettle();
@@ -205,7 +235,7 @@ void main() {
     await _scrollTo(tester, find.text('还款分配（2）'));
     await _scrollTo(tester, find.text('差异清单（1）'));
     await _scrollTo(tester, find.text('疑似重复还款'));
-    expect(find.textContaining('还款成功'), findsNothing);
+    await expectNoForbiddenRepaymentUi(tester, page: '账单详情');
   });
 
   testWidgets('交易：本期账期里的消费（已转分期）；10-14 的退款在下一期（可能账期之外），列在账单中心的交易里不出现在 10-10', (
