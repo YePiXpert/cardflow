@@ -7,10 +7,10 @@ from playwright.sync_api import sync_playwright
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "mock")
 os.makedirs(OUT, exist_ok=True)
-ids = ["home-dark", "home-light", "card-dark", "cash-dark"]
+ids = ["home-dark", "home-light", "card-dark", "loan-dark", "cash-dark"]
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path="/usr/bin/chromium", args=["--no-sandbox", "--disable-gpu"])
-    page = b.new_page(viewport={"width": 1700, "height": 900}, device_scale_factor=3)
+    page = b.new_page(viewport={"width": 2100, "height": 1600}, device_scale_factor=3)
     page.goto("file://" + os.path.join(HERE, "mock.html"))
     page.wait_for_load_state("load")
     for i in ids:

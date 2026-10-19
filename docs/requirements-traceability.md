@@ -55,6 +55,7 @@
 | R-CASH-08 视图与覆盖 | P-07 | forecast_runs | API-42 | F-06 | M1 | E-05 | 已规划 |
 | R-CASH-09 数据不足降级 | P-07, P-10 | — | plan.data_issues | F-07 | M1/M2 | E-10 | PoC 已验证 |
 | R-CASH-10 先验基线 | P-07, P-11 | — | plan.baseline_check | F-08 | M2 | E-10 | PoC 已验证 |
+| R-CASH-11 消费贷（2026-10-19 新增） | 卡账首页、贷款详情、贷款表单、P-07 | loans, loan_payments（本地库 v5） | App 层 loan_schedule（纯函数） | R-CASH-11 验收例 | 公测版 0.0.3 | evidence/l1/ | 已规划（简报 L-1） |
 | R-PLAN-01 输入 | P-10 | plans | API-50 | TC-MOB-04 | M2 | E-04 | 已规划 |
 | R-PLAN-02 拆单默认关闭 | P-10 | plans(allow_split) | PlanRequest.k | F-09 | M2 | E-10 | PoC 已验证 |
 | R-PLAN-03 金额口径 | P-10 | plans(原价/优惠/返现字段) | API-50 校验 | TC-API-04 | M2 | E-04 | 已规划 |
