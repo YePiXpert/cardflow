@@ -1,5 +1,6 @@
 # required-reason-scan.txt：Required Reason API 扫描（BL-16，简报 I1-c §6 第 8 条）与 ios/Runner/PrivacyInfo.xcprivacy 的结论
-# 生成时间：2026-10-19T07:12:38Z；本地源码提交：8149c29
+# 生成时间：2026-10-19T14:14:19Z；本地源码提交：8845348
+# 说明：两次扫描都是版本号改为 0.0.1 之前（App 版本 0.1.0）的构建；改版本号不涉及隐私清单与二进制里的 API，结论对 0.0.1 同样适用。0.0.1 的发版构建由主会话打 ios-v0.0.1 标签触发并核对（同一扫描步骤会再产出一份 required-reason-scan）。本文件在版本号改动后重新生成（内容同上一版，只修正了一处被截断的提交说明）。
 # 来源：ios-unsigned 的"Required Reason API scan (BL-16)"步骤，artifact required-reason-scan——第 1 次构建运行 39211270256（源码 6547054），
 #       第 2 次构建运行 39212910838（源码 8149c29，交付）。下文"原文"是 artifact 里 required-reason-scan.txt 与 hits.tsv 的全文（cat），
 #       另附本机对两次 IPA 的只读核对（python3 -I，内存中解析，不解压）。过滤：无。
@@ -357,8 +358,8 @@ Frameworks/sqlite3mc.framework/sqlite3mc: sysctl 名称字符串 = ['hw.ncpu']
 [exit=0]
 
 ## 改动后的 App 清单
-$ git show 8149c29 --stat --format='%h %s' | cut -c1-120
-8149c29 移动端隐私清单（BL-16 扫描结论，第 1 次 iOS 构建 39211270256 的 required-reason-scan）：删�
+$ git show 8149c29 --stat --format='%h'
+8149c29
 
  apps/mobile/README.md                        |  7 +++++++
  apps/mobile/ios/Runner/PrivacyInfo.xcprivacy | 21 +++++++--------------

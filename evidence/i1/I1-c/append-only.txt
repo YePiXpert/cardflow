@@ -1,6 +1,7 @@
 # append-only.txt：v4 约束与触发器测试（账单版本追加只读：直接 UPDATE 金额列必须被 RAISE(ABORT) 拒绝；状态机、分配合计、linked_repayment_id 等）
-# 生成时间：2026-10-19T06:58:05Z；源码提交：8149c29；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
+# 生成时间：2026-10-19T14:10:06Z；源码提交：8845348；工作目录：apps/mobile（领域包命令在 apps/mobile/packages/cardflow_domain）
 # 过滤：输出经 grep -Ev 'Woah! You appear to be trying to run flutter as root|without superuser privileges|^  /$|^📎$'（去掉 flutter 以 root 运行时打印的宿主提示 4 行）；其余为工具原文，未删节。
+# 说明：版本号改为 0.0.1 后重跑（源码提交 8845348；上一版证据是 8149c29、App 版本 0.1.0 时生成的）。
 # 方法：test/data/db/ledger_constraints_test.dart 在真实 sqlite3mc 上绕过仓库、直接写 SQL；下面先列出 v4 的账单版本触发器原文，
 # 再运行全部约束测试。
 $ awk '/CREATE TRIGGER IF NOT EXISTS statement_versions_append_only/,/END/' lib/data/db/schema.dart
@@ -18,6 +19,17 @@ WHEN NEW.version_no <> 1 + COALESCE((
 BEGIN SELECT RAISE(ABORT, 'statement_versions: version_no must follow the latest version'); END''',
 [exit=0]
 $ flutter test test/data/db/ledger_constraints_test.dart --reporter expanded
+Resolving dependencies...
+Downloading packages...
+  build 4.0.11 (5.0.0 available)
+  build_config 1.3.3 (1.4.0 available)
+  build_runner 2.16.2 (2.17.1 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.3 available)
+Got dependencies!
+6 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
 00:00 +0: loading /projects/cardflow/apps/mobile/test/data/db/ledger_constraints_test.dart
 00:00 +0: 账单版本追加只读（R-STMT-07） 直接 UPDATE 任何金额列、到期日或其他列都被触发器拒绝（RAISE(ABORT)）；行不变
 00:00 +1: 账单版本追加只读（R-STMT-07） 更正 = 新版本：版本号紧接最新（不跳号、不复用），人工修正理由必填，v1 不能是修正

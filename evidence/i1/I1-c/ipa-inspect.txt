@@ -1,4 +1,5 @@
 # ipa-inspect.txt：交付的未签名 IPA 检查（第 2 次 iOS 构建）；文中另附第 1 次构建的 IPA 检查（同样全部通过，因 Required Reason 扫描结论改了 PrivacyInfo 而未交付）
+# 说明：本文件为版本号改为 0.0.1 之前的构建（App 版本 0.1.0，构建号 50 与 52，源码 6547054 与 8149c29）；0.0.1 的发版构建由主会话核对（打 ios-v0.0.1 标签触发）。
 # 生成时间：2026-10-19T07:12:52Z
 # 运行：https://github.com/YePiXpert/cardflow/actions/runs/39212910838 （workflow_dispatch，main @ 8149c29，第 2 次 iOS 构建，成功；运行序号 #52 = CFBundleVersion；ios-unsigned job 117931115537）
 # artifact 页面 URL：https://github.com/YePiXpert/cardflow/actions/runs/39212910838/artifacts/12168329099

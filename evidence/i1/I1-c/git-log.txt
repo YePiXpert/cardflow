@@ -1,7 +1,14 @@
-# git-log.txt：I-1c 的提交（5c4f811 之后，均已推送到 origin/main：I-1c 代理 6 个、主会话 4 个（图标与版本、简报与接续说明、执行记录）、I1-c2 续做），及署名扫描
-# 生成时间：2026-10-19T07:13:34Z；本地 HEAD：8149c29（本文件随后的证据提交不在列表中）
+# git-log.txt：I-1c 的提交（5c4f811 之后，均已推送到 origin/main：I-1c 代理 6 个、主会话 4 个（图标与版本、简报与接续说明、执行记录）、I1-c2 续做与版本号改为 0.0.1），及署名扫描
+# 生成时间：2026-10-19T14:14:24Z；本地 HEAD：8845348（本文件随后的证据提交不在列表中）
 # 过滤：无；以下为 git 原文。扫描用的正则把模型/厂商名里的一个字母写成字符类，避免证据里出现这些名字本身。
+# 说明：版本号改为 0.0.1 后重跑（含版本号改动提交 8845348；上一版证据提交 1b50e30 也在列表中）。
 $ git log --date=iso-strict --format='%h %ad %an <%ae>%n    %s%n    trailers:[%(trailers:only,separator=; )]' 5c4f811..HEAD
+8845348 2026-10-19T15:09:02+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端版本号改为 0.0.1（用户要求）：pubspec.yaml 版本 0.0.1+1（构建号仍由 CI 运行序号给出）；公测说明改为"公测版 0.0.1：……"，版本号只来自 PublicBeta.version 一处，测试读取 pubspec.yaml 断言它与版本名相同（改了 pubspec 忘改常量 CI 即失败）；不再用"beta 1"的说法，统一叫"公测版 0.0.1"（公测版测试、apps/mobile README 的公测版一节与其他提及、根 README 移动端一行"I-1 已交付（公测版 0.0.1）"、mobile.yml 图标检查的注释）；关于页测试改用与常量不同的模拟版本 9.8.7（构建 65），证明版本与构建号来自 package_info_plus（与诊断页同一来源）而不是常量；领域包自己的版本 0.1.0 不变
+    trailers:[]
+1b50e30 2026-10-19T08:13:56+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    证据：I-1c（含 I1-c2 续做）——静态分析、格式、App 483 项与领域包 279 项测试、新建与从 v1/v2/v3 升级的 v4 结构对比、账单版本追加只读与 v4 约束触发器测试、分期与 Python money.py 对照（重跑，头部为真实源码提交）、CI 固定 SHA 的 gh api 查询原文、Required Reason API 扫描两次原文与隐私清单结论、Web 编译、CI 运行（push 与两次 iOS 构建）、交付 IPA（cardflow-unsigned-8149c29）检查、公测版测试（阶段代号防回归、公测说明与关于页）、提交列表与署名扫描
+    trailers:[]
 8149c29 2026-10-19T07:52:06+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
     移动端隐私清单（BL-16 扫描结论，第 1 次 iOS 构建 39211270256 的 required-reason-scan）：删除没有任何命中的 UserDefaults（CA92.1）；保留 FileTimestamp（C617.1：主二进制导入 NSFileCreationDate，sqlite3mc 导入 stat/fstat/lstat）、SystemBootTime（35F9.1：sqlite3mc 导入 sysctlbyname，实读 hw.ncpu、未见 kern.boottime，按扫描规则保守保留）、DiskSpace（E174.1：sqlite3mc 导入 statfs/fstatfs），理由码不变；Flutter.framework 与插件资源包自带清单不重复；清单注释写明来源；iOS 配置测试改为按结论断言三类登记、UserDefaults 不在清单里；README 补隐私清单结论与 SystemBootTime 的保守保留
     trailers:[]
@@ -56,12 +63,12 @@ b161f62 2026-10-19T05:48:42+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
 [exit=0]
 
 $ git rev-parse HEAD origin/main
-8149c29d8db8e8a226336a90e809b4ad208bea66
-8149c29d8db8e8a226336a90e809b4ad208bea66
+884534837f3785e62dae2597430f4885acf07000
+884534837f3785e62dae2597430f4885acf07000
 [exit=0]
 
 $ git log 5c4f811..HEAD --format='%an <%ae> | %cn <%ce>' | sort | uniq -c
-     17 YePiXpert <YePiXpert@users.noreply.github.com> | YePiXpert <YePiXpert@users.noreply.github.com>
+     19 YePiXpert <YePiXpert@users.noreply.github.com> | YePiXpert <YePiXpert@users.noreply.github.com>
 [exit=0]
 
 $ git log 5c4f811..HEAD --format='%B' | grep -ciE 'cl[a]ude|anthr[o]pic|co-auth[o]red-by|generat[e]d with'
@@ -73,6 +80,16 @@ $ grep -rniE 'cl[a]ude|anthr[o]pic|generat[e]d with' --exclude=git-log.txt apps/
 [exit=0]
 
 $ git status --short
-?? evidence/i1/I1-c/
+ M evidence/i1/I1-c/analyze.txt
+ M evidence/i1/I1-c/append-only.txt
+ M evidence/i1/I1-c/build-web.txt
+ M evidence/i1/I1-c/ci-dart-run.txt
+ M evidence/i1/I1-c/format.txt
+ M evidence/i1/I1-c/git-log.txt
+ M evidence/i1/I1-c/ipa-inspect.txt
+ M evidence/i1/I1-c/public-beta.txt
+ M evidence/i1/I1-c/required-reason-scan.txt
+ M evidence/i1/I1-c/schema-diff.txt
+ M evidence/i1/I1-c/test.txt
 [exit=0]
 
