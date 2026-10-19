@@ -1,6 +1,6 @@
 # 接续说明（handoff）
 
-> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-18（I-0c 验收后）。
+> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-19（I1-b 验收、I1-c 派发后）。
 
 ## 1. 当前状态
 
@@ -14,23 +14,24 @@
 - 已完成：**I-0c**（纯 Dart 领域包 `apps/mobile/packages/cardflow_domain`：金额/日期/账期/现金时间线/验证器/有限搜索/协议 v1 适配与哈希；Dart fixture 运行器 `dart run cardflow_domain:run_fixtures [--dump DIR]`；Python 运行器 `--dump`；CI `protocol-parity` job 双端逐字节一致）。265 项领域测试、App 154 项；CI 运行 39114057360 全绿。不出 IPA。证据 `evidence/i0/I0-c/`。I-1 的领域包 API 说明见 `apps/mobile/README.md`"领域层"一节与 `packages/rules-protocol/README.md` 末节。
 - I-0 阶段末审查已完成（报告 `evidence/i0/review-i0.md`，简报 `briefs/review-i0.md`）：blocker 0、major 0、minor 15、疑问 5。处置：R-15/R-03/R-08 等 8 条写入 `briefs/I1-a.md` §6，1 条写入 `briefs/I1-b.md` §5，其余记 backlog BL-13~BL-19；疑问裁决：有限搜索漏报（R-01）作 I-2 第一个任务 I2-0（BL-15）；PrivacyInfo 保留待 I1-c 扫描二进制（BL-16）；v1 暂不混淆（BL-17，security-privacy §3 已注明）。I-0 阶段退出只差用户真机回传。
 - 已完成：**I1-a**（本地库 v2：9 张 STRICT 表、冻结迁移 SQL、11 索引 10 触发器；仓库层与领域映射；真实/演示工作空间与隔离；P-22/P-02/P-03 最小版/P-04/P-01 最小版；审查带入项 R-15/R-03/R-08 等全部落实）。291 项 App 测试；CI 运行 39140901236 绿；13 个提交（c82d9a0…012542a）。证据 `evidence/i1/I1-a/`。偏离与约定见 `apps/mobile/README.md` 的"I-1a 的偏离与约定"一节，主会话已接受并登记（data-model §10.14、BL-20/BL-21）。
+- 已完成：**I1-b**（本地库 v3：现金账户、余额快照与包含事件、现金事件、周期事项与单期例外、情景与计算版本共 8 张 STRICT 表，冻结 2→3 迁移，13 索引、9 触发器；现金仓库层与领域映射，审查 §5 交叉规则复刻 `checkCashTimelineInputs`；演示空间现金数据（固定今天下基准口径 30 天内一个可见缺口）；P-08、P-07（只做表格视图）、P-09、P-01 现金压力卡；给 I-1c 的还款扣款接口 `planRepaymentDebit`/`confirmRepaymentDebit`/`cancelRepaymentDebit`）。385 项 App 测试；F-01~F-05、F-07 经仓库映射与领域包直算逐字段一致；CI 运行 39147014570 绿；10 个提交（201c8da…da46d65）。证据 `evidence/i1/I1-b/`。偏离见 `apps/mobile/README.md` 的"I-1b 的偏离与约定"一节，主会话 2026-10-19 全部接受并登记（data-model §10.14、BL-22~BL-24）。代理违反"一次一个代理"派了一个只读子审查代理，被用量上限打断、无产出；现金数据层的审查并入 I-1 阶段末审查。
 
 ## 2. 如何判断进行中任务做到哪了
 
 1. `git log --oneline -10` 与 `git status`：看该任务路径是否已提交。
-2. `ls evidence/i0/<任务>/`：按简报的验收清单核对哪些证据已存在。
+2. `ls evidence/i1/<任务>/`（I-0 的在 `evidence/i0/`）：按简报的验收清单核对哪些证据已存在。
 3. `gh run list --workflow mobile.yml --limit 5`：看 dart / ios-unsigned job 是否跑过、是否绿。
 4. 若代理被用量上限打断：同一会话用 SendMessage 续跑；新会话则按 `briefs/<任务>.md` 重新派发，并在简报开头注明"先核对磁盘现状，不要重复创建"。
 
 ## 3. 下一步（按顺序，一次一个代理）
 
-1. **I1-b 进行中**（2026-10-18 派发，简报 `briefs/I1-b.md`，证据 `evidence/i1/I1-b/`）：本地库 v3、现金账户/快照/收支计划/情景、资金日历 P-07/P-08/P-09。验收后派 I1-c（出第三个 IPA）。
+1. **I1-c 进行中**（2026-10-19 派发，简报 `briefs/I1-c.md`，其 §6 是派发前补的带入项与裁决；证据 `evidence/i1/I1-c/`）：本地库 v4（交易、账单与追加只读版本、分期、还款与分配、差异项）；领域包新增分期拆分与 IRR 模块（主会话裁决，简报 §6 第 1 条，与 Python `money.py` 对照）；P-05、P-06、P-03 补齐、P-01 近期到期/待办；演示数据补齐；CI 固定 action SHA 与 Required Reason API 扫描（BL-14/BL-16）；BL-18、BL-21。结束时触发 ios-unsigned 出第三个未签名 IPA（最多 2 次）。验收后：写 `briefs/review-i1.md` 跑 I-1 阶段末审查（范围 I1-a/b/c 全部，重点现金数据层与还款状态机）→ 用户真机走通 UF-1/3/5 → I-2（第一个任务 I2-0 = BL-15 + BL-23）。
 2. 等用户对 IPA 4d720c9 回传：加密库状态应为"已启用（SQLite3 Multiple Ciphers 2.6.1，算法 chacha20）"，密钥"已生成"，基准 `open_ms + count_ms < 1000`。若真机加密库不可用，按 ADR-001 回退 sqflite_sqlcipher（只换 drift 的执行器，领域包与数据层接口不变）。
-3. **I-1**（卡片、账期、现金流；`ios-first-plan.md` §3、§4b）已拆为三个单代理任务，简报已写好：`briefs/I1-a.md`（本地库 v2 + 工作空间 + 建卡/账期/额度）→ `briefs/I1-b.md`（现金与资金日历）→ `briefs/I1-c.md`（交易/账单/分期/还款 + 阶段交付 IPA）。按顺序逐个派发，每个验收后再派下一个。真机回传未到时也可开始，但 DB 层必须留在 `openAppDatabase` 抽象之后以便回退。只有 I1-c 触发 iOS 构建。
+3. **I-1**（卡片、账期、现金流；`ios-first-plan.md` §3、§4b）拆成的三个单代理任务中 I1-a、I1-b 已验收，只剩 I1-c。真机回传未到时也可继续，但 DB 层必须留在 `openAppDatabase` 抽象之后以便回退。只有 I1-c 触发 iOS 构建。
 
 ## 4. 执行规则（已与用户约定）
 
-- 一次只跑一个实现代理；审查只在阶段末跑一次，只修 blocker/major，其余记 `backlog.md`。
+- 一次只跑一个实现代理，实现代理不得再派子代理（I1-b 曾违反）；审查只在阶段末由主会话派一次，只修 blocker/major，其余记 `backlog.md`。
 - 简报不中途追加需求。
 - **提交、PR、代码、文档中不出现 Claude / AI 署名**（用户要求）；提交身份 `YePiXpert <YePiXpert@users.noreply.github.com>`。
 - 公开仓库：不得出现宿主服务清单、端口清单、口令、令牌、用户邮箱；推送前扫描。
