@@ -60,15 +60,20 @@ void main() {
     (tester) async {
       await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
       expect(find.text('演示'), findsOneWidget);
-      await tester.scrollUntilVisible(find.textContaining('查看资金日历'), 200);
+      final confirmed = find.widgetWithText(ChoiceChip, '已确认');
+      await tester.scrollUntilVisible(confirmed, 200);
+      await tester.ensureVisible(confirmed);
+      await tester.pumpAndSettle();
       expect(find.text('现金压力'), findsOneWidget);
       expect(find.textContaining(OverviewPage.noCashAccounts), findsNothing);
       expect(find.text('未来 30 天 · 基准预期 · 人民币（CNY）'), findsOneWidget);
       expect(find.text('11-01 · 工资卡'), findsOneWidget);
       expect(find.text('▲ 首个缺口日 11-01（工资卡）· 共 1 个缺口点'), findsOneWidget);
-      await tester.tap(find.widgetWithText(ChoiceChip, '已确认'));
+      await tester.tap(confirmed);
       await tester.pumpAndSettle();
       expect(find.text('▲ 首个缺口日 11-01（工资卡）· 共 2 个缺口点'), findsOneWidget);
+      await tester.ensureVisible(find.textContaining('查看资金日历'));
+      await tester.pumpAndSettle();
       await tester.tap(find.textContaining('查看资金日历'));
       await tester.pumpAndSettle();
       expect(appBarTitle(CashCalendarPage.title), findsOneWidget);

@@ -918,6 +918,15 @@ class RepaymentDetailPage extends ConsumerWidget {
             icon: Icons.lock_outline,
             text: '扣款账户是受限资金：它不计入可用现金（R-CASH-01）。',
           ),
+        const SectionTitle('操作'),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
+          child: Wrap(
+            spacing: CfSpace.xs,
+            runSpacing: CfSpace.xs,
+            children: actions,
+          ),
+        ),
         const SectionTitle('时间线'),
         for (final (label, at, reached) in steps)
           ListTile(
@@ -1007,15 +1016,6 @@ class RepaymentDetailPage extends ConsumerWidget {
               },
               child: const Text('编辑证据备注'),
             ),
-          ),
-        ),
-        const SectionTitle('操作'),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
-          child: Wrap(
-            spacing: CfSpace.xs,
-            runSpacing: CfSpace.xs,
-            children: actions,
           ),
         ),
       ],

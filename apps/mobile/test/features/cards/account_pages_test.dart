@@ -107,7 +107,7 @@ void main() {
       expect(appBarTitle('卡包'), findsOneWidget);
     });
 
-    testWidgets('成功（卡 A）：预测账期（未出账）、系统估计、尚无账单、留位、额度、两张卡', (tester) async {
+    testWidgets('成功（卡 A）：预测账期（未出账）、系统估计、本期账单（演示 10-10）、额度、两张卡', (tester) async {
       await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
       await goTo(tester, AppRoutes.account(await _demoAccount(tester, '卡 A')));
       expect(appBarTitle('卡 A'), findsOneWidget);
@@ -115,7 +115,8 @@ void main() {
       expect(find.text('系统估计'), findsOneWidget);
       expect(find.text('2026-11-10'), findsOneWidget);
       expect(find.text('2026-11-28'), findsOneWidget);
-      expect(find.text(AccountDetailPage.noStatementsNote), findsOneWidget);
+      expect(find.text(AccountDetailPage.noStatementsNote), findsNothing);
+      expect(find.text('本期账单（2026-10-10 出账）'), findsOneWidget);
       expect(find.textContaining('I-1c 提供'), findsNothing);
       expect(find.text('仅示例'), findsOneWidget);
       await _scrollTo(tester, find.text('银行可用（原值）'));

@@ -69,7 +69,9 @@ Future<void> clearDemoWorkspace(
         '${rows['cards'] ?? 0} 张卡片、${rows['billing_rule_versions'] ?? 0} 个账期规则版本、'
         '${rows['limit_snapshots'] ?? 0} 条额度快照、${rows['credit_pools'] ?? 0} 个授信池、'
         '${rows['cash_accounts'] ?? 0} 个现金账户、${rows['cash_events'] ?? 0} 笔收支、'
-        '${rows['recurring_items'] ?? 0} 个周期事项、${rows['scenarios'] ?? 0} 个情景。'
+        '${rows['recurring_items'] ?? 0} 个周期事项、${rows['scenarios'] ?? 0} 个情景、'
+        '${rows['transactions'] ?? 0} 笔交易、${rows['statements'] ?? 0} 期账单、'
+        '${rows['installment_plans'] ?? 0} 笔分期、${rows['repayments'] ?? 0} 笔还款。'
         '真实数据不受影响。之后再体验演示会重新生成。',
     confirmLabel: '清除',
     destructive: true,

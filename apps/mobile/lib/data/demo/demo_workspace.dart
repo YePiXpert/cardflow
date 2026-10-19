@@ -17,6 +17,9 @@
 /// 2,500）、一个压力情景（收入推迟 3 天），并计算"基准预期"与压力情景各一个版本。固定"今天"下，
 /// 基准口径 30 天内有一个可见缺口：11-01 定存转出后工资卡余额 300，低于储备 2,000。
 ///
+/// 账单与还款部分（I-1c，[seedDemoLedger]）：卡 A 的交易、10-10 账单两个版本（修正留痕）、一笔 12 期分期、
+/// 一笔已登记未确认的还款与一个疑似重复差异项、一笔退款待核对。
+///
 /// 所有写入都经仓库（同样的校验），在一个事务里完成；固定"今天" = 2026-10-16（[demoClock]）。
 library;
 
@@ -32,10 +35,15 @@ import '../repositories/cash_forecast_reader.dart';
 import '../repositories/cash_models.dart';
 import '../repositories/credit_account_repository.dart';
 import '../repositories/credit_pool_repository.dart';
+import '../repositories/installment_repository.dart';
+import '../repositories/ledger_models.dart';
 import '../repositories/limit_snapshot_repository.dart';
 import '../repositories/models.dart';
 import '../repositories/recurring_item_repository.dart';
+import '../repositories/repayment_repository.dart';
 import '../repositories/scenario_repository.dart';
+import '../repositories/statement_repository.dart';
+import '../repositories/transaction_repository.dart';
 import '../repositories/workspace_repository.dart';
 import '../repositories/workspace_scope.dart';
 import '../time/clock.dart';
@@ -128,7 +136,12 @@ Future<void> seedDemoWorkspace(WorkspaceScope scope) async {
 
   // 卡 A：主卡与附属卡，同一信用账户（F-21）。
   final a = await card('演示银行甲', '1001', '卡 A');
-  await card('演示银行甲', '1002', '卡 A 附属卡', primaryCardId: a);
+  final aSupplementary = await card(
+    '演示银行甲',
+    '1002',
+    '卡 A 附属卡',
+    primaryCardId: a,
+  );
   final accountA = await accountOf(a);
   await rule(
     accountA,
@@ -191,6 +204,13 @@ Future<void> seedDemoWorkspace(WorkspaceScope scope) async {
   await snapshot(accountC, fixed: 1000000, used: 400000, available: 600000);
 
   await seedDemoCash(scope);
+  await seedDemoLedger(
+    scope,
+    creditAccountId: accountA,
+    mainCardId: a,
+    supplementaryCardId: aSupplementary,
+  );
+  await computeDemoRuns(scope);
 }
 
 /// 演示空间的现金数据（见文件头）。
@@ -354,11 +374,153 @@ Future<void> seedDemoCash(WorkspaceScope scope) async {
     ),
   );
 
-  // 压力情景：预计收入推迟 3 天；"基准预期"与它各计算一个版本（P-09 可对比）。
-  final stress = await scenarios.create(
+  // 压力情景：预计收入推迟 3 天（计算版本在全部演示数据写完后算，见 [computeDemoRuns]）。
+  await scenarios.create(
     const ScenarioDraft(name: '收入推迟 3 天', incomeDelayDays: 3),
   );
+}
+
+/// "基准预期"与压力情景各计算一个版本（P-09 可对比）。放在最后：计算版本的输入哈希含全部现金事件（包括
+/// 还款生成的扣款），先算后写会让版本一开始就"过期"。
+Future<void> computeDemoRuns(WorkspaceScope scope) async {
   final reader = CashForecastReader(scope);
   await reader.recompute(ScenarioView.builtinKey(ScenarioKind.builtinBaseline));
+  final stress = (await ScenarioRepository(
+    scope,
+  ).rows()).firstWhere((r) => r.kind == ScenarioKind.userStress.code);
   await reader.recompute(stress.id);
+}
+
+/// 演示空间的账单与还款（I-1c，卡 A 的人民币子账户，现金从"工资卡"扣）：
+///
+/// - 交易：9-21 家电城 10,000（转 12 期分期，每期费率 0.6%，第 1 期在 10-10 账单）、9-28 超市 1,500（10-10
+///   账期）、10-12 超市 268（未出账）、10-14 超市退货 −150（退款待核对，F-34）、10-15 晚上附属卡订机票 1,200
+///   （入账日未知）；
+/// - 10-10 账单（10-28 到期）：v1 手工录入，v2 人工修正最低还款额（修正留痕，原值可查）；
+/// - 还款：10-15 自动扣款 1,000（现金已扣）与同一天手工登记的 1,000（已登记、待银行确认）→ 疑似重复差异项
+///   （F-32）。两笔的现金事件都在工资卡快照日（10-16）之前，资金日历的数字不变。
+Future<void> seedDemoLedger(
+  WorkspaceScope scope, {
+  required String creditAccountId,
+  required String mainCardId,
+  required String supplementaryCardId,
+}) async {
+  final sub = (await CreditAccountRepository(
+    scope,
+  ).currencyAccounts(creditAccountId)).firstWhere((c) => c.isPrimary).id;
+  final salary = (await CashAccountRepository(
+    scope,
+  ).list()).firstWhere((a) => a.name == '工资卡').id;
+  final transactions = TransactionRepository(scope);
+  Future<String> txn(
+    String at,
+    int amount,
+    String merchant, {
+    TxnType type = TxnType.purchase,
+    bool posted = true,
+    String? card,
+    String? parent,
+  }) async {
+    final when = Timestamp.parse('$at:00+08:00');
+    final row = await transactions.create(
+      TransactionDraft(
+        currencyAccountId: sub,
+        type: type,
+        amountMinor: amount,
+        txnAt: when,
+        postedOn: posted ? when.date : null,
+        cardId: card ?? mainCardId,
+        merchant: merchant,
+        category: type == TxnType.refund ? '退款' : '日常',
+        parentTransactionId: parent,
+      ),
+    );
+    return row.id;
+  }
+
+  final appliance = await txn('2026-09-21T10:00', 1000000, '家电城');
+  await InstallmentRepository(scope).create(
+    InstallmentDraft(
+      transactionId: appliance,
+      periods: 12,
+      perPeriodRate: Rational.parseDecimal('0.006'),
+      firstStatementOn: LocalDate(2026, 10, 10),
+    ),
+  );
+  await txn('2026-09-28T19:00', 150000, '超市');
+  final groceries = await txn('2026-10-12T18:30', 26800, '超市');
+  await txn(
+    '2026-10-14T09:00',
+    -15000,
+    '超市退货',
+    type: TxnType.refund,
+    parent: groceries,
+  );
+  await txn(
+    '2026-10-15T20:30',
+    120000,
+    '机票',
+    posted: false,
+    card: supplementaryCardId,
+  );
+
+  // 10-10 账单：1,500 消费 + 分期第 1 期（本金 833.33 + 费用 60.00）= 2,393.33。
+  final statements = StatementRepository(scope);
+  final statement = await statements.recordIssued(
+    StatementEntryDraft(
+      currencyAccountId: sub,
+      statementDate: LocalDate(2026, 10, 10),
+      dueDate: LocalDate(2026, 10, 28),
+      figures: const StatementFigures(
+        previousBalanceMinor: 300000,
+        paymentsMinor: 300000,
+        newBalanceMinor: 239333,
+        minDueMinor: 29333,
+        feesMinor: 0,
+        installmentDueMinor: 89333,
+      ),
+    ),
+  );
+  await statements.correct(
+    statement.id,
+    figures: const StatementFigures(
+      previousBalanceMinor: 300000,
+      paymentsMinor: 300000,
+      newBalanceMinor: 239333,
+      minDueMinor: 23933,
+      feesMinor: 0,
+      installmentDueMinor: 89333,
+    ),
+    reason: '最低还款额抄错，按纸质账单更正',
+  );
+
+  // 10-15：自动扣款 1,000（现金已扣）+ 同一天手工登记的 1,000（已登记）→ 疑似重复。
+  final repayments = RepaymentRepository(scope);
+  final auto = await repayments.create(
+    RepaymentDraft(
+      currencyAccountId: sub,
+      cashAccountId: salary,
+      amountMinor: 100000,
+      method: RepaymentMethod.autoDebit,
+      allocations: <String, int>{statement.id: 100000},
+      initiatedAt: Timestamp.parse('2026-10-15T06:00:00+08:00'),
+      expectedDebitOn: LocalDate(2026, 10, 15),
+    ),
+  );
+  await repayments.confirmDebit(
+    auto.id,
+    Timestamp.parse('2026-10-15T06:05:00+08:00'),
+  );
+  await repayments.create(
+    RepaymentDraft(
+      currencyAccountId: sub,
+      cashAccountId: salary,
+      amountMinor: 100000,
+      method: RepaymentMethod.manual,
+      allocations: <String, int>{statement.id: 100000},
+      initiatedAt: Timestamp.parse('2026-10-15T21:10:00+08:00'),
+      expectedDebitOn: LocalDate(2026, 10, 15),
+      evidenceNote: '银行 App 转账截图（附件在 I-3）',
+    ),
+  );
 }

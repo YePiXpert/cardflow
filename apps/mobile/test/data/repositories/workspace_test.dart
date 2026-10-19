@@ -6,6 +6,7 @@ import 'package:cardflow/data/mapping/domain_mapping.dart';
 import 'package:cardflow/data/repositories/card_wallet_reader.dart';
 import 'package:cardflow/data/repositories/cash_event_repository.dart';
 import 'package:cardflow/data/repositories/cash_forecast_reader.dart';
+import 'package:cardflow/data/repositories/ledger_reader.dart';
 import 'package:cardflow/data/repositories/models.dart';
 import 'package:cardflow/data/repositories/recurring_item_repository.dart';
 import 'package:cardflow/data/repositories/scenario_repository.dart';
@@ -168,6 +169,62 @@ void main() {
       final board = await ScenarioBoard.load(demo);
       expect(board.items.map((i) => i.runs.length), <int>[0, 1, 1]);
       expect(board.items.every((i) => !i.stale), isTrue);
+    });
+
+    test('账单与还款（I-1c）：卡 A 的 10-10 账单两个版本（修正留痕）；12 期分期第 1 期已出账；一笔已登记未确认的还款'
+        '与疑似重复、退款待核对；负债四分法；新表每张都有行', () async {
+      final data = await LedgerReader(demo).load();
+      final statement = data.statements.single;
+      expect(data.accountName(statement.currencyAccountId), '卡 A');
+      expect(
+        (statement.statementDate, statement.dueDate, statement.status),
+        ('2026-10-10', '2026-10-28', 'amended'),
+      );
+      expect(
+        data.versions[statement.id]!
+            .map((v) => (v.versionNo, v.sourceKind, v.minDueMinor))
+            .toList(),
+        <(int, String, int?)>[(1, 'manual', 29333), (2, 'correction', 23933)],
+      );
+      final plan = data.plans.single;
+      final periods = data.periods[plan.id]!;
+      expect(periods.first.status, 'billed');
+      expect(periods.skip(1).every((p) => p.status == 'scheduled'), isTrue);
+      expect(periods.last.principalMinor, 83337);
+      expect(
+        data.repayments.map((r) => (r.method, r.status)).toSet(),
+        <(String, String)>{
+          ('auto_debit', 'cash_debited'),
+          ('manual', 'recorded'),
+        },
+      );
+      expect(data.openItems.map((i) => i.kind).toSet(), <String>{
+        'duplicate_repayment',
+        'refund_pending',
+      });
+      final l = data.liabilities[statement.currencyAccountId]!;
+      expect(l.currentDue, 239333, reason: '两笔还款都还没有银行入账');
+      expect(
+        l.unbilled,
+        26800 + 120000,
+        reason: '超市 268 与入账日未知的机票 1,200；退款待核对不计',
+      );
+      expect(l.pendingRefunds, 15000);
+      expect(l.futureInstallmentPrincipal, 10 * 83333 + 83337);
+      expect(l.total, 239333 + 146800 + 916667);
+      final rows = await WorkspaceRepository(db).countRows(demo.workspaceId);
+      for (final table in <String>[
+        'transactions',
+        'statements',
+        'statement_versions',
+        'installment_plans',
+        'installment_schedule',
+        'repayments',
+        'repayment_allocations',
+        'reconciliation_items',
+      ]) {
+        expect(rows[table], greaterThan(0), reason: table);
+      }
     });
 
     test('A 8,000、C 6,000 与回归样本的可用额一致；演示空间不判陈旧', () {

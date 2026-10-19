@@ -94,8 +94,20 @@ void main() {
     expect(find.text('可用于还款'), findsOneWidget);
     expect(find.text('定期存款'), findsOneWidget);
     expect(find.text('不计入可用现金（受限资金，未设可用日期）'), findsOneWidget);
-    for (final text in <String>['工资', '已出账单', '贷款月供']) {
-      await _scrollTo(tester, find.text(text).first);
+    // 还款生成的扣款（I-1c 演示数据，10-15）也列在收支计划里（"其他"组，在最后），但不能在这里改。
+    for (final text in <String>['工资', '贷款月供', '已出账单', '卡 A 还款']) {
+      // 同名的可能有多条（两笔还款、两笔已出账单）：滚到至少出现一条为止。
+      for (var i = 0; i < 40 && find.text(text).evaluate().isEmpty; i++) {
+        await tester.drag(
+          find
+              .byWidgetPredicate(
+                (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+              )
+              .first,
+          const Offset(0, -200),
+        );
+        await tester.pumpAndSettle();
+      }
       expect(find.text(text), findsWidgets, reason: text);
     }
     await _scrollTo(tester, find.textContaining('单期例外 1 项'));
