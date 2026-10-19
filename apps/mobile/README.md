@@ -1,7 +1,8 @@
 # apps/mobile — 卡序 iOS App（Flutter）
 
 本目录是卡序的 Flutter 工程（I-0a 骨架；I-0b 加密本地库；I-0c 领域包；I-1a 本地库 v2、真实/演示工作空间、
-建卡/信用账户/账期规则/额度快照；I-1b 本地库 v3、现金账户与快照、收支计划与周期事项、情景、资金日历）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见
+建卡/信用账户/账期规则/额度快照；I-1b 本地库 v3、现金账户与快照、收支计划与周期事项、情景、资金日历；I-1c 本地库 v4、
+交易与账单版本、分期、还款登记与核对、差异项；公测版 0.1.0 beta 1：关于页与公测说明）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见
 `docs/80-delivery/ios-first-plan.md`。
 
 ## 目录
@@ -10,16 +11,16 @@
 |---|---|
 | `lib/main.dart` | 入口：建立 Provider 容器、安装错误钩子、启动 App |
 | `lib/app/` | App 外壳：`app.dart`（MaterialApp、语言、演示横幅）、`router.dart`/`routes.dart`（go_router：启动分流、五个主导航、卡包栈）、`startup/`（启动分流 `app_gate.dart`、启动页与"重置本地数据"确认页）、`diagnostics/`（内存环形诊断日志）、`shell/`（底部 Tab）、`theme/`（`tokens.dart` 设计 token 唯一来源，`app_theme.dart` 浅色/深色主题）、`money/`（金额格式与 `minorDigits` 表、全局金额隐藏开关）、`widgets/`（`MoneyText`、首次空白态、状态视图、空间标识、演示横幅、确认框、轻提示） |
-| `lib/features/<模块>/` | 功能模块：`overview` 总览（P-01，含现金压力卡）、`cards` 卡包（P-02 卡包与新建卡片、P-03 详情、P-04 设置）、`planner` 规划（P-10 与规划 Tab 的分段条）、`cash` 现金与收支（P-08：账户、快照、收支计划、周期事项、调拨）、`calendar` 资金日历（P-07）、`scenarios` 情景与对比（P-09）、`promotions` 发现、`settings` 我的、`onboarding` 欢迎页（P-22）与空间切换、`diagnostics` 诊断页 |
+| `lib/features/<模块>/` | 功能模块：`overview` 总览（P-01，含现金压力卡、近期到期与待办）、`cards` 卡包（P-02 卡包与新建卡片、P-03 详情（含账单部分）、P-04 设置）、`statements` 账单中心（P-05：列表、详情、录入正式账单、人工修正、记一笔、转分期）、`repayments` 还款与核对（P-06：列表、详情与时间线、登记还款）、`planner` 规划（P-10 与规划 Tab 的分段条）、`cash` 现金与收支（P-08：账户、快照、收支计划、周期事项、调拨）、`calendar` 资金日历（P-07）、`scenarios` 情景与对比（P-09）、`promotions` 发现、`settings` 我的（含「关于」与公测说明）、`onboarding` 欢迎页（P-22）与空间切换、`diagnostics` 诊断页 |
 | `lib/data/db/` | 加密本地库（drift + SQLite3MultipleCiphers，见下文"加密本地库"）：表定义、迁移、打开、重置 |
-| `lib/data/repositories/` | 仓库（按当前工作空间过滤）、读模型 `CardWalletReader`/`CashPlanReader`/`CashForecastReader`、数据层 provider（当前工作空间、时钟、各仓库），见下文"工作空间与演示模式""仓库与 provider""现金与资金日历" |
-| `lib/data/mapping/` | 数据层 → 领域对象映射：`domain_mapping.dart`（规则版本 → `BillingRule`、预测账期与 3 期预览、快照与授信池 → `CardOption`/`ModelInputs` → `capacityLayers`）；`cash_mapping.dart`（现金账户/快照/事件/情景 → `CashAccount`/`Snapshot`/`CashEvent`/`Scenario`，交叉校验、输入哈希、情景计算结果 JSON） |
+| `lib/data/repositories/` | 仓库（按当前工作空间过滤）、读模型 `CardWalletReader`/`CashPlanReader`/`CashForecastReader`/`LedgerReader`、数据层 provider（当前工作空间、时钟、各仓库），见下文"工作空间与演示模式""仓库与 provider""现金与资金日历""账单、分期与还款" |
+| `lib/data/mapping/` | 数据层 → 领域对象映射：`domain_mapping.dart`（规则版本 → `BillingRule`、预测账期与 3 期预览、快照与授信池 → `CardOption`/`ModelInputs` → `capacityLayers`）；`cash_mapping.dart`（现金账户/快照/事件/情景 → `CashAccount`/`Snapshot`/`CashEvent`/`Scenario`，交叉校验、输入哈希、情景计算结果 JSON）；`ledger_mapping.dart`（交易账期归属、账单余额、负债四分法、分期各期与成本、还款入账日与额度释放） |
 | `lib/data/time/` | 业务时区（只支持固定偏移时区）、入账日推导（截止时点）、时钟（演示空间固定"今天"） |
 | `lib/data/validation/` | G2/G5 与末四位校验（仓库与界面共用一套文案） |
 | `lib/data/demo/` | 演示空间的合成数据 |
 | `lib/data/ids.dart` | UUID v4（`Random.secure()`，不引入 uuid 包） |
 | `packages/cardflow_domain/` | 纯 Dart 领域包（I-0c）：金额、日期、账期、现金时间线、独立验证器、有限搜索、规则协议 v1 与 fixture 运行器；App 以 path 依赖引入，见下文"领域层" |
-| `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置；`test/data/db/`、`test/data/repositories/` 在真实 sqlite3mc 上测试加密本地库与仓库；`test/support/sensitive_text.dart` 查日志与报告里的敏感内容 |
+| `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置；`test/data/db/`、`test/data/repositories/` 在真实 sqlite3mc 上测试加密本地库与仓库；`test/support/sensitive_text.dart` 查日志与报告里的敏感内容；`test/support/forbidden_ui.dart` 整页检查"还款成功"与绿色；`test/app/public_beta_test.dart` 阶段代号防回归与公测说明 |
 | `ios/` | iOS 工程：`Flutter/CardFlow.xcconfig`（Bundle ID 与签名参数的唯一来源）、`Runner/PrivacyInfo.xcprivacy`（隐私清单） |
 | `web/` | 只用于 CI 的 Web 编译烟雾测试，不发布 |
 
@@ -39,7 +40,7 @@
 - 不提交任何签名材料（证书、描述文件、团队 ID、entitlements）。在 Mac 上自行签名时，把团队 ID 写进不入库的 `ios/Flutter/CardFlow.local.xcconfig`。
 - 重新运行 `flutter create` 时必须带 `--org li.yep`，否则会生成错误的包名。
 
-## 加密本地库（I-0b，ADR-001 PoC-1；I-1a 起 schema v2，I-1b 起 v3）
+## 加密本地库（I-0b，ADR-001 PoC-1；I-1a 起 schema v2，I-1b 起 v3，I-1c 起 v4）
 
 **方案**：drift 2.35.2 + sqlite3 3.7.1。`pubspec.yaml` 末尾的 `hooks.user_defines.sqlite3.source: sqlite3mc`
 让 sqlite3 包的构建钩子把 [SQLite3MultipleCiphers](https://github.com/utelle/SQLite3MultipleCiphers)（sqlite3mc）
@@ -95,8 +96,8 @@ SQLite 头。任一步失败都关闭连接、抛 `DatabaseOpenException`（只�
 |---|---|
 | `database_providers.dart` | `databaseProvider`（`Future<AppDatabase>`，供仓库使用）、`openedDatabaseProvider`（含加密库信息与是否新建）、钥匙串与目录 provider（测试替换点）、`databaseKeyExistsProvider`、`databaseRecoveryProvider`（重试与重置） |
 | `app_database.dart` | `AppDatabase`（drift `@DriftDatabase`，私有构造）、`openAppDatabase`（取密钥 → 加密连接 → 迁移 → 外键读回 → 文件头检查）、`ensureForeignKeys`、`readMeta()`、`readCipherInfo()`；生成文件 `app_database.g.dart` |
-| `tables.dart` | v2、v3 业务表的 drift 表 DSL（列、主键、唯一键、CHECK、复合外键，全部 STRICT） |
-| `schema.dart` | `LocalSchema.currentSchemaVersion`（3）、meta 表、冻结的 `SchemaV2`、`SchemaV3`（各自的建表、索引、触发器）、`schemaMigrations`（1→2、2→3）、`createSchema` / `migrateSchema`（同一事务写 `user_version`） |
+| `tables.dart` | v2、v3、v4 业务表的 drift 表 DSL（列、主键、唯一键、CHECK、复合外键，全部 STRICT） |
+| `schema.dart` | `LocalSchema.currentSchemaVersion`（4）、meta 表、冻结的 `SchemaV2`、`SchemaV3`、`SchemaV4`（各自的建表、索引、触发器）、`schemaMigrations`（1→2、2→3、3→4）、`createSchema` / `migrateSchema`（同一事务写 `user_version`） |
 | `database_failures.dart` | 异常 → 错误码（`databaseOpenExceptionFrom`）、`closeQuietly` |
 | `database_reset.dart` | "重置本地数据"：删数据库文件与钥匙串密钥、忘掉缓存 |
 | `encryption.dart` | sqlite3mc 检查与设置密钥（drift 的 `setup`） |
@@ -133,17 +134,36 @@ TEXT RFC 3339 带偏移；金额 INTEGER 最小单位（|v| ≤ 10^13）；币�
 | `recurring_items` / `recurring_overrides` | 周期事项（频率、锚定日、日规则、起止日、启用）与单期例外（`skip`/`override` 的金额、日期、时刻） |
 | `scenarios` / `scenario_runs` | 情景（内置两条参数固定只读，CHECK + 触发器；每个空间每种内置至多一条）与计算版本（版本号唯一递增、只追加、`inputs_hash` 64 位小写十六进制、`result` JSON 对象） |
 
-**加表与迁移**（v3 即照此办理，I-1c 起同样；`schema.dart` 文件头有同样的步骤）：
+**v4 的表**（I-1c，`tables.dart` 与冻结的 `SchemaV4`；8 张表、14 个索引、20 个触发器；3→4 只加表、索引与触发器，不动 v2/v3 的
+表与数据。`schema_test.dart` 比较新建与从 v1、v2、v3 升级四条路径的结构完全一致，并核对升级前写入的 v2、v3 数据原样保留；
+`ledger_constraints_test.dart` 直接写 SQL 验证每条约束与触发器，例如直接 UPDATE 账单版本的金额列必须失败）：
+
+| 表 | 要点 |
+|---|---|
+| `transactions` | 交易挂在币种子账户（卡片只是介质，F-24）：类型 9 种，金额"负债增加为正"按类型定符号（CHECK）；交易时点 + 业务时区 + 精度；入账日可空；状态；退款/冲正的原交易（同一子账户，复合外键）；指纹；卡片须属于该子账户的信用账户（触发器）；归属、类型、来源不可改，删除（tombstone）后不再改 |
+| `statements` | 账单挂在币种子账户：同一子账户同一账单日只一份（UNIQUE，F-21）；状态机 PRD §6.2（触发器，见偏离）；`current_version_id` 指向最新版本（延迟检查的复合外键，只能前移）；账单日与归属不可改 |
+| `statement_versions` | 追加只读：任何 UPDATE 都 `RAISE(ABORT)`；版本号紧接最新；人工修正 = 新版本且理由必填（CHECK）；要素除新余额外可空（来源未含此项）；贷方余额 ≥ 0 且不与正的新余额并存（F-38）；最低还款不超过新余额；到期日晚于账单日 |
+| `installment_plans` | 由一笔消费转成（每笔至多一个，同一子账户）；条款（本金、期数 1–60、每期费率规范十进制文本、收费方式、尾差位置、取整 `HALF_UP`）建好后不可改；状态只能从进行中变为已还完、已提前结清或已作废 |
+| `installment_schedule` | 各期本金、费用、所在账单日与到期日（建计划时算好），之后只改状态（未出账 → 已出账 → 已结清，或作废）；期号不超过期数 |
+| `repayments` | 状态机 PRD §6.3（触发器，见偏离）；双侧时间（发起、预计扣款日、现金扣款、银行入账、银行确认）与状态要求的时点（CHECK）；金额、方式、归属与币种不可改；现金账户须同币种同空间；作废 = tombstone |
+| `repayment_allocations` | 还款 → 账单（同一子账户，复合外键）；Σ ≤ 还款额（触发器；界面要求 =，F-33）；只删了重写，不改 |
+| `reconciliation_items` | 4 种差异项；`refs` 是规范化 JSON 对象，同类同引用唯一；只能从待处理处理一次（已处理/已忽略，记结果与处理者），不重开 |
+
+另：父表补唯一索引 `currency_accounts (workspace_id, id, currency)`、`cash_accounts (workspace_id, id, currency)`，让交易与还款的币种
+经复合外键与账户一致；v3 的 `cash_events.linked_repayment_id` 用触发器约束（INSERT 与 UPDATE OF：非空值必须指向同一空间的还款），
+还款删除或作废前若仍有未删除的现金事件指向它则 `RAISE(ABORT)`——不重建 `cash_events`，新建库与升级上来的库用同一组触发器。
+
+**加表与迁移**（v3、v4 即照此办理，之后同样；`schema.dart` 文件头有同样的步骤）：
 1. 在 `tables.dart` 加表或加列（drift 表 DSL），`app_database.dart` 的 `@DriftDatabase(tables: …)` 登记新表；
    新的业务表必须带 `workspace_id`，并加进 `workspace_repository.dart` 的 `workspaceDataTables`（删除顺序：子表在前）；
 2. 运行 `dart run build_runner build` 与 `dart format .`；
-3. `LocalSchema.currentSchemaVersion` 加 1（I-1c 为 v4）；
+3. `LocalSchema.currentSchemaVersion` 加 1（I-1c 为 v4，下一次为 v5）；
 4. 在 `schema.dart` 新建 `SchemaV<n>`：冻结这一版**新增**的建表语句（`CREATE TABLE IF NOT EXISTS`，内容与 drift
    生成的一字不差——可设 `CARDFLOW_SCHEMA_DUMP_DIR` 跑 `test/data/db/schema_test.dart` 看新库结构）、索引与触发器
    （都带 `IF NOT EXISTS`）；只做 expand，不改写金额原值；
 5. `schemaMigrations` 登记 `n-1: _migrateV<n-1>ToV<n>`；`latestIndexes`/`latestTriggers` 加上新版的；
 6. `schema_test.dart` 增加"从 v<n-1> 升级"与新建的一致性比较（已有的从 v1、v2 升级的比较保留；升级前写入旧版数据并核对原样保留）；
-   约束测试加新约束（v3 的在 `cash_constraints_test.dart`）；`workspace_isolation_test.dart` 的 `runAllQueries` 加新仓库的全部
+   约束测试加新约束（v3 的在 `cash_constraints_test.dart`，v4 的在 `ledger_constraints_test.dart`）；`workspace_isolation_test.dart` 的 `runAllQueries` 加新仓库的全部
    查询（没有 `id` 列的表在 `_rowKeys` 里登记行键）；演示数据要写到每一张新表（隔离测试要求两个空间的每张表都有行）。
 迁移在一个事务里执行（失败整体回滚，`migration_failed`）；`user_version` 在同一事务里写入，迁移语句可重跑
 （测试"重跑 1→2 不报错"）。若 v3 要给 v2 的表**加列**，`ALTER TABLE` 后 SQLite 保存的建表文本与 drift 新建的不同，
@@ -167,11 +187,12 @@ COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 �
 - **两个工作空间**：真实（`real`）与演示（`demo`）各最多一个未删除的（部分唯一索引）。"当前工作空间"存在
   `app_settings`（键 `current_workspace_id`）。所有业务仓库都由 `WorkspaceScope`（数据库 + 当前工作空间 id + 时钟）
   构造，查询一律带 `workspace_id`；跨空间的 id 一律"已不存在"。隔离测试 `workspace_isolation_test.dart`：一个空间写满
-  全部业务表，以另一个空间为当前空间运行每个仓库的全部查询（含用对方的 id 去查，82 条），结果全部为空；反向亦然。
+  全部业务表，以另一个空间为当前空间运行每个仓库的全部查询（含用对方的 id 去查，I-1c 时 237 条），结果全部为空；反向亦然。
 - **启动分流**（`lib/app/startup/app_gate.dart`，BL-04）：数据库打开中/打不开 → 启动页；没有工作空间 → P-22
   （`/welcome`，任何路由都先到这里）；就绪后进入五个主导航。诊断页不受分流约束。
 - **P-22**：「手工建卡」进入（必要时新建）真实空间并打开新建卡片；「体验演示」进入（首次生成）演示空间并转到总览；
-  「从账单文件开始」「从备份恢复」「连接服务器」显示但禁用并注明阶段（I-3 / I-4 / 后续）。真实↔演示切换须确认；
+  「从账单文件开始」「从备份恢复」「连接服务器」显示但禁用并注明"后续版本提供"（连接服务器为"后续提供（自托管同步）"；
+  公测版起界面不写内部阶段代号）；最底部是公测说明（见"公测版 0.1.0"）。真实↔演示切换须确认；
   「退出演示」回到真实空间（没有则回到 P-22）；「清除演示数据」确认框写明影响数量，删除演示空间全部行。
 - **演示数据**（`lib/data/demo/demo_workspace.dart`，经仓库写入、一个事务）：卡 A/B/C 的账期与可用额与回归样本一致
   （engine-spec §9），另加与 B 同行的卡 D：A 主卡 + 附属卡同一信用账户（F-21）；B 与 D 是同一银行的两个独立授信
@@ -179,7 +200,8 @@ COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 �
   C 的规则带截止时点 22:00。现金部分（I-1b，`seedDemoCash`）：工资卡（储备 2,000）与受限的定期存款（不计入可用现金）、
   工资卡 10-16 的快照（当天早餐已包含、水电费未包含）、与回归样本同一组数值的收支、房租周期事项（每月 27 日，12-27 单期覆盖为
   1,200）、11-01 工资卡 → 定期存款 2,500 的调拨、"收入推迟 3 天"压力情景，并计算"基准预期"与它各一个版本；固定"今天"下
-  基准口径 30 天内有一个可见缺口（11-01 定存转出后余额 300，低于储备）。
+  基准口径 30 天内有一个可见缺口（11-01 定存转出后余额 300，低于储备）。账单与还款部分（I-1c，`seedDemoLedger`）见"账单、分期与
+  还款"一节；两笔还款的现金事件都在工资卡快照日之前，资金日历的数字不变。
 - **时钟**：`clockProvider` —— 演示空间固定"今天" = 2026-10-16（北京时间 12:00，`demoClock`），陈旧判定不触发；真实空间
   用系统时间。页面与仓库都不直接调用 `DateTime.now()`。
 - **演示横幅**：`DemoBannerFrame`（`MaterialApp.builder`）在演示空间时每页顶部常驻紫色横幅（烧瓶 + "演示数据 ·
@@ -204,9 +226,16 @@ COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 �
 | `ScenarioRepository` | `rows()`、`list()`（内置两条在前，未保存时是虚拟的）、`byKey`/`require`、`ensureBuiltin(kind)`、`create`/`update(ScenarioDraft)`、`delete`（连同版本）、`runs`/`allRuns`/`runById`、`addRun` |
 | `CashPlanReader` | `load()` → `CashPlanView`（P-08）；`loadAccount(id)` → `CashAccountDetailView`；`loadRecurring(id)` → `RecurringDetailView` |
 | `CashForecastReader` | `loadInputs()` → `CashDomainInputs`（映射、交叉校验、`dataIssues`）；`forecast(CashForecastQuery)` → `CashForecast`（P-07/P-01）；`recompute(scenarioKey)` → 新的计算版本；`isRunStale`；顶层函数 `forecastFrom`、`inputsHash`、`runResultOf`、`compareRuns`；`ScenarioBoard.load` |
+| `TransactionRepository`（I-1c） | `list({currencyAccountId})`、`byId`/`require`、`create(TransactionDraft)`（幂等；退款 → 退款待核对、无登记的还款入账 → 未匹配）、`markPosted`、`delete` |
+| `StatementRepository` | `list({currencyAccountId})`、`byId`/`require`、`versions(statementId)`、`allVersions()`、`recordIssued(StatementEntryDraft)`（v1）、`correct(statementId, figures:, reason:, dueDate:)`（新版本）、`moveStatus` |
+| `InstallmentRepository` | `plans({currencyAccountId})`、`byId`/`require`、`byTransaction`、`schedule(planId)`、`allPeriods()`、`create(InstallmentDraft)`（幂等）、`cancel` |
+| `RepaymentRepository` | `list`、`byId`/`require`、`allocationsOf`、`allAllocations`、`create(RepaymentDraft)`（幂等）、`markInitiated`、`confirmDebit`、`markFailed`、`retry`、`markUserPaid`、`markCreditPosted`、`confirmByBank`、`markNeedsReview`、`reverse`、`delete`（作废登记）、`setEvidenceNote`、`resolveDuplicate`、`markOverdueMarkedPaid` |
+| `ReconciliationRepository` | `list({status})`、`byId`/`require`、`find`、`open(kind, refs)`（同类同引用不重复）、`resolve(id, resolution)`、`dismiss`、`openDuplicatePairs()`、`offsetRefunds()` |
+| `LedgerReader` | `load()` → `LedgerData`（P-05/P-06/P-03/P-01：账单、版本与余额，交易与账期，分期与各期、成本，还款、分配与现金事件，差异项，负债四分法，近期到期；打开时维护"已逾期"与到期的"用户已标记 → 待核对"） |
 
 写方法校验失败抛 `ValidationException(field, message)`（文案可直接显示、不含用户数据）；其余为 `NotFoundException`、
-`IllegalCardTransitionException`、`ConflictException`、`StorageRejectedException`（`repository_errors.dart`）。
+`IllegalCardTransitionException`、`IllegalRepaymentTransitionException`（I-1c）、`ConflictException`、`StorageRejectedException`
+（`repository_errors.dart`）。
 
 provider（`providers.dart`，都不自动重试）：`workspaceRepositoryProvider`、`currentWorkspaceProvider`（`Workspace?`；
 `enterReal`/`enterDemo`/`exitDemo`/`clearDemo`，日志只记 `workspace/*` 事件与 real/demo）、`clockProvider`、
@@ -214,11 +243,12 @@ provider（`providers.dart`，都不自动重试）：`workspaceRepositoryProvid
 `cashEventRepositoryProvider`、`recurringItemRepositoryProvider`、`scenarioRepositoryProvider`）、`localDataRevisionProvider`
 （drift 表更新计数：读 provider watch 它，写入后自动重算）、`walletProvider`、`demoWorkspaceRowsProvider`；I-1b 的读 provider：
 `cashPlanProvider`、`cashAccountDetailProvider(id)`、`recurringDetailProvider(id)`、`cashForecastProvider(CashForecastQuery)`、
-`scenarioBoardProvider`。功能页自己的 provider 放在 `lib/features/<模块>/`（例：
-`card_providers.dart`）。
+`scenarioBoardProvider`；I-1c 加 `transactionRepositoryProvider`、`statementRepositoryProvider`、`installmentRepositoryProvider`、
+`repaymentRepositoryProvider`、`reconciliationRepositoryProvider` 与读 provider `ledgerProvider`。功能页自己的 provider 放在
+`lib/features/<模块>/`（例：`card_providers.dart`）。
 
 **页面骨架与路由约定**：页面是 `ConsumerWidget`，按 `switch (asyncValue)` 给出四态——首次空白（`FirstRunEmptyState`，
-未开放的操作用 `EmptyStateAction.stage` 注明阶段）、加载（`LoadingSkeleton`，静态）、错误（`ErrorBlock`，错误码 +「重试」=
+未开放的操作用 `EmptyStateAction.stage` 注明"后续版本提供"，不写内部阶段代号）、加载（`LoadingSkeleton`，静态）、错误（`ErrorBlock`，错误码 +「重试」=
 `ref.invalidate`）、成功；对象不存在显示"已不存在"。区块标题 `SectionTitle`，提示 `NoticeCard`，徽标 `StatusBadge`，
 "标签：值" `LabeledValue`（金额值用 `MoneyText`）；轻提示 `showFeedback`（替换正在显示的提示）；二次确认 `confirmAction`。
 路由常量在 `routes.dart`（卡包栈：`/cards` → `/cards/accounts/:accountId`（P-03）→ `…/settings?section=rule|limits|currencies|pool`（P-04）；
@@ -273,7 +303,7 @@ P-09 `/planner/scenarios` 是并列的顶层路由（分段之间切换没有返
 **资金日历**（`CashForecastReader.forecast`、`forecastFrom`）：窗口 = 今天起 7/30/90/180 天；口径 = 已确认/基准预期/压力情景；
 逐账户调用领域包 `evaluateAccounts`（账户之间从不互抵），摘要按币种给出"最差的那个账户"的最低点、日期、缺口数与距零/距储备；
 日行来自领域时间线（当日流出、流入、当日最低，金额是情景变换后的），缺口 ▲ 与领域包的缺口点一致；尾部责任 = 窗口外、层级为
-计划（planned）的事件（分期在 I-1c 接入同一列表）；假设 = 领域包的说明（先支出后收入、快照当天未包含事件、情景改期）加数据层的
+计划（planned）的事件与进行中分期尚未结清的各期（I-1c 接入同一列表，`source: 'installment'`）；假设 = 领域包的说明（先支出后收入、快照当天未包含事件、情景改期）加数据层的
 说明（可用日期、陈旧）。快照超过 7 天（领域包 `dataIssues(staleAfterDays: 7)`，演示空间不判）→"假设分析"，照常从快照余额起算，
 不补零；计入但缺快照的账户不进入计算，显示"数据不全：{账户}缺快照，未计入"。没有缺口用中性色，不用绿色，不出现"安全/稳妥"。
 
@@ -288,13 +318,123 @@ P-09 `/planner/scenarios` 是并列的顶层路由（分段之间切换没有返
 - 还款 → 现金：`CashEventRepository.planRepaymentDebit(repaymentId, cashAccountId, on, amountMinor, at?, label?)` 生成（或改期改额）
   一条层级 `planned`、类别 `repayment`、尚未发生、`linked_repayment_id = repaymentId` 的事件（每笔还款至多一条未删除的）；
   `confirmRepaymentDebit(repaymentId, debitedAt, amountMinor?)` 在确认扣款时把它变为确定、已发生，日期与时刻改为实际扣款时点
-  （F-31：现金时间线按扣款日生效）；`cancelRepaymentDebit` 作废尚未发生的；`byRepayment` 查询。`linked_repayment_id` 暂无外键
-  （`repayments` 表在 I-1c 建，届时用触发器或重建表加约束）；
+  （F-31：现金时间线按扣款日生效）；`cancelRepaymentDebit` 作废尚未发生的；`byRepayment` 查询。`linked_repayment_id` 在 I-1c 用触发器
+  约束到同一空间的还款（见"v4 的表"）；
 - 尾部责任：`CashForecast.tail` 是 `TailObligation`（日期、金额、币种、账户名、标签、`source`、`refId`）的列表，I-1c 把分期计划的
   未来各期（`source: 'installment'`）加进同一列表即可在 P-07 显示；
 - 测试工厂（`test/data/repositories/repository_test_support.dart`）：`createTestCashAccount`、`addTestCashEvent`、
   `recordTestCashSnapshot`（当天事件默认答"未包含"）、`StaleAwareClock`（时刻固定、判断陈旧）；组件测试 `readCashPlan(tester)`、
   `withCurrentScope(tester, action)`、`pumpCardFlowApp(realClock: …)`。
+
+## 账单、分期与还款（I-1c，R-STMT-01~11、UF-3）
+
+**交易与账期归属**（`TransactionRepository`；`ledger_mapping.dart` 的 `transactionCycle`）：
+- 交易挂在币种子账户上，卡片只是介质：换卡后旧卡的交易、账单与还款分配都不迁移、不变（F-24）。金额"负债增加为正"，
+  类型决定符号（消费、费用、利息为正，退款与还款入账为负，转账/取现与调整按方向）；交易时点按账户业务时区写出并带精度
+  （精确到时刻/只知道日期/只知道月份）；入账日可空；指纹 = 规范化要素的 sha256（导入去重时用）。「记一笔」不提供"分期本金"
+  "分期手续费"两种类型——它们由分期计划的各期表示，不另记交易（避免重复计入）；"还款入账（银行记录）"只用于核对，负债按
+  P-06 登记的还款核销。
+- 账期归属：入账日已知 → 领域包 `resolveCycle`（已出账单优先，否则按规则预测）；入账日未知 → 交易日在入账延迟区间内的
+  全部可能账期（领域包 `cyclesForTransaction`；已出账的账单日用已出账单的到期日），界面显示"可能账期：… 或 …（入账日未知，
+  保守按最早到期 …）"（F-15）。交易"已出账" = 它的每个可能账单日都不晚于该子账户最近一期已出账单的账单日。
+
+**账单与版本**（`StatementRepository`）：
+- 「录入正式账单」= v1（来源"手工录入"）：账单日不晚于今天（账户业务时区）、到期日晚于账单日；同一币种子账户同一账单日只有
+  一份，所以同一信用账户的两张卡只产生一份账单（F-21）。要素：上期余额、本期新余额（可负）、最低还款、本期还款、本期贷记、
+  费用、利息、分期应还、贷方余额；来源没有给的项存空值，界面显示"来源未含此项"而不是 0。
+- 「人工修正」= 新版本（来源"人工修正"、理由必填，可同时更正到期日），旧版本原样保留、可切换查看（R-STMT-07）；账单版本表的
+  任何 UPDATE 都被触发器拒绝；已结清的账单不能再修正。
+- 本期应还 = 当前版本的新余额（有贷方余额时为 0，界面显示"贷方余额"，F-38）；剩余应还 = 本期应还 − 已按银行入账核销的还款
+  分配（`paidOnStatement`）。状态（PRD §6.2）：录入为"已出账"，修正后"已修正"；银行确认的分配 ≥ 应还 → "已结清"，> 0 →
+  "部分结清"（结清只由银行确认触发）；过了到期日仍有剩余应还 → "已逾期"（读模型 `LedgerReader.load` 打开时维护）。
+
+**负债四分法**（R-STMT-02、F-30，`liabilityOf` → `LiabilityBreakdown`）：总负债 = 已出账未还 + 未出账 + 未来分期本金（不含
+未计提的分期手续费），四项分列、不重复相加：
+- 已出账未还 = 最近一期账单的剩余应还（即"本期应还"）；有贷方余额时为 −贷方余额（负债为负，R-STMT-11）；
+- 未出账 = 最近一期账单之后的交易，不含已转分期的原消费、还款入账行与待核对的退款（待核对的退款单列，F-34）；
+- 未来分期本金 = 进行中计划里尚未出账的各期本金；这些期的手续费单列，不计入总负债；
+- 只扣减银行已入账的还款（`credit_posted`/`bank_confirmed`），"我已还款"不扣减。
+- 例（`ledger_test.dart` 的 F-30）：12,000 的消费转 12 期（每期费率 0.6%：每期本金 1,000、费用 72），第 1 期在已出账的 10-10 账单里
+  （账单应还 1,572 = 当期分期 1,072 + 另一笔 500），10-12 的 300 未出账，其余 11 期本金 11,000 是"未来分期本金"（792 的费用单列），
+  原消费不再计入未出账：总负债 = 1,572 + 300 + 11,000 = 12,872。
+
+**分期算法与取整**（F-36、F-37；`InstallmentRepository`、领域包 `installment.dart`）：
+- 本金拆分 = 领域包 `splitInstallments`：每期 `HALF_UP(本金 / 期数)`，尾差加到末期（默认，建行口径）或首期，Σ 各期 = 本金；
+  每期收取的手续费 = `applyRate(本金总额, 每期费率, HALF_UP)`（`installmentCashFlows`，每期相同）。条款里的取整固定 `HALF_UP`；
+  "首期一次收取"见"I-1c 的偏离与约定"。
+- 条款：本金默认 = 消费金额（可小于它）、期数 1–60、每期费率 0 ≤ r < 1（至多 10 位小数，存规范十进制文本）、收费方式、尾差
+  位置；建好后不可改（触发器）。
+- 各期所在账单：第 1 期默认是"入账日（未知时交易日）与今天中较晚者"所在的账期，也可指定首期账单日（须是规则给出的账单日、
+  不早于这笔消费本身的账期）；之后每期从上一期账单日的次日推出（`resolveCycle`，已出账单优先）。已出账单覆盖的期直接是
+  "已出账"；之后录入账单时，账单日不晚于它的各期 → 已出账；账单结清时 → 已结清，全部结清的计划 → 已还完。
+- 成本两种并列（`InstallmentCost`）：名义年化 = 每期费率 × 12（界面注明"不是实际成本"）；实际年化 = 各期现金流（月 0 放款为负、
+  第 k 月还"本金 + 费用"为正）的月 IRR（有理数二分，精度 10^-12）按复利 `(1 + r)^12 − 1`；显示为百分数，至多 4 位小数（HALF_UP）。
+  F-37：每期 1.5%、12 期 → 名义 18%，实际年化 36.7571%（与 Python 对照一致）。
+- 作废只在各期都还没出账时可以（录错了），原消费重新计入未出账；提前结清在后续版本。资金日历（P-07）的尾部责任列出进行中
+  计划尚未结清、到期日在窗口外的各期（`source: 'installment'`，金额 = 本金 + 费用，F-06）。
+
+**还款状态机**（PRD §6.3，`RepaymentRepository`；非法转移抛 `IllegalRepaymentTransitionException`，触发器
+`repayments_status_transition` 兜底）：
+
+| 从 → 到 | P-06 动作 | 条件与效果 |
+|---|---|---|
+| — → 已登记 `recorded` | 「登记」 | 发起时间不晚于现在；预计扣款日不早于发起日；分配 Σ ≤ 还款额（界面要求 =，F-33），只能分到本子账户未结清的账单；有现金账户与预计扣款日时，现金时间线生成一条计划扣款（`planRepaymentDebit`） |
+| 已登记 → 处理中 `processing` | 「标记已发起」 | 记发起时间 |
+| 已登记/处理中 → 现金已扣 `cash_debited` | 「确认扣款」 | 已登记的先经处理中；扣款时点不晚于现在、不早于发起；计划扣款按实际时点变为确定、已发生（`confirmRepaymentDebit`，F-31）；实际金额与登记不同 → 金额不符 |
+| 处理中 → 失败 `failed` | 「标记失败」 | 计划扣款作废 |
+| 失败 → 已登记 | 「重试登记」 | 可给新的预计扣款日，重新生成计划扣款 |
+| 现金已扣 → 银行已入账 `credit_posted` | 「上传入账证据」 | 入账时点不早于扣款；负债从入账日（信用账户业务时区，截止时点按 `postingDateFor`）起核销；入账金额与登记不同 → 金额不符 |
+| 银行已入账 → 银行确认 `bank_confirmed` | 「银行确认」 | 不早于入账；按银行确认的分配判断各期账单"已结清/部分结清" |
+| 已登记 → 用户已标记 `user_marked_paid` | 「我已还款」 | 只是你的确认：不结清、不核销负债（R-STMT-03） |
+| 用户已标记 → 待核对 `needs_review` | 自动 | 分配到的账单过了到期日仍无银行证据（读模型打开时） |
+| 用户已标记/待核对 → 银行确认 | 「银行确认（取得证据）」 | 须给实际扣款时点（现金侧按它确认扣款），入账时点取确认时点 |
+| 银行确认 → 已冲正 `reversed` | 「冲正」 | 不再核销负债；已结清的账单状态不变，剩余应还按实际重新计算 |
+
+另：「作废登记」（tombstone）只对已登记、失败、用户已标记、待核对且现金尚未扣的还款，计划扣款一并作废。双侧时间（F-31）：
+现金侧（`expected_debit_on`、`cash_debited_at`）按现金时区；负债侧按 `credit_posted_at` 在信用账户业务时区的日期。额度释放
+（F-28，`releasedRepaymentsOn`）：只有银行已入账、入账日晚于额度快照日、且"入账日 + 释放时滞 ≤ 今天"的还款才释放；账户规则里
+还没有释放时滞，一律按"未知"处理——不释放，以新的额度快照为准（P-03 有说明）。文案：状态与轻提示都带确认层级（"已登记（待
+银行确认）"），没有"还款成功"，不用绿色（银行确认用 confirm.bank 色与印章图标）；`repayment_pages_test.dart` 在 9 种状态下逐页
+滚动检查（`test/support/forbidden_ui.dart`，检查本身带自检）。
+
+**差异项**（R-STMT-09，`ReconciliationRepository`）：
+
+| 类型 | 何时生成（引用） | 处理结果 |
+|---|---|---|
+| 疑似重复还款 | 同一天（实际扣款日 → 预计扣款日 → 发起日，现金时区）、同一子账户、同金额的一笔自动扣款与一笔手工还款，两笔都不是失败或冲正（F-32；`repayment_ids`） | 确为两笔；同一笔 → 作废其中一笔登记（`resolveDuplicate`） |
+| 金额不符 | 确认扣款或上传入账证据时金额与登记不同（`repayment_id`、`side`、登记与实际金额） | 已核对 |
+| 退款待核对 | 每一笔退款：是否冲抵本期应还取决于账户规则，规则未知（`transaction_id`） | 已冲抵应还（之后计入未出账）；未冲抵本期应还 |
+| 未匹配的还款 | 记一笔"还款入账（银行记录）"时，同一子账户 3 天内没有同金额、未作废的还款登记（`transaction_id`） | 已登记对应还款（或「去登记还款」） |
+
+同类同引用只有一条（包括已处理的，不重开）；任何一条都可「忽略」；只能处理一次，记录结果、处理者与时间，P-06"已处理的差异"
+列出。疑似重复处理前负债只核销一次（两笔都已入账时只计较大的一笔，`paidOnStatement`）；退款在处理前应还不变、不计入未出账，
+也不进现金（不当收入，F-34）。
+
+**页面与演示数据**：P-05 账单中心（`lib/features/statements/`：列表与筛选、详情、录入正式账单、人工修正、记一笔、转分期）与
+P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线、登记还款）挂在总览栈与信用账户详情栈下（`/overview/…`、
+`/cards/accounts/:accountId/…`；路由常量 `AppRoutes.statements`/`statement`/`newStatement`/`correctStatement`/`newTransaction`/
+`newInstallment`/`repayments`/`repayment`/`newRepayment`，表单全屏）。P-03 的账单部分在 `account_ledger_section.dart`（本期、负债
+四分法、最近 3 期与「全部账单」、「去还款：查看操作说明」「登记还款」、还款释放说明），P-01 的在 `ledger_overview.dart`（待办条、
+快捷新增、近期到期 14 天、负债四分法）。读 provider：`ledgerProvider`（`LedgerReader.load`）。演示空间（`seedDemoLedger`）：卡 A
+的交易（家电城 10,000 转 12 期、每期 0.6%；超市消费；超市退货 → 退款待核对；附属卡入账日未知的机票）、10-10 账单 v1 与 v2（修正
+最低还款额）、10-15 自动扣款 1,000（现金已扣）与同日手工登记的 1,000（已登记）→ 疑似重复差异项。
+
+## 公测版 0.1.0（beta 1）
+
+- 版本：`pubspec.yaml` 的版本名 0.1.0；构建号由 CI 的运行序号给出（`--build-number`），不在 pubspec 里改。App 图标是卡序自己的
+  图标（`ios/Runner/Assets.xcassets/AppIcon.appiconset`，15 个尺寸，RGB 无透明通道）；ios-unsigned 的"Verify IPA"检查构建出的
+  `Info.plist` 有 `CFBundleIcons`（主图标名 AppIcon）且 `Runner.app/Assets.car` 存在。
+- 界面文字不出现内部阶段代号：未开放的功能写"后续版本提供"一类说法。防回归测试 `test/app/public_beta_test.dart`：扫描 `lib/`
+  全部字符串字面量（注释除外，扫描器带正反例自检）是否匹配 `I-\d`，并逐页打开演示空间的全部页面、真实空间的首次空白页与 P-22，
+  每页滚到底检查渲染出来的文字。
+- 公测说明（`lib/features/settings/public_beta.dart` 的 `PublicBeta.note`，P-22 首次使用页最底部与「关于」共用同一段）："公测版
+  0.1.0：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。删除 App 或「重置本地数据」会永久删除全部数据；目前还没有备份
+  与导出，后续版本提供。"测试逐字核对原文，并核对其中的版本号与 `pubspec.yaml` 的版本名一致（改版本时一起改）。
+- 「关于」（我的 › 关于卡序，`/settings/about`，`about_page.dart`）：名称"卡序 CardFlow"、"公测版"标识、版本与构建号（与诊断页
+  同一来源 `appDiagnosticsProvider`，即 package_info_plus）、公测说明、源码地址 `github.com/YePiXpert/cardflow`（可选中的纯文本 +
+  「复制源码地址」；App 内不打开浏览器，不加依赖）、反馈方式"我的 › 诊断信息 › 复制诊断信息，附上问题描述发到 GitHub Issues"与
+  「打开诊断信息」。
+- 打 `ios-v*` 标签与建 GitHub 预发布版由主会话在验收后进行。
 
 ## I-1a 的偏离与约定（主会话裁决前的保守做法）
 
@@ -341,6 +481,31 @@ P-09 `/planner/scenarios` 是并列的顶层路由（分段之间切换没有返
 - P-01 现金压力卡的口径默认"基准预期"（engine-spec F-18 的决策情景），可切到"已确认"；P-07 同样默认基准预期。
 - "设为决策情景"留到 I-2（按钮位置写明）。
 
+## I-1c 的偏离与约定（主会话裁决前的保守做法）
+
+- 状态机比 PRD 多两条：账单"已修正 → 已逾期"（PRD §6.2 只画了已出账、部分结清 → 已逾期；修正过的账单同样会过期未还）；还款
+  "待核对 → 银行确认"（PRD §6.3 里待核对没有出口；取得证据后与"用户已标记 → 银行确认"同样处理）。账单的"预测账期"不存表：未出的
+  账单由领域包按规则预测（P-03/P-01 的"预测账期（未出账）"），`statements` 只存已出账的。
+- 分期手续费"首期一次收取"（`fee_mode = upfront`）：Python `money.py` 没有这种方式；本地约定手续费总额 =
+  `applyRate(本金总额, 每期费率 × 期数, HALF_UP)`，全部在第 1 期收取，本金拆分不变。
+- 分期各期的账单日在建计划时按当时的规则与已出账单算好，之后不改（规则改了也不重排；`installment_schedule` 只改状态）。
+- 本地表比 data-model §3 多的列：`installment_plans.currency_account_id`、`repayment_allocations.workspace_id`/`currency_account_id`
+  （携带账户列的复合外键保证交易、账单、还款属于同一币种子账户，data-model §10.5）；`repayments.expected_debit_on`（简报列）、
+  `evidence_note`、`deleted_at`（作废登记的 tombstone）；各表的 `row_version` 与时间戳。没有建的列
+  （导入与附件在后续版本）：`source_document_id`、`bank_reference`、`mcc`、`evidence_document_id`、`origin_device_id`。
+  `installment_schedule` 的费用列叫 `fee_minor`（DDL 写 `interest_minor`；这里存的是分期手续费，不是利息）。
+- `reconciliation_items.kind` 本地只有 4 种（金额不符、疑似重复还款、退款待核对、未匹配的还款）；DDL 的 `missing`、
+  `duplicate_txn`、`sync_conflict` 属于导入与同步，后续版本再加（放宽 CHECK 只需 expand）。
+- 疑似重复的"同一天"按现金时区依次取实际扣款日、预计扣款日、发起日；未匹配的还款按"同一子账户、同金额、日期相差 3 天内"匹配
+  登记。退款一律先进"退款待核对"（规则未知），用户标记"已冲抵应还"后才计入未出账，"未冲抵本期应还"的继续不计。
+- 额度释放时滞：账户规则（bank-rules-spec 的 LimitRule）本期没有建，`releasedRepaymentsOn` 的时滞一律为未知 → 不释放（最保守）。
+- 冲正（银行确认 → 已冲正）后已结清的账单状态不变（PRD §6.2 没有回退的转移），剩余应还按实际重新计算并显示。
+- 交易"是否已出账"按"所有可能账单日都不晚于最近一期已出账单的账单日"判断；没有规则时按入账日（未知时交易日）比较。
+- "记一笔"不提供分期本金/手续费类型（由分期各期表示）；"还款入账（银行记录）"只用于核对，不进入负债计算。
+- 资金日历尾部责任里分期一期的金额 = 本金 + 费用（现金要付的）；负债四分法的"未来分期本金"不含费用（费用单列）。
+- 公测版：界面上未开放的功能统一写"后续版本提供"（原来写内部阶段代号）；需求编号（如"（F-33）""（R-CASH-01）"）与页面编号
+  （"（P-06）"）仍出现在少数提示里，简报只要求去掉阶段代号，未改，见汇报的已知问题。
+
 ## 领域层（I-0c）：`packages/cardflow_domain`
 
 **分层**：领域层是独立的纯 Dart 包（不依赖 Flutter、drift、数据库），App 在 `pubspec.yaml` 里以 path
@@ -352,9 +517,16 @@ P-09 `/planner/scenarios` 是并列的顶层路由（分段之间切换没有返
 
 | 库 | 内容 |
 |---|---|
-| `package:cardflow_domain/cardflow_domain.dart` | `Money`/`minorDigits`/`toMinor`/`fromMinor`/`applyRate`/`decimalText`/`Rational`/`RoundingMode`；`LocalDate`/`Timestamp`/`TimePrecision`；`BillingRule`/`cyclesForTransaction`/`selectRule`/`resolveCycle`；`CashEvent`/`Snapshot`/`Scenario`/`buildTimeline`/`evaluate`；`CardOption`/`PlanRequest`/`ModelInputs`/`capacityLayers`/`classify`；`verify`；`dataIssues`/`baselineCheck`；`boundedSearch`；协议 v1：`parseJson`、`canonicalJson`、`protocolInputHash`、`inputsFromProtocol`、`inputsToProtocol`、`verifyFromProtocol`、`cardCyclesToProtocol` |
+| `package:cardflow_domain/cardflow_domain.dart` | `Money`/`minorDigits`/`toMinor`/`fromMinor`/`applyRate`/`decimalText`/`Rational`/`RoundingMode`；`LocalDate`/`Timestamp`/`TimePrecision`；`BillingRule`/`cyclesForTransaction`/`selectRule`/`resolveCycle`；`CashEvent`/`Snapshot`/`Scenario`/`buildTimeline`/`evaluate`；`CardOption`/`PlanRequest`/`ModelInputs`/`capacityLayers`/`classify`；`verify`；`dataIssues`/`baselineCheck`；`boundedSearch`；分期（I-1c）：`RemainderTo`/`splitInstallments`/`installmentCashFlows`/`irrMonthly`/`installmentIrrFlows`/`annualize`；协议 v1：`parseJson`、`canonicalJson`、`protocolInputHash`、`inputsFromProtocol`、`inputsToProtocol`、`verifyFromProtocol`、`cardCyclesToProtocol` |
 | `package:cardflow_domain/fixture_runner.dart` | golden fixture 运行器（依赖 dart:io，App 不引用） |
 | `package:cardflow_domain/testing.dart` | 测试辅助：按 Python 测试写法构造协议文档（`protocolCard`、`protocolDocument`…）、带种子的随机文档（`randomPlanInput`） |
+
+**分期模块**（I-1c，`lib/src/installment.dart`，主会话裁决）：`splitInstallments(principalMinor, periods, [remainderTo])`、
+`installmentCashFlows(principalMinor, periods, perPeriodRate, {remainderTo, rateRounding})`、`irrMonthly(flows, {tol})`（默认 10^-12，
+至多 200 次二分）、`installmentIrrFlows`、`annualize(monthlyRate)` → `(nominalX12, effectiveCompound)`，与 Python `money.py` 的
+`split_installments`、`installment_cash_flows`、`irr_monthly`、`annualize` 逐条同义；只用 `int`/`BigInt`/`Rational`。IRR 的符号以
+Python 代码的行为为准：月 0 放款为负、各期还款为正（Python 的 docstring 写反了）。测试 `test/installment_test.dart`：移植 Python 的
+拆分守恒性质（200 例）、F-36、F-37、符号约定，以及 7 组 Python 对照样本（命令与原文见 `evidence/i1/I1-c/installment-parity.txt`）。
 
 **禁止 double**：领域包的 `lib/`、`bin/`、`tool/` 里不得出现 `double`、`num`、`toDouble()` 一类调用、小数或
 指数字面量，以及浮点除法 `/`（整数除法用 `~/`）。金额是 `int` 最小单位；利率、情景系数是 `Rational`
@@ -419,3 +591,49 @@ I-2 构造规划输入时，`CardOption` 换成真实规则（`billingRuleFromRo
 
 `test/data/repositories/cash_parity_test.dart` 用与领域包测试相同的数值写入真实库，经上表映射后调用领域包，与直接构造领域对象
 调用领域包的结果逐字段比较（含时间线每个点、假设、跳过的事件、缺口的事件列表）：F-01、F-02、F-03、F-04（四种）、F-05、F-07。
+
+
+### 数据层 → 领域对象映射：账单（I-1c，`lib/data/mapping/ledger_mapping.dart`）
+
+| 本地数据 | 领域对象 / 函数 | 说明 |
+|---|---|---|
+| 交易 + 规则版本 + 已出账单 | `transactionCycle` → `resolveCycle`，或 `selectRule` + `cyclesForTransaction` | 入账日已知取一个账期（已出账单优先）；未知取入账延迟区间内的可能账期（F-15） |
+| 本子账户的账单 | `IssuedStatement(账单日, 到期日, 来源)` | 已出账单优先于规则预测（交易归属与分期各期都这样用） |
+| 分期条款 | `installmentPeriodsOf` → `splitInstallments`、`installmentCashFlows`、`applyRate` | 每期收取与 Python 同义；首期一次收取见偏离 |
+| 分期条款 + 各期 | `InstallmentCost.of` → `installmentIrrFlows`、`irrMonthly`、`annualize` | 名义 ×12 与实际年化（IRR 复利）；`percentText` 至多 4 位小数 |
+| 还款 + 规则版本 | `creditDateOf` → `postingDateFor` | 负债核销日（信用账户业务时区，截止时点） |
+| 分配 + 还款 + 入账日 | `paidOnStatement` | 已入账才核销；未处理的疑似重复只计一次；`bankConfirmedOnly` 判断结清 |
+| 账单余额 + 交易账期 + 分期各期 | `liabilityOf` → `LiabilityBreakdown` | 负债四分法（F-30） |
+| 还款 + 快照日 + 释放时滞 | `releasedRepaymentsOn` | 时滞未知不释放（F-28） |
+
+
+## 给 I-2 的接口（消费规划：从本地数据组装规划输入）
+
+I-2 在本地规划"一笔消费怎么刷"：把本地数据组装成领域包的 `ModelInputs`，经 `inputsToProtocol`（它会再跑一遍
+`inputsFromProtocol` 的全部交叉校验）得到协议 v1 文档，再交给 `verify`/`boundedSearch`。各部分的现成来源：
+
+| 输入 | 本地来源 | 要点 |
+|---|---|---|
+| 卡（`CardOption`） | `CapacityModel.build(...)`（`domain_mapping.dart`）：每张未停用的卡一个，同账户共享可用额，预授权只记一张 | 目前用占位规则、`repayFrom` 为空串（容量计算不读它们）：I-2 要换成该账户在交易日生效的真实规则（`BillingRuleRepository.effectiveOn` 或 `billingRuleFromRow` + `selectRule`）与还款现金账户 id（须"计入可用现金"，`CashAvailability`） |
+| 额度三层（卡 ≤ 信用账户 ≤ 授信池） | 同上，`capacityLayers`/`cardLimit`；池可用原值 = 池上限 − Σ 成员 `used_minor` | 临额到期回落（F-27）、负可用截零（F-26）、预授权（F-25）都已在映射里；有成员缺快照时池未知，不以 0 代替 |
+| 现金账户、快照、事件 | `CashForecastReader.loadInputs()` → `CashDomainInputs`（`accounts`、`snapshots`、`events`、`issues`） | 只含"计入可用现金"且有快照的账户；陈旧（> 7 天）时结果是"假设分析"；先过 `checkCashTimelineInputs` |
+| 情景 | `ScenarioRepository.list()`/`byKey` → `ScenarioParams` → `scenarioFromParams`（`cash_mapping.dart`） | 内置"已确认""基准预期"与用户压力情景；额度变化（`limitChanges`）本期只保存与校验，I-2 接进容量 |
+| 已出账单 | `StatementRepository.list(currencyAccountId:)` → `IssuedStatement` | 交给 `resolveCycle`：已出账单优先于规则预测 |
+| 应还与还款 | `LedgerReader.load()` → `LedgerData.balances`（剩余应还）、`liabilities`（负债四分法） | 已登记还款的扣款已经是 `cash_events` 里带 `linked_repayment_id` 的事件（计划或确定），规划不要再重复计入 |
+| 分期未来各期 | `CashDomainInputs.installmentDue`（`TailObligation`：到期日、本金 + 费用） | 资金日历窗口外的进入尾部责任 |
+
+**预留（plan_reservations）将挂在哪里**：data-model §3 的 `plan_reservations(id, workspace_id, plan_id, currency_account_id,
+cash_account_id, amount_minor, status active/converted/released, linked_transaction_id)`。按"加表与迁移"的步骤在 v5 加表（带
+`workspace_id`、进 `workspaceDataTables`、演示数据写一行、隔离测试覆盖），并且：
+- 额度侧：`CapacityModel.build` 算可用额时扣减该币种子账户 `active` 的预留（预留是计划中的占用，与快照的 `used_minor` 不重复）；
+- 现金侧：采纳方案生成的还款计划用 v3 已有的 `cash_events.linked_plan_run_id`（层级 `planned`；同 `linked_repayment_id`，P-08 不可改，
+  `CashEventRepository` 已拒绝直接修改这类事件），过期或转换时作废；
+- 关联真实交易：`linked_transaction_id` 指向 `transactions.id`（同一币种子账户，携带账户列的复合外键），转换后不再占用。
+
+**测试工厂**（`test/data/repositories/repository_test_support.dart`）：建库 `openRealTestDatabase`、`createTestWorkspace`；卡与账户
+`createTestCard`、`declareTestRule`（默认 10 日出账、当月 28 日到期）、`primaryCurrencyAccount`、`recordTestSnapshot`；现金
+`createTestCashAccount`、`addTestCashEvent`、`recordTestCashSnapshot`、`StaleAwareClock`；账单与还款 `recordTestStatement`、
+`addTestTransaction`、`registerTestRepayment`、`insertTestRepaymentRow`；`expectRepositoryError`。组件测试：`pumpCardFlowApp`
+（`TestWorkspace.none/real/demo`、`seed`、`realClock`）、`readWallet`、`readCashPlan`、`withCurrentScope`，账单读模型 `readLedger`
+与种子 `seedLedger`（`test/features/statements/statement_pages_test.dart`），整页检查 `forEachScreen`、`expectNoForbiddenRepaymentUi`
+（`test/support/forbidden_ui.dart`）。
