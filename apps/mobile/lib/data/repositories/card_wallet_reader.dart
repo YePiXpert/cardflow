@@ -121,19 +121,7 @@ final class AccountView {
       (cards.isNotEmpty && cards.every((c) => c.cardStatus.isInactive));
 
   /// 账户在界面上的名字：主卡（未停用）的别名 → 任一未停用卡的别名 → 产品名 → 银行名。
-  String get displayName {
-    for (final card in activeCards) {
-      if (card.kind == HolderKind.primary && card.alias != null) {
-        return card.alias!;
-      }
-    }
-    for (final card in activeCards) {
-      if (card.alias != null) {
-        return card.alias!;
-      }
-    }
-    return account.productName ?? bank.name;
-  }
+  String get displayName => creditAccountDisplayName(account, cards, bank);
 
   /// 规则来源徽标；没有规则时为 null（"未设置"）。
   RuleSource? get ruleSource {
@@ -141,6 +129,28 @@ final class AccountView {
         currentRule ?? (ruleVersions.isEmpty ? null : ruleVersions.last);
     return rule == null ? null : RuleSource.of(rule.source);
   }
+}
+
+/// 信用账户在界面上的名字：主卡（未停用）的别名 → 任一未停用卡的别名 → 产品名 → 银行名。
+String creditAccountDisplayName(
+  CreditAccountRow account,
+  Iterable<CardRow> cards,
+  BankRow bank,
+) {
+  final active = cards.where(
+    (c) => c.creditAccountId == account.id && !c.cardStatus.isInactive,
+  );
+  for (final card in active) {
+    if (card.kind == HolderKind.primary && card.alias != null) {
+      return card.alias!;
+    }
+  }
+  for (final card in active) {
+    if (card.alias != null) {
+      return card.alias!;
+    }
+  }
+  return account.productName ?? bank.name;
 }
 
 /// 一个授信池的读模型（F-23）。

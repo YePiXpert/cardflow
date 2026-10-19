@@ -263,6 +263,7 @@ final class CashEventRepository {
     try {
       await _db.transaction(() async {
         final row = await require(id);
+        _checkNotLinked(row);
         if (row.transferGroupId != null &&
             (amountMinor != null || on != null || at != null)) {
           throw const ConflictException('调拨的日期与金额不能改；请删除后重新登记');
@@ -322,6 +323,7 @@ final class CashEventRepository {
   /// 删除一笔收支（tombstone）。调拨两端一起删除；周期事项的单期请用"跳过"。
   Future<void> delete(String id) => _db.transaction(() async {
     final row = await require(id);
+    _checkNotLinked(row);
     if (row.recurringItemId != null) {
       throw const ConflictException('周期事项的单期请在周期事项里跳过');
     }
@@ -625,10 +627,16 @@ final class CashEventRepository {
     return account;
   }
 
-  void _checkEditable(CashEventRow row) {
+  /// 还款或计划生成的事件只在对应的还款（P-06）或计划里确认、作废（I-1c：不经状态机确认扣款会让
+  /// 还款与现金两侧对不上）。
+  void _checkNotLinked(CashEventRow row) {
     if (row.linkedRepaymentId != null || row.linkedPlanRunId != null) {
       throw const ConflictException('这笔是还款或计划生成的，请在对应的还款或计划里修改');
     }
+  }
+
+  void _checkEditable(CashEventRow row) {
+    _checkNotLinked(row);
     if (row.transferGroupId != null) {
       throw const ConflictException('调拨的日期与金额不能改；请删除后重新登记');
     }

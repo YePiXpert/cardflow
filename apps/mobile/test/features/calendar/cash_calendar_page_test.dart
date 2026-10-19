@@ -225,7 +225,7 @@ void main() {
     expect(find.text('2026-12-20 · 卡 A 还款'), findsOneWidget);
     // 窗口拉到 90 天，它就在窗口内了。
     await _chip(tester, '90 天');
-    await _scrollTo(tester, find.text('窗口外没有计划中的还款（分期在 I-1c 接入）。'));
+    await _scrollTo(tester, find.text(CashCalendarPage.noTailText));
   });
 
   testWidgets('压力口径但还没有压力情景：引导「新建情景」', (tester) async {

@@ -45,6 +45,9 @@ class CashCalendarPage extends ConsumerStatefulWidget {
   /// 窗口内没有缺口时的文案（中性色）。
   static const String noGapText = '窗口内没有缺口';
 
+  /// 窗口外没有计划中的还款、也没有未到期的分期时的文案。
+  static const String noTailText = '窗口外没有计划中的还款或分期。';
+
   /// 可选的窗口（天）。
   static const List<int> windows = <int>[7, 30, 90, 180];
 
@@ -242,7 +245,7 @@ class _CashCalendarPageState extends ConsumerState<CashCalendarPage> {
       if (f.tail.isEmpty)
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
-          child: Text('窗口外没有计划中的还款（分期在 I-1c 接入）。', style: secondary),
+          child: Text(CashCalendarPage.noTailText, style: secondary),
         )
       else
         ExpansionTile(

@@ -7,7 +7,6 @@ import 'dart:io';
 
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/demo/demo_workspace.dart';
-import 'package:cardflow/data/ids.dart';
 import 'package:cardflow/data/repositories/bank_repository.dart';
 import 'package:cardflow/data/repositories/billing_rule_repository.dart';
 import 'package:cardflow/data/repositories/card_repository.dart';
@@ -17,15 +16,23 @@ import 'package:cardflow/data/repositories/cash_event_repository.dart';
 import 'package:cardflow/data/repositories/cash_forecast_reader.dart';
 import 'package:cardflow/data/repositories/credit_account_repository.dart';
 import 'package:cardflow/data/repositories/credit_pool_repository.dart';
+import 'package:cardflow/data/repositories/installment_repository.dart';
+import 'package:cardflow/data/repositories/ledger_models.dart';
+import 'package:cardflow/data/repositories/ledger_reader.dart';
 import 'package:cardflow/data/repositories/limit_snapshot_repository.dart';
 import 'package:cardflow/data/repositories/models.dart';
+import 'package:cardflow/data/repositories/reconciliation_repository.dart';
 import 'package:cardflow/data/repositories/recurring_item_repository.dart';
+import 'package:cardflow/data/repositories/repayment_repository.dart';
 import 'package:cardflow/data/repositories/repository_errors.dart';
 import 'package:cardflow/data/repositories/scenario_repository.dart';
+import 'package:cardflow/data/repositories/statement_repository.dart';
+import 'package:cardflow/data/repositories/transaction_repository.dart';
 import 'package:cardflow/data/repositories/workspace_repository.dart';
 import 'package:cardflow/data/repositories/workspace_scope.dart';
 import 'package:cardflow/data/time/clock.dart';
-import 'package:cardflow_domain/cardflow_domain.dart' show DueRule, LocalDate;
+import 'package:cardflow_domain/cardflow_domain.dart'
+    show DueRule, LocalDate, Rational;
 import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 
@@ -88,7 +95,15 @@ Future<Map<String, int>> runAllQueries(
       final CashDomainInputs inputs =>
         inputs.accountRows.length +
             inputs.eventRows.length +
-            inputs.latestSnapshots.length,
+            inputs.latestSnapshots.length +
+            inputs.installmentDue.length,
+      final LedgerData data =>
+        data.statements.length +
+            data.transactions.length +
+            data.repayments.length +
+            data.allocations.length +
+            data.plans.length +
+            data.items.length,
       _ => 1,
     };
     results[name] = count;
@@ -267,7 +282,125 @@ Future<Map<String, int>> runAllQueries(
     'CashForecastReader.loadInputs()',
     CashForecastReader(scope).loadInputs,
   );
+
+  // v4（I-1c）：交易、账单与版本、分期、还款与分配、差异项。
+  final transactions = TransactionRepository(scope);
+  final statements = StatementRepository(scope);
+  final installments = InstallmentRepository(scope);
+  final repayments = RepaymentRepository(scope);
+  final items = ReconciliationRepository(scope);
+  await run('TransactionRepository.list()', transactions.list);
+  await run('StatementRepository.list()', statements.list);
+  await run('StatementRepository.allVersions()', statements.allVersions);
+  await run('InstallmentRepository.plans()', installments.plans);
+  await run('InstallmentRepository.allPeriods()', installments.allPeriods);
+  await run('RepaymentRepository.list()', repayments.list);
+  await run('RepaymentRepository.allAllocations()', repayments.allAllocations);
+  await run('ReconciliationRepository.list()', items.list);
+  await run(
+    'ReconciliationRepository.openDuplicatePairs()',
+    items.openDuplicatePairs,
+  );
+  await run('ReconciliationRepository.offsetRefunds()', items.offsetRefunds);
+  for (final id in foreign['currency_accounts']!) {
+    await run(
+      'TransactionRepository.list(currencyAccountId: $id)',
+      () => transactions.list(currencyAccountId: id),
+    );
+    await run(
+      'StatementRepository.list(currencyAccountId: $id)',
+      () => statements.list(currencyAccountId: id),
+    );
+    await run(
+      'InstallmentRepository.plans(currencyAccountId: $id)',
+      () => installments.plans(currencyAccountId: id),
+    );
+    await run(
+      'RepaymentRepository.list(currencyAccountId: $id)',
+      () => repayments.list(currencyAccountId: id),
+    );
+  }
+  for (final id in foreign['transactions']!) {
+    await run('TransactionRepository.byId($id)', () => transactions.byId(id));
+    await run(
+      'TransactionRepository.require($id)',
+      () => transactions.require(id),
+    );
+    await run(
+      'InstallmentRepository.byTransaction($id)',
+      () => installments.byTransaction(id),
+    );
+  }
+  for (final id in foreign['statements']!) {
+    await run('StatementRepository.byId($id)', () => statements.byId(id));
+    await run('StatementRepository.require($id)', () => statements.require(id));
+    await run(
+      'StatementRepository.versions($id)',
+      () => statements.versions(id),
+    );
+  }
+  for (final id in foreign['installment_plans']!) {
+    await run('InstallmentRepository.byId($id)', () => installments.byId(id));
+    await run(
+      'InstallmentRepository.require($id)',
+      () => installments.require(id),
+    );
+    await run(
+      'InstallmentRepository.schedule($id)',
+      () => installments.schedule(id),
+    );
+  }
+  for (final id in foreign['repayments']!) {
+    await run('RepaymentRepository.byId($id)', () => repayments.byId(id));
+    await run('RepaymentRepository.require($id)', () => repayments.require(id));
+    await run(
+      'RepaymentRepository.allocationsOf($id)',
+      () => repayments.allocationsOf(id),
+    );
+    await run(
+      'CashEventRepository.byRepayment($id)',
+      () => cashEvents.byRepayment(id),
+    );
+  }
+  for (final id in foreign['reconciliation_items']!) {
+    await run('ReconciliationRepository.byId($id)', () => items.byId(id));
+    await run('ReconciliationRepository.require($id)', () => items.require(id));
+  }
+  await run(
+    'LedgerReader.load()',
+    () => LedgerReader(scope).load(maintain: false),
+  );
   return results;
+}
+
+/// 以 [scope] 为当前工作空间、用另一个空间的 id 改账单、交易、分期、还款与差异项：一律"已不存在"。
+Future<void> expectForeignLedgerWritesRejected(
+  WorkspaceScope scope,
+  Map<String, List<String>> foreign,
+) async {
+  await expectRepositoryError<NotFoundException>(
+    () => TransactionRepository(scope).delete(foreign['transactions']!.first),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () => StatementRepository(scope).correct(
+      foreign['statements']!.first,
+      figures: const StatementFigures(newBalanceMinor: 1),
+      reason: '跨空间修正',
+    ),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () =>
+        InstallmentRepository(scope)
+            .cancel(foreign['installment_plans']!.first),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () => RepaymentRepository(scope).markUserPaid(foreign['repayments']!.first),
+  );
+  await expectRepositoryError<NotFoundException>(
+    () =>
+        ReconciliationRepository(scope)
+            .dismiss(foreign['reconciliation_items']!.first),
+  );
 }
 
 /// 以 [scope] 为当前工作空间、用另一个空间的 id 写入现金数据：一律"已不存在"。
@@ -333,55 +466,50 @@ Future<void> _enrich(WorkspaceScope scope) async {
   await _enrichLedger(scope, first.id);
 }
 
-/// v4 的表各写一行（直接写库）：交易、账单与版本、分期与一期、还款与分配、差异项。
+/// v4 的表各写一行（经仓库）：9 月的交易与账单（避开演示数据的 10 月账单）、6 期分期、一笔还款（带计划
+/// 扣款）与分配、一笔退款（退款待核对）。
 Future<void> _enrichLedger(WorkspaceScope scope, String creditAccountId) async {
-  final db = scope.db;
-  final ws = scope.workspaceId;
-  final sub = await primaryCurrencyAccount(scope, creditAccountId);
+  final sub = (await primaryCurrencyAccount(scope, creditAccountId)).id;
   final card = (await CardRepository(
     scope,
   ).list(creditAccountId: creditAccountId)).first;
   final cash = (await CashAccountRepository(scope).list()).first;
-  const ts = '2026-10-16T09:00:00+08:00';
-  final txn = newUuidV4();
-  final statement = newUuidV4();
-  final version = newUuidV4();
-  final plan = newUuidV4();
-  final repayment = newUuidV4();
-  for (final sql in <String>[
-    'INSERT INTO transactions (id, workspace_id, currency_account_id, card_id, txn_type, '
-        'amount_minor, currency, txn_at, txn_tz, time_precision, posted_on, status, '
-        'fingerprint, source_kind, confirmation_level, recorded_at, updated_at) VALUES '
-        "('$txn', '$ws', '${sub.id}', '${card.id}', 'purchase', 600000, 'CNY', '$ts', "
-        "'Asia/Shanghai', 'datetime', '2026-09-21', 'posted', '${'ab' * 32}', 'manual', "
-        "'user_confirmed', '$ts', '$ts')",
-    'INSERT INTO statements (id, workspace_id, currency_account_id, statement_date, '
-        "due_date, status, created_at, updated_at) VALUES ('$statement', '$ws', '${sub.id}', "
-        "'2026-09-30', '2026-10-25', 'issued', '$ts', '$ts')",
-    'INSERT INTO statement_versions (id, workspace_id, statement_id, version_no, '
-        'source_kind, new_balance_minor, due_date, recorded_by, recorded_at) VALUES '
-        "('$version', '$ws', '$statement', 1, 'manual', 100000, '2026-10-25', 'user', '$ts')",
-    "UPDATE statements SET current_version_id = '$version' WHERE id = '$statement'",
-    'INSERT INTO installment_plans (id, workspace_id, currency_account_id, transaction_id, '
-        'principal_minor, periods, per_period_rate, fee_mode, remainder_policy, rounding, '
-        "status, created_at, updated_at) VALUES ('$plan', '$ws', '${sub.id}', '$txn', 600000, "
-        "6, '0.006', 'per_period', 'last', 'HALF_UP', 'active', '$ts', '$ts')",
-    'INSERT INTO installment_schedule (workspace_id, plan_id, period_no, principal_minor, '
-        "fee_minor, statement_date, due_date, status) VALUES ('$ws', '$plan', 1, 100000, "
-        "3600, '2026-09-30', '2026-10-25', 'billed')",
-    'INSERT INTO repayments (id, workspace_id, currency_account_id, cash_account_id, '
-        'amount_minor, currency, status, method, created_at, updated_at) VALUES '
-        "('$repayment', '$ws', '${sub.id}', '${cash.id}', 100000, 'CNY', 'recorded', "
-        "'manual', '$ts', '$ts')",
-    'INSERT INTO repayment_allocations (workspace_id, currency_account_id, repayment_id, '
-        "statement_id, amount_minor) VALUES ('$ws', '${sub.id}', '$repayment', '$statement', "
-        '100000)',
-    'INSERT INTO reconciliation_items (id, workspace_id, kind, refs, created_at, '
-        "updated_at) VALUES ('${newUuidV4()}', '$ws', 'unmatched_repayment', "
-        '\'{"repayment_id":"$repayment"}\', \'$ts\', \'$ts\')',
-  ]) {
-    await db.customStatement(sql);
-  }
+  final txn = await addTestTransaction(
+    scope,
+    sub,
+    amount: 600000,
+    txnAt: '2026-08-21T10:00:00+08:00',
+    cardId: card.id,
+  );
+  final statement = await recordTestStatement(
+    scope,
+    sub,
+    statementDate: LocalDate(2026, 9, 10),
+    dueDate: LocalDate(2026, 9, 28),
+  );
+  await InstallmentRepository(scope).create(
+    InstallmentDraft(
+      transactionId: txn.id,
+      periods: 6,
+      perPeriodRate: Rational.parseDecimal('0.006'),
+      firstStatementOn: LocalDate(2026, 9, 10),
+    ),
+  );
+  await registerTestRepayment(
+    scope,
+    currencyAccountId: sub,
+    cashAccountId: cash.id,
+    amount: 100000,
+    statementId: statement.id,
+    expectedDebitOn: LocalDate(2026, 9, 25),
+  );
+  await addTestTransaction(
+    scope,
+    sub,
+    type: TxnType.refund,
+    amount: -100,
+    txnAt: '2026-09-02T10:00:00+08:00',
+  );
 }
 
 void main() {
@@ -438,6 +566,7 @@ void main() {
               .leavePool(demoIds['credit_accounts']!.first),
     );
     await expectForeignCashWritesRejected(real, demoIds);
+    await expectForeignLedgerWritesRejected(real, demoIds);
     expect(await idsByTable(db, demo.workspaceId), demoIds);
   });
 
@@ -464,6 +593,7 @@ void main() {
     }
     _log('演示空间为当前：共 ${results.length} 条查询，全部为空');
     await expectForeignCashWritesRejected(demo, realIds);
+    await expectForeignLedgerWritesRejected(demo, realIds);
     expect(await idsByTable(db, real.workspaceId), realIds);
   });
 

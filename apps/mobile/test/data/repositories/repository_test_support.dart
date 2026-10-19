@@ -10,8 +10,12 @@ import 'package:cardflow/data/repositories/cash_account_repository.dart';
 import 'package:cardflow/data/repositories/cash_event_repository.dart';
 import 'package:cardflow/data/repositories/cash_models.dart';
 import 'package:cardflow/data/repositories/credit_account_repository.dart';
+import 'package:cardflow/data/repositories/ledger_models.dart';
 import 'package:cardflow/data/repositories/limit_snapshot_repository.dart';
 import 'package:cardflow/data/repositories/models.dart';
+import 'package:cardflow/data/repositories/repayment_repository.dart';
+import 'package:cardflow/data/repositories/statement_repository.dart';
+import 'package:cardflow/data/repositories/transaction_repository.dart';
 import 'package:cardflow/data/repositories/workspace_repository.dart';
 import 'package:cardflow/data/repositories/workspace_scope.dart';
 import 'package:cardflow/data/time/clock.dart';
@@ -266,3 +270,75 @@ Future<String> insertTestRepaymentRow(
   );
   return repaymentId;
 }
+
+/// 录入一期正式账单（v1，默认 10-10 出账、10-28 到期、本期应还 1,000、最低还款 100）。
+Future<StatementRow> recordTestStatement(
+  WorkspaceScope scope,
+  String currencyAccountId, {
+  LocalDate? statementDate,
+  LocalDate? dueDate,
+  int newBalance = 100000,
+  int? minDue = 10000,
+  int? installmentDue,
+  int? creditBalance,
+}) => StatementRepository(scope).recordIssued(
+  StatementEntryDraft(
+    currencyAccountId: currencyAccountId,
+    statementDate: statementDate ?? LocalDate(2026, 10, 10),
+    dueDate: dueDate ?? LocalDate(2026, 10, 28),
+    figures: StatementFigures(
+      newBalanceMinor: newBalance,
+      minDueMinor: minDue,
+      installmentDueMinor: installmentDue,
+      creditBalanceMinor: creditBalance,
+    ),
+  ),
+);
+
+/// 记一笔交易（默认消费 100，北京时间 10-12 10:00，当天入账）。[amount] 带符号。
+Future<CardTransactionRow> addTestTransaction(
+  WorkspaceScope scope,
+  String currencyAccountId, {
+  TxnType type = TxnType.purchase,
+  int amount = 10000,
+  String txnAt = '2026-10-12T10:00:00+08:00',
+  LocalDate? postedOn,
+  bool unposted = false,
+  String? cardId,
+  String? merchant,
+  String? parentTransactionId,
+}) => TransactionRepository(scope).create(
+  TransactionDraft(
+    currencyAccountId: currencyAccountId,
+    type: type,
+    amountMinor: amount,
+    txnAt: Timestamp.parse(txnAt),
+    postedOn: unposted ? null : postedOn ?? Timestamp.parse(txnAt).date,
+    cardId: cardId,
+    merchant: merchant,
+    parentTransactionId: parentTransactionId,
+  ),
+);
+
+/// 登记一笔还款（默认手动还款，全额分配到 [statementId]）。
+Future<RepaymentRow> registerTestRepayment(
+  WorkspaceScope scope, {
+  required String currencyAccountId,
+  required String? cashAccountId,
+  required int amount,
+  Map<String, int>? allocations,
+  String? statementId,
+  RepaymentMethod method = RepaymentMethod.manual,
+  LocalDate? expectedDebitOn,
+  String? initiatedAt,
+}) => RepaymentRepository(scope).create(
+  RepaymentDraft(
+    currencyAccountId: currencyAccountId,
+    cashAccountId: cashAccountId,
+    amountMinor: amount,
+    method: method,
+    allocations: allocations ?? <String, int>{?statementId: amount},
+    expectedDebitOn: expectedDebitOn,
+    initiatedAt: initiatedAt == null ? null : Timestamp.parse(initiatedAt),
+  ),
+);

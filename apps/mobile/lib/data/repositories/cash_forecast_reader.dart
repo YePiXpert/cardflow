@@ -4,9 +4,15 @@ import 'package:flutter/foundation.dart';
 import '../db/app_database.dart';
 import '../mapping/cash_mapping.dart';
 import '../time/clock.dart';
+import 'bank_repository.dart';
+import 'card_repository.dart';
+import 'card_wallet_reader.dart' show creditAccountDisplayName;
 import 'cash_account_repository.dart';
 import 'cash_event_repository.dart';
 import 'cash_models.dart';
+import 'credit_account_repository.dart';
+import 'installment_repository.dart';
+import 'ledger_models.dart';
 import 'recurring_item_repository.dart';
 import 'scenario_repository.dart';
 import 'workspace_scope.dart';
@@ -32,6 +38,7 @@ final class CashDomainInputs {
     required this.events,
     required this.eventRows,
     required this.issues,
+    this.installmentDue = const <TailObligation>[],
   });
 
   /// 现金时区里的今天。
@@ -74,6 +81,9 @@ final class CashDomainInputs {
 
   /// 领域包 `dataIssues`（`staleAfterDays` = 7；演示空间去掉陈旧）。
   final List<DataIssue> issues;
+
+  /// 进行中分期计划尚未结清的各期（到期日、本金 + 费用；F-06：窗口外的进入尾部责任）。
+  final List<TailObligation> installmentDue;
 
   /// 快照距今天数（按现金时区的日期）。
   int? snapshotAgeDays(String accountId) {
@@ -214,7 +224,7 @@ final class CashSummary {
   int get marginToReserve => lowestBalance - lowest.account.reserveFloor;
 }
 
-/// 尾部责任：窗口外的计划（planned）事件（R-CASH-08；分期在 I-1c 接入同一列表）。
+/// 尾部责任：窗口外的计划（planned）事件与分期计划尚未结清的各期（R-CASH-08、F-06）。
 @immutable
 final class TailObligation {
   const TailObligation({
@@ -233,7 +243,7 @@ final class TailObligation {
   final String accountName;
   final String label;
 
-  /// `cash_event`（本期）；I-1c 起有 `installment`。
+  /// `cash_event`（计划事件）或 `installment`（分期的一期，I-1c；`refId` 为 `计划 id/期号`）。
   final String source;
 
   /// 来源行的 id。
@@ -436,6 +446,7 @@ final class CashForecastReader {
             cashStaleAfterDays,
           );
     final judgeStale = !_scope.clock.isFixed;
+    final installmentDue = await _installmentDue();
     return CashDomainInputs(
       today: today,
       judgeStale: judgeStale,
@@ -457,7 +468,56 @@ final class CashForecastReader {
         for (final issue in issues)
           if (judgeStale || issue.code != 'STALE_SNAPSHOT') issue,
       ],
+      installmentDue: installmentDue,
     );
+  }
+
+  /// 进行中的分期计划尚未结清（未出账、已出账）的各期：到期日、金额（本金 + 费用，记为流出）、信用账户名。
+  Future<List<TailObligation>> _installmentDue() async {
+    final installments = InstallmentRepository(_scope);
+    final plans = <InstallmentPlanRow>[
+      for (final p in await installments.plans())
+        if (p.status == InstallmentPlanStatus.active.code) p,
+    ];
+    if (plans.isEmpty) {
+      return const <TailObligation>[];
+    }
+    final accounts = CreditAccountRepository(_scope);
+    final subs = {for (final c in await accounts.currencyAccounts()) c.id: c};
+    final credit = {for (final a in await accounts.list()) a.id: a};
+    final banks = {
+      for (final b in await BankRepository(_scope).listStored()) b.id: b,
+    };
+    final cards = await CardRepository(_scope).list();
+    final due = <TailObligation>[];
+    for (final plan in plans) {
+      final sub = subs[plan.currencyAccountId];
+      final account = sub == null ? null : credit[sub.creditAccountId];
+      final bank = account == null ? null : banks[account.bankId];
+      if (sub == null || account == null || bank == null) {
+        continue;
+      }
+      final name = creditAccountDisplayName(account, cards, bank);
+      for (final p in await installments.schedule(plan.id)) {
+        final status = InstallmentPeriodStatus.of(p.status);
+        if (status != InstallmentPeriodStatus.scheduled &&
+            status != InstallmentPeriodStatus.billed) {
+          continue;
+        }
+        due.add(
+          TailObligation(
+            on: LocalDate.parse(p.dueDate),
+            amountMinor: -(p.principalMinor + p.feeMinor),
+            currency: sub.currency,
+            accountName: name,
+            label: '分期 第 ${p.periodNo}/${plan.periods} 期',
+            source: 'installment',
+            refId: '${plan.id}/${p.periodNo}',
+          ),
+        );
+      }
+    }
+    return due;
   }
 
   /// 查询对应的情景（内置两条或压力情景）；压力情景不存在时为 null。
@@ -671,6 +731,9 @@ CashForecast forecastFrom(
           source: 'cash_event',
           refId: e.id,
         ),
+    // F-06：分期在窗口外的到期期次（不属于任何现金账户，筛选账户时照样列出）。
+    for (final t in inputs.installmentDue)
+      if (t.on > horizonEnd) t,
   ]..sort((a, b) => a.on.compareTo(b.on));
 
   final assumptions = <String>[

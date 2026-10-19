@@ -1,6 +1,7 @@
 import 'package:sqlite3/common.dart' show SqliteException;
 
 import '../db/database_platform.dart';
+import 'ledger_models.dart';
 import 'models.dart';
 
 /// 仓库拒绝一次写入或查不到对象。[message] 是可以直接显示给用户的中文说明，**不含任何用户数据**
@@ -44,6 +45,17 @@ final class IllegalCardTransitionException extends RepositoryException {
 
   @override
   String get message => '卡片不能从「${from.label}」变为「${to.label}」';
+}
+
+/// 还款状态机不允许的转移（PRD §6.3）。
+final class IllegalRepaymentTransitionException extends RepositoryException {
+  const IllegalRepaymentTransitionException(this.from, this.to);
+
+  final RepaymentStatus from;
+  final RepaymentStatus to;
+
+  @override
+  String get message => '还款不能从「${from.label}」变为「${to.label}」';
 }
 
 /// 操作与现有数据冲突（如主子账户不可删、规则区间重叠）。
