@@ -366,10 +366,7 @@ Future<Map<String, int>> runAllQueries(
     await run('ReconciliationRepository.byId($id)', () => items.byId(id));
     await run('ReconciliationRepository.require($id)', () => items.require(id));
   }
-  await run(
-    'LedgerReader.load()',
-    () => LedgerReader(scope).load(maintain: false),
-  );
+  await run('LedgerReader.load()', () => LedgerReader(scope).load());
   return results;
 }
 

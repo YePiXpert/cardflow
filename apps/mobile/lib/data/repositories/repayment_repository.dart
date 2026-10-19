@@ -537,38 +537,6 @@ final class RepaymentRepository {
         await items.resolve(itemId, ReconciliationResolution.samePayment);
       });
 
-  /// 到期后仍无证据的"用户已标记"→ 待核对：分配到的账单里有到期日早于 [today]（信用账户业务时区的今天，
-  /// 按子账户给）的。返回改动的笔数（没有要改的时不写库）。
-  Future<int> markOverdueMarkedPaid(
-    Map<String, LocalDate> todayByAccount,
-  ) async {
-    var changed = 0;
-    final rows =
-        await (_db.select(_db.repayments)..where(
-              (r) =>
-                  r.workspaceId.equals(_ws) &
-                  r.deletedAt.isNull() &
-                  r.status.equals(RepaymentStatus.userMarkedPaid.code),
-            ))
-            .get();
-    for (final row in rows) {
-      final today = todayByAccount[row.currencyAccountId];
-      if (today == null) {
-        continue;
-      }
-      final statements = await _allocatedStatements(row.id);
-      if (statements.any((s) => LocalDate.parse(s.dueDate) < today)) {
-        await _move(
-          row,
-          RepaymentStatus.needsReview,
-          const RepaymentsCompanion(),
-        );
-        changed++;
-      }
-    }
-    return changed;
-  }
-
   // ---- 内部 ----
 
   Future<void> _guarded(Future<void> Function() action) async {

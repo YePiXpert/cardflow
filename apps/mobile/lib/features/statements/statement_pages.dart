@@ -39,7 +39,7 @@ class StatementCenterPage extends ConsumerStatefulWidget {
 
 class _StatementCenterPageState extends ConsumerState<StatementCenterPage> {
   String? _account;
-  StatementStatus? _status;
+  EffectiveStatementStatus? _status;
   String? _currency;
   String? _month;
 
@@ -123,7 +123,7 @@ class _StatementCenterPageState extends ConsumerState<StatementCenterPage> {
         if ((_account == null ||
                 data.currencyAccounts[s.currencyAccountId]!.creditAccountId ==
                     _account) &&
-            (_status == null || s.status == _status!.code) &&
+            (_status == null || data.statusOf(s.id) == _status) &&
             (_currency == null ||
                 data.currencyAccounts[s.currencyAccountId]!.currency ==
                     _currency) &&
@@ -141,11 +141,11 @@ class _StatementCenterPageState extends ConsumerState<StatementCenterPage> {
             labelOf: (id) => data.wallet.account(id)?.displayName ?? '账户',
             onSelected: (v) => setState(() => _account = v),
           ),
-        _FilterChips<StatementStatus>(
+        _FilterChips<EffectiveStatementStatus>(
           label: '状态',
-          values: <StatementStatus>[
-            for (final status in StatementStatus.values)
-              if (all.any((s) => s.status == status.code)) status,
+          values: <EffectiveStatementStatus>[
+            for (final status in EffectiveStatementStatus.values)
+              if (all.any((s) => data.statusOf(s.id) == status)) status,
           ],
           selected: _status,
           labelOf: (s) => s.label,
@@ -303,7 +303,7 @@ class _StatementTile extends StatelessWidget {
                   spacing: CfSpace.xs,
                   runSpacing: CfSpace.xxs,
                   children: <Widget>[
-                    statementStatusBadge(StatementStatus.of(statement.status)),
+                    if (balance != null) effectiveStatusBadge(balance),
                     confirmationBadge(data.confirmationOf(statement.id)),
                     StatusBadge(
                       label: '$versions 个版本',
@@ -428,7 +428,7 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
             spacing: CfSpace.xs,
             runSpacing: CfSpace.xxs,
             children: <Widget>[
-              statementStatusBadge(StatementStatus.of(s.status)),
+              effectiveStatusBadge(balance),
               confirmationBadge(data.confirmationOf(s.id)),
             ],
           ),
@@ -570,12 +570,46 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
             currency: currency,
             source: sourceText,
           ),
-        LedgerAmountRow(
-          label: '本期剩余应还',
-          minor: balance.remaining,
-          currency: currency,
-          source: '系统估计：当前版本的应还减去银行已入账的还款（"我已还款"不扣减）',
-        ),
+        if (!balance.isCurrent)
+          NoticeCard(
+            icon: Icons.merge_type,
+            tone: NoticeTone.unknown,
+            text:
+                '${effectiveStatusText(balance)}：这期没还的部分已计入下一期的新增账单，'
+                '不再单独计入负债、近期到期与逾期，也不再接受还款分配。',
+          )
+        else ...<Widget>[
+          if (balance.paidAfter > 0)
+            LedgerAmountRow(
+              label: '账单日之后银行入账的还款',
+              minor: balance.paidAfter,
+              currency: currency,
+              source: '不论分配到哪一期；账单日及以前入账的已反映在新增账单里',
+            ),
+          for (final a in balance.adjustments)
+            LedgerAmountRow(
+              label:
+                  '转分期调整（${data.transaction(a.plan.transactionId)?.merchant ?? '消费'}）',
+              minor: a.amountMinor,
+              currency: currency,
+              negativeLabel: '减',
+              source: '这笔已出账的消费在本版本录入后才转分期：减去分期本金，加上本期这一期的本金与手续费',
+            ),
+          LedgerAmountRow(
+            label: '本期剩余应还',
+            minor: balance.remaining,
+            currency: currency,
+            source:
+                '系统估计：新增账单减去账单日之后银行入账的还款'
+                '${balance.adjustments.isEmpty ? '' : '，加上转分期调整'}（"我已还款"不扣减）',
+          ),
+          if (balance.creditBalance > 0 && balance.basis >= 0)
+            LedgerAmountRow(
+              label: '贷方余额（多还的部分）',
+              minor: balance.creditBalance,
+              currency: currency,
+            ),
+        ],
         if (liability != null)
           LedgerAmountRow(
             label: '未出账',
@@ -645,7 +679,7 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
                 spacing: CfSpace.xs,
                 runSpacing: CfSpace.xxs,
                 children: <Widget>[
-                  repaymentStatusBadge(RepaymentStatus.of(repayment.status)),
+                  repaymentStatusBadge(data.repaymentStatusOf(repayment)),
                   Text(RepaymentMethod.of(repayment.method).label),
                 ],
               ),

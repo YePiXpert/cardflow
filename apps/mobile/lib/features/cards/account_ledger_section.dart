@@ -17,8 +17,9 @@ import '../../data/repositories/providers.dart';
 import '../statements/ledger_formatting.dart';
 import 'card_formatting.dart';
 
-/// P-03 的账单部分（I-1c，ui-spec P-03）：本期（账期、应还、最低还款、还款状态）、「去还款」「登记还款」、
-/// 负债四分法、最近 3 期与「全部账单」。还没有正式账单时只给出入口（预测账期在上方的本期区）。
+/// P-03 的账单部分（I-1c，ui-spec P-03）：本期（账期、剩余应还、最低还款、有效状态、还款状态）、「去还款」
+/// 「登记还款」、负债四分法、最近 3 期（更早的写"已并入 MM-DD 账单"）与「全部账单」。还没有正式账单时只给出
+/// 入口（预测账期在上方的本期区）。
 class AccountLedgerSection extends ConsumerWidget {
   const AccountLedgerSection({
     super.key,
@@ -59,9 +60,7 @@ class AccountLedgerSection extends ConsumerWidget {
         ?.copyWith(color: CardFlowColors.of(context).textSecondary);
     final currency = sub.currency;
     final statements = data.statementsOf(sub.row.id);
-    final latest = statements.isEmpty
-        ? null
-        : data.balances[statements.first.id];
+    final latest = data.currentStatementOf(sub.row.id);
     final liability = data.liabilities[sub.row.id];
     final repayment = latest == null
         ? null
@@ -69,11 +68,11 @@ class AccountLedgerSection extends ConsumerWidget {
     final unreleased = LedgerReader.unreleasedRepayments(data, sub.row.id);
     final awaiting =
         repayment != null &&
-        !latest!.status.isSettled &&
+        latest!.status.owes &&
         const <RepaymentStatus>{
           RepaymentStatus.userMarkedPaid,
           RepaymentStatus.needsReview,
-        }.contains(RepaymentStatus.of(repayment.status));
+        }.contains(data.repaymentStatusOf(repayment));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -89,14 +88,14 @@ class AccountLedgerSection extends ConsumerWidget {
                   '本期账单（${latest.statement.statementDate} 出账）',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                statementStatusBadge(latest.status),
+                effectiveStatusBadge(latest),
                 confirmationBadge(data.confirmationOf(latest.statement.id)),
               ],
             ),
           ),
           LabeledValue(label: '到期还款日', value: Text(latest.statement.dueDate)),
           LedgerAmountRow(
-            label: '本期应还（剩余）',
+            label: '本期剩余应还',
             minor: latest.remaining,
             currency: currency,
           ),
@@ -115,7 +114,7 @@ class AccountLedgerSection extends ConsumerWidget {
             label: '还款状态',
             value: repayment == null
                 ? const Text('还没有还款登记')
-                : repaymentStatusBadge(RepaymentStatus.of(repayment.status)),
+                : repaymentStatusBadge(data.repaymentStatusOf(repayment)),
           ),
           if (awaiting)
             const NoticeCard(
@@ -191,7 +190,7 @@ class AccountLedgerSection extends ConsumerWidget {
                   runSpacing: CfSpace.xxs,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
-                    statementStatusBadge(b.status),
+                    effectiveStatusBadge(b),
                     Text('到期 ${formatShortDate(b.dueDate, account.today)}'),
                   ],
                 ),

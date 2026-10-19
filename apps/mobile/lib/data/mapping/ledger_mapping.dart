@@ -65,6 +65,9 @@ typedef DuplicatePair = (String, String);
 /// 某账单的还款分配合计：只算已按银行入账核销的还款（`credit_posted`/`bank_confirmed`，F-31），入账日
 /// 不晚于 [on]；[bankConfirmedOnly] 为真时只算银行确认的（结清只由它触发，PRD §6.2）。未处理的疑似重复
 /// 两笔都已核销时只计较大的一笔（F-32）。已作废、已冲正、失败的还款不计（R2-15）。
+///
+/// 只用于**存储状态**（动作记录：银行确认时把所分配的账单记为已结清/部分结清）。剩余应还与有效状态按入账
+/// 日期计算、不按分配（[creditedAfter]、[StatementBalance]，PRD §6.2 裁决段）。
 int paidOnStatement({
   required String statementId,
   required Iterable<RepaymentAllocationRow> allocations,
@@ -107,37 +110,209 @@ int paidOnStatement({
   return total;
 }
 
-/// 一份账单在某日的余额（当前版本）。
+/// 账单版本的有符号余额（"新增账单"）：有贷方余额（溢缴）时为 −贷方余额，否则为新余额。
+int signedBalanceOf(StatementVersionRow version) {
+  final credit = creditBalanceOf(version);
+  return credit > 0 ? -credit : version.newBalanceMinor;
+}
+
+/// 一个币种子账户在账单日 [after] **之后**（不含当天）、[on] 及以前银行入账的还款合计，不论分配到哪一期
+/// （PRD §6.2 裁决段：入账日不晚于账单日的还款已反映在新增账单里，不再扣减；金额按入账日期计算，不按分配
+/// 计算）。只算已按银行入账核销的还款（`credit_posted`/`bank_confirmed`），[bankConfirmedOnly] 为真时只算
+/// 银行确认的；已作废、已冲正、失败、"我已还款"的不算。未处理的疑似重复两笔都计入时只计较大的一笔（F-32）。
+int creditedAfter({
+  required Iterable<RepaymentRow> repayments,
+  required Map<String, LocalDate?> creditDates,
+  required LocalDate after,
+  required LocalDate on,
+  List<DuplicatePair> openDuplicates = const <DuplicatePair>[],
+  bool bankConfirmedOnly = false,
+}) {
+  final counted = <String, int>{};
+  for (final r in repayments) {
+    if (r.deletedAt != null) {
+      continue;
+    }
+    final status = RepaymentStatus.of(r.status);
+    final credits = bankConfirmedOnly
+        ? status == RepaymentStatus.bankConfirmed
+        : status.isCredited;
+    final date = creditDates[r.id];
+    if (!credits || date == null || date <= after || date > on) {
+      continue;
+    }
+    counted[r.id] = r.amountMinor;
+  }
+  var total = 0;
+  for (final amount in counted.values) {
+    total += amount;
+  }
+  for (final (a, b) in openDuplicates) {
+    final x = counted[a];
+    final y = counted[b];
+    if (x != null && y != null) {
+      total -= x < y ? x : y;
+    }
+  }
+  return total;
+}
+
+/// 一笔已出账消费转分期对它所在那一期账单的调整（PRD §6.2 裁决段、裁决第 2 条）。
+@immutable
+final class InstallmentAdjustment {
+  const InstallmentAdjustment({required this.plan, required this.amountMinor});
+
+  final InstallmentPlanRow plan;
+
+  /// −分期本金 + 账单日等于该期的那一期（本金 + 手续费）；通常为负。
+  final int amountMinor;
+}
+
+/// 已出账消费转分期的调整：消费已计入账单 [statement] 的新增账单（入账日已知、账期就是这一期），且这期的当前
+/// 版本 [version] 录入早于分期计划建立时（严格早于；之后录入的版本视为已反映分期，不再调整）→ 这期的剩余
+/// 应还 − 分期本金 + 账单日等于这期的那一期（本金 + 手续费）。作废的计划不调整。入账日未知、只是"可能"
+/// 落在这期的消费不调整（偏大，保守）。
+List<InstallmentAdjustment> installmentAdjustmentsFor({
+  required StatementRow statement,
+  required StatementVersionRow version,
+  required Iterable<InstallmentPlanRow> plans,
+  required Map<String, List<InstallmentScheduleRow>> periods,
+  required Map<String, TxnCycle> cycles,
+}) {
+  final statementDate = LocalDate.parse(statement.statementDate);
+  final recorded = Timestamp.parse(version.recordedAt).utcMicros;
+  final adjustments = <InstallmentAdjustment>[];
+  for (final plan in plans) {
+    if (plan.currencyAccountId != statement.currencyAccountId ||
+        !InstallmentPlanStatus.of(plan.status).coversPrincipal) {
+      continue;
+    }
+    final cycle = cycles[plan.transactionId];
+    if (cycle is! TxnCycleKnown || cycle.cycle.statementDate != statementDate) {
+      continue;
+    }
+    if (recorded >= Timestamp.parse(plan.createdAt).utcMicros) {
+      continue;
+    }
+    var amount = -plan.principalMinor;
+    for (final p in periods[plan.id] ?? const <InstallmentScheduleRow>[]) {
+      if (p.statementDate == statement.statementDate &&
+          p.status != InstallmentPeriodStatus.cancelled.code) {
+        amount += p.principalMinor + p.feeMinor;
+      }
+    }
+    adjustments.add(InstallmentAdjustment(plan: plan, amountMinor: amount));
+  }
+  return adjustments;
+}
+
+/// 有效状态的推导（PRD §6.2 裁决段；纯函数，表驱动测试见 `statement_standing_test.dart`）。
+///
+/// [basis] 是当前版本的新增账单（有符号，溢缴为负），[paidAfter]/[paidAfterConfirmed] 是账单日之后银行入账 /
+/// 银行确认的还款，[adjustment] 是转分期调整。剩余应还 = basis − paidAfter + adjustment：
+/// > 0 → 过了到期日 [EffectiveStatementStatus.overdue]，否则有入账还款为"已还一部分"、没有为"待还"；
+/// ≤ 0 → 转分期本身就结清了这期为"已转分期"；有入账还款时，只按银行确认的也结清为"已还清"，否则
+/// "已入账（待银行确认）"；没有还款也没有转分期（新增账单 ≤ 0）为"无需还款"。
+EffectiveStatementStatus effectiveStatusOf({
+  required int basis,
+  required int paidAfter,
+  required int paidAfterConfirmed,
+  required int adjustment,
+  required LocalDate dueDate,
+  required LocalDate today,
+}) {
+  final remaining = basis - paidAfter + adjustment;
+  if (remaining > 0) {
+    if (dueDate < today) {
+      return EffectiveStatementStatus.overdue;
+    }
+    return paidAfter > 0
+        ? EffectiveStatementStatus.partiallyPaid
+        : EffectiveStatementStatus.due;
+  }
+  if (basis > 0 && basis + adjustment <= 0) {
+    return EffectiveStatementStatus.converted;
+  }
+  if (paidAfter > 0) {
+    return basis - paidAfterConfirmed + adjustment <= 0
+        ? EffectiveStatementStatus.paid
+        : EffectiveStatementStatus.postedAwaitingBank;
+  }
+  return EffectiveStatementStatus.nothingDue;
+}
+
+/// 一份账单在"今天"的读数（当前版本）：本期的剩余应还与有效状态；更早的账单已并入下一期。
 @immutable
 final class StatementBalance {
   const StatementBalance({
     required this.statement,
     required this.current,
-    required this.amountDue,
-    required this.creditBalance,
-    required this.credited,
-    required this.bankConfirmed,
+    required this.today,
+    this.mergedInto,
+    this.paidAfter = 0,
+    this.paidAfterConfirmed = 0,
+    this.adjustments = const <InstallmentAdjustment>[],
   });
 
   final StatementRow statement;
   final StatementVersionRow current;
 
-  /// 本期应还（当前版本；有贷方余额时为 0）。
-  final int amountDue;
+  /// 所属信用账户业务时区里的今天。
+  final LocalDate today;
 
-  /// 贷方余额（溢缴款）。
-  final int creditBalance;
+  /// 已并入的下一期账单的账单日；本期（同一币种子账户里最近的一期）为 null。
+  final LocalDate? mergedInto;
 
-  /// 银行已入账的还款分配（疑似重复只计一次）。
-  final int credited;
+  /// 账单日之后银行入账的还款（不论分配到哪一期；疑似重复只计一次）。已并入的账单为 0。
+  final int paidAfter;
 
-  /// 银行确认的还款分配。
-  final int bankConfirmed;
+  /// 其中银行确认的。
+  final int paidAfterConfirmed;
 
-  /// 剩余应还（不小于 0）。
-  int get remaining => amountDue > credited ? amountDue - credited : 0;
+  /// 已出账消费转分期的调整（[installmentAdjustmentsFor]）。已并入的账单为空。
+  final List<InstallmentAdjustment> adjustments;
 
-  StatementStatus get status => StatementStatus.of(statement.status);
+  /// 本期（不是已并入下一期的旧账单）。
+  bool get isCurrent => mergedInto == null;
+
+  /// 当前版本的新增账单（有符号：溢缴为负）。
+  int get basis => signedBalanceOf(current);
+
+  /// 当前版本的本期应还（新余额；有贷方余额时为 0）。
+  int get amountDue => amountDueOf(current);
+
+  /// 转分期调整合计。
+  int get adjustment {
+    var total = 0;
+    for (final a in adjustments) {
+      total += a.amountMinor;
+    }
+    return total;
+  }
+
+  /// 有符号的本期剩余应还（< 0 为贷方余额）；已并入下一期的账单为 0（未还部分已在下一期的新增账单里）。
+  int get balance => isCurrent ? basis - paidAfter + adjustment : 0;
+
+  /// 本期剩余应还（不小于 0）。
+  int get remaining => balance > 0 ? balance : 0;
+
+  /// 贷方余额（溢缴款，≥ 0）。
+  int get creditBalance => balance < 0 ? -balance : 0;
+
+  /// 有效状态（PRD §6.2 裁决段）。
+  EffectiveStatementStatus get status => isCurrent
+      ? effectiveStatusOf(
+          basis: basis,
+          paidAfter: paidAfter,
+          paidAfterConfirmed: paidAfterConfirmed,
+          adjustment: adjustment,
+          dueDate: dueDate,
+          today: today,
+        )
+      : EffectiveStatementStatus.merged;
+
+  /// 存储状态（动作记录）。
+  StatementStatus get storedStatus => StatementStatus.of(statement.status);
 
   LocalDate get statementDate => LocalDate.parse(statement.statementDate);
 
@@ -291,47 +466,47 @@ final class LiabilityBreakdown {
 
   final String currency;
 
-  /// 最近一期已出账单（没有时为 null）。
+  /// 本期账单（同一币种子账户里最近一期已出账单；没有时为 null）。更早的账单已并入它，不另计。
   final StatementBalance? latest;
 
   /// 未出账：最近一期账单之后的交易（已转分期的原交易、还款入账行、待核对的退款不计）。
   final int unbilled;
 
-  /// 未来分期本金：尚未出账的各期本金（不含费用）。
+  /// 未来分期本金：账单日晚于本期账单日的各期本金（不含费用；没有账单时为全部各期）。
   final int futureInstallmentPrincipal;
 
-  /// 尚未出账的各期手续费（未计提，不计入总负债；R-STMT-01 的"未来分期还款"用）。
+  /// 同样这些期的手续费（未计提，不计入总负债；R-STMT-01 的"未来分期还款"用）。
   final int futureInstallmentFees;
 
   /// 待核对的退款（未计入未出账，F-34）。
   final int pendingRefunds;
 
-  /// 本期应还（最近一期账单的剩余应还；有贷方余额时为 0）。
+  /// 本期应还（本期账单的剩余应还；贷方余额时为 0）。
   int get currentDue => latest?.remaining ?? 0;
 
   /// 贷方余额（溢缴款）。
   int get creditBalance => latest?.creditBalance ?? 0;
 
-  /// 已出账未还（有贷方余额时为负：负债为负，R-STMT-11）。
-  int get billedUnpaid => creditBalance > 0 ? -creditBalance : currentDue;
+  /// 已出账未还 = 本期账单的有符号剩余应还（有贷方余额时为负：负债为负，R-STMT-11）。
+  int get billedUnpaid => latest?.balance ?? 0;
 
   /// 总负债。
   int get total => billedUnpaid + unbilled + futureInstallmentPrincipal;
 }
 
-/// 负债四分法的计算（一个币种子账户）：[balances] 是该子账户全部账单在某日的余额（按账单日升序），
+/// 负债四分法的计算（一个币种子账户）：[latest] 是本期账单（同一子账户里最近的一期，更早的已并入它），
 /// [transactions] 是该子账户未删除的交易及其账期，[coveredByPlans] 是已转分期（计划未作废）的交易，
-/// [refundIncluded] 是已确认冲抵应还的退款（其余退款待核对，不计入），[periods] 是该子账户进行中计划的各期。
+/// [refundIncluded] 是已确认冲抵应还的退款（其余退款待核对，不计入），[periods] 是该子账户未作废计划的各期
+/// （只计账单日晚于本期账单日的，PRD §6.2 裁决段）。
 LiabilityBreakdown liabilityOf({
   required String currency,
-  required List<StatementBalance> balances,
+  required StatementBalance? latest,
   required List<(CardTransactionRow, TxnCycle)> transactions,
   required Set<String> coveredByPlans,
   required Set<String> refundIncluded,
   required List<InstallmentScheduleRow> periods,
   required BusinessTimeZone zone,
 }) {
-  final latest = balances.isEmpty ? null : balances.last;
   final latestDate = latest?.statementDate;
   var unbilled = 0;
   var pendingRefunds = 0;
@@ -357,7 +532,10 @@ LiabilityBreakdown liabilityOf({
   var principal = 0;
   var fees = 0;
   for (final p in periods) {
-    if (p.status == InstallmentPeriodStatus.scheduled.code) {
+    if (p.status == InstallmentPeriodStatus.cancelled.code) {
+      continue;
+    }
+    if (latestDate == null || LocalDate.parse(p.statementDate) > latestDate) {
       principal += p.principalMinor;
       fees += p.feeMinor;
     }

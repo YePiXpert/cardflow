@@ -41,6 +41,25 @@ final class StaleAwareClock implements AppClock {
   bool get isFixed => false;
 }
 
+/// 可以前进的固定时钟：同一测试里要区分先后的写入（例如先录账单、后转分期——PRD §6.2 裁决段按"版本录入
+/// 早于计划建立"判断转分期调整）用 [advance] 拨快；不拨时与 [testClock] 相同。
+final class SteppingClock implements AppClock {
+  SteppingClock([DateTime? start])
+    : _now = start ?? DateTime.utc(2026, 10, 18, 4);
+
+  DateTime _now;
+
+  /// 拨快 [by]（默认 1 分钟）。
+  void advance([Duration by = const Duration(minutes: 1)]) =>
+      _now = _now.add(by);
+
+  @override
+  DateTime now() => _now.toUtc();
+
+  @override
+  bool get isFixed => true;
+}
+
 /// 在临时目录打开真实加密库（与 App 相同的流程），测试结束时关闭。
 Future<AppDatabase> openRealTestDatabase() async {
   final opened = await openTestDatabase(

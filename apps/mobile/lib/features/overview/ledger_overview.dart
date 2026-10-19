@@ -7,15 +7,15 @@ import '../../app/theme/tokens.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
 import '../../data/mapping/ledger_mapping.dart' show StatementBalance;
-import '../../data/repositories/ledger_models.dart';
 import '../../data/repositories/ledger_reader.dart';
 import '../../data/repositories/providers.dart';
 import '../cards/card_formatting.dart';
 import '../statements/ledger_formatting.dart';
 
 /// P-01 的账单部分（I-1c，ui-spec P-01）：待办条（待核对的还款、差异项）、快捷新增（登记还款、记一笔）、
-/// 近期到期 14 天（应还、到期、还款状态 + 确认层级 → P-05）、负债四分法（按币种，口径：只扣减银行已入账的
-/// 还款）。读取失败只在这一块报错（ui-spec P-01 九态"仅失败卡片报错"）。
+/// 近期到期 14 天（本期剩余应还 > 0 的账单：应还、到期、有效状态 + 确认层级 → P-05；已并入下一期的旧账单
+/// 不列）、负债四分法（按币种，口径：只扣减银行已入账的还款）。读取失败只在这一块报错（ui-spec P-01 九态
+/// "仅失败卡片报错"）。
 class OverviewLedgerSection extends ConsumerWidget {
   const OverviewLedgerSection({super.key});
 
@@ -139,7 +139,8 @@ class OverviewLedgerSection extends ConsumerWidget {
   }
 }
 
-/// 近期到期的一行：剩余应还、到期、账单状态与确认层级、最近一笔还款的状态（"已标记"未经银行确认时显示待核对）。
+/// 近期到期的一行：剩余应还、到期、账单的有效状态与确认层级、最近一笔还款的状态（"已标记"到期仍无证据时
+/// 显示待核对）。
 class _UpcomingTile extends StatelessWidget {
   const _UpcomingTile({required this.data, required this.balance});
 
@@ -155,7 +156,7 @@ class _UpcomingTile extends StatelessWidget {
     final repayment = data.latestRepaymentOn(s.id);
     final repaymentStatus = repayment == null
         ? null
-        : RepaymentStatus.of(repayment.status);
+        : data.repaymentStatusOf(repayment);
     return ListTile(
       title: Wrap(
         spacing: CfSpace.sm,
@@ -177,7 +178,7 @@ class _UpcomingTile extends StatelessWidget {
           spacing: CfSpace.xs,
           runSpacing: CfSpace.xxs,
           children: <Widget>[
-            statementStatusBadge(StatementStatus.of(s.status)),
+            effectiveStatusBadge(b),
             confirmationBadge(data.confirmationOf(s.id)),
             if (repaymentStatus != null) repaymentStatusBadge(repaymentStatus),
           ],

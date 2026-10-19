@@ -111,6 +111,32 @@ enum StatementStatus {
   bool get isSettled => this == settled;
 }
 
+/// 账单的有效状态（PRD §6.2 的 2026-10-19 裁决段）：由金额与日期在读模型里推导，不另存。界面、近期到期、
+/// 逾期提醒与首页一律用它；[StatementStatus] 是存储状态（动作记录，触发器照它约束）。
+///
+/// 同一币种子账户里最近一期账单是"本期"，更早的账单 [merged]（"已并入 {下一期账单日} 账单"）。本期按"剩余
+/// 应还"（新增账单 − 账单日之后银行入账的还款 ± 已出账消费转分期的调整）判断：> 0 → 未过到期日为
+/// [due]/[partiallyPaid]，过了为 [overdue]；≤ 0 → 因转分期而结清为 [converted]，银行确认的还款足额为
+/// [paid]，只有入账未确认为 [postedAwaitingBank]，没有要还的为 [nothingDue]（< 0 另显示贷方余额）。
+enum EffectiveStatementStatus {
+  due('待还'),
+  partiallyPaid('已还一部分'),
+  overdue('已逾期'),
+  paid('已还清'),
+  postedAwaitingBank('已入账（待银行确认）'),
+  converted('已转分期'),
+  nothingDue('无需还款'),
+  merged('已并入下一期');
+
+  const EffectiveStatementStatus(this.label);
+
+  /// 界面文案（[merged] 在界面上写成"已并入 MM-DD 账单"）。
+  final String label;
+
+  /// 还欠着（剩余应还 > 0）。
+  bool get owes => this == due || this == partiallyPaid || this == overdue;
+}
+
 /// 账单版本的来源。
 enum StatementSource {
   manual('manual', '手工录入'),

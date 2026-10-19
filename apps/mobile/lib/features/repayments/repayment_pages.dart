@@ -44,7 +44,7 @@ class RepaymentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = RepaymentStatus.of(repayment.status);
+    final status = data.repaymentStatusOf(repayment);
     final today = data.todayByCurrencyAccount[repayment.currencyAccountId];
     final statements = <String>[
       for (final a in data.allocationsOf(repayment.id))
@@ -158,7 +158,7 @@ class RepaymentCenterPage extends ConsumerWidget {
     }
     final awaiting = <RepaymentRow>[
       for (final r in repayments)
-        if (RepaymentStatus.of(r.status).awaitsEvidence) r,
+        if (data.repaymentStatusOf(r).awaitsEvidence) r,
     ];
     final open = <ReconciliationItemRow>[
       for (final i in items)
@@ -661,7 +661,7 @@ class RepaymentDetailPage extends ConsumerWidget {
   ) {
     final theme = Theme.of(context);
     final colors = CardFlowColors.of(context);
-    final status = RepaymentStatus.of(r.status);
+    final status = data.repaymentStatusOf(r);
     final account = data.accountOf(r.currencyAccountId)!;
     final cash = r.cashAccountId == null
         ? null

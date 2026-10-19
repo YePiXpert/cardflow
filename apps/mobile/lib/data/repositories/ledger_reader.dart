@@ -20,11 +20,12 @@ import 'transaction_repository.dart';
 import 'workspace_scope.dart';
 
 /// 账单中心、还款与核对、账户详情与总览（P-05/P-06/P-03/P-01）共用的读模型：一次读齐当前工作空间的
-/// 账单与版本、交易、分期、还款与分配、差异项，并算出每份账单在"今天"的余额（F-31：银行入账后才核销）
-/// 与每个币种子账户的负债四分法（R-STMT-02、F-30）。
+/// 账单与版本、交易、分期、还款与分配、差异项，并算出每份账单在"今天"的读数与有效状态（PRD §6.2 的
+/// 2026-10-19 裁决段：同一币种子账户里最近一期是本期，更早的已并入下一期；本期剩余应还 = 新增账单 − 账单日
+/// 之后银行入账的还款 ± 已出账消费转分期的调整）与每个币种子账户的负债四分法（R-STMT-02、F-30）。
 ///
-/// [LedgerReader.load] 先做两件只在需要时才写库的维护：过了到期日、仍未还清的账单 → 已逾期；"用户已标记"
-/// 的还款在到期后仍无证据 → 待核对（UF-3 步骤 6）。
+/// 只读：[LedgerReader.load] 不写库。逾期、"用户已标记"到期后仍无证据的"待核对"都在这里推导
+/// （[balances] 的 `status`、[repaymentStatusOf]），存储状态只是动作记录。
 @immutable
 final class LedgerData {
   const LedgerData({
@@ -218,14 +219,14 @@ final class LedgerData {
     return null;
   }
 
-  /// 账单的确认层级：结清（银行确认的还款足额）→ 银行确认；手工录入/修正 → 你已确认；导入 → 系统估计
-  /// （I-3）。
+  /// 账单的确认层级：有效状态"已还清"（银行确认的还款足额）→ 银行确认；手工录入/修正 → 你已确认；
+  /// 导入 → 系统估计（I-3）。
   ConfirmationShown confirmationOf(String statementId) {
     final s = statement(statementId);
     if (s == null) {
       return ConfirmationShown.userConfirmed;
     }
-    if (StatementStatus.of(s.status).isSettled) {
+    if (balances[s.id]?.status == EffectiveStatementStatus.paid) {
       return ConfirmationShown.bankConfirmed;
     }
     final current = versions[s.id]?.last;
@@ -287,18 +288,26 @@ final class LedgerData {
     return list.isEmpty ? null : list.first.$1;
   }
 
-  /// 近期到期（P-01，14 天内到期或已逾期、尚未结清的账单），到期早的在前。
+  /// 某币种子账户的本期账单（最近一期；没有账单时为 null）。
+  StatementBalance? currentStatementOf(String currencyAccountId) =>
+      liabilities[currencyAccountId]?.latest;
+
+  /// 某账单的有效状态（PRD §6.2 裁决段）；账单不在当前空间时为 null。
+  EffectiveStatementStatus? statusOf(String statementId) =>
+      balances[statementId]?.status;
+
+  /// 近期到期（P-01，14 天内到期或已逾期、剩余应还 > 0 的本期账单），到期早的在前。已并入下一期的旧账单、
+  /// 已还清/已转分期/无需还款的都不列出。
   List<StatementBalance> upcoming({int days = 14}) {
     final list = <StatementBalance>[];
     for (final s in statements) {
       final balance = balances[s.id];
-      final today = todayByCurrencyAccount[s.currencyAccountId];
-      if (balance == null || today == null || balance.status.isSettled) {
+      if (balance == null || !balance.status.owes) {
         continue;
       }
       final due = balance.dueDate;
-      if (balance.status == StatementStatus.overdue ||
-          (due >= today && due <= today.addDays(days))) {
+      if (balance.status == EffectiveStatementStatus.overdue ||
+          (due >= balance.today && due <= balance.today.addDays(days))) {
         list.add(balance);
       }
     }
@@ -306,11 +315,71 @@ final class LedgerData {
     return list;
   }
 
+  /// 还款的有效状态：存储状态为"用户已标记"、而分配到的账单里有已过到期日的 → 待核对（UF-3 步骤 6；
+  /// 读模型推导，不写库）；其余为存储状态。
+  RepaymentStatus repaymentStatusOf(RepaymentRow repayment) {
+    final stored = RepaymentStatus.of(repayment.status);
+    if (stored != RepaymentStatus.userMarkedPaid) {
+      return stored;
+    }
+    final today = todayByCurrencyAccount[repayment.currencyAccountId];
+    if (today == null) {
+      return stored;
+    }
+    for (final a in allocations) {
+      if (a.repaymentId != repayment.id) {
+        continue;
+      }
+      final s = statement(a.statementId);
+      if (s != null && LocalDate.parse(s.dueDate) < today) {
+        return RepaymentStatus.needsReview;
+      }
+    }
+    return stored;
+  }
+
   /// 等银行证据的还款（P-01 待办"待核对的还款"）：用户已标记、待核对、现金已扣、银行已入账。
   List<RepaymentRow> get awaitingEvidence => <RepaymentRow>[
     for (final r in repayments)
-      if (RepaymentStatus.of(r.status).awaitsEvidence) r,
+      if (repaymentStatusOf(r).awaitsEvidence) r,
   ];
+
+  /// 不在任何已录入账单里的交易（P-05"不在已录账单里的交易"）：账期的账单日都没有录入账单的（未出账的、
+  /// 所在账期还没录入正式账单的、没有账期规则的）。[creditAccountId] 非空时只看这个信用账户。
+  List<(CardTransactionRow, TxnCycle)> looseTransactions({
+    String? creditAccountId,
+  }) {
+    final recorded = <String, Set<LocalDate>>{};
+    for (final s in statements) {
+      recorded
+          .putIfAbsent(s.currencyAccountId, () => <LocalDate>{})
+          .add(LocalDate.parse(s.statementDate));
+    }
+    return <(CardTransactionRow, TxnCycle)>[
+      for (final t in transactions)
+        if (creditAccountId == null ||
+            currencyAccounts[t.currencyAccountId]?.creditAccountId ==
+                creditAccountId)
+          if (cycles[t.id] ?? const TxnCycleNoRule() case final c)
+            if (!c.statementDates.any(
+              (d) => recorded[t.currencyAccountId]?.contains(d) ?? false,
+            ))
+              (t, c),
+    ];
+  }
+
+  /// 入账日未知、可能账期跨过本期账单日的交易（Q-3）：可能已在本期账单里，也可能还没出账——负债按未出账
+  /// 计（偏大），界面提示"可能已出账，请补入账日"。
+  bool mayBeBilled(CardTransactionRow txn) {
+    final cycle = cycles[txn.id];
+    final current = currentStatementOf(txn.currencyAccountId);
+    if (txn.postedOn != null || cycle is! TxnCyclePossible || current == null) {
+      return false;
+    }
+    final date = current.statementDate;
+    final dates = cycle.statementDates;
+    return dates.any((d) => d <= date) && dates.any((d) => d > date);
+  }
 
   /// 未处理的差异项。
   List<ReconciliationItemRow> get openItems => <ReconciliationItemRow>[
@@ -386,37 +455,8 @@ final class LedgerReader {
 
   final WorkspaceScope _scope;
 
-  /// 读入（先维护：逾期、待核对；没有要改的时不写库）。
-  Future<LedgerData> load({bool maintain = true}) async {
-    var data = await _read();
-    if (maintain && await _maintain(data)) {
-      data = await _read();
-    }
-    return data;
-  }
-
-  /// 过了到期日仍未还清 → 已逾期；"用户已标记"到期后仍无证据 → 待核对。返回是否写了库。
-  Future<bool> _maintain(LedgerData data) async {
-    var changed = false;
-    final statements = StatementRepository(_scope);
-    for (final s in data.statements) {
-      final balance = data.balances[s.id];
-      final today = data.todayByCurrencyAccount[s.currencyAccountId];
-      if (balance == null || today == null) {
-        continue;
-      }
-      if (balance.dueDate < today &&
-          balance.remaining > 0 &&
-          balance.status.canBecome(StatementStatus.overdue)) {
-        changed |= await statements.moveStatus(s.id, StatementStatus.overdue);
-      }
-    }
-    final marked = await RepaymentRepository(_scope)
-        .markOverdueMarkedPaid(data.todayByCurrencyAccount);
-    return changed || marked > 0;
-  }
-
-  Future<LedgerData> _read() async {
+  /// 读入（只读，不写库：逾期与"待核对"都是推导出来的有效状态）。
+  Future<LedgerData> load() async {
     final wallet = await CardWalletReader(_scope).load();
     final subs = await CreditAccountRepository(_scope).currencyAccounts();
     final statementRepo = StatementRepository(_scope);
@@ -479,42 +519,6 @@ final class LedgerReader {
               versions: rulesOf[r.currencyAccountId] ?? const [],
             );
     }
-    final repaymentById = {for (final r in repayments) r.id: r};
-
-    final balances = <String, StatementBalance>{};
-    for (final s in statements) {
-      final current = versions[s.id]?.last;
-      final today = todayOf[s.currencyAccountId];
-      if (current == null || today == null) {
-        continue;
-      }
-      balances[s.id] = StatementBalance(
-        statement: s,
-        current: current,
-        amountDue: amountDueOf(current),
-        creditBalance: creditBalanceOf(current),
-        credited: paidOnStatement(
-          statementId: s.id,
-          allocations: allocations,
-          repayments: repaymentById,
-          creditDates: creditDates,
-          on: today,
-          openDuplicates: openDuplicates,
-        ),
-        bankConfirmed: paidOnStatement(
-          statementId: s.id,
-          allocations: allocations,
-          repayments: repaymentById,
-          creditDates: <String, LocalDate?>{
-            for (final r in repayments) r.id: LocalDate(1970, 1, 1),
-          },
-          on: LocalDate(9999, 12, 31),
-          openDuplicates: openDuplicates,
-          bankConfirmedOnly: true,
-        ),
-      );
-    }
-
     final cycles = <String, TxnCycle>{};
     for (final t in transactions) {
       final zone = zoneOf[t.currencyAccountId];
@@ -537,6 +541,70 @@ final class LedgerReader {
       );
     }
 
+    // 每个币种子账户：账单按账单日升序，最近一期是本期，更早的并入下一期（PRD §6.2 裁决段）。
+    final balances = <String, StatementBalance>{};
+    final currentOf = <String, StatementBalance>{};
+    for (final sub in subs) {
+      final today = todayOf[sub.id];
+      if (today == null) {
+        continue;
+      }
+      final own = <StatementRow>[
+        for (final s in statements.reversed)
+          if (s.currencyAccountId == sub.id) s,
+      ]..sort((a, b) => a.statementDate.compareTo(b.statementDate));
+      final mine = <RepaymentRow>[
+        for (final r in repayments)
+          if (r.currencyAccountId == sub.id) r,
+      ];
+      for (var i = 0; i < own.length; i++) {
+        final s = own[i];
+        final current = versions[s.id]?.last;
+        if (current == null) {
+          continue;
+        }
+        if (i + 1 < own.length) {
+          balances[s.id] = StatementBalance(
+            statement: s,
+            current: current,
+            today: today,
+            mergedInto: LocalDate.parse(own[i + 1].statementDate),
+          );
+          continue;
+        }
+        final date = LocalDate.parse(s.statementDate);
+        final balance = StatementBalance(
+          statement: s,
+          current: current,
+          today: today,
+          paidAfter: creditedAfter(
+            repayments: mine,
+            creditDates: creditDates,
+            after: date,
+            on: today,
+            openDuplicates: openDuplicates,
+          ),
+          paidAfterConfirmed: creditedAfter(
+            repayments: mine,
+            creditDates: creditDates,
+            after: date,
+            on: today,
+            openDuplicates: openDuplicates,
+            bankConfirmedOnly: true,
+          ),
+          adjustments: installmentAdjustmentsFor(
+            statement: s,
+            version: current,
+            plans: plans,
+            periods: periods,
+            cycles: cycles,
+          ),
+        );
+        balances[s.id] = balance;
+        currentOf[sub.id] = balance;
+      }
+    }
+
     final covered = <String>{
       for (final p in plans)
         if (InstallmentPlanStatus.of(p.status).coversPrincipal) p.transactionId,
@@ -547,13 +615,9 @@ final class LedgerReader {
       if (zone == null) {
         continue;
       }
-      final own = <StatementBalance>[
-        for (final s in statements.reversed)
-          if (s.currencyAccountId == sub.id) ?balances[s.id],
-      ];
       liabilities[sub.id] = liabilityOf(
         currency: sub.currency,
-        balances: own,
+        latest: currentOf[sub.id],
         transactions: <(CardTransactionRow, TxnCycle)>[
           for (final t in transactions)
             if (t.currencyAccountId == sub.id)
@@ -564,7 +628,7 @@ final class LedgerReader {
         periods: <InstallmentScheduleRow>[
           for (final p in plans)
             if (p.currencyAccountId == sub.id &&
-                p.status == InstallmentPlanStatus.active.code)
+                InstallmentPlanStatus.of(p.status).coversPrincipal)
               ...?periods[p.id],
         ],
         zone: zone,

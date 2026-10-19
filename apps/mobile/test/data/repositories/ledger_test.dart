@@ -26,13 +26,15 @@ Rational r(String text) => Rational.parseDecimal(text);
 void main() {
   late AppDatabase db;
   late WorkspaceScope scope;
+  late SteppingClock clock;
   late String accountId;
   late String sub;
   late String cardId;
 
   setUp(() async {
     db = await openRealTestDatabase();
-    scope = await createTestWorkspace(db);
+    clock = SteppingClock();
+    scope = await createTestWorkspace(db, clock: clock);
     final card = await createTestCard(scope, last4: '1001', alias: '卡 A');
     accountId = card.creditAccountId;
     cardId = card.cardId;
@@ -107,6 +109,123 @@ void main() {
       await expectRepositoryError<ConflictException>(
         () => InstallmentRepository(scope).cancel(plan.id),
       );
+    });
+
+    test('已出账消费转分期（默认首期，审查 P1）：10-05 的 12,000 已计入 10-10 账单的新增账单，账单录入之后才转 12 期'
+        '（每期 0.6%），首期默认在 11-10 → 10-10 剩余应还 = 12,000 − 12,000 = 0、有效状态"已转分期"、'
+        '未来分期本金 12,000、总负债 12,000（本金不重计）；之后录入的修正版本视为已反映分期、不再调整', () async {
+      final purchase = await addTestTransaction(
+        scope,
+        sub,
+        amount: 1200000,
+        txnAt: '2026-10-05T10:00:00+08:00',
+        merchant: '家电城',
+      );
+      final statement = await recordTestStatement(
+        scope,
+        sub,
+        newBalance: 1200000,
+        minDue: 120000,
+      );
+      var data = await LedgerReader(scope).load();
+      expect(data.liabilities[sub]!.total, 1200000, reason: '转分期之前');
+      clock.advance();
+      final plan = await InstallmentRepository(scope).create(
+        InstallmentDraft(
+          transactionId: purchase.id,
+          periods: 12,
+          perPeriodRate: r('0.006'),
+        ),
+      );
+      final periods = await InstallmentRepository(scope).schedule(plan.id);
+      expect(periods.first.statementDate, '2026-11-10');
+      data = await LedgerReader(scope).load();
+      final balance = data.balances[statement.id]!;
+      expect(balance.adjustments.single.amountMinor, -1200000);
+      expect((balance.remaining, balance.balance), (0, 0));
+      expect(balance.status, EffectiveStatementStatus.converted);
+      final l = data.liabilities[sub]!;
+      expect(
+        (l.billedUnpaid, l.unbilled, l.futureInstallmentPrincipal, l.total),
+        (0, 0, 1200000, 1200000),
+      );
+      expect(l.futureInstallmentFees, 12 * 7200);
+      expect(data.upcoming(), isEmpty, reason: '没有要还的');
+
+      // 银行把分期后的账单重出（新增账单 0），按人工修正录入：修正版本晚于计划，视为已反映分期。
+      clock.advance();
+      await StatementRepository(scope).correct(
+        statement.id,
+        figures: const StatementFigures(newBalanceMinor: 0, minDueMinor: 0),
+        reason: '银行按分期调整后重出账单',
+      );
+      data = await LedgerReader(scope).load();
+      expect(data.balances[statement.id]!.adjustments, isEmpty);
+      expect(data.balances[statement.id]!.remaining, 0);
+      expect(data.statusOf(statement.id), EffectiveStatementStatus.nothingDue);
+      expect(data.liabilities[sub]!.total, 1200000);
+    });
+
+    test(
+      '已出账消费转分期（首期 = 消费所在的 10-10 账单，审查 P1b）：10-10 剩余应还 = 12,000 − 12,000 + 第 1 期'
+      '（1,000 + 72）= 1,072、"待还"；未来分期本金只计账单日晚于 10-10 的 11 期 = 11,000；总负债 12,072',
+      () async {
+        final purchase = await addTestTransaction(
+          scope,
+          sub,
+          amount: 1200000,
+          txnAt: '2026-10-05T10:00:00+08:00',
+        );
+        final statement = await recordTestStatement(
+          scope,
+          sub,
+          newBalance: 1200000,
+          minDue: 120000,
+        );
+        clock.advance();
+        await InstallmentRepository(scope).create(
+          InstallmentDraft(
+            transactionId: purchase.id,
+            periods: 12,
+            perPeriodRate: r('0.006'),
+            firstStatementOn: d(2026, 10, 10),
+          ),
+        );
+        final data = await LedgerReader(scope).load();
+        final balance = data.balances[statement.id]!;
+        expect(balance.adjustments.single.amountMinor, -1200000 + 107200);
+        expect(balance.remaining, 107200);
+        expect(balance.status, EffectiveStatementStatus.due);
+        final l = data.liabilities[sub]!;
+        expect(l.futureInstallmentPrincipal, 1100000);
+        expect(l.futureInstallmentFees, 11 * 7200);
+        expect(l.total, 107200 + 1100000);
+      },
+    );
+
+    test('同一时刻录入的账单与计划不调整（只有"版本录入早于计划建立"才调整；分不出先后时按新增账单原值，'
+        '负债偏大、不偏小）', () async {
+      final purchase = await addTestTransaction(
+        scope,
+        sub,
+        amount: 1200000,
+        txnAt: '2026-10-05T10:00:00+08:00',
+      );
+      final statement = await recordTestStatement(
+        scope,
+        sub,
+        newBalance: 1200000,
+      );
+      await InstallmentRepository(scope).create(
+        InstallmentDraft(
+          transactionId: purchase.id,
+          periods: 12,
+          perPeriodRate: r('0.006'),
+        ),
+      );
+      final data = await LedgerReader(scope).load();
+      expect(data.balances[statement.id]!.adjustments, isEmpty);
+      expect(data.liabilities[sub]!.total, 1200000 + 1200000);
     });
 
     test('没有账单时：全部交易都是未出账；分期未出账的各期都在未来分期本金里', () async {

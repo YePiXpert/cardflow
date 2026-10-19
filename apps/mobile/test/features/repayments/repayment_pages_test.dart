@@ -198,8 +198,10 @@ void main() {
     );
   });
 
-  testWidgets('每种还款状态（9 种）与已结清、已逾期的账单：还款详情、还款与核对、账单中心、账单详情、'
-      '信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）', (tester) async {
+  testWidgets('每种还款状态（9 种）与已还一部分、已还清、已逾期、已入账（待银行确认）、已并入下一期的账单：还款详情、'
+      '还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）', (
+    tester,
+  ) async {
     late _AllStatuses seeded;
     await pumpCardFlowApp(
       tester,
@@ -214,13 +216,15 @@ void main() {
       reason: '9 种状态都有',
     );
     expect(
-      <StatementStatus>{
-        for (final s in data.statements) StatementStatus.of(s.status),
+      <EffectiveStatementStatus>{
+        for (final s in data.statements) data.statusOf(s.id)!,
       },
-      containsAll(<StatementStatus>[
-        StatementStatus.partiallySettled,
-        StatementStatus.settled,
-        StatementStatus.overdue,
+      containsAll(<EffectiveStatementStatus>[
+        EffectiveStatementStatus.partiallyPaid,
+        EffectiveStatementStatus.paid,
+        EffectiveStatementStatus.overdue,
+        EffectiveStatementStatus.postedAwaitingBank,
+        EffectiveStatementStatus.merged,
       ]),
     );
     final pages = <(String, String)>[
@@ -232,12 +236,10 @@ void main() {
       (AppRoutes.repayments(), '还款与核对'),
       (AppRoutes.statements(), '账单中心'),
       for (final s in data.statements)
-        (
-          AppRoutes.statement(s.id),
-          '账单详情（${StatementStatus.of(s.status).label}）',
-        ),
+        (AppRoutes.statement(s.id), '账单详情（${data.statusOf(s.id)!.label}）'),
       (AppRoutes.account(seeded.accountA), '信用账户详情（卡 A）'),
       (AppRoutes.account(seeded.accountB), '信用账户详情（卡 B）'),
+      (AppRoutes.account(seeded.accountC), '信用账户详情（卡 C）'),
       (AppRoutes.overview, '总览'),
     ];
     for (final (route, page) in pages) {
@@ -356,17 +358,20 @@ final class _AllStatuses {
   const _AllStatuses({
     required this.accountA,
     required this.accountB,
+    required this.accountC,
     required this.confirmed,
   });
 
   final String accountA;
   final String accountB;
+  final String accountC;
   final String confirmed;
 }
 
 /// 卡 A：10-10 账单（应还 9,000）上有 9 种状态的还款各一笔（金额各不相同，不构成疑似重复；时点都在
-/// 10-17，早于测试的"现在" 10-18 12:00）；卡 B：10-10 账单全额还款经银行确认 → 已结清，09-10 账单
-/// 过了到期日仍未还 → 已逾期。
+/// 10-17，早于测试的"现在" 10-18 12:00）→ 已还一部分；卡 B：10-10 账单全额还款经银行确认 → 已还清，更早的
+/// 09-10 账单 → 已并入 10-10 账单；卡 C：只有 09-10 账单、过了到期日仍未还 → 已逾期；卡 D：10-10 账单全额
+/// 银行已入账、还没确认 → 已入账（待银行确认）。
 Future<_AllStatuses> _seedAllStatuses(WorkspaceScope scope) async {
   final cardA = await createTestCard(scope, last4: '1001', alias: '卡 A');
   await declareTestRule(scope, cardA.creditAccountId);
@@ -434,9 +439,37 @@ Future<_AllStatuses> _seedAllStatuses(WorkspaceScope scope) async {
   final reversed = await confirmed(18000);
   await repo.reverse(reversed);
   await confirmed(5000, sub: subB, statement: settled.id);
+  final cardC = await createTestCard(scope, last4: '3003', alias: '卡 C');
+  await declareTestRule(scope, cardC.creditAccountId);
+  final subC = (await primaryCurrencyAccount(scope, cardC.creditAccountId)).id;
+  await recordTestStatement(
+    scope,
+    subC,
+    statementDate: LocalDate(2026, 9, 10),
+    dueDate: LocalDate(2026, 9, 28),
+    newBalance: 8000,
+    minDue: 800,
+  );
+  final cardD = await createTestCard(scope, last4: '4004', alias: '卡 D');
+  await declareTestRule(scope, cardD.creditAccountId);
+  final subD = (await primaryCurrencyAccount(scope, cardD.creditAccountId)).id;
+  final postedOnly = await recordTestStatement(
+    scope,
+    subD,
+    newBalance: 6000,
+    minDue: 600,
+  );
+  final awaitingBank = await register(
+    6000,
+    sub: subD,
+    statement: postedOnly.id,
+  );
+  await repo.confirmDebit(awaitingBank, at('10:00'));
+  await repo.markCreditPosted(awaitingBank, at('11:00'));
   return _AllStatuses(
     accountA: cardA.creditAccountId,
     accountB: cardB.creditAccountId,
+    accountC: cardC.creditAccountId,
     confirmed: bankConfirmed,
   );
 }

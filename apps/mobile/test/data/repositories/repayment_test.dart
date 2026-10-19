@@ -61,6 +61,20 @@ Future<void> _driveTo(
   }
 }
 
+/// 账单与还款各行的 (id, row_version, status)：读模型只读的证据（读之前与读之后应完全相同）。
+Future<List<String>> _rowVersions(AppDatabase db) async => <String>[
+  for (final row
+      in await db
+          .customSelect(
+            "SELECT 'statement:' || id || ':' || row_version || ':' || status AS k "
+            'FROM statements UNION ALL '
+            "SELECT 'repayment:' || id || ':' || row_version || ':' || status AS k "
+            'FROM repayments ORDER BY k',
+          )
+          .get())
+    row.read<String>('k'),
+];
+
 /// 一个仓库动作与它要到达的状态。
 typedef _Action = (
   String,
@@ -183,6 +197,7 @@ void main() {
         var data = await LedgerReader(scope).load();
         expect(data.balances[statement.id]!.remaining, 100000);
         expect(data.statement(statement.id)!.status, 'issued');
+        expect(data.statusOf(statement.id), EffectiveStatementStatus.due);
         await repo.confirmByBank(
           row.id,
           t('2026-10-18T11:00:00+08:00'),
@@ -191,6 +206,7 @@ void main() {
         data = await LedgerReader(scope).load();
         expect(data.statement(statement.id)!.status, 'settled');
         expect(data.balances[statement.id]!.remaining, 0);
+        expect(data.statusOf(statement.id), EffectiveStatementStatus.paid);
         final event = (await CashEventRepository(scope).byRepayment(row.id))!;
         expect((event.postingStatus, event.eventOn), ('posted', '2026-10-18'));
         for (final s in RepaymentStatus.values) {
@@ -269,10 +285,15 @@ void main() {
       var data = await LedgerReader(scope).load();
       expect(data.balances[statement.id]!.remaining, 60000);
       expect(data.statement(statement.id)!.status, 'issued');
+      expect(
+        data.statusOf(statement.id),
+        EffectiveStatementStatus.partiallyPaid,
+      );
+      expect(data.balances[statement.id]!.paidAfterConfirmed, 0);
       await repo.confirmByBank(row.id, t('2026-10-18T11:00:00+08:00'));
       data = await LedgerReader(scope).load();
       expect(data.statement(statement.id)!.status, 'partially_settled');
-      expect(data.balances[statement.id]!.bankConfirmed, 40000);
+      expect(data.balances[statement.id]!.paidAfterConfirmed, 40000);
     });
 
     test('F-32：同日、同账户、同金额的一笔自动扣款与一笔手工还款 → 疑似重复；处理前负债只核销一次；'
@@ -301,7 +322,7 @@ void main() {
       }
       var data = await LedgerReader(scope).load();
       expect(data.openDuplicates, hasLength(1));
-      expect(data.balances[statement.id]!.credited, 30000, reason: '负债只核销一次');
+      expect(data.balances[statement.id]!.paidAfter, 30000, reason: '负债只核销一次');
       // 两笔都已扣款：不能按"同一笔"作废。
       await expectRepositoryError<ConflictException>(
         () =>
@@ -309,7 +330,7 @@ void main() {
       );
       await repo.resolveDuplicate(items.single.id);
       data = await LedgerReader(scope).load();
-      expect(data.balances[statement.id]!.credited, 60000);
+      expect(data.balances[statement.id]!.paidAfter, 60000);
 
       // 另一组（都还没扣款）：同一笔 → 作废手工那笔，它的计划扣款一并作废。
       final auto2 = await register(
@@ -603,34 +624,39 @@ void main() {
     );
   });
 
-  test(
-    '到期后：未还清的账单 → 已逾期；"用户已标记"仍无证据 → 待核对（UF-3 步骤 6）；取得证据后银行确认 → 结清',
-    () async {
-      // 今天 10-30，账单 10-28 到期。
-      await setUpWith(FixedClock(DateTime.utc(2026, 10, 30, 4)));
-      final repo = RepaymentRepository(scope);
-      final row = await register(expected: d(2026, 10, 27));
-      await repo.markUserPaid(row.id);
-      final data = await LedgerReader(scope).load();
-      expect(data.statement(statement.id)!.status, 'overdue');
-      expect((await repo.require(row.id)).status, 'needs_review');
-      expect(data.awaitingEvidence.map((r) => r.id), <String>[row.id]);
-      // 再读一次不再写库（没有要改的）。
-      await LedgerReader(scope).load();
-      await expectRepositoryError<ValidationException>(
-        () => repo.confirmByBank(row.id, t('2026-10-29T10:00:00+08:00')),
-      );
-      await repo.confirmByBank(
-        row.id,
-        t('2026-10-29T10:00:00+08:00'),
-        debitedAt: t('2026-10-27T09:00:00+08:00'),
-      );
-      final after = await LedgerReader(scope).load();
-      expect(after.statement(statement.id)!.status, 'settled');
-      expect(
-        (await repo.require(row.id)).creditPostedAt,
-        '2026-10-29T10:00:00+08:00',
-      );
-    },
-  );
+  test('到期后：未还清的账单 → 已逾期；"用户已标记"仍无证据 → 待核对（UF-3 步骤 6）；读模型只推导、不写库；'
+      '取得证据后银行确认 → 已还清', () async {
+    // 今天 10-30，账单 10-28 到期。
+    await setUpWith(FixedClock(DateTime.utc(2026, 10, 30, 4)));
+    final repo = RepaymentRepository(scope);
+    final row = await register(expected: d(2026, 10, 27));
+    await repo.markUserPaid(row.id);
+    final revision = await _rowVersions(db);
+    final data = await LedgerReader(scope).load();
+    expect(data.statusOf(statement.id), EffectiveStatementStatus.overdue);
+    expect(
+      data.repaymentStatusOf(data.repayment(row.id)!),
+      RepaymentStatus.needsReview,
+    );
+    expect(data.awaitingEvidence.map((r) => r.id), <String>[row.id]);
+    // 只读：存储状态不变，没有任何行被改写。
+    expect(data.statement(statement.id)!.status, 'issued');
+    expect((await repo.require(row.id)).status, 'user_marked_paid');
+    expect(await _rowVersions(db), revision);
+    await expectRepositoryError<ValidationException>(
+      () => repo.confirmByBank(row.id, t('2026-10-29T10:00:00+08:00')),
+    );
+    await repo.confirmByBank(
+      row.id,
+      t('2026-10-29T10:00:00+08:00'),
+      debitedAt: t('2026-10-27T09:00:00+08:00'),
+    );
+    final after = await LedgerReader(scope).load();
+    expect(after.statement(statement.id)!.status, 'settled');
+    expect(after.statusOf(statement.id), EffectiveStatementStatus.paid);
+    expect(
+      (await repo.require(row.id)).creditPostedAt,
+      '2026-10-29T10:00:00+08:00',
+    );
+  });
 }

@@ -16,21 +16,30 @@ import '../../data/repositories/ledger_models.dart';
 import '../../data/repositories/ledger_reader.dart';
 import '../cards/card_formatting.dart';
 
-/// 账单状态徽标。
-StatusBadge statementStatusBadge(StatementStatus status) => StatusBadge(
-  label: status.label,
-  icon: switch (status) {
-    StatementStatus.predicted => Icons.calculate_outlined,
-    StatementStatus.issued => Icons.receipt_long_outlined,
-    StatementStatus.amended => Icons.edit_note,
-    StatementStatus.partiallySettled ||
-    StatementStatus.settled => Icons.approval_outlined,
-    StatementStatus.overdue => Icons.warning_amber_outlined,
+/// 账单有效状态的文案（PRD §6.2 裁决段）：已并入下一期的写"已并入 MM-DD 账单"。
+String effectiveStatusText(StatementBalance balance) =>
+    balance.status == EffectiveStatementStatus.merged
+    ? '已并入 ${formatShortDate(balance.mergedInto!, balance.today)} 账单'
+    : balance.status.label;
+
+/// 账单有效状态的徽标（界面一律用它；存储状态只是动作记录）。没有绿色：银行确认的"已还清"用银行确认色。
+StatusBadge effectiveStatusBadge(StatementBalance balance) => StatusBadge(
+  label: effectiveStatusText(balance),
+  icon: switch (balance.status) {
+    EffectiveStatementStatus.due => Icons.receipt_long_outlined,
+    EffectiveStatementStatus.partiallyPaid => Icons.timelapse,
+    EffectiveStatementStatus.overdue => Icons.warning_amber_outlined,
+    EffectiveStatementStatus.paid => Icons.approval_outlined,
+    EffectiveStatementStatus.postedAwaitingBank => Icons.input,
+    EffectiveStatementStatus.converted => Icons.call_split,
+    EffectiveStatementStatus.nothingDue => Icons.remove_circle_outline,
+    EffectiveStatementStatus.merged => Icons.merge_type,
   },
-  tone: switch (status) {
-    StatementStatus.partiallySettled ||
-    StatementStatus.settled => NoticeTone.bank,
-    StatementStatus.overdue => NoticeTone.danger,
+  tone: switch (balance.status) {
+    EffectiveStatementStatus.paid => NoticeTone.bank,
+    EffectiveStatementStatus.overdue => NoticeTone.danger,
+    EffectiveStatementStatus.due ||
+    EffectiveStatementStatus.partiallyPaid => NoticeTone.attention,
     _ => NoticeTone.unknown,
   },
 );

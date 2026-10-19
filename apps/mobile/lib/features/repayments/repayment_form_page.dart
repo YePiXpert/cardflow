@@ -255,7 +255,7 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
     final statements = <StatementBalance>[
       for (final s in data.statementsOf(sub))
         if (data.balances[s.id] case final b?)
-          if (!b.status.isSettled) b,
+          if (!b.storedStatus.isSettled) b,
     ];
     final cashChoices = <CashAccountRow>[
       for (final a in activeCash)
