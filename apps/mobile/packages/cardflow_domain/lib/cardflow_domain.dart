@@ -9,6 +9,7 @@
 /// | money | `minorDigits`、`toMinor`/`fromMinor`（超精度拒绝）、`RoundingMode`、`applyRate`、`decimalText`、`Money` |
 /// | time | `LocalDate`（业务日期）、`Timestamp`（RFC 3339，自带偏移）、`TimePrecision` |
 /// | billing | `BillingRule`、`cyclesForTransaction`、`selectRule`、`resolveCycle`、`BillingRuleError` |
+/// | installment | `splitInstallments`、`installmentCashFlows`、`irrMonthly`、`annualize`（分期拆分与成本，I-1c） |
 /// | cash | `CashEvent`、`Snapshot`、`Scenario`、`buildTimeline`、`evaluate`、`evaluateAccounts` |
 /// | verifier | `verify`、`checkScenario`、`cardFee`、`globalFloorBreaches` |
 /// | checks | `dataIssues`、`baselineCheck` |
@@ -23,6 +24,7 @@ export 'src/allocation.dart';
 export 'src/billing.dart';
 export 'src/cash.dart';
 export 'src/checks.dart';
+export 'src/installment.dart';
 export 'src/money.dart';
 export 'src/protocol/adapter.dart';
 export 'src/protocol/binary64.dart';
