@@ -505,7 +505,7 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
               horizontal: CfSpace.md,
               vertical: CfSpace.xxs,
             ),
-            child: Text('修正只生成新版本，原值保留可查（R-STMT-07）。', style: secondary),
+            child: Text('修正只生成新版本，原值保留可查。', style: secondary),
           ),
         LedgerAmountRow(
           label: '上期余额',

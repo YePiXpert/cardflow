@@ -916,7 +916,7 @@ class RepaymentDetailPage extends ConsumerWidget {
             CashAccountKind.of(cash.kind) == CashAccountKind.restricted)
           const NoticeCard(
             icon: Icons.lock_outline,
-            text: '扣款账户是受限资金：它不计入可用现金（R-CASH-01）。',
+            text: '扣款账户是受限资金：它不计入可用现金。',
           ),
         const SectionTitle('操作'),
         Padding(

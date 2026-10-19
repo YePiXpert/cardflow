@@ -5,7 +5,7 @@
 // "公测版"标识、版本与构建号（与诊断页同一来源 package_info_plus，测试用与常量不同的版本号证明来源，含读取中/读取失败）、
 // 源码地址（可选中的纯文本 + 复制，不打开浏览器）、反馈方式。
 //
-// 阶段代号防回归：用户可见的文字里不出现内部阶段代号（"I-3 提供""I-2 使用"一类，正则 `I-\d`），
+// 内部编号防回归：用户可见的文字里不出现内部阶段代号（"I-3 提供""I-2 使用"一类）与规格编号（"（F-33）""（R-CASH-01）"一类），
 // 未开放的功能一律写"后续版本提供"一类说法。两道检查：
 // 1. 扫描 lib/ 下全部 Dart 源码的字符串字面量（去掉注释；内插表达式里的字符串也算），先用正反例自检扫描器；
 // 2. 逐页打开 App（演示空间的全部页面、真实空间的首次空白页、没有工作空间时的 P-22），每页从顶滚到底，
@@ -29,8 +29,11 @@ import '../support/forbidden_ui.dart';
 import '../test_helpers.dart';
 import 'accessibility_test.dart' show allPages;
 
-/// 内部阶段代号（I-0 … I-9 及其后缀，如 I-1c）。
-final RegExp stageCode = RegExp(r'I-\d');
+/// 内部编号：阶段代号（I-0 … I-9 及其后缀，如 I-1c），以及规格编号——需求（R-CASH-01）、验收样例（F-33）、
+/// 页面（P-06）、用户流程（UF-3）。公测用户看不懂这些编号，界面文字一律不写（0.0.1 发版前主会话补）。
+final RegExp stageCode = RegExp(
+  r'I-\d|\b(?:F|P)-\d{2}\b|\bR-[A-Z]+-\d{2}\b|\bUF-\d\b',
+);
 
 /// Dart 源码里字符串字面量的内容（注释里的不算）：（起始行号, 内容）。内插 `${…}`、`$name` 在内容里记为
 /// `…`；内插表达式里的字符串字面量另记一条。支持单/双引号、三引号、原始字符串与嵌套的块注释。
@@ -206,6 +209,10 @@ void main() {
       '内插里的字符串': r"final e = '额度 ${n > 0 ? 'I-2 使用' : ''} 项';",
       '内插之后的文字': r"final f = '${label}：I-3 提供';",
       '紧跟在注释后的字符串': "// 说明\nconst g = 'I-4';",
+      '验收样例编号': "const h = '分配合计须等于还款额（F-33）';",
+      '需求编号': "const i = '它不计入可用现金（R-CASH-01）。';",
+      '页面编号': "const j = '去登记这笔还款（P-06）';",
+      '用户流程编号': "const k = '按 UF-3 走一遍';",
     };
     flagged.forEach((name, code) {
       test(name, () => expect(stageCodeLiterals(code), isNotEmpty));
@@ -218,6 +225,8 @@ void main() {
       '注释在代码行尾': "const y = '后续版本提供'; // I-3",
       '内插的变量名': r"final z = '${stage}：$label';",
       '原始字符串里的正则': r"final p = RegExp(r'I-\d');",
+      '常见的技术写法': "const q = 'UTF-8、SHA-256、ISO-8601、RFC-3339';",
+      '注释里的规格编号': "// F-33、R-CASH-01、P-06\nconst r = '后续版本提供';",
     };
     clean.forEach((name, code) {
       test(name, () => expect(stageCodeLiterals(code), isEmpty, reason: code));
@@ -233,7 +242,7 @@ void main() {
     });
   });
 
-  test('lib/ 全部 Dart 源码的字符串字面量（注释除外）都不含阶段代号 I-数字', () {
+  test('lib/ 全部 Dart 源码的字符串字面量（注释除外）都不含阶段代号与规格编号', () {
     final files =
         Directory('lib')
             .listSync(recursive: true)
@@ -252,7 +261,7 @@ void main() {
     print('扫描了 ${files.length} 个文件，含阶段代号的字符串字面量：${hits.length} 处');
   });
 
-  testWidgets('演示空间的全部页面（每页滚到底）没有文字匹配 I-数字', (tester) async {
+  testWidgets('演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
     final pages = await allPages(tester);
     await _expectNoStageCodeOnPages(tester, pages);
@@ -260,7 +269,7 @@ void main() {
     print('检查了演示空间的 ${pages.length} 个页面');
   });
 
-  testWidgets('真实空间的首次空白页与"我的"各页没有文字匹配 I-数字', (tester) async {
+  testWidgets('真实空间的首次空白页与"我的"各页没有文字含阶段代号或规格编号', (tester) async {
     await pumpCardFlowApp(tester);
     await _expectNoStageCodeOnPages(tester, <String>[
       AppRoutes.overview,
@@ -278,7 +287,7 @@ void main() {
     ]);
   });
 
-  testWidgets('P-22 首次使用页（没有工作空间）没有文字匹配 I-数字', (tester) async {
+  testWidgets('P-22 首次使用页（没有工作空间）没有文字含阶段代号或规格编号', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.none);
     await forEachScreen(tester, () {
       expect(stageCodeTexts(tester), isEmpty);

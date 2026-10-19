@@ -267,7 +267,7 @@ enum ReconciliationKind {
     'unmatched_repayment',
     '未匹配的还款',
     source: '银行记录里有一笔还款入账，但没有对应的还款登记',
-    suggestion: '去登记这笔还款（P-06），或确认不是你的还款后忽略',
+    suggestion: '去登记这笔还款，或确认不是你的还款后忽略',
   );
 
   const ReconciliationKind(

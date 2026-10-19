@@ -48,7 +48,7 @@ class RepaymentFormPage extends ConsumerStatefulWidget {
   static const String savedMessage = '已登记（待银行确认）';
 
   /// 分配合计与还款额不相等时的提示。
-  static const String allocationMismatch = '分配合计须等于还款额（F-33），否则不能保存';
+  static const String allocationMismatch = '分配合计须等于还款额，否则不能保存';
 
   @override
   ConsumerState<RepaymentFormPage> createState() => _RepaymentFormPageState();
@@ -347,7 +347,7 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
         if (restricted)
           const NoticeCard(
             icon: Icons.lock_outline,
-            text: '这是受限资金或不可用于还款的账户：它不计入可用现金，资金日历不会用它承担这笔扣款（R-CASH-01）。',
+            text: '这是受限资金或不可用于还款的账户：它不计入可用现金，资金日历不会用它承担这笔扣款。',
           ),
         ChoiceWrap<RepaymentMethod>(
           label: '方式',

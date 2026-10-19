@@ -160,7 +160,7 @@ class AccountLedgerSection extends ConsumerWidget {
           const NoticeCard(
             icon: Icons.schedule,
             tone: NoticeTone.unknown,
-            text: '额度释放时滞未知：银行入账后暂不计入可用容量，以新的额度快照为准（F-28）。',
+            text: '额度释放时滞未知：银行入账后暂不计入可用容量，以新的额度快照为准。',
           ),
         ],
         if (liability != null) ...<Widget>[
