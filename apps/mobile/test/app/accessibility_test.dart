@@ -85,6 +85,7 @@ Future<List<String>> allPages(WidgetTester tester) async {
     AppRoutes.discover,
     AppRoutes.settings,
     AppRoutes.diagnostics,
+    AppRoutes.about,
     AppRoutes.welcome,
   ];
 }

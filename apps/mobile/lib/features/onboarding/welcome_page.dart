@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/theme/tokens.dart';
 import '../../app/widgets/state_views.dart';
 import '../../data/repositories/providers.dart';
+import '../settings/public_beta.dart';
 import 'workspace_actions.dart';
 
 /// 一种开始方式。[stage] 非空表示本期不可用（按钮禁用，旁边注明所属阶段）。
@@ -17,7 +18,7 @@ class StartOption {
   final String? stage;
 }
 
-/// P-22 首次使用/欢迎/演示模式（ui-spec §6、UF-1 步骤 1）。
+/// P-22 首次使用/欢迎/演示模式（ui-spec §6、UF-1 步骤 1）；底部是公测说明（与「关于」同一段）。
 ///
 /// [firstRun] 为 true：没有工作空间时的入口（任何路由都先到这里，没有返回按钮）；false：从
 /// "我的 › 欢迎与开始方式"进入，可返回。
@@ -176,6 +177,10 @@ class _WelcomePageState extends ConsumerState<WelcomePage> {
               child: const Text('清除演示数据'),
             ),
           ],
+          const SizedBox(height: CfSpace.lg),
+          Text(PublicBeta.noteTitle, style: theme.textTheme.titleMedium),
+          const SizedBox(height: CfSpace.xs),
+          const PublicBetaNotice(margin: EdgeInsets.zero),
         ],
       ),
     );

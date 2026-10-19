@@ -1,13 +1,26 @@
 // 公测版（0.1.0 beta 1）的界面约束（简报 I1-c2 §2）。
 //
+// 公测说明与「关于」：P-22 首次使用页底部（最后一节）与"我的 › 关于卡序"显示同一段公测说明（原文逐字断言，
+// 版本号与 pubspec.yaml 的版本名一致）；「关于」显示名称"卡序 CardFlow"、"公测版"标识、版本与构建号（与诊断页
+// 同一来源 package_info_plus，含读取中/读取失败）、源码地址（可选中的纯文本 + 复制，不打开浏览器）、反馈方式。
+//
 // 阶段代号防回归：用户可见的文字里不出现内部阶段代号（"I-3 提供""I-2 使用"一类，正则 `I-\d`），
 // 未开放的功能一律写"后续版本提供"一类说法。两道检查：
 // 1. 扫描 lib/ 下全部 Dart 源码的字符串字面量（去掉注释；内插表达式里的字符串也算），先用正反例自检扫描器；
 // 2. 逐页打开 App（演示空间的全部页面、真实空间的首次空白页、没有工作空间时的 P-22），每页从顶滚到底，
 //    检查渲染出来的全部文字（RichText 与输入框内容）。
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cardflow/app/routes.dart';
+import 'package:cardflow/features/diagnostics/app_diagnostics.dart';
+import 'package:cardflow/features/diagnostics/diagnostics_page.dart';
+import 'package:cardflow/features/onboarding/welcome_page.dart';
+import 'package:cardflow/features/settings/about_page.dart';
+import 'package:cardflow/features/settings/public_beta.dart';
+import 'package:cardflow/features/settings/settings_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/forbidden_ui.dart';
@@ -171,6 +184,16 @@ Future<void> _expectNoStageCodeOnPages(
   }
 }
 
+/// 在页面的主滚动区里滚到 [finder]（「关于」页的可选中文本自带一个滚动区，不能用默认的 Scrollable 查找）。
+Future<void> _scrollTo(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(
+    finder,
+    200,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.pumpAndSettle();
+}
+
 void main() {
   group('阶段代号防回归：扫描器自检', () {
     const flagged = <String, String>{
@@ -257,6 +280,124 @@ void main() {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.none);
     await forEachScreen(tester, () {
       expect(stageCodeTexts(tester), isEmpty);
+    });
+  });
+
+  group('公测说明与「关于」', () {
+    /// 简报 I1-c2 §2 第 2 条给出的说明原文。
+    const briefNote =
+        '公测版 0.1.0：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。'
+        '删除 App 或「重置本地数据」会永久删除全部数据；目前还没有备份与导出，后续版本提供。';
+
+    test('说明原文与简报一致；版本号与 pubspec.yaml 的版本名一致', () {
+      expect(PublicBeta.note, briefNote);
+      final pubspec = File('pubspec.yaml').readAsStringSync();
+      final version = RegExp(
+        r'^version:\s*(\d+\.\d+\.\d+)\+\d+\s*$',
+        multiLine: true,
+      ).firstMatch(pubspec);
+      expect(version, isNotNull, reason: 'pubspec.yaml 的 version 行');
+      expect(PublicBeta.version, version!.group(1));
+      expect(PublicBeta.appName, '卡序 CardFlow');
+      expect(PublicBeta.sourceAddress, 'github.com/YePiXpert/cardflow');
+      expect(PublicBeta.feedback, '我的 › 诊断信息 › 复制诊断信息，附上问题描述发到 GitHub Issues');
+    });
+
+    testWidgets('P-22 首次使用页（没有工作空间）：底部最后一节是公测说明', (tester) async {
+      await pumpCardFlowApp(tester, workspace: TestWorkspace.none);
+      expect(appBarTitle(WelcomePage.title), findsOneWidget);
+      final list = tester.widget<ListView>(
+        find.descendant(
+          of: find.byType(WelcomePage),
+          matching: find.byType(ListView),
+        ),
+      );
+      final children =
+          (list.childrenDelegate as SliverChildListDelegate).children;
+      expect(children.last, isA<PublicBetaNotice>(), reason: '说明在最底部');
+      await _scrollTo(tester, find.text(PublicBeta.note));
+      expect(find.text(PublicBeta.noteTitle), findsOneWidget);
+      expect(find.text(PublicBeta.note), findsOneWidget);
+    });
+
+    testWidgets('从"我的"进入的欢迎页同样在底部显示公测说明', (tester) async {
+      await pumpCardFlowApp(tester);
+      await goTo(tester, AppRoutes.welcome);
+      await _scrollTo(tester, find.text(PublicBeta.note));
+      expect(find.text(PublicBeta.note), findsOneWidget);
+    });
+
+    testWidgets('「关于」：我的 › 关于卡序；名称、公测版标识、版本与构建号（与诊断页同一来源）、公测说明、'
+        '源码地址可选中并可复制、反馈方式与「打开诊断信息」', (tester) async {
+      final copied = captureClipboard(tester);
+      await pumpCardFlowApp(tester);
+      await goTo(tester, AppRoutes.settings);
+      await tester.tap(find.text(AboutPage.title));
+      await tester.pumpAndSettle();
+      expect(appBarTitle(AboutPage.title), findsOneWidget);
+      expect(
+        appRouter(tester).routerDelegate.currentConfiguration.uri.path,
+        AppRoutes.about,
+      );
+      expect(find.text(PublicBeta.appName), findsOneWidget);
+      expect(find.text(PublicBeta.badge), findsOneWidget);
+      // test_helpers.dart 的 mockPackageInfo：版本 0.0.1、构建 7。
+      expect(find.text('0.0.1（构建 7）'), findsOneWidget);
+      expect(find.text(PublicBeta.noteTitle), findsOneWidget);
+      expect(find.text(PublicBeta.note), findsOneWidget);
+      final source = find.byType(SelectableText);
+      await _scrollTo(tester, source);
+      expect(
+        tester.widget<SelectableText>(source).data,
+        'github.com/YePiXpert/cardflow',
+      );
+      await _scrollTo(tester, find.text('复制源码地址'));
+      await tester.tap(find.text('复制源码地址'));
+      await tester.pumpAndSettle();
+      expect(copied, <String>['github.com/YePiXpert/cardflow']);
+      expect(find.text(AboutPage.copiedMessage), findsOneWidget);
+      await _scrollTo(tester, find.text(PublicBeta.feedback));
+      expect(find.text(PublicBeta.feedback), findsOneWidget);
+      await _scrollTo(tester, find.text('打开诊断信息'));
+      await tester.tap(find.text('打开诊断信息'));
+      await tester.pumpAndSettle();
+      expect(appBarTitle(DiagnosticsPage.title), findsOneWidget);
+      // 诊断页显示同一个版本与构建号。
+      expect(find.text('0.0.1（构建 7）'), findsOneWidget);
+    });
+
+    testWidgets('「关于」的版本读取中：显示"读取中…"，公测说明照常显示', (tester) async {
+      final pending = Completer<AppDiagnostics>();
+      await pumpCardFlowApp(
+        tester,
+        overrides: <Override>[
+          appDiagnosticsProvider.overrideWith((ref) => pending.future),
+        ],
+      );
+      await goTo(tester, AppRoutes.about);
+      expect(find.text('读取中…'), findsOneWidget);
+      expect(find.text(PublicBeta.note), findsOneWidget, reason: '说明不依赖版本读取');
+    });
+
+    testWidgets('「关于」的版本读取失败：显示错误类型', (tester) async {
+      await pumpCardFlowApp(
+        tester,
+        overrides: <Override>[
+          appDiagnosticsProvider.overrideWith(
+            (ref) => Future<AppDiagnostics>.error(StateError('x')),
+          ),
+        ],
+      );
+      await goTo(tester, AppRoutes.about);
+      expect(find.text('读取失败（StateError）'), findsOneWidget);
+    });
+
+    testWidgets('"我的"页有「关于卡序」入口', (tester) async {
+      await pumpCardFlowApp(tester);
+      await goTo(tester, AppRoutes.settings);
+      expect(appBarTitle(SettingsPage.title), findsOneWidget);
+      expect(find.text(AboutPage.title), findsOneWidget);
+      expect(find.text('版本、公测说明、源码与反馈'), findsOneWidget);
     });
   });
 }

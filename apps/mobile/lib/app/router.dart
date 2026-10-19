@@ -20,6 +20,7 @@ import '../features/promotions/promotions_page.dart';
 import '../features/repayments/repayment_form_page.dart';
 import '../features/repayments/repayment_pages.dart';
 import '../features/scenarios/scenario_pages.dart';
+import '../features/settings/about_page.dart';
 import '../features/settings/settings_page.dart';
 import '../features/statements/statement_forms.dart';
 import '../features/statements/statement_pages.dart';
@@ -435,6 +436,11 @@ GoRouter createAppRouter({
                     path: 'diagnostics',
                     pageBuilder: (context, state) =>
                         _page(state, const DiagnosticsPage()),
+                  ),
+                  GoRoute(
+                    path: 'about',
+                    pageBuilder: (context, state) =>
+                        _page(state, const AboutPage()),
                   ),
                   GoRoute(
                     path: 'welcome',

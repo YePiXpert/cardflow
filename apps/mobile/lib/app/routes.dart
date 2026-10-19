@@ -45,6 +45,9 @@ abstract final class AppRoutes {
   /// 诊断信息（我的 › 诊断信息）。
   static const String diagnostics = '/settings/diagnostics';
 
+  /// 关于（我的 › 关于卡序）：版本、公测说明、源码与反馈。
+  static const String about = '/settings/about';
+
   /// 欢迎与开始方式（P-22，从"我的"进入，全屏覆盖底部导航，可返回）。
   static const String welcome = '/settings/welcome';
 

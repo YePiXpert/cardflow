@@ -184,6 +184,7 @@ class NoticeCard extends StatelessWidget {
     required this.text,
     this.tone = NoticeTone.attention,
     this.action,
+    this.margin = defaultMargin,
   });
 
   final IconData icon;
@@ -191,15 +192,21 @@ class NoticeCard extends StatelessWidget {
   final NoticeTone tone;
   final Widget? action;
 
+  /// 外边距；放在本身已有内边距的列表里时可传 [EdgeInsets.zero]。
+  final EdgeInsetsGeometry margin;
+
+  /// 默认外边距（与页面内容左右对齐）。
+  static const EdgeInsets defaultMargin = EdgeInsets.symmetric(
+    horizontal: CfSpace.md,
+    vertical: CfSpace.xs,
+  );
+
   @override
   Widget build(BuildContext context) {
     final colors = CardFlowColors.of(context);
     final tones = toneColors(colors, tone);
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: CfSpace.md,
-        vertical: CfSpace.xs,
-      ),
+      margin: margin,
       padding: const EdgeInsets.all(CfSpace.sm),
       decoration: BoxDecoration(
         color: tones.bg,

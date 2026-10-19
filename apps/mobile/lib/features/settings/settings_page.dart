@@ -3,10 +3,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import 'about_page.dart';
 
 /// P-19 我的（设置）根页（ui-spec §6）。
 ///
-/// 本阶段只有：纯本地模式说明（"首次空白"态）、诊断信息入口、欢迎页入口。
+/// 本阶段只有：纯本地模式说明（"首次空白"态）、诊断信息入口、欢迎页入口、关于（版本、公测说明、源码与反馈）。
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -74,6 +75,13 @@ class SettingsPage extends StatelessWidget {
             subtitle: const Text('卡序的使用边界与开始方式'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(AppRoutes.welcome),
+          ),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text(AboutPage.title),
+            subtitle: const Text('版本、公测说明、源码与反馈'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(AppRoutes.about),
           ),
         ],
       ),
