@@ -3,7 +3,7 @@ description: "卡序 CardFlow：多信用卡管理 App（iOS 优先，纯本地�
 publish_to: 'none'
 
 # CFBundleShortVersionString = 版本名；CFBundleVersion = 构建号（CI 用 --build-number 覆盖）。
-version: 0.1.0+1
+version: 0.0.1+1
 
 environment:
   sdk: ^3.13.5

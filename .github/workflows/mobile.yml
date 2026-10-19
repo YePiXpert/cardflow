@@ -321,7 +321,7 @@ jobs:
           test -d Payload/Runner.app/Frameworks/Flutter.framework
           test -d Payload/Runner.app/Frameworks/App.framework
           ls Payload/Runner.app/Frameworks
-          # App 图标（公测版 0.1.0）：actool 编译出 Assets.car，并在 Info.plist 写入 CFBundleIcons（主图标名 AppIcon）。
+          # App 图标（公测版 0.0.1）：actool 编译出 Assets.car，并在 Info.plist 写入 CFBundleIcons（主图标名 AppIcon）。
           icon_name="$(read_key CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName 2>/dev/null || true)"
           test "$icon_name" = "AppIcon" || { echo "::error::CFBundleIcons:CFBundlePrimaryIcon:CFBundleIconName is '$icon_name', expected AppIcon"; exit 1; }
           test -f Payload/Runner.app/Assets.car || { echo "::error::Runner.app/Assets.car missing (the app icon was not compiled)"; exit 1; }

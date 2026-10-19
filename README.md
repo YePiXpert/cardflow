@@ -14,7 +14,7 @@
 | `docs/` | 规划文档（唯一事实来源） | 已完成 |
 | `poc/engine_reference/` | 参考引擎 PoC（golden-fixture 预言机，非生产代码） | 已验证 |
 | `services/api/` | 服务端：FastAPI 模块化单体 + worker + CLI；Python 3.13，uv 管理，包 `cardflow`（平铺布局，模块划分见 architecture §4） | M0 骨架（T-002） |
-| `apps/mobile/` | Flutter 移动端（iOS 优先；骨架、主题、金额组件、诊断页、加密本地库（v4：工作空间、信用账户、卡片、账期规则版本、额度快照、现金账户与快照、现金事件、周期事项、情景与计算版本、交易、账单与追加只读的账单版本、分期计划与各期、还款与分配、差异项）；真实/演示工作空间；卡包、账户详情与设置、总览（预测账期、现金压力、近期到期与待办）、账单中心（录入与修正账单、记一笔、转分期）、还款登记与核对、现金与收支、资金日历、情景对比；「关于」与公测说明；`packages/cardflow_domain` 纯 Dart 领域包（含分期拆分与成本）；CI 出未签名 IPA） | I-1 已交付（公测版 0.1.0 beta 1） |
+| `apps/mobile/` | Flutter 移动端（iOS 优先；骨架、主题、金额组件、诊断页、加密本地库（v4：工作空间、信用账户、卡片、账期规则版本、额度快照、现金账户与快照、现金事件、周期事项、情景与计算版本、交易、账单与追加只读的账单版本、分期计划与各期、还款与分配、差异项）；真实/演示工作空间；卡包、账户详情与设置、总览（预测账期、现金压力、近期到期与待办）、账单中心（录入与修正账单、记一笔、转分期）、还款登记与核对、现金与收支、资金日历、情景对比；「关于」与公测说明；`packages/cardflow_domain` 纯 Dart 领域包（含分期拆分与成本）；CI 出未签名 IPA） | I-1 已交付（公测版 0.0.1） |
 | `apps/admin/` | Web 后台 React SPA（占位，T-031） | 未实现 |
 | `packages/rules-protocol/` | 规则协议 v1 JSON Schema、golden fixture、Python 运行器；Dart 端在 `apps/mobile/packages/cardflow_domain`，CI `protocol-parity` 双端逐字节一致 | v1 已冻结（1.1.0） |
 | `deploy/` | Compose 文件：`compose.dev.yaml` = 开发库（项目名 `cardflow-dev`，仅 127.0.0.1:18432）；`compose.yaml` = 自托管部署（项目名 `cardflow`，仅 127.0.0.1:18080，见下文"部署"）；`.env.example`；`secrets/`（只有 README 入库） | 开发库可用；部署可用（T-012） |

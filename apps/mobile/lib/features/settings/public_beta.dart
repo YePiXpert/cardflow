@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../app/widgets/state_views.dart';
 
-/// 公测版（0.1.0 beta 1）的固定文字：P-22 首次使用页底部与「关于」共用同一段公测说明。
+/// 公测版的固定文字：P-22 首次使用页底部与「关于」共用同一段公测说明。版本号只在 [PublicBeta.version] 一处，
+/// 必须与 `pubspec.yaml` 的版本名相同（`test/app/public_beta_test.dart` 读取 pubspec 断言二者相等，改版本时一起改）。
 abstract final class PublicBeta {
   /// App 名称（与诊断报告的标题一致）。
   static const String appName = '卡序 CardFlow';
 
   /// 公测版本号：与 `pubspec.yaml` 的版本名一致（测试核对；构建号由 CI 的运行序号给出）。
-  static const String version = '0.1.0';
+  static const String version = '0.0.1';
 
   /// "公测版"标识。
   static const String badge = '公测版';

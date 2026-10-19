@@ -1,8 +1,9 @@
-// 公测版（0.1.0 beta 1）的界面约束（简报 I1-c2 §2）。
+// 公测版 0.0.1 的界面约束（简报 I1-c2 §2；版本号按用户要求为 0.0.1）。
 //
-// 公测说明与「关于」：P-22 首次使用页底部（最后一节）与"我的 › 关于卡序"显示同一段公测说明（原文逐字断言，
-// 版本号与 pubspec.yaml 的版本名一致）；「关于」显示名称"卡序 CardFlow"、"公测版"标识、版本与构建号（与诊断页
-// 同一来源 package_info_plus，含读取中/读取失败）、源码地址（可选中的纯文本 + 复制，不打开浏览器）、反馈方式。
+// 公测说明与「关于」：P-22 首次使用页底部（最后一节）与"我的 › 关于卡序"显示同一段公测说明（原文逐字断言；
+// 说明里的版本号只来自 PublicBeta.version，测试读取 pubspec.yaml 断言它与版本名相同）；「关于」显示名称"卡序 CardFlow"、
+// "公测版"标识、版本与构建号（与诊断页同一来源 package_info_plus，测试用与常量不同的版本号证明来源，含读取中/读取失败）、
+// 源码地址（可选中的纯文本 + 复制，不打开浏览器）、反馈方式。
 //
 // 阶段代号防回归：用户可见的文字里不出现内部阶段代号（"I-3 提供""I-2 使用"一类，正则 `I-\d`），
 // 未开放的功能一律写"后续版本提供"一类说法。两道检查：
@@ -22,6 +23,7 @@ import 'package:cardflow/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../support/forbidden_ui.dart';
 import '../test_helpers.dart';
@@ -284,24 +286,32 @@ void main() {
   });
 
   group('公测说明与「关于」', () {
-    /// 简报 I1-c2 §2 第 2 条给出的说明原文。
+    /// 简报 I1-c2 §2 第 2 条给出的说明原文（版本号按用户要求改为 0.0.1）。
     const briefNote =
-        '公测版 0.1.0：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。'
+        '公测版 0.0.1：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。'
         '删除 App 或「重置本地数据」会永久删除全部数据；目前还没有备份与导出，后续版本提供。';
 
-    test('说明原文与简报一致；版本号与 pubspec.yaml 的版本名一致', () {
-      expect(PublicBeta.note, briefNote);
-      final pubspec = File('pubspec.yaml').readAsStringSync();
-      final version = RegExp(
-        r'^version:\s*(\d+\.\d+\.\d+)\+\d+\s*$',
-        multiLine: true,
-      ).firstMatch(pubspec);
-      expect(version, isNotNull, reason: 'pubspec.yaml 的 version 行');
-      expect(PublicBeta.version, version!.group(1));
-      expect(PublicBeta.appName, '卡序 CardFlow');
-      expect(PublicBeta.sourceAddress, 'github.com/YePiXpert/cardflow');
-      expect(PublicBeta.feedback, '我的 › 诊断信息 › 复制诊断信息，附上问题描述发到 GitHub Issues');
-    });
+    test(
+      '说明原文（公测版 0.0.1）；说明里的版本号就是 PublicBeta.version，且与 pubspec.yaml 的版本名相同',
+      () {
+        expect(PublicBeta.note, briefNote);
+        expect(PublicBeta.version, '0.0.1');
+        expect(PublicBeta.note, startsWith('公测版 ${PublicBeta.version}：'));
+        final pubspec = File('pubspec.yaml').readAsStringSync();
+        final version = RegExp(
+          r'^version:\s*(\d+\.\d+\.\d+)\+\d+\s*$',
+          multiLine: true,
+        ).firstMatch(pubspec);
+        expect(version, isNotNull, reason: 'pubspec.yaml 的 version 行');
+        expect(PublicBeta.version, version!.group(1));
+        expect(PublicBeta.appName, '卡序 CardFlow');
+        expect(PublicBeta.sourceAddress, 'github.com/YePiXpert/cardflow');
+        expect(
+          PublicBeta.feedback,
+          '我的 › 诊断信息 › 复制诊断信息，附上问题描述发到 GitHub Issues',
+        );
+      },
+    );
 
     testWidgets('P-22 首次使用页（没有工作空间）：底部最后一节是公测说明', (tester) async {
       await pumpCardFlowApp(tester, workspace: TestWorkspace.none);
@@ -331,6 +341,14 @@ void main() {
         '源码地址可选中并可复制、反馈方式与「打开诊断信息」', (tester) async {
       final copied = captureClipboard(tester);
       await pumpCardFlowApp(tester);
+      // 版本与构建号必须来自 package_info_plus（与诊断页同一来源），不是 PublicBeta.version：模拟一个不同的版本。
+      PackageInfo.setMockInitialValues(
+        appName: '卡序',
+        packageName: 'li.yep.cardflow',
+        version: '9.8.7',
+        buildNumber: '65',
+        buildSignature: '',
+      );
       await goTo(tester, AppRoutes.settings);
       await tester.tap(find.text(AboutPage.title));
       await tester.pumpAndSettle();
@@ -341,8 +359,7 @@ void main() {
       );
       expect(find.text(PublicBeta.appName), findsOneWidget);
       expect(find.text(PublicBeta.badge), findsOneWidget);
-      // test_helpers.dart 的 mockPackageInfo：版本 0.0.1、构建 7。
-      expect(find.text('0.0.1（构建 7）'), findsOneWidget);
+      expect(find.text('9.8.7（构建 65）'), findsOneWidget);
       expect(find.text(PublicBeta.noteTitle), findsOneWidget);
       expect(find.text(PublicBeta.note), findsOneWidget);
       final source = find.byType(SelectableText);
@@ -363,7 +380,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(appBarTitle(DiagnosticsPage.title), findsOneWidget);
       // 诊断页显示同一个版本与构建号。
-      expect(find.text('0.0.1（构建 7）'), findsOneWidget);
+      expect(find.text('9.8.7（构建 65）'), findsOneWidget);
     });
 
     testWidgets('「关于」的版本读取中：显示"读取中…"，公测说明照常显示', (tester) async {
