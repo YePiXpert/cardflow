@@ -12140,6 +12140,6584 @@ class ScenarioRunsCompanion extends UpdateCompanion<ScenarioRunRow> {
   }
 }
 
+class $CardTransactionsTable extends CardTransactions
+    with TableInfo<$CardTransactionsTable, CardTransactionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CardTransactionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyAccountIdMeta = const VerificationMeta(
+    'currencyAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> currencyAccountId =
+      GeneratedColumn<String>(
+        'currency_account_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _cardIdMeta = const VerificationMeta('cardId');
+  @override
+  late final GeneratedColumn<String> cardId = GeneratedColumn<String>(
+    'card_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _txnTypeMeta = const VerificationMeta(
+    'txnType',
+  );
+  @override
+  late final GeneratedColumn<String> txnType = GeneratedColumn<String>(
+    'txn_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyMeta = const VerificationMeta(
+    'currency',
+  );
+  @override
+  late final GeneratedColumn<String> currency = GeneratedColumn<String>(
+    'currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _txnAtMeta = const VerificationMeta('txnAt');
+  @override
+  late final GeneratedColumn<String> txnAt = GeneratedColumn<String>(
+    'txn_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _txnTzMeta = const VerificationMeta('txnTz');
+  @override
+  late final GeneratedColumn<String> txnTz = GeneratedColumn<String>(
+    'txn_tz',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timePrecisionMeta = const VerificationMeta(
+    'timePrecision',
+  );
+  @override
+  late final GeneratedColumn<String> timePrecision = GeneratedColumn<String>(
+    'time_precision',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _postedOnMeta = const VerificationMeta(
+    'postedOn',
+  );
+  @override
+  late final GeneratedColumn<String> postedOn = GeneratedColumn<String>(
+    'posted_on',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _merchantMeta = const VerificationMeta(
+    'merchant',
+  );
+  @override
+  late final GeneratedColumn<String> merchant = GeneratedColumn<String>(
+    'merchant',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _parentTransactionIdMeta =
+      const VerificationMeta('parentTransactionId');
+  @override
+  late final GeneratedColumn<String> parentTransactionId =
+      GeneratedColumn<String>(
+        'parent_transaction_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _fingerprintMeta = const VerificationMeta(
+    'fingerprint',
+  );
+  @override
+  late final GeneratedColumn<String> fingerprint = GeneratedColumn<String>(
+    'fingerprint',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceKindMeta = const VerificationMeta(
+    'sourceKind',
+  );
+  @override
+  late final GeneratedColumn<String> sourceKind = GeneratedColumn<String>(
+    'source_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _confirmationLevelMeta = const VerificationMeta(
+    'confirmationLevel',
+  );
+  @override
+  late final GeneratedColumn<String> confirmationLevel =
+      GeneratedColumn<String>(
+        'confirmation_level',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _recordedAtMeta = const VerificationMeta(
+    'recordedAt',
+  );
+  @override
+  late final GeneratedColumn<String> recordedAt = GeneratedColumn<String>(
+    'recorded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    currencyAccountId,
+    cardId,
+    txnType,
+    amountMinor,
+    currency,
+    txnAt,
+    txnTz,
+    timePrecision,
+    postedOn,
+    merchant,
+    category,
+    status,
+    parentTransactionId,
+    fingerprint,
+    sourceKind,
+    confirmationLevel,
+    rowVersion,
+    recordedAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'transactions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CardTransactionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('currency_account_id')) {
+      context.handle(
+        _currencyAccountIdMeta,
+        currencyAccountId.isAcceptableOrUnknown(
+          data['currency_account_id']!,
+          _currencyAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyAccountIdMeta);
+    }
+    if (data.containsKey('card_id')) {
+      context.handle(
+        _cardIdMeta,
+        cardId.isAcceptableOrUnknown(data['card_id']!, _cardIdMeta),
+      );
+    }
+    if (data.containsKey('txn_type')) {
+      context.handle(
+        _txnTypeMeta,
+        txnType.isAcceptableOrUnknown(data['txn_type']!, _txnTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_txnTypeMeta);
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorMeta);
+    }
+    if (data.containsKey('currency')) {
+      context.handle(
+        _currencyMeta,
+        currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyMeta);
+    }
+    if (data.containsKey('txn_at')) {
+      context.handle(
+        _txnAtMeta,
+        txnAt.isAcceptableOrUnknown(data['txn_at']!, _txnAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_txnAtMeta);
+    }
+    if (data.containsKey('txn_tz')) {
+      context.handle(
+        _txnTzMeta,
+        txnTz.isAcceptableOrUnknown(data['txn_tz']!, _txnTzMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_txnTzMeta);
+    }
+    if (data.containsKey('time_precision')) {
+      context.handle(
+        _timePrecisionMeta,
+        timePrecision.isAcceptableOrUnknown(
+          data['time_precision']!,
+          _timePrecisionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_timePrecisionMeta);
+    }
+    if (data.containsKey('posted_on')) {
+      context.handle(
+        _postedOnMeta,
+        postedOn.isAcceptableOrUnknown(data['posted_on']!, _postedOnMeta),
+      );
+    }
+    if (data.containsKey('merchant')) {
+      context.handle(
+        _merchantMeta,
+        merchant.isAcceptableOrUnknown(data['merchant']!, _merchantMeta),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('parent_transaction_id')) {
+      context.handle(
+        _parentTransactionIdMeta,
+        parentTransactionId.isAcceptableOrUnknown(
+          data['parent_transaction_id']!,
+          _parentTransactionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fingerprint')) {
+      context.handle(
+        _fingerprintMeta,
+        fingerprint.isAcceptableOrUnknown(
+          data['fingerprint']!,
+          _fingerprintMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_fingerprintMeta);
+    }
+    if (data.containsKey('source_kind')) {
+      context.handle(
+        _sourceKindMeta,
+        sourceKind.isAcceptableOrUnknown(data['source_kind']!, _sourceKindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceKindMeta);
+    }
+    if (data.containsKey('confirmation_level')) {
+      context.handle(
+        _confirmationLevelMeta,
+        confirmationLevel.isAcceptableOrUnknown(
+          data['confirmation_level']!,
+          _confirmationLevelMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_confirmationLevelMeta);
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('recorded_at')) {
+      context.handle(
+        _recordedAtMeta,
+        recordedAt.isAcceptableOrUnknown(data['recorded_at']!, _recordedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, currencyAccountId, id},
+  ];
+  @override
+  CardTransactionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CardTransactionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      currencyAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_account_id'],
+      )!,
+      cardId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}card_id'],
+      ),
+      txnType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}txn_type'],
+      )!,
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      )!,
+      currency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency'],
+      )!,
+      txnAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}txn_at'],
+      )!,
+      txnTz: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}txn_tz'],
+      )!,
+      timePrecision: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}time_precision'],
+      )!,
+      postedOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}posted_on'],
+      ),
+      merchant: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}merchant'],
+      ),
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      parentTransactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}parent_transaction_id'],
+      ),
+      fingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fingerprint'],
+      )!,
+      sourceKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_kind'],
+      )!,
+      confirmationLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}confirmation_level'],
+      )!,
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      recordedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $CardTransactionsTable createAlias(String alias) {
+    return $CardTransactionsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class CardTransactionRow extends DataClass
+    implements Insertable<CardTransactionRow> {
+  final String id;
+  final String workspaceId;
+  final String currencyAccountId;
+  final String? cardId;
+
+  /// `purchase` / `refund` / `repayment` / `transfer` / `fee` / `interest` /
+  /// `installment_principal` / `installment_fee` / `adjustment`。
+  final String txnType;
+  final int amountMinor;
+  final String currency;
+
+  /// 交易时点（RFC 3339，按 [txnTz] 的偏移写出）。
+  final String txnAt;
+
+  /// 交易的业务时区（信用账户的 `business_tz`）。
+  final String txnTz;
+
+  /// `datetime` / `date` / `month`。
+  final String timePrecision;
+
+  /// 银行入账日；空 = 还不知道（按入账延迟区间给出"可能账期"，F-15）。
+  final String? postedOn;
+  final String? merchant;
+  final String? category;
+
+  /// `pending` / `posted` / `reversed`。
+  final String status;
+
+  /// 退款、冲正指向的原交易（同一币种子账户）。
+  final String? parentTransactionId;
+  final String fingerprint;
+
+  /// `manual` / `import`。
+  final String sourceKind;
+
+  /// `system_estimated` / `user_confirmed` / `bank_confirmed`。
+  final String confirmationLevel;
+  final int rowVersion;
+  final String recordedAt;
+  final String updatedAt;
+  final String? deletedAt;
+  const CardTransactionRow({
+    required this.id,
+    required this.workspaceId,
+    required this.currencyAccountId,
+    this.cardId,
+    required this.txnType,
+    required this.amountMinor,
+    required this.currency,
+    required this.txnAt,
+    required this.txnTz,
+    required this.timePrecision,
+    this.postedOn,
+    this.merchant,
+    this.category,
+    required this.status,
+    this.parentTransactionId,
+    required this.fingerprint,
+    required this.sourceKind,
+    required this.confirmationLevel,
+    required this.rowVersion,
+    required this.recordedAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['currency_account_id'] = Variable<String>(currencyAccountId);
+    if (!nullToAbsent || cardId != null) {
+      map['card_id'] = Variable<String>(cardId);
+    }
+    map['txn_type'] = Variable<String>(txnType);
+    map['amount_minor'] = Variable<int>(amountMinor);
+    map['currency'] = Variable<String>(currency);
+    map['txn_at'] = Variable<String>(txnAt);
+    map['txn_tz'] = Variable<String>(txnTz);
+    map['time_precision'] = Variable<String>(timePrecision);
+    if (!nullToAbsent || postedOn != null) {
+      map['posted_on'] = Variable<String>(postedOn);
+    }
+    if (!nullToAbsent || merchant != null) {
+      map['merchant'] = Variable<String>(merchant);
+    }
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || parentTransactionId != null) {
+      map['parent_transaction_id'] = Variable<String>(parentTransactionId);
+    }
+    map['fingerprint'] = Variable<String>(fingerprint);
+    map['source_kind'] = Variable<String>(sourceKind);
+    map['confirmation_level'] = Variable<String>(confirmationLevel);
+    map['row_version'] = Variable<int>(rowVersion);
+    map['recorded_at'] = Variable<String>(recordedAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<String>(deletedAt);
+    }
+    return map;
+  }
+
+  CardTransactionsCompanion toCompanion(bool nullToAbsent) {
+    return CardTransactionsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      currencyAccountId: Value(currencyAccountId),
+      cardId: cardId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cardId),
+      txnType: Value(txnType),
+      amountMinor: Value(amountMinor),
+      currency: Value(currency),
+      txnAt: Value(txnAt),
+      txnTz: Value(txnTz),
+      timePrecision: Value(timePrecision),
+      postedOn: postedOn == null && nullToAbsent
+          ? const Value.absent()
+          : Value(postedOn),
+      merchant: merchant == null && nullToAbsent
+          ? const Value.absent()
+          : Value(merchant),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+      status: Value(status),
+      parentTransactionId: parentTransactionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(parentTransactionId),
+      fingerprint: Value(fingerprint),
+      sourceKind: Value(sourceKind),
+      confirmationLevel: Value(confirmationLevel),
+      rowVersion: Value(rowVersion),
+      recordedAt: Value(recordedAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory CardTransactionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CardTransactionRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      currencyAccountId: serializer.fromJson<String>(json['currencyAccountId']),
+      cardId: serializer.fromJson<String?>(json['cardId']),
+      txnType: serializer.fromJson<String>(json['txnType']),
+      amountMinor: serializer.fromJson<int>(json['amountMinor']),
+      currency: serializer.fromJson<String>(json['currency']),
+      txnAt: serializer.fromJson<String>(json['txnAt']),
+      txnTz: serializer.fromJson<String>(json['txnTz']),
+      timePrecision: serializer.fromJson<String>(json['timePrecision']),
+      postedOn: serializer.fromJson<String?>(json['postedOn']),
+      merchant: serializer.fromJson<String?>(json['merchant']),
+      category: serializer.fromJson<String?>(json['category']),
+      status: serializer.fromJson<String>(json['status']),
+      parentTransactionId: serializer.fromJson<String?>(
+        json['parentTransactionId'],
+      ),
+      fingerprint: serializer.fromJson<String>(json['fingerprint']),
+      sourceKind: serializer.fromJson<String>(json['sourceKind']),
+      confirmationLevel: serializer.fromJson<String>(json['confirmationLevel']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      recordedAt: serializer.fromJson<String>(json['recordedAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'currencyAccountId': serializer.toJson<String>(currencyAccountId),
+      'cardId': serializer.toJson<String?>(cardId),
+      'txnType': serializer.toJson<String>(txnType),
+      'amountMinor': serializer.toJson<int>(amountMinor),
+      'currency': serializer.toJson<String>(currency),
+      'txnAt': serializer.toJson<String>(txnAt),
+      'txnTz': serializer.toJson<String>(txnTz),
+      'timePrecision': serializer.toJson<String>(timePrecision),
+      'postedOn': serializer.toJson<String?>(postedOn),
+      'merchant': serializer.toJson<String?>(merchant),
+      'category': serializer.toJson<String?>(category),
+      'status': serializer.toJson<String>(status),
+      'parentTransactionId': serializer.toJson<String?>(parentTransactionId),
+      'fingerprint': serializer.toJson<String>(fingerprint),
+      'sourceKind': serializer.toJson<String>(sourceKind),
+      'confirmationLevel': serializer.toJson<String>(confirmationLevel),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'recordedAt': serializer.toJson<String>(recordedAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
+    };
+  }
+
+  CardTransactionRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? currencyAccountId,
+    Value<String?> cardId = const Value.absent(),
+    String? txnType,
+    int? amountMinor,
+    String? currency,
+    String? txnAt,
+    String? txnTz,
+    String? timePrecision,
+    Value<String?> postedOn = const Value.absent(),
+    Value<String?> merchant = const Value.absent(),
+    Value<String?> category = const Value.absent(),
+    String? status,
+    Value<String?> parentTransactionId = const Value.absent(),
+    String? fingerprint,
+    String? sourceKind,
+    String? confirmationLevel,
+    int? rowVersion,
+    String? recordedAt,
+    String? updatedAt,
+    Value<String?> deletedAt = const Value.absent(),
+  }) => CardTransactionRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+    cardId: cardId.present ? cardId.value : this.cardId,
+    txnType: txnType ?? this.txnType,
+    amountMinor: amountMinor ?? this.amountMinor,
+    currency: currency ?? this.currency,
+    txnAt: txnAt ?? this.txnAt,
+    txnTz: txnTz ?? this.txnTz,
+    timePrecision: timePrecision ?? this.timePrecision,
+    postedOn: postedOn.present ? postedOn.value : this.postedOn,
+    merchant: merchant.present ? merchant.value : this.merchant,
+    category: category.present ? category.value : this.category,
+    status: status ?? this.status,
+    parentTransactionId: parentTransactionId.present
+        ? parentTransactionId.value
+        : this.parentTransactionId,
+    fingerprint: fingerprint ?? this.fingerprint,
+    sourceKind: sourceKind ?? this.sourceKind,
+    confirmationLevel: confirmationLevel ?? this.confirmationLevel,
+    rowVersion: rowVersion ?? this.rowVersion,
+    recordedAt: recordedAt ?? this.recordedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  CardTransactionRow copyWithCompanion(CardTransactionsCompanion data) {
+    return CardTransactionRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      currencyAccountId: data.currencyAccountId.present
+          ? data.currencyAccountId.value
+          : this.currencyAccountId,
+      cardId: data.cardId.present ? data.cardId.value : this.cardId,
+      txnType: data.txnType.present ? data.txnType.value : this.txnType,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+      currency: data.currency.present ? data.currency.value : this.currency,
+      txnAt: data.txnAt.present ? data.txnAt.value : this.txnAt,
+      txnTz: data.txnTz.present ? data.txnTz.value : this.txnTz,
+      timePrecision: data.timePrecision.present
+          ? data.timePrecision.value
+          : this.timePrecision,
+      postedOn: data.postedOn.present ? data.postedOn.value : this.postedOn,
+      merchant: data.merchant.present ? data.merchant.value : this.merchant,
+      category: data.category.present ? data.category.value : this.category,
+      status: data.status.present ? data.status.value : this.status,
+      parentTransactionId: data.parentTransactionId.present
+          ? data.parentTransactionId.value
+          : this.parentTransactionId,
+      fingerprint: data.fingerprint.present
+          ? data.fingerprint.value
+          : this.fingerprint,
+      sourceKind: data.sourceKind.present
+          ? data.sourceKind.value
+          : this.sourceKind,
+      confirmationLevel: data.confirmationLevel.present
+          ? data.confirmationLevel.value
+          : this.confirmationLevel,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      recordedAt: data.recordedAt.present
+          ? data.recordedAt.value
+          : this.recordedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardTransactionRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('cardId: $cardId, ')
+          ..write('txnType: $txnType, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('currency: $currency, ')
+          ..write('txnAt: $txnAt, ')
+          ..write('txnTz: $txnTz, ')
+          ..write('timePrecision: $timePrecision, ')
+          ..write('postedOn: $postedOn, ')
+          ..write('merchant: $merchant, ')
+          ..write('category: $category, ')
+          ..write('status: $status, ')
+          ..write('parentTransactionId: $parentTransactionId, ')
+          ..write('fingerprint: $fingerprint, ')
+          ..write('sourceKind: $sourceKind, ')
+          ..write('confirmationLevel: $confirmationLevel, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    workspaceId,
+    currencyAccountId,
+    cardId,
+    txnType,
+    amountMinor,
+    currency,
+    txnAt,
+    txnTz,
+    timePrecision,
+    postedOn,
+    merchant,
+    category,
+    status,
+    parentTransactionId,
+    fingerprint,
+    sourceKind,
+    confirmationLevel,
+    rowVersion,
+    recordedAt,
+    updatedAt,
+    deletedAt,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CardTransactionRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.currencyAccountId == this.currencyAccountId &&
+          other.cardId == this.cardId &&
+          other.txnType == this.txnType &&
+          other.amountMinor == this.amountMinor &&
+          other.currency == this.currency &&
+          other.txnAt == this.txnAt &&
+          other.txnTz == this.txnTz &&
+          other.timePrecision == this.timePrecision &&
+          other.postedOn == this.postedOn &&
+          other.merchant == this.merchant &&
+          other.category == this.category &&
+          other.status == this.status &&
+          other.parentTransactionId == this.parentTransactionId &&
+          other.fingerprint == this.fingerprint &&
+          other.sourceKind == this.sourceKind &&
+          other.confirmationLevel == this.confirmationLevel &&
+          other.rowVersion == this.rowVersion &&
+          other.recordedAt == this.recordedAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class CardTransactionsCompanion extends UpdateCompanion<CardTransactionRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> currencyAccountId;
+  final Value<String?> cardId;
+  final Value<String> txnType;
+  final Value<int> amountMinor;
+  final Value<String> currency;
+  final Value<String> txnAt;
+  final Value<String> txnTz;
+  final Value<String> timePrecision;
+  final Value<String?> postedOn;
+  final Value<String?> merchant;
+  final Value<String?> category;
+  final Value<String> status;
+  final Value<String?> parentTransactionId;
+  final Value<String> fingerprint;
+  final Value<String> sourceKind;
+  final Value<String> confirmationLevel;
+  final Value<int> rowVersion;
+  final Value<String> recordedAt;
+  final Value<String> updatedAt;
+  final Value<String?> deletedAt;
+  final Value<int> rowid;
+  const CardTransactionsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.currencyAccountId = const Value.absent(),
+    this.cardId = const Value.absent(),
+    this.txnType = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.currency = const Value.absent(),
+    this.txnAt = const Value.absent(),
+    this.txnTz = const Value.absent(),
+    this.timePrecision = const Value.absent(),
+    this.postedOn = const Value.absent(),
+    this.merchant = const Value.absent(),
+    this.category = const Value.absent(),
+    this.status = const Value.absent(),
+    this.parentTransactionId = const Value.absent(),
+    this.fingerprint = const Value.absent(),
+    this.sourceKind = const Value.absent(),
+    this.confirmationLevel = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.recordedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CardTransactionsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String currencyAccountId,
+    this.cardId = const Value.absent(),
+    required String txnType,
+    required int amountMinor,
+    required String currency,
+    required String txnAt,
+    required String txnTz,
+    required String timePrecision,
+    this.postedOn = const Value.absent(),
+    this.merchant = const Value.absent(),
+    this.category = const Value.absent(),
+    required String status,
+    this.parentTransactionId = const Value.absent(),
+    required String fingerprint,
+    required String sourceKind,
+    required String confirmationLevel,
+    this.rowVersion = const Value.absent(),
+    required String recordedAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       currencyAccountId = Value(currencyAccountId),
+       txnType = Value(txnType),
+       amountMinor = Value(amountMinor),
+       currency = Value(currency),
+       txnAt = Value(txnAt),
+       txnTz = Value(txnTz),
+       timePrecision = Value(timePrecision),
+       status = Value(status),
+       fingerprint = Value(fingerprint),
+       sourceKind = Value(sourceKind),
+       confirmationLevel = Value(confirmationLevel),
+       recordedAt = Value(recordedAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<CardTransactionRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? currencyAccountId,
+    Expression<String>? cardId,
+    Expression<String>? txnType,
+    Expression<int>? amountMinor,
+    Expression<String>? currency,
+    Expression<String>? txnAt,
+    Expression<String>? txnTz,
+    Expression<String>? timePrecision,
+    Expression<String>? postedOn,
+    Expression<String>? merchant,
+    Expression<String>? category,
+    Expression<String>? status,
+    Expression<String>? parentTransactionId,
+    Expression<String>? fingerprint,
+    Expression<String>? sourceKind,
+    Expression<String>? confirmationLevel,
+    Expression<int>? rowVersion,
+    Expression<String>? recordedAt,
+    Expression<String>? updatedAt,
+    Expression<String>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (currencyAccountId != null) 'currency_account_id': currencyAccountId,
+      if (cardId != null) 'card_id': cardId,
+      if (txnType != null) 'txn_type': txnType,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (currency != null) 'currency': currency,
+      if (txnAt != null) 'txn_at': txnAt,
+      if (txnTz != null) 'txn_tz': txnTz,
+      if (timePrecision != null) 'time_precision': timePrecision,
+      if (postedOn != null) 'posted_on': postedOn,
+      if (merchant != null) 'merchant': merchant,
+      if (category != null) 'category': category,
+      if (status != null) 'status': status,
+      if (parentTransactionId != null)
+        'parent_transaction_id': parentTransactionId,
+      if (fingerprint != null) 'fingerprint': fingerprint,
+      if (sourceKind != null) 'source_kind': sourceKind,
+      if (confirmationLevel != null) 'confirmation_level': confirmationLevel,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (recordedAt != null) 'recorded_at': recordedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CardTransactionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? currencyAccountId,
+    Value<String?>? cardId,
+    Value<String>? txnType,
+    Value<int>? amountMinor,
+    Value<String>? currency,
+    Value<String>? txnAt,
+    Value<String>? txnTz,
+    Value<String>? timePrecision,
+    Value<String?>? postedOn,
+    Value<String?>? merchant,
+    Value<String?>? category,
+    Value<String>? status,
+    Value<String?>? parentTransactionId,
+    Value<String>? fingerprint,
+    Value<String>? sourceKind,
+    Value<String>? confirmationLevel,
+    Value<int>? rowVersion,
+    Value<String>? recordedAt,
+    Value<String>? updatedAt,
+    Value<String?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return CardTransactionsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+      cardId: cardId ?? this.cardId,
+      txnType: txnType ?? this.txnType,
+      amountMinor: amountMinor ?? this.amountMinor,
+      currency: currency ?? this.currency,
+      txnAt: txnAt ?? this.txnAt,
+      txnTz: txnTz ?? this.txnTz,
+      timePrecision: timePrecision ?? this.timePrecision,
+      postedOn: postedOn ?? this.postedOn,
+      merchant: merchant ?? this.merchant,
+      category: category ?? this.category,
+      status: status ?? this.status,
+      parentTransactionId: parentTransactionId ?? this.parentTransactionId,
+      fingerprint: fingerprint ?? this.fingerprint,
+      sourceKind: sourceKind ?? this.sourceKind,
+      confirmationLevel: confirmationLevel ?? this.confirmationLevel,
+      rowVersion: rowVersion ?? this.rowVersion,
+      recordedAt: recordedAt ?? this.recordedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (currencyAccountId.present) {
+      map['currency_account_id'] = Variable<String>(currencyAccountId.value);
+    }
+    if (cardId.present) {
+      map['card_id'] = Variable<String>(cardId.value);
+    }
+    if (txnType.present) {
+      map['txn_type'] = Variable<String>(txnType.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (currency.present) {
+      map['currency'] = Variable<String>(currency.value);
+    }
+    if (txnAt.present) {
+      map['txn_at'] = Variable<String>(txnAt.value);
+    }
+    if (txnTz.present) {
+      map['txn_tz'] = Variable<String>(txnTz.value);
+    }
+    if (timePrecision.present) {
+      map['time_precision'] = Variable<String>(timePrecision.value);
+    }
+    if (postedOn.present) {
+      map['posted_on'] = Variable<String>(postedOn.value);
+    }
+    if (merchant.present) {
+      map['merchant'] = Variable<String>(merchant.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (parentTransactionId.present) {
+      map['parent_transaction_id'] = Variable<String>(
+        parentTransactionId.value,
+      );
+    }
+    if (fingerprint.present) {
+      map['fingerprint'] = Variable<String>(fingerprint.value);
+    }
+    if (sourceKind.present) {
+      map['source_kind'] = Variable<String>(sourceKind.value);
+    }
+    if (confirmationLevel.present) {
+      map['confirmation_level'] = Variable<String>(confirmationLevel.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (recordedAt.present) {
+      map['recorded_at'] = Variable<String>(recordedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardTransactionsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('cardId: $cardId, ')
+          ..write('txnType: $txnType, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('currency: $currency, ')
+          ..write('txnAt: $txnAt, ')
+          ..write('txnTz: $txnTz, ')
+          ..write('timePrecision: $timePrecision, ')
+          ..write('postedOn: $postedOn, ')
+          ..write('merchant: $merchant, ')
+          ..write('category: $category, ')
+          ..write('status: $status, ')
+          ..write('parentTransactionId: $parentTransactionId, ')
+          ..write('fingerprint: $fingerprint, ')
+          ..write('sourceKind: $sourceKind, ')
+          ..write('confirmationLevel: $confirmationLevel, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $StatementVersionsTable extends StatementVersions
+    with TableInfo<$StatementVersionsTable, StatementVersionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StatementVersionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statementIdMeta = const VerificationMeta(
+    'statementId',
+  );
+  @override
+  late final GeneratedColumn<String> statementId = GeneratedColumn<String>(
+    'statement_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _versionNoMeta = const VerificationMeta(
+    'versionNo',
+  );
+  @override
+  late final GeneratedColumn<int> versionNo = GeneratedColumn<int>(
+    'version_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceKindMeta = const VerificationMeta(
+    'sourceKind',
+  );
+  @override
+  late final GeneratedColumn<String> sourceKind = GeneratedColumn<String>(
+    'source_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _previousBalanceMinorMeta =
+      const VerificationMeta('previousBalanceMinor');
+  @override
+  late final GeneratedColumn<int> previousBalanceMinor = GeneratedColumn<int>(
+    'previous_balance_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _newBalanceMinorMeta = const VerificationMeta(
+    'newBalanceMinor',
+  );
+  @override
+  late final GeneratedColumn<int> newBalanceMinor = GeneratedColumn<int>(
+    'new_balance_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _minDueMinorMeta = const VerificationMeta(
+    'minDueMinor',
+  );
+  @override
+  late final GeneratedColumn<int> minDueMinor = GeneratedColumn<int>(
+    'min_due_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _paymentsMinorMeta = const VerificationMeta(
+    'paymentsMinor',
+  );
+  @override
+  late final GeneratedColumn<int> paymentsMinor = GeneratedColumn<int>(
+    'payments_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _creditsMinorMeta = const VerificationMeta(
+    'creditsMinor',
+  );
+  @override
+  late final GeneratedColumn<int> creditsMinor = GeneratedColumn<int>(
+    'credits_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _feesMinorMeta = const VerificationMeta(
+    'feesMinor',
+  );
+  @override
+  late final GeneratedColumn<int> feesMinor = GeneratedColumn<int>(
+    'fees_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _interestMinorMeta = const VerificationMeta(
+    'interestMinor',
+  );
+  @override
+  late final GeneratedColumn<int> interestMinor = GeneratedColumn<int>(
+    'interest_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _installmentDueMinorMeta =
+      const VerificationMeta('installmentDueMinor');
+  @override
+  late final GeneratedColumn<int> installmentDueMinor = GeneratedColumn<int>(
+    'installment_due_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _creditBalanceMinorMeta =
+      const VerificationMeta('creditBalanceMinor');
+  @override
+  late final GeneratedColumn<int> creditBalanceMinor = GeneratedColumn<int>(
+    'credit_balance_minor',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dueDateMeta = const VerificationMeta(
+    'dueDate',
+  );
+  @override
+  late final GeneratedColumn<String> dueDate = GeneratedColumn<String>(
+    'due_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordedByMeta = const VerificationMeta(
+    'recordedBy',
+  );
+  @override
+  late final GeneratedColumn<String> recordedBy = GeneratedColumn<String>(
+    'recorded_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordedAtMeta = const VerificationMeta(
+    'recordedAt',
+  );
+  @override
+  late final GeneratedColumn<String> recordedAt = GeneratedColumn<String>(
+    'recorded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    statementId,
+    versionNo,
+    sourceKind,
+    previousBalanceMinor,
+    newBalanceMinor,
+    minDueMinor,
+    paymentsMinor,
+    creditsMinor,
+    feesMinor,
+    interestMinor,
+    installmentDueMinor,
+    creditBalanceMinor,
+    dueDate,
+    recordedBy,
+    reason,
+    recordedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'statement_versions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StatementVersionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('statement_id')) {
+      context.handle(
+        _statementIdMeta,
+        statementId.isAcceptableOrUnknown(
+          data['statement_id']!,
+          _statementIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_statementIdMeta);
+    }
+    if (data.containsKey('version_no')) {
+      context.handle(
+        _versionNoMeta,
+        versionNo.isAcceptableOrUnknown(data['version_no']!, _versionNoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_versionNoMeta);
+    }
+    if (data.containsKey('source_kind')) {
+      context.handle(
+        _sourceKindMeta,
+        sourceKind.isAcceptableOrUnknown(data['source_kind']!, _sourceKindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceKindMeta);
+    }
+    if (data.containsKey('previous_balance_minor')) {
+      context.handle(
+        _previousBalanceMinorMeta,
+        previousBalanceMinor.isAcceptableOrUnknown(
+          data['previous_balance_minor']!,
+          _previousBalanceMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('new_balance_minor')) {
+      context.handle(
+        _newBalanceMinorMeta,
+        newBalanceMinor.isAcceptableOrUnknown(
+          data['new_balance_minor']!,
+          _newBalanceMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_newBalanceMinorMeta);
+    }
+    if (data.containsKey('min_due_minor')) {
+      context.handle(
+        _minDueMinorMeta,
+        minDueMinor.isAcceptableOrUnknown(
+          data['min_due_minor']!,
+          _minDueMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('payments_minor')) {
+      context.handle(
+        _paymentsMinorMeta,
+        paymentsMinor.isAcceptableOrUnknown(
+          data['payments_minor']!,
+          _paymentsMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('credits_minor')) {
+      context.handle(
+        _creditsMinorMeta,
+        creditsMinor.isAcceptableOrUnknown(
+          data['credits_minor']!,
+          _creditsMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fees_minor')) {
+      context.handle(
+        _feesMinorMeta,
+        feesMinor.isAcceptableOrUnknown(data['fees_minor']!, _feesMinorMeta),
+      );
+    }
+    if (data.containsKey('interest_minor')) {
+      context.handle(
+        _interestMinorMeta,
+        interestMinor.isAcceptableOrUnknown(
+          data['interest_minor']!,
+          _interestMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('installment_due_minor')) {
+      context.handle(
+        _installmentDueMinorMeta,
+        installmentDueMinor.isAcceptableOrUnknown(
+          data['installment_due_minor']!,
+          _installmentDueMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('credit_balance_minor')) {
+      context.handle(
+        _creditBalanceMinorMeta,
+        creditBalanceMinor.isAcceptableOrUnknown(
+          data['credit_balance_minor']!,
+          _creditBalanceMinorMeta,
+        ),
+      );
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(
+        _dueDateMeta,
+        dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dueDateMeta);
+    }
+    if (data.containsKey('recorded_by')) {
+      context.handle(
+        _recordedByMeta,
+        recordedBy.isAcceptableOrUnknown(data['recorded_by']!, _recordedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedByMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    }
+    if (data.containsKey('recorded_at')) {
+      context.handle(
+        _recordedAtMeta,
+        recordedAt.isAcceptableOrUnknown(data['recorded_at']!, _recordedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, statementId, id},
+    {statementId, versionNo},
+  ];
+  @override
+  StatementVersionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StatementVersionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      statementId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}statement_id'],
+      )!,
+      versionNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}version_no'],
+      )!,
+      sourceKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_kind'],
+      )!,
+      previousBalanceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}previous_balance_minor'],
+      ),
+      newBalanceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}new_balance_minor'],
+      )!,
+      minDueMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}min_due_minor'],
+      ),
+      paymentsMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}payments_minor'],
+      ),
+      creditsMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}credits_minor'],
+      ),
+      feesMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fees_minor'],
+      ),
+      interestMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}interest_minor'],
+      ),
+      installmentDueMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}installment_due_minor'],
+      ),
+      creditBalanceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}credit_balance_minor'],
+      ),
+      dueDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}due_date'],
+      )!,
+      recordedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_by'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      ),
+      recordedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_at'],
+      )!,
+    );
+  }
+
+  @override
+  $StatementVersionsTable createAlias(String alias) {
+    return $StatementVersionsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class StatementVersionRow extends DataClass
+    implements Insertable<StatementVersionRow> {
+  final String id;
+  final String workspaceId;
+  final String statementId;
+  final int versionNo;
+
+  /// `manual` / `import` / `correction`。
+  final String sourceKind;
+  final int? previousBalanceMinor;
+  final int newBalanceMinor;
+  final int? minDueMinor;
+  final int? paymentsMinor;
+  final int? creditsMinor;
+  final int? feesMinor;
+  final int? interestMinor;
+  final int? installmentDueMinor;
+  final int? creditBalanceMinor;
+  final String dueDate;
+
+  /// `user` / `import`（本地只有一个使用者：`user` 即本机用户）。
+  final String recordedBy;
+  final String? reason;
+  final String recordedAt;
+  const StatementVersionRow({
+    required this.id,
+    required this.workspaceId,
+    required this.statementId,
+    required this.versionNo,
+    required this.sourceKind,
+    this.previousBalanceMinor,
+    required this.newBalanceMinor,
+    this.minDueMinor,
+    this.paymentsMinor,
+    this.creditsMinor,
+    this.feesMinor,
+    this.interestMinor,
+    this.installmentDueMinor,
+    this.creditBalanceMinor,
+    required this.dueDate,
+    required this.recordedBy,
+    this.reason,
+    required this.recordedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['statement_id'] = Variable<String>(statementId);
+    map['version_no'] = Variable<int>(versionNo);
+    map['source_kind'] = Variable<String>(sourceKind);
+    if (!nullToAbsent || previousBalanceMinor != null) {
+      map['previous_balance_minor'] = Variable<int>(previousBalanceMinor);
+    }
+    map['new_balance_minor'] = Variable<int>(newBalanceMinor);
+    if (!nullToAbsent || minDueMinor != null) {
+      map['min_due_minor'] = Variable<int>(minDueMinor);
+    }
+    if (!nullToAbsent || paymentsMinor != null) {
+      map['payments_minor'] = Variable<int>(paymentsMinor);
+    }
+    if (!nullToAbsent || creditsMinor != null) {
+      map['credits_minor'] = Variable<int>(creditsMinor);
+    }
+    if (!nullToAbsent || feesMinor != null) {
+      map['fees_minor'] = Variable<int>(feesMinor);
+    }
+    if (!nullToAbsent || interestMinor != null) {
+      map['interest_minor'] = Variable<int>(interestMinor);
+    }
+    if (!nullToAbsent || installmentDueMinor != null) {
+      map['installment_due_minor'] = Variable<int>(installmentDueMinor);
+    }
+    if (!nullToAbsent || creditBalanceMinor != null) {
+      map['credit_balance_minor'] = Variable<int>(creditBalanceMinor);
+    }
+    map['due_date'] = Variable<String>(dueDate);
+    map['recorded_by'] = Variable<String>(recordedBy);
+    if (!nullToAbsent || reason != null) {
+      map['reason'] = Variable<String>(reason);
+    }
+    map['recorded_at'] = Variable<String>(recordedAt);
+    return map;
+  }
+
+  StatementVersionsCompanion toCompanion(bool nullToAbsent) {
+    return StatementVersionsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      statementId: Value(statementId),
+      versionNo: Value(versionNo),
+      sourceKind: Value(sourceKind),
+      previousBalanceMinor: previousBalanceMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(previousBalanceMinor),
+      newBalanceMinor: Value(newBalanceMinor),
+      minDueMinor: minDueMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(minDueMinor),
+      paymentsMinor: paymentsMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paymentsMinor),
+      creditsMinor: creditsMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(creditsMinor),
+      feesMinor: feesMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(feesMinor),
+      interestMinor: interestMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(interestMinor),
+      installmentDueMinor: installmentDueMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(installmentDueMinor),
+      creditBalanceMinor: creditBalanceMinor == null && nullToAbsent
+          ? const Value.absent()
+          : Value(creditBalanceMinor),
+      dueDate: Value(dueDate),
+      recordedBy: Value(recordedBy),
+      reason: reason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reason),
+      recordedAt: Value(recordedAt),
+    );
+  }
+
+  factory StatementVersionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StatementVersionRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      statementId: serializer.fromJson<String>(json['statementId']),
+      versionNo: serializer.fromJson<int>(json['versionNo']),
+      sourceKind: serializer.fromJson<String>(json['sourceKind']),
+      previousBalanceMinor: serializer.fromJson<int?>(
+        json['previousBalanceMinor'],
+      ),
+      newBalanceMinor: serializer.fromJson<int>(json['newBalanceMinor']),
+      minDueMinor: serializer.fromJson<int?>(json['minDueMinor']),
+      paymentsMinor: serializer.fromJson<int?>(json['paymentsMinor']),
+      creditsMinor: serializer.fromJson<int?>(json['creditsMinor']),
+      feesMinor: serializer.fromJson<int?>(json['feesMinor']),
+      interestMinor: serializer.fromJson<int?>(json['interestMinor']),
+      installmentDueMinor: serializer.fromJson<int?>(
+        json['installmentDueMinor'],
+      ),
+      creditBalanceMinor: serializer.fromJson<int?>(json['creditBalanceMinor']),
+      dueDate: serializer.fromJson<String>(json['dueDate']),
+      recordedBy: serializer.fromJson<String>(json['recordedBy']),
+      reason: serializer.fromJson<String?>(json['reason']),
+      recordedAt: serializer.fromJson<String>(json['recordedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'statementId': serializer.toJson<String>(statementId),
+      'versionNo': serializer.toJson<int>(versionNo),
+      'sourceKind': serializer.toJson<String>(sourceKind),
+      'previousBalanceMinor': serializer.toJson<int?>(previousBalanceMinor),
+      'newBalanceMinor': serializer.toJson<int>(newBalanceMinor),
+      'minDueMinor': serializer.toJson<int?>(minDueMinor),
+      'paymentsMinor': serializer.toJson<int?>(paymentsMinor),
+      'creditsMinor': serializer.toJson<int?>(creditsMinor),
+      'feesMinor': serializer.toJson<int?>(feesMinor),
+      'interestMinor': serializer.toJson<int?>(interestMinor),
+      'installmentDueMinor': serializer.toJson<int?>(installmentDueMinor),
+      'creditBalanceMinor': serializer.toJson<int?>(creditBalanceMinor),
+      'dueDate': serializer.toJson<String>(dueDate),
+      'recordedBy': serializer.toJson<String>(recordedBy),
+      'reason': serializer.toJson<String?>(reason),
+      'recordedAt': serializer.toJson<String>(recordedAt),
+    };
+  }
+
+  StatementVersionRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? statementId,
+    int? versionNo,
+    String? sourceKind,
+    Value<int?> previousBalanceMinor = const Value.absent(),
+    int? newBalanceMinor,
+    Value<int?> minDueMinor = const Value.absent(),
+    Value<int?> paymentsMinor = const Value.absent(),
+    Value<int?> creditsMinor = const Value.absent(),
+    Value<int?> feesMinor = const Value.absent(),
+    Value<int?> interestMinor = const Value.absent(),
+    Value<int?> installmentDueMinor = const Value.absent(),
+    Value<int?> creditBalanceMinor = const Value.absent(),
+    String? dueDate,
+    String? recordedBy,
+    Value<String?> reason = const Value.absent(),
+    String? recordedAt,
+  }) => StatementVersionRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    statementId: statementId ?? this.statementId,
+    versionNo: versionNo ?? this.versionNo,
+    sourceKind: sourceKind ?? this.sourceKind,
+    previousBalanceMinor: previousBalanceMinor.present
+        ? previousBalanceMinor.value
+        : this.previousBalanceMinor,
+    newBalanceMinor: newBalanceMinor ?? this.newBalanceMinor,
+    minDueMinor: minDueMinor.present ? minDueMinor.value : this.minDueMinor,
+    paymentsMinor: paymentsMinor.present
+        ? paymentsMinor.value
+        : this.paymentsMinor,
+    creditsMinor: creditsMinor.present ? creditsMinor.value : this.creditsMinor,
+    feesMinor: feesMinor.present ? feesMinor.value : this.feesMinor,
+    interestMinor: interestMinor.present
+        ? interestMinor.value
+        : this.interestMinor,
+    installmentDueMinor: installmentDueMinor.present
+        ? installmentDueMinor.value
+        : this.installmentDueMinor,
+    creditBalanceMinor: creditBalanceMinor.present
+        ? creditBalanceMinor.value
+        : this.creditBalanceMinor,
+    dueDate: dueDate ?? this.dueDate,
+    recordedBy: recordedBy ?? this.recordedBy,
+    reason: reason.present ? reason.value : this.reason,
+    recordedAt: recordedAt ?? this.recordedAt,
+  );
+  StatementVersionRow copyWithCompanion(StatementVersionsCompanion data) {
+    return StatementVersionRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      statementId: data.statementId.present
+          ? data.statementId.value
+          : this.statementId,
+      versionNo: data.versionNo.present ? data.versionNo.value : this.versionNo,
+      sourceKind: data.sourceKind.present
+          ? data.sourceKind.value
+          : this.sourceKind,
+      previousBalanceMinor: data.previousBalanceMinor.present
+          ? data.previousBalanceMinor.value
+          : this.previousBalanceMinor,
+      newBalanceMinor: data.newBalanceMinor.present
+          ? data.newBalanceMinor.value
+          : this.newBalanceMinor,
+      minDueMinor: data.minDueMinor.present
+          ? data.minDueMinor.value
+          : this.minDueMinor,
+      paymentsMinor: data.paymentsMinor.present
+          ? data.paymentsMinor.value
+          : this.paymentsMinor,
+      creditsMinor: data.creditsMinor.present
+          ? data.creditsMinor.value
+          : this.creditsMinor,
+      feesMinor: data.feesMinor.present ? data.feesMinor.value : this.feesMinor,
+      interestMinor: data.interestMinor.present
+          ? data.interestMinor.value
+          : this.interestMinor,
+      installmentDueMinor: data.installmentDueMinor.present
+          ? data.installmentDueMinor.value
+          : this.installmentDueMinor,
+      creditBalanceMinor: data.creditBalanceMinor.present
+          ? data.creditBalanceMinor.value
+          : this.creditBalanceMinor,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      recordedBy: data.recordedBy.present
+          ? data.recordedBy.value
+          : this.recordedBy,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      recordedAt: data.recordedAt.present
+          ? data.recordedAt.value
+          : this.recordedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StatementVersionRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('statementId: $statementId, ')
+          ..write('versionNo: $versionNo, ')
+          ..write('sourceKind: $sourceKind, ')
+          ..write('previousBalanceMinor: $previousBalanceMinor, ')
+          ..write('newBalanceMinor: $newBalanceMinor, ')
+          ..write('minDueMinor: $minDueMinor, ')
+          ..write('paymentsMinor: $paymentsMinor, ')
+          ..write('creditsMinor: $creditsMinor, ')
+          ..write('feesMinor: $feesMinor, ')
+          ..write('interestMinor: $interestMinor, ')
+          ..write('installmentDueMinor: $installmentDueMinor, ')
+          ..write('creditBalanceMinor: $creditBalanceMinor, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('recordedBy: $recordedBy, ')
+          ..write('reason: $reason, ')
+          ..write('recordedAt: $recordedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    statementId,
+    versionNo,
+    sourceKind,
+    previousBalanceMinor,
+    newBalanceMinor,
+    minDueMinor,
+    paymentsMinor,
+    creditsMinor,
+    feesMinor,
+    interestMinor,
+    installmentDueMinor,
+    creditBalanceMinor,
+    dueDate,
+    recordedBy,
+    reason,
+    recordedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StatementVersionRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.statementId == this.statementId &&
+          other.versionNo == this.versionNo &&
+          other.sourceKind == this.sourceKind &&
+          other.previousBalanceMinor == this.previousBalanceMinor &&
+          other.newBalanceMinor == this.newBalanceMinor &&
+          other.minDueMinor == this.minDueMinor &&
+          other.paymentsMinor == this.paymentsMinor &&
+          other.creditsMinor == this.creditsMinor &&
+          other.feesMinor == this.feesMinor &&
+          other.interestMinor == this.interestMinor &&
+          other.installmentDueMinor == this.installmentDueMinor &&
+          other.creditBalanceMinor == this.creditBalanceMinor &&
+          other.dueDate == this.dueDate &&
+          other.recordedBy == this.recordedBy &&
+          other.reason == this.reason &&
+          other.recordedAt == this.recordedAt);
+}
+
+class StatementVersionsCompanion extends UpdateCompanion<StatementVersionRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> statementId;
+  final Value<int> versionNo;
+  final Value<String> sourceKind;
+  final Value<int?> previousBalanceMinor;
+  final Value<int> newBalanceMinor;
+  final Value<int?> minDueMinor;
+  final Value<int?> paymentsMinor;
+  final Value<int?> creditsMinor;
+  final Value<int?> feesMinor;
+  final Value<int?> interestMinor;
+  final Value<int?> installmentDueMinor;
+  final Value<int?> creditBalanceMinor;
+  final Value<String> dueDate;
+  final Value<String> recordedBy;
+  final Value<String?> reason;
+  final Value<String> recordedAt;
+  final Value<int> rowid;
+  const StatementVersionsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.statementId = const Value.absent(),
+    this.versionNo = const Value.absent(),
+    this.sourceKind = const Value.absent(),
+    this.previousBalanceMinor = const Value.absent(),
+    this.newBalanceMinor = const Value.absent(),
+    this.minDueMinor = const Value.absent(),
+    this.paymentsMinor = const Value.absent(),
+    this.creditsMinor = const Value.absent(),
+    this.feesMinor = const Value.absent(),
+    this.interestMinor = const Value.absent(),
+    this.installmentDueMinor = const Value.absent(),
+    this.creditBalanceMinor = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.recordedBy = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.recordedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StatementVersionsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String statementId,
+    required int versionNo,
+    required String sourceKind,
+    this.previousBalanceMinor = const Value.absent(),
+    required int newBalanceMinor,
+    this.minDueMinor = const Value.absent(),
+    this.paymentsMinor = const Value.absent(),
+    this.creditsMinor = const Value.absent(),
+    this.feesMinor = const Value.absent(),
+    this.interestMinor = const Value.absent(),
+    this.installmentDueMinor = const Value.absent(),
+    this.creditBalanceMinor = const Value.absent(),
+    required String dueDate,
+    required String recordedBy,
+    this.reason = const Value.absent(),
+    required String recordedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       statementId = Value(statementId),
+       versionNo = Value(versionNo),
+       sourceKind = Value(sourceKind),
+       newBalanceMinor = Value(newBalanceMinor),
+       dueDate = Value(dueDate),
+       recordedBy = Value(recordedBy),
+       recordedAt = Value(recordedAt);
+  static Insertable<StatementVersionRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? statementId,
+    Expression<int>? versionNo,
+    Expression<String>? sourceKind,
+    Expression<int>? previousBalanceMinor,
+    Expression<int>? newBalanceMinor,
+    Expression<int>? minDueMinor,
+    Expression<int>? paymentsMinor,
+    Expression<int>? creditsMinor,
+    Expression<int>? feesMinor,
+    Expression<int>? interestMinor,
+    Expression<int>? installmentDueMinor,
+    Expression<int>? creditBalanceMinor,
+    Expression<String>? dueDate,
+    Expression<String>? recordedBy,
+    Expression<String>? reason,
+    Expression<String>? recordedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (statementId != null) 'statement_id': statementId,
+      if (versionNo != null) 'version_no': versionNo,
+      if (sourceKind != null) 'source_kind': sourceKind,
+      if (previousBalanceMinor != null)
+        'previous_balance_minor': previousBalanceMinor,
+      if (newBalanceMinor != null) 'new_balance_minor': newBalanceMinor,
+      if (minDueMinor != null) 'min_due_minor': minDueMinor,
+      if (paymentsMinor != null) 'payments_minor': paymentsMinor,
+      if (creditsMinor != null) 'credits_minor': creditsMinor,
+      if (feesMinor != null) 'fees_minor': feesMinor,
+      if (interestMinor != null) 'interest_minor': interestMinor,
+      if (installmentDueMinor != null)
+        'installment_due_minor': installmentDueMinor,
+      if (creditBalanceMinor != null)
+        'credit_balance_minor': creditBalanceMinor,
+      if (dueDate != null) 'due_date': dueDate,
+      if (recordedBy != null) 'recorded_by': recordedBy,
+      if (reason != null) 'reason': reason,
+      if (recordedAt != null) 'recorded_at': recordedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StatementVersionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? statementId,
+    Value<int>? versionNo,
+    Value<String>? sourceKind,
+    Value<int?>? previousBalanceMinor,
+    Value<int>? newBalanceMinor,
+    Value<int?>? minDueMinor,
+    Value<int?>? paymentsMinor,
+    Value<int?>? creditsMinor,
+    Value<int?>? feesMinor,
+    Value<int?>? interestMinor,
+    Value<int?>? installmentDueMinor,
+    Value<int?>? creditBalanceMinor,
+    Value<String>? dueDate,
+    Value<String>? recordedBy,
+    Value<String?>? reason,
+    Value<String>? recordedAt,
+    Value<int>? rowid,
+  }) {
+    return StatementVersionsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      statementId: statementId ?? this.statementId,
+      versionNo: versionNo ?? this.versionNo,
+      sourceKind: sourceKind ?? this.sourceKind,
+      previousBalanceMinor: previousBalanceMinor ?? this.previousBalanceMinor,
+      newBalanceMinor: newBalanceMinor ?? this.newBalanceMinor,
+      minDueMinor: minDueMinor ?? this.minDueMinor,
+      paymentsMinor: paymentsMinor ?? this.paymentsMinor,
+      creditsMinor: creditsMinor ?? this.creditsMinor,
+      feesMinor: feesMinor ?? this.feesMinor,
+      interestMinor: interestMinor ?? this.interestMinor,
+      installmentDueMinor: installmentDueMinor ?? this.installmentDueMinor,
+      creditBalanceMinor: creditBalanceMinor ?? this.creditBalanceMinor,
+      dueDate: dueDate ?? this.dueDate,
+      recordedBy: recordedBy ?? this.recordedBy,
+      reason: reason ?? this.reason,
+      recordedAt: recordedAt ?? this.recordedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (statementId.present) {
+      map['statement_id'] = Variable<String>(statementId.value);
+    }
+    if (versionNo.present) {
+      map['version_no'] = Variable<int>(versionNo.value);
+    }
+    if (sourceKind.present) {
+      map['source_kind'] = Variable<String>(sourceKind.value);
+    }
+    if (previousBalanceMinor.present) {
+      map['previous_balance_minor'] = Variable<int>(previousBalanceMinor.value);
+    }
+    if (newBalanceMinor.present) {
+      map['new_balance_minor'] = Variable<int>(newBalanceMinor.value);
+    }
+    if (minDueMinor.present) {
+      map['min_due_minor'] = Variable<int>(minDueMinor.value);
+    }
+    if (paymentsMinor.present) {
+      map['payments_minor'] = Variable<int>(paymentsMinor.value);
+    }
+    if (creditsMinor.present) {
+      map['credits_minor'] = Variable<int>(creditsMinor.value);
+    }
+    if (feesMinor.present) {
+      map['fees_minor'] = Variable<int>(feesMinor.value);
+    }
+    if (interestMinor.present) {
+      map['interest_minor'] = Variable<int>(interestMinor.value);
+    }
+    if (installmentDueMinor.present) {
+      map['installment_due_minor'] = Variable<int>(installmentDueMinor.value);
+    }
+    if (creditBalanceMinor.present) {
+      map['credit_balance_minor'] = Variable<int>(creditBalanceMinor.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<String>(dueDate.value);
+    }
+    if (recordedBy.present) {
+      map['recorded_by'] = Variable<String>(recordedBy.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (recordedAt.present) {
+      map['recorded_at'] = Variable<String>(recordedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StatementVersionsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('statementId: $statementId, ')
+          ..write('versionNo: $versionNo, ')
+          ..write('sourceKind: $sourceKind, ')
+          ..write('previousBalanceMinor: $previousBalanceMinor, ')
+          ..write('newBalanceMinor: $newBalanceMinor, ')
+          ..write('minDueMinor: $minDueMinor, ')
+          ..write('paymentsMinor: $paymentsMinor, ')
+          ..write('creditsMinor: $creditsMinor, ')
+          ..write('feesMinor: $feesMinor, ')
+          ..write('interestMinor: $interestMinor, ')
+          ..write('installmentDueMinor: $installmentDueMinor, ')
+          ..write('creditBalanceMinor: $creditBalanceMinor, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('recordedBy: $recordedBy, ')
+          ..write('reason: $reason, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $StatementsTable extends Statements
+    with TableInfo<$StatementsTable, StatementRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StatementsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyAccountIdMeta = const VerificationMeta(
+    'currencyAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> currencyAccountId =
+      GeneratedColumn<String>(
+        'currency_account_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _statementDateMeta = const VerificationMeta(
+    'statementDate',
+  );
+  @override
+  late final GeneratedColumn<String> statementDate = GeneratedColumn<String>(
+    'statement_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dueDateMeta = const VerificationMeta(
+    'dueDate',
+  );
+  @override
+  late final GeneratedColumn<String> dueDate = GeneratedColumn<String>(
+    'due_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currentVersionIdMeta = const VerificationMeta(
+    'currentVersionId',
+  );
+  @override
+  late final GeneratedColumn<String> currentVersionId = GeneratedColumn<String>(
+    'current_version_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    currencyAccountId,
+    statementDate,
+    dueDate,
+    status,
+    currentVersionId,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'statements';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StatementRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('currency_account_id')) {
+      context.handle(
+        _currencyAccountIdMeta,
+        currencyAccountId.isAcceptableOrUnknown(
+          data['currency_account_id']!,
+          _currencyAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyAccountIdMeta);
+    }
+    if (data.containsKey('statement_date')) {
+      context.handle(
+        _statementDateMeta,
+        statementDate.isAcceptableOrUnknown(
+          data['statement_date']!,
+          _statementDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_statementDateMeta);
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(
+        _dueDateMeta,
+        dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dueDateMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('current_version_id')) {
+      context.handle(
+        _currentVersionIdMeta,
+        currentVersionId.isAcceptableOrUnknown(
+          data['current_version_id']!,
+          _currentVersionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, currencyAccountId, id},
+    {workspaceId, currencyAccountId, statementDate},
+  ];
+  @override
+  StatementRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StatementRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      currencyAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_account_id'],
+      )!,
+      statementDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}statement_date'],
+      )!,
+      dueDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}due_date'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      currentVersionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}current_version_id'],
+      ),
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $StatementsTable createAlias(String alias) {
+    return $StatementsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class StatementRow extends DataClass implements Insertable<StatementRow> {
+  final String id;
+  final String workspaceId;
+  final String currencyAccountId;
+  final String statementDate;
+
+  /// 当前版本的到期还款日。
+  final String dueDate;
+
+  /// `predicted` / `issued` / `amended` / `partially_settled` / `settled` / `overdue`。
+  final String status;
+  final String? currentVersionId;
+  final int rowVersion;
+  final String createdAt;
+  final String updatedAt;
+  const StatementRow({
+    required this.id,
+    required this.workspaceId,
+    required this.currencyAccountId,
+    required this.statementDate,
+    required this.dueDate,
+    required this.status,
+    this.currentVersionId,
+    required this.rowVersion,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['currency_account_id'] = Variable<String>(currencyAccountId);
+    map['statement_date'] = Variable<String>(statementDate);
+    map['due_date'] = Variable<String>(dueDate);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || currentVersionId != null) {
+      map['current_version_id'] = Variable<String>(currentVersionId);
+    }
+    map['row_version'] = Variable<int>(rowVersion);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  StatementsCompanion toCompanion(bool nullToAbsent) {
+    return StatementsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      currencyAccountId: Value(currencyAccountId),
+      statementDate: Value(statementDate),
+      dueDate: Value(dueDate),
+      status: Value(status),
+      currentVersionId: currentVersionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentVersionId),
+      rowVersion: Value(rowVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory StatementRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StatementRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      currencyAccountId: serializer.fromJson<String>(json['currencyAccountId']),
+      statementDate: serializer.fromJson<String>(json['statementDate']),
+      dueDate: serializer.fromJson<String>(json['dueDate']),
+      status: serializer.fromJson<String>(json['status']),
+      currentVersionId: serializer.fromJson<String?>(json['currentVersionId']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'currencyAccountId': serializer.toJson<String>(currencyAccountId),
+      'statementDate': serializer.toJson<String>(statementDate),
+      'dueDate': serializer.toJson<String>(dueDate),
+      'status': serializer.toJson<String>(status),
+      'currentVersionId': serializer.toJson<String?>(currentVersionId),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  StatementRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? currencyAccountId,
+    String? statementDate,
+    String? dueDate,
+    String? status,
+    Value<String?> currentVersionId = const Value.absent(),
+    int? rowVersion,
+    String? createdAt,
+    String? updatedAt,
+  }) => StatementRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+    statementDate: statementDate ?? this.statementDate,
+    dueDate: dueDate ?? this.dueDate,
+    status: status ?? this.status,
+    currentVersionId: currentVersionId.present
+        ? currentVersionId.value
+        : this.currentVersionId,
+    rowVersion: rowVersion ?? this.rowVersion,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  StatementRow copyWithCompanion(StatementsCompanion data) {
+    return StatementRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      currencyAccountId: data.currencyAccountId.present
+          ? data.currencyAccountId.value
+          : this.currencyAccountId,
+      statementDate: data.statementDate.present
+          ? data.statementDate.value
+          : this.statementDate,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      status: data.status.present ? data.status.value : this.status,
+      currentVersionId: data.currentVersionId.present
+          ? data.currentVersionId.value
+          : this.currentVersionId,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StatementRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('statementDate: $statementDate, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('status: $status, ')
+          ..write('currentVersionId: $currentVersionId, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    currencyAccountId,
+    statementDate,
+    dueDate,
+    status,
+    currentVersionId,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StatementRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.currencyAccountId == this.currencyAccountId &&
+          other.statementDate == this.statementDate &&
+          other.dueDate == this.dueDate &&
+          other.status == this.status &&
+          other.currentVersionId == this.currentVersionId &&
+          other.rowVersion == this.rowVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class StatementsCompanion extends UpdateCompanion<StatementRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> currencyAccountId;
+  final Value<String> statementDate;
+  final Value<String> dueDate;
+  final Value<String> status;
+  final Value<String?> currentVersionId;
+  final Value<int> rowVersion;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const StatementsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.currencyAccountId = const Value.absent(),
+    this.statementDate = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.status = const Value.absent(),
+    this.currentVersionId = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StatementsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String currencyAccountId,
+    required String statementDate,
+    required String dueDate,
+    required String status,
+    this.currentVersionId = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       currencyAccountId = Value(currencyAccountId),
+       statementDate = Value(statementDate),
+       dueDate = Value(dueDate),
+       status = Value(status),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<StatementRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? currencyAccountId,
+    Expression<String>? statementDate,
+    Expression<String>? dueDate,
+    Expression<String>? status,
+    Expression<String>? currentVersionId,
+    Expression<int>? rowVersion,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (currencyAccountId != null) 'currency_account_id': currencyAccountId,
+      if (statementDate != null) 'statement_date': statementDate,
+      if (dueDate != null) 'due_date': dueDate,
+      if (status != null) 'status': status,
+      if (currentVersionId != null) 'current_version_id': currentVersionId,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StatementsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? currencyAccountId,
+    Value<String>? statementDate,
+    Value<String>? dueDate,
+    Value<String>? status,
+    Value<String?>? currentVersionId,
+    Value<int>? rowVersion,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return StatementsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+      statementDate: statementDate ?? this.statementDate,
+      dueDate: dueDate ?? this.dueDate,
+      status: status ?? this.status,
+      currentVersionId: currentVersionId ?? this.currentVersionId,
+      rowVersion: rowVersion ?? this.rowVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (currencyAccountId.present) {
+      map['currency_account_id'] = Variable<String>(currencyAccountId.value);
+    }
+    if (statementDate.present) {
+      map['statement_date'] = Variable<String>(statementDate.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<String>(dueDate.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (currentVersionId.present) {
+      map['current_version_id'] = Variable<String>(currentVersionId.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StatementsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('statementDate: $statementDate, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('status: $status, ')
+          ..write('currentVersionId: $currentVersionId, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $InstallmentPlansTable extends InstallmentPlans
+    with TableInfo<$InstallmentPlansTable, InstallmentPlanRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InstallmentPlansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyAccountIdMeta = const VerificationMeta(
+    'currencyAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> currencyAccountId =
+      GeneratedColumn<String>(
+        'currency_account_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _transactionIdMeta = const VerificationMeta(
+    'transactionId',
+  );
+  @override
+  late final GeneratedColumn<String> transactionId = GeneratedColumn<String>(
+    'transaction_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _principalMinorMeta = const VerificationMeta(
+    'principalMinor',
+  );
+  @override
+  late final GeneratedColumn<int> principalMinor = GeneratedColumn<int>(
+    'principal_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _periodsMeta = const VerificationMeta(
+    'periods',
+  );
+  @override
+  late final GeneratedColumn<int> periods = GeneratedColumn<int>(
+    'periods',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _perPeriodRateMeta = const VerificationMeta(
+    'perPeriodRate',
+  );
+  @override
+  late final GeneratedColumn<String> perPeriodRate = GeneratedColumn<String>(
+    'per_period_rate',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _feeModeMeta = const VerificationMeta(
+    'feeMode',
+  );
+  @override
+  late final GeneratedColumn<String> feeMode = GeneratedColumn<String>(
+    'fee_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _remainderPolicyMeta = const VerificationMeta(
+    'remainderPolicy',
+  );
+  @override
+  late final GeneratedColumn<String> remainderPolicy = GeneratedColumn<String>(
+    'remainder_policy',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roundingMeta = const VerificationMeta(
+    'rounding',
+  );
+  @override
+  late final GeneratedColumn<String> rounding = GeneratedColumn<String>(
+    'rounding',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _earlySettledAtMeta = const VerificationMeta(
+    'earlySettledAt',
+  );
+  @override
+  late final GeneratedColumn<String> earlySettledAt = GeneratedColumn<String>(
+    'early_settled_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    currencyAccountId,
+    transactionId,
+    principalMinor,
+    periods,
+    perPeriodRate,
+    feeMode,
+    remainderPolicy,
+    rounding,
+    status,
+    earlySettledAt,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'installment_plans';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InstallmentPlanRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('currency_account_id')) {
+      context.handle(
+        _currencyAccountIdMeta,
+        currencyAccountId.isAcceptableOrUnknown(
+          data['currency_account_id']!,
+          _currencyAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyAccountIdMeta);
+    }
+    if (data.containsKey('transaction_id')) {
+      context.handle(
+        _transactionIdMeta,
+        transactionId.isAcceptableOrUnknown(
+          data['transaction_id']!,
+          _transactionIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_transactionIdMeta);
+    }
+    if (data.containsKey('principal_minor')) {
+      context.handle(
+        _principalMinorMeta,
+        principalMinor.isAcceptableOrUnknown(
+          data['principal_minor']!,
+          _principalMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_principalMinorMeta);
+    }
+    if (data.containsKey('periods')) {
+      context.handle(
+        _periodsMeta,
+        periods.isAcceptableOrUnknown(data['periods']!, _periodsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_periodsMeta);
+    }
+    if (data.containsKey('per_period_rate')) {
+      context.handle(
+        _perPeriodRateMeta,
+        perPeriodRate.isAcceptableOrUnknown(
+          data['per_period_rate']!,
+          _perPeriodRateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_perPeriodRateMeta);
+    }
+    if (data.containsKey('fee_mode')) {
+      context.handle(
+        _feeModeMeta,
+        feeMode.isAcceptableOrUnknown(data['fee_mode']!, _feeModeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_feeModeMeta);
+    }
+    if (data.containsKey('remainder_policy')) {
+      context.handle(
+        _remainderPolicyMeta,
+        remainderPolicy.isAcceptableOrUnknown(
+          data['remainder_policy']!,
+          _remainderPolicyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_remainderPolicyMeta);
+    }
+    if (data.containsKey('rounding')) {
+      context.handle(
+        _roundingMeta,
+        rounding.isAcceptableOrUnknown(data['rounding']!, _roundingMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roundingMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('early_settled_at')) {
+      context.handle(
+        _earlySettledAtMeta,
+        earlySettledAt.isAcceptableOrUnknown(
+          data['early_settled_at']!,
+          _earlySettledAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, transactionId},
+  ];
+  @override
+  InstallmentPlanRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InstallmentPlanRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      currencyAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_account_id'],
+      )!,
+      transactionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transaction_id'],
+      )!,
+      principalMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}principal_minor'],
+      )!,
+      periods: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}periods'],
+      )!,
+      perPeriodRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}per_period_rate'],
+      )!,
+      feeMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fee_mode'],
+      )!,
+      remainderPolicy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remainder_policy'],
+      )!,
+      rounding: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}rounding'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      earlySettledAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}early_settled_at'],
+      ),
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $InstallmentPlansTable createAlias(String alias) {
+    return $InstallmentPlansTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class InstallmentPlanRow extends DataClass
+    implements Insertable<InstallmentPlanRow> {
+  final String id;
+  final String workspaceId;
+  final String currencyAccountId;
+  final String transactionId;
+  final int principalMinor;
+  final int periods;
+  final String perPeriodRate;
+
+  /// `per_period` / `upfront`。
+  final String feeMode;
+
+  /// `last` / `first`。
+  final String remainderPolicy;
+
+  /// `HALF_UP`。
+  final String rounding;
+
+  /// `active` / `completed` / `early_settled` / `cancelled`（data-model §10.12）。
+  final String status;
+  final String? earlySettledAt;
+  final int rowVersion;
+  final String createdAt;
+  final String updatedAt;
+  const InstallmentPlanRow({
+    required this.id,
+    required this.workspaceId,
+    required this.currencyAccountId,
+    required this.transactionId,
+    required this.principalMinor,
+    required this.periods,
+    required this.perPeriodRate,
+    required this.feeMode,
+    required this.remainderPolicy,
+    required this.rounding,
+    required this.status,
+    this.earlySettledAt,
+    required this.rowVersion,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['currency_account_id'] = Variable<String>(currencyAccountId);
+    map['transaction_id'] = Variable<String>(transactionId);
+    map['principal_minor'] = Variable<int>(principalMinor);
+    map['periods'] = Variable<int>(periods);
+    map['per_period_rate'] = Variable<String>(perPeriodRate);
+    map['fee_mode'] = Variable<String>(feeMode);
+    map['remainder_policy'] = Variable<String>(remainderPolicy);
+    map['rounding'] = Variable<String>(rounding);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || earlySettledAt != null) {
+      map['early_settled_at'] = Variable<String>(earlySettledAt);
+    }
+    map['row_version'] = Variable<int>(rowVersion);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  InstallmentPlansCompanion toCompanion(bool nullToAbsent) {
+    return InstallmentPlansCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      currencyAccountId: Value(currencyAccountId),
+      transactionId: Value(transactionId),
+      principalMinor: Value(principalMinor),
+      periods: Value(periods),
+      perPeriodRate: Value(perPeriodRate),
+      feeMode: Value(feeMode),
+      remainderPolicy: Value(remainderPolicy),
+      rounding: Value(rounding),
+      status: Value(status),
+      earlySettledAt: earlySettledAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(earlySettledAt),
+      rowVersion: Value(rowVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory InstallmentPlanRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InstallmentPlanRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      currencyAccountId: serializer.fromJson<String>(json['currencyAccountId']),
+      transactionId: serializer.fromJson<String>(json['transactionId']),
+      principalMinor: serializer.fromJson<int>(json['principalMinor']),
+      periods: serializer.fromJson<int>(json['periods']),
+      perPeriodRate: serializer.fromJson<String>(json['perPeriodRate']),
+      feeMode: serializer.fromJson<String>(json['feeMode']),
+      remainderPolicy: serializer.fromJson<String>(json['remainderPolicy']),
+      rounding: serializer.fromJson<String>(json['rounding']),
+      status: serializer.fromJson<String>(json['status']),
+      earlySettledAt: serializer.fromJson<String?>(json['earlySettledAt']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'currencyAccountId': serializer.toJson<String>(currencyAccountId),
+      'transactionId': serializer.toJson<String>(transactionId),
+      'principalMinor': serializer.toJson<int>(principalMinor),
+      'periods': serializer.toJson<int>(periods),
+      'perPeriodRate': serializer.toJson<String>(perPeriodRate),
+      'feeMode': serializer.toJson<String>(feeMode),
+      'remainderPolicy': serializer.toJson<String>(remainderPolicy),
+      'rounding': serializer.toJson<String>(rounding),
+      'status': serializer.toJson<String>(status),
+      'earlySettledAt': serializer.toJson<String?>(earlySettledAt),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  InstallmentPlanRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? currencyAccountId,
+    String? transactionId,
+    int? principalMinor,
+    int? periods,
+    String? perPeriodRate,
+    String? feeMode,
+    String? remainderPolicy,
+    String? rounding,
+    String? status,
+    Value<String?> earlySettledAt = const Value.absent(),
+    int? rowVersion,
+    String? createdAt,
+    String? updatedAt,
+  }) => InstallmentPlanRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+    transactionId: transactionId ?? this.transactionId,
+    principalMinor: principalMinor ?? this.principalMinor,
+    periods: periods ?? this.periods,
+    perPeriodRate: perPeriodRate ?? this.perPeriodRate,
+    feeMode: feeMode ?? this.feeMode,
+    remainderPolicy: remainderPolicy ?? this.remainderPolicy,
+    rounding: rounding ?? this.rounding,
+    status: status ?? this.status,
+    earlySettledAt: earlySettledAt.present
+        ? earlySettledAt.value
+        : this.earlySettledAt,
+    rowVersion: rowVersion ?? this.rowVersion,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  InstallmentPlanRow copyWithCompanion(InstallmentPlansCompanion data) {
+    return InstallmentPlanRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      currencyAccountId: data.currencyAccountId.present
+          ? data.currencyAccountId.value
+          : this.currencyAccountId,
+      transactionId: data.transactionId.present
+          ? data.transactionId.value
+          : this.transactionId,
+      principalMinor: data.principalMinor.present
+          ? data.principalMinor.value
+          : this.principalMinor,
+      periods: data.periods.present ? data.periods.value : this.periods,
+      perPeriodRate: data.perPeriodRate.present
+          ? data.perPeriodRate.value
+          : this.perPeriodRate,
+      feeMode: data.feeMode.present ? data.feeMode.value : this.feeMode,
+      remainderPolicy: data.remainderPolicy.present
+          ? data.remainderPolicy.value
+          : this.remainderPolicy,
+      rounding: data.rounding.present ? data.rounding.value : this.rounding,
+      status: data.status.present ? data.status.value : this.status,
+      earlySettledAt: data.earlySettledAt.present
+          ? data.earlySettledAt.value
+          : this.earlySettledAt,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InstallmentPlanRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('transactionId: $transactionId, ')
+          ..write('principalMinor: $principalMinor, ')
+          ..write('periods: $periods, ')
+          ..write('perPeriodRate: $perPeriodRate, ')
+          ..write('feeMode: $feeMode, ')
+          ..write('remainderPolicy: $remainderPolicy, ')
+          ..write('rounding: $rounding, ')
+          ..write('status: $status, ')
+          ..write('earlySettledAt: $earlySettledAt, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    currencyAccountId,
+    transactionId,
+    principalMinor,
+    periods,
+    perPeriodRate,
+    feeMode,
+    remainderPolicy,
+    rounding,
+    status,
+    earlySettledAt,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InstallmentPlanRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.currencyAccountId == this.currencyAccountId &&
+          other.transactionId == this.transactionId &&
+          other.principalMinor == this.principalMinor &&
+          other.periods == this.periods &&
+          other.perPeriodRate == this.perPeriodRate &&
+          other.feeMode == this.feeMode &&
+          other.remainderPolicy == this.remainderPolicy &&
+          other.rounding == this.rounding &&
+          other.status == this.status &&
+          other.earlySettledAt == this.earlySettledAt &&
+          other.rowVersion == this.rowVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class InstallmentPlansCompanion extends UpdateCompanion<InstallmentPlanRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> currencyAccountId;
+  final Value<String> transactionId;
+  final Value<int> principalMinor;
+  final Value<int> periods;
+  final Value<String> perPeriodRate;
+  final Value<String> feeMode;
+  final Value<String> remainderPolicy;
+  final Value<String> rounding;
+  final Value<String> status;
+  final Value<String?> earlySettledAt;
+  final Value<int> rowVersion;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const InstallmentPlansCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.currencyAccountId = const Value.absent(),
+    this.transactionId = const Value.absent(),
+    this.principalMinor = const Value.absent(),
+    this.periods = const Value.absent(),
+    this.perPeriodRate = const Value.absent(),
+    this.feeMode = const Value.absent(),
+    this.remainderPolicy = const Value.absent(),
+    this.rounding = const Value.absent(),
+    this.status = const Value.absent(),
+    this.earlySettledAt = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InstallmentPlansCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String currencyAccountId,
+    required String transactionId,
+    required int principalMinor,
+    required int periods,
+    required String perPeriodRate,
+    required String feeMode,
+    required String remainderPolicy,
+    required String rounding,
+    required String status,
+    this.earlySettledAt = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       currencyAccountId = Value(currencyAccountId),
+       transactionId = Value(transactionId),
+       principalMinor = Value(principalMinor),
+       periods = Value(periods),
+       perPeriodRate = Value(perPeriodRate),
+       feeMode = Value(feeMode),
+       remainderPolicy = Value(remainderPolicy),
+       rounding = Value(rounding),
+       status = Value(status),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<InstallmentPlanRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? currencyAccountId,
+    Expression<String>? transactionId,
+    Expression<int>? principalMinor,
+    Expression<int>? periods,
+    Expression<String>? perPeriodRate,
+    Expression<String>? feeMode,
+    Expression<String>? remainderPolicy,
+    Expression<String>? rounding,
+    Expression<String>? status,
+    Expression<String>? earlySettledAt,
+    Expression<int>? rowVersion,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (currencyAccountId != null) 'currency_account_id': currencyAccountId,
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (principalMinor != null) 'principal_minor': principalMinor,
+      if (periods != null) 'periods': periods,
+      if (perPeriodRate != null) 'per_period_rate': perPeriodRate,
+      if (feeMode != null) 'fee_mode': feeMode,
+      if (remainderPolicy != null) 'remainder_policy': remainderPolicy,
+      if (rounding != null) 'rounding': rounding,
+      if (status != null) 'status': status,
+      if (earlySettledAt != null) 'early_settled_at': earlySettledAt,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InstallmentPlansCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? currencyAccountId,
+    Value<String>? transactionId,
+    Value<int>? principalMinor,
+    Value<int>? periods,
+    Value<String>? perPeriodRate,
+    Value<String>? feeMode,
+    Value<String>? remainderPolicy,
+    Value<String>? rounding,
+    Value<String>? status,
+    Value<String?>? earlySettledAt,
+    Value<int>? rowVersion,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return InstallmentPlansCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+      transactionId: transactionId ?? this.transactionId,
+      principalMinor: principalMinor ?? this.principalMinor,
+      periods: periods ?? this.periods,
+      perPeriodRate: perPeriodRate ?? this.perPeriodRate,
+      feeMode: feeMode ?? this.feeMode,
+      remainderPolicy: remainderPolicy ?? this.remainderPolicy,
+      rounding: rounding ?? this.rounding,
+      status: status ?? this.status,
+      earlySettledAt: earlySettledAt ?? this.earlySettledAt,
+      rowVersion: rowVersion ?? this.rowVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (currencyAccountId.present) {
+      map['currency_account_id'] = Variable<String>(currencyAccountId.value);
+    }
+    if (transactionId.present) {
+      map['transaction_id'] = Variable<String>(transactionId.value);
+    }
+    if (principalMinor.present) {
+      map['principal_minor'] = Variable<int>(principalMinor.value);
+    }
+    if (periods.present) {
+      map['periods'] = Variable<int>(periods.value);
+    }
+    if (perPeriodRate.present) {
+      map['per_period_rate'] = Variable<String>(perPeriodRate.value);
+    }
+    if (feeMode.present) {
+      map['fee_mode'] = Variable<String>(feeMode.value);
+    }
+    if (remainderPolicy.present) {
+      map['remainder_policy'] = Variable<String>(remainderPolicy.value);
+    }
+    if (rounding.present) {
+      map['rounding'] = Variable<String>(rounding.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (earlySettledAt.present) {
+      map['early_settled_at'] = Variable<String>(earlySettledAt.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InstallmentPlansCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('transactionId: $transactionId, ')
+          ..write('principalMinor: $principalMinor, ')
+          ..write('periods: $periods, ')
+          ..write('perPeriodRate: $perPeriodRate, ')
+          ..write('feeMode: $feeMode, ')
+          ..write('remainderPolicy: $remainderPolicy, ')
+          ..write('rounding: $rounding, ')
+          ..write('status: $status, ')
+          ..write('earlySettledAt: $earlySettledAt, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $InstallmentScheduleTable extends InstallmentSchedule
+    with TableInfo<$InstallmentScheduleTable, InstallmentScheduleRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InstallmentScheduleTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<String> planId = GeneratedColumn<String>(
+    'plan_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _periodNoMeta = const VerificationMeta(
+    'periodNo',
+  );
+  @override
+  late final GeneratedColumn<int> periodNo = GeneratedColumn<int>(
+    'period_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _principalMinorMeta = const VerificationMeta(
+    'principalMinor',
+  );
+  @override
+  late final GeneratedColumn<int> principalMinor = GeneratedColumn<int>(
+    'principal_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _feeMinorMeta = const VerificationMeta(
+    'feeMinor',
+  );
+  @override
+  late final GeneratedColumn<int> feeMinor = GeneratedColumn<int>(
+    'fee_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statementDateMeta = const VerificationMeta(
+    'statementDate',
+  );
+  @override
+  late final GeneratedColumn<String> statementDate = GeneratedColumn<String>(
+    'statement_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dueDateMeta = const VerificationMeta(
+    'dueDate',
+  );
+  @override
+  late final GeneratedColumn<String> dueDate = GeneratedColumn<String>(
+    'due_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    workspaceId,
+    planId,
+    periodNo,
+    principalMinor,
+    feeMinor,
+    statementDate,
+    dueDate,
+    status,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'installment_schedule';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InstallmentScheduleRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('plan_id')) {
+      context.handle(
+        _planIdMeta,
+        planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_planIdMeta);
+    }
+    if (data.containsKey('period_no')) {
+      context.handle(
+        _periodNoMeta,
+        periodNo.isAcceptableOrUnknown(data['period_no']!, _periodNoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_periodNoMeta);
+    }
+    if (data.containsKey('principal_minor')) {
+      context.handle(
+        _principalMinorMeta,
+        principalMinor.isAcceptableOrUnknown(
+          data['principal_minor']!,
+          _principalMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_principalMinorMeta);
+    }
+    if (data.containsKey('fee_minor')) {
+      context.handle(
+        _feeMinorMeta,
+        feeMinor.isAcceptableOrUnknown(data['fee_minor']!, _feeMinorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_feeMinorMeta);
+    }
+    if (data.containsKey('statement_date')) {
+      context.handle(
+        _statementDateMeta,
+        statementDate.isAcceptableOrUnknown(
+          data['statement_date']!,
+          _statementDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_statementDateMeta);
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(
+        _dueDateMeta,
+        dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dueDateMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {planId, periodNo};
+  @override
+  InstallmentScheduleRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InstallmentScheduleRow(
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      planId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plan_id'],
+      )!,
+      periodNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}period_no'],
+      )!,
+      principalMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}principal_minor'],
+      )!,
+      feeMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fee_minor'],
+      )!,
+      statementDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}statement_date'],
+      )!,
+      dueDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}due_date'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+    );
+  }
+
+  @override
+  $InstallmentScheduleTable createAlias(String alias) {
+    return $InstallmentScheduleTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class InstallmentScheduleRow extends DataClass
+    implements Insertable<InstallmentScheduleRow> {
+  final String workspaceId;
+  final String planId;
+  final int periodNo;
+  final int principalMinor;
+  final int feeMinor;
+  final String statementDate;
+  final String dueDate;
+
+  /// `scheduled` / `billed` / `settled` / `cancelled`（data-model §10.12）。
+  final String status;
+  const InstallmentScheduleRow({
+    required this.workspaceId,
+    required this.planId,
+    required this.periodNo,
+    required this.principalMinor,
+    required this.feeMinor,
+    required this.statementDate,
+    required this.dueDate,
+    required this.status,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['plan_id'] = Variable<String>(planId);
+    map['period_no'] = Variable<int>(periodNo);
+    map['principal_minor'] = Variable<int>(principalMinor);
+    map['fee_minor'] = Variable<int>(feeMinor);
+    map['statement_date'] = Variable<String>(statementDate);
+    map['due_date'] = Variable<String>(dueDate);
+    map['status'] = Variable<String>(status);
+    return map;
+  }
+
+  InstallmentScheduleCompanion toCompanion(bool nullToAbsent) {
+    return InstallmentScheduleCompanion(
+      workspaceId: Value(workspaceId),
+      planId: Value(planId),
+      periodNo: Value(periodNo),
+      principalMinor: Value(principalMinor),
+      feeMinor: Value(feeMinor),
+      statementDate: Value(statementDate),
+      dueDate: Value(dueDate),
+      status: Value(status),
+    );
+  }
+
+  factory InstallmentScheduleRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InstallmentScheduleRow(
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      planId: serializer.fromJson<String>(json['planId']),
+      periodNo: serializer.fromJson<int>(json['periodNo']),
+      principalMinor: serializer.fromJson<int>(json['principalMinor']),
+      feeMinor: serializer.fromJson<int>(json['feeMinor']),
+      statementDate: serializer.fromJson<String>(json['statementDate']),
+      dueDate: serializer.fromJson<String>(json['dueDate']),
+      status: serializer.fromJson<String>(json['status']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'planId': serializer.toJson<String>(planId),
+      'periodNo': serializer.toJson<int>(periodNo),
+      'principalMinor': serializer.toJson<int>(principalMinor),
+      'feeMinor': serializer.toJson<int>(feeMinor),
+      'statementDate': serializer.toJson<String>(statementDate),
+      'dueDate': serializer.toJson<String>(dueDate),
+      'status': serializer.toJson<String>(status),
+    };
+  }
+
+  InstallmentScheduleRow copyWith({
+    String? workspaceId,
+    String? planId,
+    int? periodNo,
+    int? principalMinor,
+    int? feeMinor,
+    String? statementDate,
+    String? dueDate,
+    String? status,
+  }) => InstallmentScheduleRow(
+    workspaceId: workspaceId ?? this.workspaceId,
+    planId: planId ?? this.planId,
+    periodNo: periodNo ?? this.periodNo,
+    principalMinor: principalMinor ?? this.principalMinor,
+    feeMinor: feeMinor ?? this.feeMinor,
+    statementDate: statementDate ?? this.statementDate,
+    dueDate: dueDate ?? this.dueDate,
+    status: status ?? this.status,
+  );
+  InstallmentScheduleRow copyWithCompanion(InstallmentScheduleCompanion data) {
+    return InstallmentScheduleRow(
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      planId: data.planId.present ? data.planId.value : this.planId,
+      periodNo: data.periodNo.present ? data.periodNo.value : this.periodNo,
+      principalMinor: data.principalMinor.present
+          ? data.principalMinor.value
+          : this.principalMinor,
+      feeMinor: data.feeMinor.present ? data.feeMinor.value : this.feeMinor,
+      statementDate: data.statementDate.present
+          ? data.statementDate.value
+          : this.statementDate,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      status: data.status.present ? data.status.value : this.status,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InstallmentScheduleRow(')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('planId: $planId, ')
+          ..write('periodNo: $periodNo, ')
+          ..write('principalMinor: $principalMinor, ')
+          ..write('feeMinor: $feeMinor, ')
+          ..write('statementDate: $statementDate, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    workspaceId,
+    planId,
+    periodNo,
+    principalMinor,
+    feeMinor,
+    statementDate,
+    dueDate,
+    status,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InstallmentScheduleRow &&
+          other.workspaceId == this.workspaceId &&
+          other.planId == this.planId &&
+          other.periodNo == this.periodNo &&
+          other.principalMinor == this.principalMinor &&
+          other.feeMinor == this.feeMinor &&
+          other.statementDate == this.statementDate &&
+          other.dueDate == this.dueDate &&
+          other.status == this.status);
+}
+
+class InstallmentScheduleCompanion
+    extends UpdateCompanion<InstallmentScheduleRow> {
+  final Value<String> workspaceId;
+  final Value<String> planId;
+  final Value<int> periodNo;
+  final Value<int> principalMinor;
+  final Value<int> feeMinor;
+  final Value<String> statementDate;
+  final Value<String> dueDate;
+  final Value<String> status;
+  final Value<int> rowid;
+  const InstallmentScheduleCompanion({
+    this.workspaceId = const Value.absent(),
+    this.planId = const Value.absent(),
+    this.periodNo = const Value.absent(),
+    this.principalMinor = const Value.absent(),
+    this.feeMinor = const Value.absent(),
+    this.statementDate = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.status = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InstallmentScheduleCompanion.insert({
+    required String workspaceId,
+    required String planId,
+    required int periodNo,
+    required int principalMinor,
+    required int feeMinor,
+    required String statementDate,
+    required String dueDate,
+    required String status,
+    this.rowid = const Value.absent(),
+  }) : workspaceId = Value(workspaceId),
+       planId = Value(planId),
+       periodNo = Value(periodNo),
+       principalMinor = Value(principalMinor),
+       feeMinor = Value(feeMinor),
+       statementDate = Value(statementDate),
+       dueDate = Value(dueDate),
+       status = Value(status);
+  static Insertable<InstallmentScheduleRow> custom({
+    Expression<String>? workspaceId,
+    Expression<String>? planId,
+    Expression<int>? periodNo,
+    Expression<int>? principalMinor,
+    Expression<int>? feeMinor,
+    Expression<String>? statementDate,
+    Expression<String>? dueDate,
+    Expression<String>? status,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (planId != null) 'plan_id': planId,
+      if (periodNo != null) 'period_no': periodNo,
+      if (principalMinor != null) 'principal_minor': principalMinor,
+      if (feeMinor != null) 'fee_minor': feeMinor,
+      if (statementDate != null) 'statement_date': statementDate,
+      if (dueDate != null) 'due_date': dueDate,
+      if (status != null) 'status': status,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InstallmentScheduleCompanion copyWith({
+    Value<String>? workspaceId,
+    Value<String>? planId,
+    Value<int>? periodNo,
+    Value<int>? principalMinor,
+    Value<int>? feeMinor,
+    Value<String>? statementDate,
+    Value<String>? dueDate,
+    Value<String>? status,
+    Value<int>? rowid,
+  }) {
+    return InstallmentScheduleCompanion(
+      workspaceId: workspaceId ?? this.workspaceId,
+      planId: planId ?? this.planId,
+      periodNo: periodNo ?? this.periodNo,
+      principalMinor: principalMinor ?? this.principalMinor,
+      feeMinor: feeMinor ?? this.feeMinor,
+      statementDate: statementDate ?? this.statementDate,
+      dueDate: dueDate ?? this.dueDate,
+      status: status ?? this.status,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (planId.present) {
+      map['plan_id'] = Variable<String>(planId.value);
+    }
+    if (periodNo.present) {
+      map['period_no'] = Variable<int>(periodNo.value);
+    }
+    if (principalMinor.present) {
+      map['principal_minor'] = Variable<int>(principalMinor.value);
+    }
+    if (feeMinor.present) {
+      map['fee_minor'] = Variable<int>(feeMinor.value);
+    }
+    if (statementDate.present) {
+      map['statement_date'] = Variable<String>(statementDate.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<String>(dueDate.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InstallmentScheduleCompanion(')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('planId: $planId, ')
+          ..write('periodNo: $periodNo, ')
+          ..write('principalMinor: $principalMinor, ')
+          ..write('feeMinor: $feeMinor, ')
+          ..write('statementDate: $statementDate, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('status: $status, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RepaymentsTable extends Repayments
+    with TableInfo<$RepaymentsTable, RepaymentRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RepaymentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyAccountIdMeta = const VerificationMeta(
+    'currencyAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> currencyAccountId =
+      GeneratedColumn<String>(
+        'currency_account_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _cashAccountIdMeta = const VerificationMeta(
+    'cashAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> cashAccountId = GeneratedColumn<String>(
+    'cash_account_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyMeta = const VerificationMeta(
+    'currency',
+  );
+  @override
+  late final GeneratedColumn<String> currency = GeneratedColumn<String>(
+    'currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _methodMeta = const VerificationMeta('method');
+  @override
+  late final GeneratedColumn<String> method = GeneratedColumn<String>(
+    'method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _paymentInitiatedAtMeta =
+      const VerificationMeta('paymentInitiatedAt');
+  @override
+  late final GeneratedColumn<String> paymentInitiatedAt =
+      GeneratedColumn<String>(
+        'payment_initiated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _expectedDebitOnMeta = const VerificationMeta(
+    'expectedDebitOn',
+  );
+  @override
+  late final GeneratedColumn<String> expectedDebitOn = GeneratedColumn<String>(
+    'expected_debit_on',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cashDebitedAtMeta = const VerificationMeta(
+    'cashDebitedAt',
+  );
+  @override
+  late final GeneratedColumn<String> cashDebitedAt = GeneratedColumn<String>(
+    'cash_debited_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _creditPostedAtMeta = const VerificationMeta(
+    'creditPostedAt',
+  );
+  @override
+  late final GeneratedColumn<String> creditPostedAt = GeneratedColumn<String>(
+    'credit_posted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bankConfirmedAtMeta = const VerificationMeta(
+    'bankConfirmedAt',
+  );
+  @override
+  late final GeneratedColumn<String> bankConfirmedAt = GeneratedColumn<String>(
+    'bank_confirmed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _evidenceNoteMeta = const VerificationMeta(
+    'evidenceNote',
+  );
+  @override
+  late final GeneratedColumn<String> evidenceNote = GeneratedColumn<String>(
+    'evidence_note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    currencyAccountId,
+    cashAccountId,
+    amountMinor,
+    currency,
+    status,
+    method,
+    paymentInitiatedAt,
+    expectedDebitOn,
+    cashDebitedAt,
+    creditPostedAt,
+    bankConfirmedAt,
+    evidenceNote,
+    rowVersion,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'repayments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RepaymentRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('currency_account_id')) {
+      context.handle(
+        _currencyAccountIdMeta,
+        currencyAccountId.isAcceptableOrUnknown(
+          data['currency_account_id']!,
+          _currencyAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyAccountIdMeta);
+    }
+    if (data.containsKey('cash_account_id')) {
+      context.handle(
+        _cashAccountIdMeta,
+        cashAccountId.isAcceptableOrUnknown(
+          data['cash_account_id']!,
+          _cashAccountIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorMeta);
+    }
+    if (data.containsKey('currency')) {
+      context.handle(
+        _currencyMeta,
+        currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('method')) {
+      context.handle(
+        _methodMeta,
+        method.isAcceptableOrUnknown(data['method']!, _methodMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_methodMeta);
+    }
+    if (data.containsKey('payment_initiated_at')) {
+      context.handle(
+        _paymentInitiatedAtMeta,
+        paymentInitiatedAt.isAcceptableOrUnknown(
+          data['payment_initiated_at']!,
+          _paymentInitiatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('expected_debit_on')) {
+      context.handle(
+        _expectedDebitOnMeta,
+        expectedDebitOn.isAcceptableOrUnknown(
+          data['expected_debit_on']!,
+          _expectedDebitOnMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cash_debited_at')) {
+      context.handle(
+        _cashDebitedAtMeta,
+        cashDebitedAt.isAcceptableOrUnknown(
+          data['cash_debited_at']!,
+          _cashDebitedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('credit_posted_at')) {
+      context.handle(
+        _creditPostedAtMeta,
+        creditPostedAt.isAcceptableOrUnknown(
+          data['credit_posted_at']!,
+          _creditPostedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('bank_confirmed_at')) {
+      context.handle(
+        _bankConfirmedAtMeta,
+        bankConfirmedAt.isAcceptableOrUnknown(
+          data['bank_confirmed_at']!,
+          _bankConfirmedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('evidence_note')) {
+      context.handle(
+        _evidenceNoteMeta,
+        evidenceNote.isAcceptableOrUnknown(
+          data['evidence_note']!,
+          _evidenceNoteMeta,
+        ),
+      );
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, currencyAccountId, id},
+  ];
+  @override
+  RepaymentRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RepaymentRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      currencyAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_account_id'],
+      )!,
+      cashAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cash_account_id'],
+      ),
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      )!,
+      currency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      method: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}method'],
+      )!,
+      paymentInitiatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payment_initiated_at'],
+      ),
+      expectedDebitOn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}expected_debit_on'],
+      ),
+      cashDebitedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cash_debited_at'],
+      ),
+      creditPostedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}credit_posted_at'],
+      ),
+      bankConfirmedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bank_confirmed_at'],
+      ),
+      evidenceNote: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}evidence_note'],
+      ),
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $RepaymentsTable createAlias(String alias) {
+    return $RepaymentsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class RepaymentRow extends DataClass implements Insertable<RepaymentRow> {
+  final String id;
+  final String workspaceId;
+  final String currencyAccountId;
+  final String? cashAccountId;
+  final int amountMinor;
+  final String currency;
+
+  /// `recorded` / `processing` / `cash_debited` / `credit_posted` / `bank_confirmed` / `failed` /
+  /// `user_marked_paid` / `needs_review` / `reversed`。
+  final String status;
+
+  /// `auto_debit` / `manual` / `third_party` / `other`。
+  final String method;
+  final String? paymentInitiatedAt;
+  final String? expectedDebitOn;
+  final String? cashDebitedAt;
+  final String? creditPostedAt;
+  final String? bankConfirmedAt;
+  final String? evidenceNote;
+  final int rowVersion;
+  final String createdAt;
+  final String updatedAt;
+  final String? deletedAt;
+  const RepaymentRow({
+    required this.id,
+    required this.workspaceId,
+    required this.currencyAccountId,
+    this.cashAccountId,
+    required this.amountMinor,
+    required this.currency,
+    required this.status,
+    required this.method,
+    this.paymentInitiatedAt,
+    this.expectedDebitOn,
+    this.cashDebitedAt,
+    this.creditPostedAt,
+    this.bankConfirmedAt,
+    this.evidenceNote,
+    required this.rowVersion,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['currency_account_id'] = Variable<String>(currencyAccountId);
+    if (!nullToAbsent || cashAccountId != null) {
+      map['cash_account_id'] = Variable<String>(cashAccountId);
+    }
+    map['amount_minor'] = Variable<int>(amountMinor);
+    map['currency'] = Variable<String>(currency);
+    map['status'] = Variable<String>(status);
+    map['method'] = Variable<String>(method);
+    if (!nullToAbsent || paymentInitiatedAt != null) {
+      map['payment_initiated_at'] = Variable<String>(paymentInitiatedAt);
+    }
+    if (!nullToAbsent || expectedDebitOn != null) {
+      map['expected_debit_on'] = Variable<String>(expectedDebitOn);
+    }
+    if (!nullToAbsent || cashDebitedAt != null) {
+      map['cash_debited_at'] = Variable<String>(cashDebitedAt);
+    }
+    if (!nullToAbsent || creditPostedAt != null) {
+      map['credit_posted_at'] = Variable<String>(creditPostedAt);
+    }
+    if (!nullToAbsent || bankConfirmedAt != null) {
+      map['bank_confirmed_at'] = Variable<String>(bankConfirmedAt);
+    }
+    if (!nullToAbsent || evidenceNote != null) {
+      map['evidence_note'] = Variable<String>(evidenceNote);
+    }
+    map['row_version'] = Variable<int>(rowVersion);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<String>(deletedAt);
+    }
+    return map;
+  }
+
+  RepaymentsCompanion toCompanion(bool nullToAbsent) {
+    return RepaymentsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      currencyAccountId: Value(currencyAccountId),
+      cashAccountId: cashAccountId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cashAccountId),
+      amountMinor: Value(amountMinor),
+      currency: Value(currency),
+      status: Value(status),
+      method: Value(method),
+      paymentInitiatedAt: paymentInitiatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paymentInitiatedAt),
+      expectedDebitOn: expectedDebitOn == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expectedDebitOn),
+      cashDebitedAt: cashDebitedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cashDebitedAt),
+      creditPostedAt: creditPostedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(creditPostedAt),
+      bankConfirmedAt: bankConfirmedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bankConfirmedAt),
+      evidenceNote: evidenceNote == null && nullToAbsent
+          ? const Value.absent()
+          : Value(evidenceNote),
+      rowVersion: Value(rowVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory RepaymentRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RepaymentRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      currencyAccountId: serializer.fromJson<String>(json['currencyAccountId']),
+      cashAccountId: serializer.fromJson<String?>(json['cashAccountId']),
+      amountMinor: serializer.fromJson<int>(json['amountMinor']),
+      currency: serializer.fromJson<String>(json['currency']),
+      status: serializer.fromJson<String>(json['status']),
+      method: serializer.fromJson<String>(json['method']),
+      paymentInitiatedAt: serializer.fromJson<String?>(
+        json['paymentInitiatedAt'],
+      ),
+      expectedDebitOn: serializer.fromJson<String?>(json['expectedDebitOn']),
+      cashDebitedAt: serializer.fromJson<String?>(json['cashDebitedAt']),
+      creditPostedAt: serializer.fromJson<String?>(json['creditPostedAt']),
+      bankConfirmedAt: serializer.fromJson<String?>(json['bankConfirmedAt']),
+      evidenceNote: serializer.fromJson<String?>(json['evidenceNote']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'currencyAccountId': serializer.toJson<String>(currencyAccountId),
+      'cashAccountId': serializer.toJson<String?>(cashAccountId),
+      'amountMinor': serializer.toJson<int>(amountMinor),
+      'currency': serializer.toJson<String>(currency),
+      'status': serializer.toJson<String>(status),
+      'method': serializer.toJson<String>(method),
+      'paymentInitiatedAt': serializer.toJson<String?>(paymentInitiatedAt),
+      'expectedDebitOn': serializer.toJson<String?>(expectedDebitOn),
+      'cashDebitedAt': serializer.toJson<String?>(cashDebitedAt),
+      'creditPostedAt': serializer.toJson<String?>(creditPostedAt),
+      'bankConfirmedAt': serializer.toJson<String?>(bankConfirmedAt),
+      'evidenceNote': serializer.toJson<String?>(evidenceNote),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
+    };
+  }
+
+  RepaymentRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? currencyAccountId,
+    Value<String?> cashAccountId = const Value.absent(),
+    int? amountMinor,
+    String? currency,
+    String? status,
+    String? method,
+    Value<String?> paymentInitiatedAt = const Value.absent(),
+    Value<String?> expectedDebitOn = const Value.absent(),
+    Value<String?> cashDebitedAt = const Value.absent(),
+    Value<String?> creditPostedAt = const Value.absent(),
+    Value<String?> bankConfirmedAt = const Value.absent(),
+    Value<String?> evidenceNote = const Value.absent(),
+    int? rowVersion,
+    String? createdAt,
+    String? updatedAt,
+    Value<String?> deletedAt = const Value.absent(),
+  }) => RepaymentRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+    cashAccountId: cashAccountId.present
+        ? cashAccountId.value
+        : this.cashAccountId,
+    amountMinor: amountMinor ?? this.amountMinor,
+    currency: currency ?? this.currency,
+    status: status ?? this.status,
+    method: method ?? this.method,
+    paymentInitiatedAt: paymentInitiatedAt.present
+        ? paymentInitiatedAt.value
+        : this.paymentInitiatedAt,
+    expectedDebitOn: expectedDebitOn.present
+        ? expectedDebitOn.value
+        : this.expectedDebitOn,
+    cashDebitedAt: cashDebitedAt.present
+        ? cashDebitedAt.value
+        : this.cashDebitedAt,
+    creditPostedAt: creditPostedAt.present
+        ? creditPostedAt.value
+        : this.creditPostedAt,
+    bankConfirmedAt: bankConfirmedAt.present
+        ? bankConfirmedAt.value
+        : this.bankConfirmedAt,
+    evidenceNote: evidenceNote.present ? evidenceNote.value : this.evidenceNote,
+    rowVersion: rowVersion ?? this.rowVersion,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  RepaymentRow copyWithCompanion(RepaymentsCompanion data) {
+    return RepaymentRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      currencyAccountId: data.currencyAccountId.present
+          ? data.currencyAccountId.value
+          : this.currencyAccountId,
+      cashAccountId: data.cashAccountId.present
+          ? data.cashAccountId.value
+          : this.cashAccountId,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+      currency: data.currency.present ? data.currency.value : this.currency,
+      status: data.status.present ? data.status.value : this.status,
+      method: data.method.present ? data.method.value : this.method,
+      paymentInitiatedAt: data.paymentInitiatedAt.present
+          ? data.paymentInitiatedAt.value
+          : this.paymentInitiatedAt,
+      expectedDebitOn: data.expectedDebitOn.present
+          ? data.expectedDebitOn.value
+          : this.expectedDebitOn,
+      cashDebitedAt: data.cashDebitedAt.present
+          ? data.cashDebitedAt.value
+          : this.cashDebitedAt,
+      creditPostedAt: data.creditPostedAt.present
+          ? data.creditPostedAt.value
+          : this.creditPostedAt,
+      bankConfirmedAt: data.bankConfirmedAt.present
+          ? data.bankConfirmedAt.value
+          : this.bankConfirmedAt,
+      evidenceNote: data.evidenceNote.present
+          ? data.evidenceNote.value
+          : this.evidenceNote,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RepaymentRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('currency: $currency, ')
+          ..write('status: $status, ')
+          ..write('method: $method, ')
+          ..write('paymentInitiatedAt: $paymentInitiatedAt, ')
+          ..write('expectedDebitOn: $expectedDebitOn, ')
+          ..write('cashDebitedAt: $cashDebitedAt, ')
+          ..write('creditPostedAt: $creditPostedAt, ')
+          ..write('bankConfirmedAt: $bankConfirmedAt, ')
+          ..write('evidenceNote: $evidenceNote, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    currencyAccountId,
+    cashAccountId,
+    amountMinor,
+    currency,
+    status,
+    method,
+    paymentInitiatedAt,
+    expectedDebitOn,
+    cashDebitedAt,
+    creditPostedAt,
+    bankConfirmedAt,
+    evidenceNote,
+    rowVersion,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RepaymentRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.currencyAccountId == this.currencyAccountId &&
+          other.cashAccountId == this.cashAccountId &&
+          other.amountMinor == this.amountMinor &&
+          other.currency == this.currency &&
+          other.status == this.status &&
+          other.method == this.method &&
+          other.paymentInitiatedAt == this.paymentInitiatedAt &&
+          other.expectedDebitOn == this.expectedDebitOn &&
+          other.cashDebitedAt == this.cashDebitedAt &&
+          other.creditPostedAt == this.creditPostedAt &&
+          other.bankConfirmedAt == this.bankConfirmedAt &&
+          other.evidenceNote == this.evidenceNote &&
+          other.rowVersion == this.rowVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class RepaymentsCompanion extends UpdateCompanion<RepaymentRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> currencyAccountId;
+  final Value<String?> cashAccountId;
+  final Value<int> amountMinor;
+  final Value<String> currency;
+  final Value<String> status;
+  final Value<String> method;
+  final Value<String?> paymentInitiatedAt;
+  final Value<String?> expectedDebitOn;
+  final Value<String?> cashDebitedAt;
+  final Value<String?> creditPostedAt;
+  final Value<String?> bankConfirmedAt;
+  final Value<String?> evidenceNote;
+  final Value<int> rowVersion;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<String?> deletedAt;
+  final Value<int> rowid;
+  const RepaymentsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.currencyAccountId = const Value.absent(),
+    this.cashAccountId = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.currency = const Value.absent(),
+    this.status = const Value.absent(),
+    this.method = const Value.absent(),
+    this.paymentInitiatedAt = const Value.absent(),
+    this.expectedDebitOn = const Value.absent(),
+    this.cashDebitedAt = const Value.absent(),
+    this.creditPostedAt = const Value.absent(),
+    this.bankConfirmedAt = const Value.absent(),
+    this.evidenceNote = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RepaymentsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String currencyAccountId,
+    this.cashAccountId = const Value.absent(),
+    required int amountMinor,
+    required String currency,
+    required String status,
+    required String method,
+    this.paymentInitiatedAt = const Value.absent(),
+    this.expectedDebitOn = const Value.absent(),
+    this.cashDebitedAt = const Value.absent(),
+    this.creditPostedAt = const Value.absent(),
+    this.bankConfirmedAt = const Value.absent(),
+    this.evidenceNote = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       currencyAccountId = Value(currencyAccountId),
+       amountMinor = Value(amountMinor),
+       currency = Value(currency),
+       status = Value(status),
+       method = Value(method),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<RepaymentRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? currencyAccountId,
+    Expression<String>? cashAccountId,
+    Expression<int>? amountMinor,
+    Expression<String>? currency,
+    Expression<String>? status,
+    Expression<String>? method,
+    Expression<String>? paymentInitiatedAt,
+    Expression<String>? expectedDebitOn,
+    Expression<String>? cashDebitedAt,
+    Expression<String>? creditPostedAt,
+    Expression<String>? bankConfirmedAt,
+    Expression<String>? evidenceNote,
+    Expression<int>? rowVersion,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<String>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (currencyAccountId != null) 'currency_account_id': currencyAccountId,
+      if (cashAccountId != null) 'cash_account_id': cashAccountId,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (currency != null) 'currency': currency,
+      if (status != null) 'status': status,
+      if (method != null) 'method': method,
+      if (paymentInitiatedAt != null)
+        'payment_initiated_at': paymentInitiatedAt,
+      if (expectedDebitOn != null) 'expected_debit_on': expectedDebitOn,
+      if (cashDebitedAt != null) 'cash_debited_at': cashDebitedAt,
+      if (creditPostedAt != null) 'credit_posted_at': creditPostedAt,
+      if (bankConfirmedAt != null) 'bank_confirmed_at': bankConfirmedAt,
+      if (evidenceNote != null) 'evidence_note': evidenceNote,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RepaymentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? currencyAccountId,
+    Value<String?>? cashAccountId,
+    Value<int>? amountMinor,
+    Value<String>? currency,
+    Value<String>? status,
+    Value<String>? method,
+    Value<String?>? paymentInitiatedAt,
+    Value<String?>? expectedDebitOn,
+    Value<String?>? cashDebitedAt,
+    Value<String?>? creditPostedAt,
+    Value<String?>? bankConfirmedAt,
+    Value<String?>? evidenceNote,
+    Value<int>? rowVersion,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<String?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return RepaymentsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+      cashAccountId: cashAccountId ?? this.cashAccountId,
+      amountMinor: amountMinor ?? this.amountMinor,
+      currency: currency ?? this.currency,
+      status: status ?? this.status,
+      method: method ?? this.method,
+      paymentInitiatedAt: paymentInitiatedAt ?? this.paymentInitiatedAt,
+      expectedDebitOn: expectedDebitOn ?? this.expectedDebitOn,
+      cashDebitedAt: cashDebitedAt ?? this.cashDebitedAt,
+      creditPostedAt: creditPostedAt ?? this.creditPostedAt,
+      bankConfirmedAt: bankConfirmedAt ?? this.bankConfirmedAt,
+      evidenceNote: evidenceNote ?? this.evidenceNote,
+      rowVersion: rowVersion ?? this.rowVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (currencyAccountId.present) {
+      map['currency_account_id'] = Variable<String>(currencyAccountId.value);
+    }
+    if (cashAccountId.present) {
+      map['cash_account_id'] = Variable<String>(cashAccountId.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (currency.present) {
+      map['currency'] = Variable<String>(currency.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (method.present) {
+      map['method'] = Variable<String>(method.value);
+    }
+    if (paymentInitiatedAt.present) {
+      map['payment_initiated_at'] = Variable<String>(paymentInitiatedAt.value);
+    }
+    if (expectedDebitOn.present) {
+      map['expected_debit_on'] = Variable<String>(expectedDebitOn.value);
+    }
+    if (cashDebitedAt.present) {
+      map['cash_debited_at'] = Variable<String>(cashDebitedAt.value);
+    }
+    if (creditPostedAt.present) {
+      map['credit_posted_at'] = Variable<String>(creditPostedAt.value);
+    }
+    if (bankConfirmedAt.present) {
+      map['bank_confirmed_at'] = Variable<String>(bankConfirmedAt.value);
+    }
+    if (evidenceNote.present) {
+      map['evidence_note'] = Variable<String>(evidenceNote.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RepaymentsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('cashAccountId: $cashAccountId, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('currency: $currency, ')
+          ..write('status: $status, ')
+          ..write('method: $method, ')
+          ..write('paymentInitiatedAt: $paymentInitiatedAt, ')
+          ..write('expectedDebitOn: $expectedDebitOn, ')
+          ..write('cashDebitedAt: $cashDebitedAt, ')
+          ..write('creditPostedAt: $creditPostedAt, ')
+          ..write('bankConfirmedAt: $bankConfirmedAt, ')
+          ..write('evidenceNote: $evidenceNote, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RepaymentAllocationsTable extends RepaymentAllocations
+    with TableInfo<$RepaymentAllocationsTable, RepaymentAllocationRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RepaymentAllocationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyAccountIdMeta = const VerificationMeta(
+    'currencyAccountId',
+  );
+  @override
+  late final GeneratedColumn<String> currencyAccountId =
+      GeneratedColumn<String>(
+        'currency_account_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _repaymentIdMeta = const VerificationMeta(
+    'repaymentId',
+  );
+  @override
+  late final GeneratedColumn<String> repaymentId = GeneratedColumn<String>(
+    'repayment_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statementIdMeta = const VerificationMeta(
+    'statementId',
+  );
+  @override
+  late final GeneratedColumn<String> statementId = GeneratedColumn<String>(
+    'statement_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    workspaceId,
+    currencyAccountId,
+    repaymentId,
+    statementId,
+    amountMinor,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'repayment_allocations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RepaymentAllocationRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('currency_account_id')) {
+      context.handle(
+        _currencyAccountIdMeta,
+        currencyAccountId.isAcceptableOrUnknown(
+          data['currency_account_id']!,
+          _currencyAccountIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyAccountIdMeta);
+    }
+    if (data.containsKey('repayment_id')) {
+      context.handle(
+        _repaymentIdMeta,
+        repaymentId.isAcceptableOrUnknown(
+          data['repayment_id']!,
+          _repaymentIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_repaymentIdMeta);
+    }
+    if (data.containsKey('statement_id')) {
+      context.handle(
+        _statementIdMeta,
+        statementId.isAcceptableOrUnknown(
+          data['statement_id']!,
+          _statementIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_statementIdMeta);
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {repaymentId, statementId};
+  @override
+  RepaymentAllocationRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RepaymentAllocationRow(
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      currencyAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_account_id'],
+      )!,
+      repaymentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}repayment_id'],
+      )!,
+      statementId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}statement_id'],
+      )!,
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      )!,
+    );
+  }
+
+  @override
+  $RepaymentAllocationsTable createAlias(String alias) {
+    return $RepaymentAllocationsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class RepaymentAllocationRow extends DataClass
+    implements Insertable<RepaymentAllocationRow> {
+  final String workspaceId;
+  final String currencyAccountId;
+  final String repaymentId;
+  final String statementId;
+  final int amountMinor;
+  const RepaymentAllocationRow({
+    required this.workspaceId,
+    required this.currencyAccountId,
+    required this.repaymentId,
+    required this.statementId,
+    required this.amountMinor,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['currency_account_id'] = Variable<String>(currencyAccountId);
+    map['repayment_id'] = Variable<String>(repaymentId);
+    map['statement_id'] = Variable<String>(statementId);
+    map['amount_minor'] = Variable<int>(amountMinor);
+    return map;
+  }
+
+  RepaymentAllocationsCompanion toCompanion(bool nullToAbsent) {
+    return RepaymentAllocationsCompanion(
+      workspaceId: Value(workspaceId),
+      currencyAccountId: Value(currencyAccountId),
+      repaymentId: Value(repaymentId),
+      statementId: Value(statementId),
+      amountMinor: Value(amountMinor),
+    );
+  }
+
+  factory RepaymentAllocationRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RepaymentAllocationRow(
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      currencyAccountId: serializer.fromJson<String>(json['currencyAccountId']),
+      repaymentId: serializer.fromJson<String>(json['repaymentId']),
+      statementId: serializer.fromJson<String>(json['statementId']),
+      amountMinor: serializer.fromJson<int>(json['amountMinor']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'currencyAccountId': serializer.toJson<String>(currencyAccountId),
+      'repaymentId': serializer.toJson<String>(repaymentId),
+      'statementId': serializer.toJson<String>(statementId),
+      'amountMinor': serializer.toJson<int>(amountMinor),
+    };
+  }
+
+  RepaymentAllocationRow copyWith({
+    String? workspaceId,
+    String? currencyAccountId,
+    String? repaymentId,
+    String? statementId,
+    int? amountMinor,
+  }) => RepaymentAllocationRow(
+    workspaceId: workspaceId ?? this.workspaceId,
+    currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+    repaymentId: repaymentId ?? this.repaymentId,
+    statementId: statementId ?? this.statementId,
+    amountMinor: amountMinor ?? this.amountMinor,
+  );
+  RepaymentAllocationRow copyWithCompanion(RepaymentAllocationsCompanion data) {
+    return RepaymentAllocationRow(
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      currencyAccountId: data.currencyAccountId.present
+          ? data.currencyAccountId.value
+          : this.currencyAccountId,
+      repaymentId: data.repaymentId.present
+          ? data.repaymentId.value
+          : this.repaymentId,
+      statementId: data.statementId.present
+          ? data.statementId.value
+          : this.statementId,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RepaymentAllocationRow(')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('repaymentId: $repaymentId, ')
+          ..write('statementId: $statementId, ')
+          ..write('amountMinor: $amountMinor')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    workspaceId,
+    currencyAccountId,
+    repaymentId,
+    statementId,
+    amountMinor,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RepaymentAllocationRow &&
+          other.workspaceId == this.workspaceId &&
+          other.currencyAccountId == this.currencyAccountId &&
+          other.repaymentId == this.repaymentId &&
+          other.statementId == this.statementId &&
+          other.amountMinor == this.amountMinor);
+}
+
+class RepaymentAllocationsCompanion
+    extends UpdateCompanion<RepaymentAllocationRow> {
+  final Value<String> workspaceId;
+  final Value<String> currencyAccountId;
+  final Value<String> repaymentId;
+  final Value<String> statementId;
+  final Value<int> amountMinor;
+  final Value<int> rowid;
+  const RepaymentAllocationsCompanion({
+    this.workspaceId = const Value.absent(),
+    this.currencyAccountId = const Value.absent(),
+    this.repaymentId = const Value.absent(),
+    this.statementId = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RepaymentAllocationsCompanion.insert({
+    required String workspaceId,
+    required String currencyAccountId,
+    required String repaymentId,
+    required String statementId,
+    required int amountMinor,
+    this.rowid = const Value.absent(),
+  }) : workspaceId = Value(workspaceId),
+       currencyAccountId = Value(currencyAccountId),
+       repaymentId = Value(repaymentId),
+       statementId = Value(statementId),
+       amountMinor = Value(amountMinor);
+  static Insertable<RepaymentAllocationRow> custom({
+    Expression<String>? workspaceId,
+    Expression<String>? currencyAccountId,
+    Expression<String>? repaymentId,
+    Expression<String>? statementId,
+    Expression<int>? amountMinor,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (currencyAccountId != null) 'currency_account_id': currencyAccountId,
+      if (repaymentId != null) 'repayment_id': repaymentId,
+      if (statementId != null) 'statement_id': statementId,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RepaymentAllocationsCompanion copyWith({
+    Value<String>? workspaceId,
+    Value<String>? currencyAccountId,
+    Value<String>? repaymentId,
+    Value<String>? statementId,
+    Value<int>? amountMinor,
+    Value<int>? rowid,
+  }) {
+    return RepaymentAllocationsCompanion(
+      workspaceId: workspaceId ?? this.workspaceId,
+      currencyAccountId: currencyAccountId ?? this.currencyAccountId,
+      repaymentId: repaymentId ?? this.repaymentId,
+      statementId: statementId ?? this.statementId,
+      amountMinor: amountMinor ?? this.amountMinor,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (currencyAccountId.present) {
+      map['currency_account_id'] = Variable<String>(currencyAccountId.value);
+    }
+    if (repaymentId.present) {
+      map['repayment_id'] = Variable<String>(repaymentId.value);
+    }
+    if (statementId.present) {
+      map['statement_id'] = Variable<String>(statementId.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RepaymentAllocationsCompanion(')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('currencyAccountId: $currencyAccountId, ')
+          ..write('repaymentId: $repaymentId, ')
+          ..write('statementId: $statementId, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReconciliationItemsTable extends ReconciliationItems
+    with TableInfo<$ReconciliationItemsTable, ReconciliationItemRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReconciliationItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _workspaceIdMeta = const VerificationMeta(
+    'workspaceId',
+  );
+  @override
+  late final GeneratedColumn<String> workspaceId = GeneratedColumn<String>(
+    'workspace_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _refsMeta = const VerificationMeta('refs');
+  @override
+  late final GeneratedColumn<String> refs = GeneratedColumn<String>(
+    'refs',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('open'),
+  );
+  static const VerificationMeta _resolutionMeta = const VerificationMeta(
+    'resolution',
+  );
+  @override
+  late final GeneratedColumn<String> resolution = GeneratedColumn<String>(
+    'resolution',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _resolvedByMeta = const VerificationMeta(
+    'resolvedBy',
+  );
+  @override
+  late final GeneratedColumn<String> resolvedBy = GeneratedColumn<String>(
+    'resolved_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _resolvedAtMeta = const VerificationMeta(
+    'resolvedAt',
+  );
+  @override
+  late final GeneratedColumn<String> resolvedAt = GeneratedColumn<String>(
+    'resolved_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rowVersionMeta = const VerificationMeta(
+    'rowVersion',
+  );
+  @override
+  late final GeneratedColumn<int> rowVersion = GeneratedColumn<int>(
+    'row_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    workspaceId,
+    kind,
+    refs,
+    status,
+    resolution,
+    resolvedBy,
+    resolvedAt,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'reconciliation_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ReconciliationItemRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('workspace_id')) {
+      context.handle(
+        _workspaceIdMeta,
+        workspaceId.isAcceptableOrUnknown(
+          data['workspace_id']!,
+          _workspaceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_workspaceIdMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('refs')) {
+      context.handle(
+        _refsMeta,
+        refs.isAcceptableOrUnknown(data['refs']!, _refsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_refsMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('resolution')) {
+      context.handle(
+        _resolutionMeta,
+        resolution.isAcceptableOrUnknown(data['resolution']!, _resolutionMeta),
+      );
+    }
+    if (data.containsKey('resolved_by')) {
+      context.handle(
+        _resolvedByMeta,
+        resolvedBy.isAcceptableOrUnknown(data['resolved_by']!, _resolvedByMeta),
+      );
+    }
+    if (data.containsKey('resolved_at')) {
+      context.handle(
+        _resolvedAtMeta,
+        resolvedAt.isAcceptableOrUnknown(data['resolved_at']!, _resolvedAtMeta),
+      );
+    }
+    if (data.containsKey('row_version')) {
+      context.handle(
+        _rowVersionMeta,
+        rowVersion.isAcceptableOrUnknown(data['row_version']!, _rowVersionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, kind, refs},
+  ];
+  @override
+  ReconciliationItemRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ReconciliationItemRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      workspaceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}workspace_id'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      refs: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}refs'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      resolution: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}resolution'],
+      ),
+      resolvedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}resolved_by'],
+      ),
+      resolvedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}resolved_at'],
+      ),
+      rowVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_version'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ReconciliationItemsTable createAlias(String alias) {
+    return $ReconciliationItemsTable(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+}
+
+class ReconciliationItemRow extends DataClass
+    implements Insertable<ReconciliationItemRow> {
+  final String id;
+  final String workspaceId;
+
+  /// `amount_mismatch` / `duplicate_repayment` / `refund_pending` / `unmatched_repayment`。
+  final String kind;
+  final String refs;
+
+  /// `open` / `resolved` / `dismissed`。
+  final String status;
+  final String? resolution;
+
+  /// `user` / `system`。
+  final String? resolvedBy;
+  final String? resolvedAt;
+  final int rowVersion;
+  final String createdAt;
+  final String updatedAt;
+  const ReconciliationItemRow({
+    required this.id,
+    required this.workspaceId,
+    required this.kind,
+    required this.refs,
+    required this.status,
+    this.resolution,
+    this.resolvedBy,
+    this.resolvedAt,
+    required this.rowVersion,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['workspace_id'] = Variable<String>(workspaceId);
+    map['kind'] = Variable<String>(kind);
+    map['refs'] = Variable<String>(refs);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || resolution != null) {
+      map['resolution'] = Variable<String>(resolution);
+    }
+    if (!nullToAbsent || resolvedBy != null) {
+      map['resolved_by'] = Variable<String>(resolvedBy);
+    }
+    if (!nullToAbsent || resolvedAt != null) {
+      map['resolved_at'] = Variable<String>(resolvedAt);
+    }
+    map['row_version'] = Variable<int>(rowVersion);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  ReconciliationItemsCompanion toCompanion(bool nullToAbsent) {
+    return ReconciliationItemsCompanion(
+      id: Value(id),
+      workspaceId: Value(workspaceId),
+      kind: Value(kind),
+      refs: Value(refs),
+      status: Value(status),
+      resolution: resolution == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resolution),
+      resolvedBy: resolvedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resolvedBy),
+      resolvedAt: resolvedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(resolvedAt),
+      rowVersion: Value(rowVersion),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ReconciliationItemRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ReconciliationItemRow(
+      id: serializer.fromJson<String>(json['id']),
+      workspaceId: serializer.fromJson<String>(json['workspaceId']),
+      kind: serializer.fromJson<String>(json['kind']),
+      refs: serializer.fromJson<String>(json['refs']),
+      status: serializer.fromJson<String>(json['status']),
+      resolution: serializer.fromJson<String?>(json['resolution']),
+      resolvedBy: serializer.fromJson<String?>(json['resolvedBy']),
+      resolvedAt: serializer.fromJson<String?>(json['resolvedAt']),
+      rowVersion: serializer.fromJson<int>(json['rowVersion']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'workspaceId': serializer.toJson<String>(workspaceId),
+      'kind': serializer.toJson<String>(kind),
+      'refs': serializer.toJson<String>(refs),
+      'status': serializer.toJson<String>(status),
+      'resolution': serializer.toJson<String?>(resolution),
+      'resolvedBy': serializer.toJson<String?>(resolvedBy),
+      'resolvedAt': serializer.toJson<String?>(resolvedAt),
+      'rowVersion': serializer.toJson<int>(rowVersion),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  ReconciliationItemRow copyWith({
+    String? id,
+    String? workspaceId,
+    String? kind,
+    String? refs,
+    String? status,
+    Value<String?> resolution = const Value.absent(),
+    Value<String?> resolvedBy = const Value.absent(),
+    Value<String?> resolvedAt = const Value.absent(),
+    int? rowVersion,
+    String? createdAt,
+    String? updatedAt,
+  }) => ReconciliationItemRow(
+    id: id ?? this.id,
+    workspaceId: workspaceId ?? this.workspaceId,
+    kind: kind ?? this.kind,
+    refs: refs ?? this.refs,
+    status: status ?? this.status,
+    resolution: resolution.present ? resolution.value : this.resolution,
+    resolvedBy: resolvedBy.present ? resolvedBy.value : this.resolvedBy,
+    resolvedAt: resolvedAt.present ? resolvedAt.value : this.resolvedAt,
+    rowVersion: rowVersion ?? this.rowVersion,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ReconciliationItemRow copyWithCompanion(ReconciliationItemsCompanion data) {
+    return ReconciliationItemRow(
+      id: data.id.present ? data.id.value : this.id,
+      workspaceId: data.workspaceId.present
+          ? data.workspaceId.value
+          : this.workspaceId,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      refs: data.refs.present ? data.refs.value : this.refs,
+      status: data.status.present ? data.status.value : this.status,
+      resolution: data.resolution.present
+          ? data.resolution.value
+          : this.resolution,
+      resolvedBy: data.resolvedBy.present
+          ? data.resolvedBy.value
+          : this.resolvedBy,
+      resolvedAt: data.resolvedAt.present
+          ? data.resolvedAt.value
+          : this.resolvedAt,
+      rowVersion: data.rowVersion.present
+          ? data.rowVersion.value
+          : this.rowVersion,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReconciliationItemRow(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('kind: $kind, ')
+          ..write('refs: $refs, ')
+          ..write('status: $status, ')
+          ..write('resolution: $resolution, ')
+          ..write('resolvedBy: $resolvedBy, ')
+          ..write('resolvedAt: $resolvedAt, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    workspaceId,
+    kind,
+    refs,
+    status,
+    resolution,
+    resolvedBy,
+    resolvedAt,
+    rowVersion,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ReconciliationItemRow &&
+          other.id == this.id &&
+          other.workspaceId == this.workspaceId &&
+          other.kind == this.kind &&
+          other.refs == this.refs &&
+          other.status == this.status &&
+          other.resolution == this.resolution &&
+          other.resolvedBy == this.resolvedBy &&
+          other.resolvedAt == this.resolvedAt &&
+          other.rowVersion == this.rowVersion &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ReconciliationItemsCompanion
+    extends UpdateCompanion<ReconciliationItemRow> {
+  final Value<String> id;
+  final Value<String> workspaceId;
+  final Value<String> kind;
+  final Value<String> refs;
+  final Value<String> status;
+  final Value<String?> resolution;
+  final Value<String?> resolvedBy;
+  final Value<String?> resolvedAt;
+  final Value<int> rowVersion;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const ReconciliationItemsCompanion({
+    this.id = const Value.absent(),
+    this.workspaceId = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.refs = const Value.absent(),
+    this.status = const Value.absent(),
+    this.resolution = const Value.absent(),
+    this.resolvedBy = const Value.absent(),
+    this.resolvedAt = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReconciliationItemsCompanion.insert({
+    required String id,
+    required String workspaceId,
+    required String kind,
+    required String refs,
+    this.status = const Value.absent(),
+    this.resolution = const Value.absent(),
+    this.resolvedBy = const Value.absent(),
+    this.resolvedAt = const Value.absent(),
+    this.rowVersion = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       workspaceId = Value(workspaceId),
+       kind = Value(kind),
+       refs = Value(refs),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<ReconciliationItemRow> custom({
+    Expression<String>? id,
+    Expression<String>? workspaceId,
+    Expression<String>? kind,
+    Expression<String>? refs,
+    Expression<String>? status,
+    Expression<String>? resolution,
+    Expression<String>? resolvedBy,
+    Expression<String>? resolvedAt,
+    Expression<int>? rowVersion,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (workspaceId != null) 'workspace_id': workspaceId,
+      if (kind != null) 'kind': kind,
+      if (refs != null) 'refs': refs,
+      if (status != null) 'status': status,
+      if (resolution != null) 'resolution': resolution,
+      if (resolvedBy != null) 'resolved_by': resolvedBy,
+      if (resolvedAt != null) 'resolved_at': resolvedAt,
+      if (rowVersion != null) 'row_version': rowVersion,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReconciliationItemsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? workspaceId,
+    Value<String>? kind,
+    Value<String>? refs,
+    Value<String>? status,
+    Value<String?>? resolution,
+    Value<String?>? resolvedBy,
+    Value<String?>? resolvedAt,
+    Value<int>? rowVersion,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ReconciliationItemsCompanion(
+      id: id ?? this.id,
+      workspaceId: workspaceId ?? this.workspaceId,
+      kind: kind ?? this.kind,
+      refs: refs ?? this.refs,
+      status: status ?? this.status,
+      resolution: resolution ?? this.resolution,
+      resolvedBy: resolvedBy ?? this.resolvedBy,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      rowVersion: rowVersion ?? this.rowVersion,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (workspaceId.present) {
+      map['workspace_id'] = Variable<String>(workspaceId.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (refs.present) {
+      map['refs'] = Variable<String>(refs.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (resolution.present) {
+      map['resolution'] = Variable<String>(resolution.value);
+    }
+    if (resolvedBy.present) {
+      map['resolved_by'] = Variable<String>(resolvedBy.value);
+    }
+    if (resolvedAt.present) {
+      map['resolved_at'] = Variable<String>(resolvedAt.value);
+    }
+    if (rowVersion.present) {
+      map['row_version'] = Variable<int>(rowVersion.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReconciliationItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('workspaceId: $workspaceId, ')
+          ..write('kind: $kind, ')
+          ..write('refs: $refs, ')
+          ..write('status: $status, ')
+          ..write('resolution: $resolution, ')
+          ..write('resolvedBy: $resolvedBy, ')
+          ..write('resolvedAt: $resolvedAt, ')
+          ..write('rowVersion: $rowVersion, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -12166,6 +18744,22 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $RecurringOverridesTable(this);
   late final $ScenariosTable scenarios = $ScenariosTable(this);
   late final $ScenarioRunsTable scenarioRuns = $ScenarioRunsTable(this);
+  late final $CardTransactionsTable cardTransactions = $CardTransactionsTable(
+    this,
+  );
+  late final $StatementVersionsTable statementVersions =
+      $StatementVersionsTable(this);
+  late final $StatementsTable statements = $StatementsTable(this);
+  late final $InstallmentPlansTable installmentPlans = $InstallmentPlansTable(
+    this,
+  );
+  late final $InstallmentScheduleTable installmentSchedule =
+      $InstallmentScheduleTable(this);
+  late final $RepaymentsTable repayments = $RepaymentsTable(this);
+  late final $RepaymentAllocationsTable repaymentAllocations =
+      $RepaymentAllocationsTable(this);
+  late final $ReconciliationItemsTable reconciliationItems =
+      $ReconciliationItemsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -12188,6 +18782,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     recurringOverrides,
     scenarios,
     scenarioRuns,
+    cardTransactions,
+    statementVersions,
+    statements,
+    installmentPlans,
+    installmentSchedule,
+    repayments,
+    repaymentAllocations,
+    reconciliationItems,
   ];
 }
 
@@ -18108,6 +24710,3162 @@ typedef $$ScenarioRunsTableProcessedTableManager =
       ScenarioRunRow,
       PrefetchHooks Function()
     >;
+typedef $$CardTransactionsTableCreateCompanionBuilder =
+    CardTransactionsCompanion Function({
+      required String id,
+      required String workspaceId,
+      required String currencyAccountId,
+      Value<String?> cardId,
+      required String txnType,
+      required int amountMinor,
+      required String currency,
+      required String txnAt,
+      required String txnTz,
+      required String timePrecision,
+      Value<String?> postedOn,
+      Value<String?> merchant,
+      Value<String?> category,
+      required String status,
+      Value<String?> parentTransactionId,
+      required String fingerprint,
+      required String sourceKind,
+      required String confirmationLevel,
+      Value<int> rowVersion,
+      required String recordedAt,
+      required String updatedAt,
+      Value<String?> deletedAt,
+      Value<int> rowid,
+    });
+typedef $$CardTransactionsTableUpdateCompanionBuilder =
+    CardTransactionsCompanion Function({
+      Value<String> id,
+      Value<String> workspaceId,
+      Value<String> currencyAccountId,
+      Value<String?> cardId,
+      Value<String> txnType,
+      Value<int> amountMinor,
+      Value<String> currency,
+      Value<String> txnAt,
+      Value<String> txnTz,
+      Value<String> timePrecision,
+      Value<String?> postedOn,
+      Value<String?> merchant,
+      Value<String?> category,
+      Value<String> status,
+      Value<String?> parentTransactionId,
+      Value<String> fingerprint,
+      Value<String> sourceKind,
+      Value<String> confirmationLevel,
+      Value<int> rowVersion,
+      Value<String> recordedAt,
+      Value<String> updatedAt,
+      Value<String?> deletedAt,
+      Value<int> rowid,
+    });
+
+class $$CardTransactionsTableFilterComposer
+    extends Composer<_$AppDatabase, $CardTransactionsTable> {
+  $$CardTransactionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cardId => $composableBuilder(
+    column: $table.cardId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get txnType => $composableBuilder(
+    column: $table.txnType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get txnAt => $composableBuilder(
+    column: $table.txnAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get txnTz => $composableBuilder(
+    column: $table.txnTz,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timePrecision => $composableBuilder(
+    column: $table.timePrecision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get postedOn => $composableBuilder(
+    column: $table.postedOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get merchant => $composableBuilder(
+    column: $table.merchant,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get parentTransactionId => $composableBuilder(
+    column: $table.parentTransactionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fingerprint => $composableBuilder(
+    column: $table.fingerprint,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get confirmationLevel => $composableBuilder(
+    column: $table.confirmationLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CardTransactionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CardTransactionsTable> {
+  $$CardTransactionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cardId => $composableBuilder(
+    column: $table.cardId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get txnType => $composableBuilder(
+    column: $table.txnType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get txnAt => $composableBuilder(
+    column: $table.txnAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get txnTz => $composableBuilder(
+    column: $table.txnTz,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get timePrecision => $composableBuilder(
+    column: $table.timePrecision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get postedOn => $composableBuilder(
+    column: $table.postedOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get merchant => $composableBuilder(
+    column: $table.merchant,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get parentTransactionId => $composableBuilder(
+    column: $table.parentTransactionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fingerprint => $composableBuilder(
+    column: $table.fingerprint,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get confirmationLevel => $composableBuilder(
+    column: $table.confirmationLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CardTransactionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CardTransactionsTable> {
+  $$CardTransactionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cardId =>
+      $composableBuilder(column: $table.cardId, builder: (column) => column);
+
+  GeneratedColumn<String> get txnType =>
+      $composableBuilder(column: $table.txnType, builder: (column) => column);
+
+  GeneratedColumn<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currency =>
+      $composableBuilder(column: $table.currency, builder: (column) => column);
+
+  GeneratedColumn<String> get txnAt =>
+      $composableBuilder(column: $table.txnAt, builder: (column) => column);
+
+  GeneratedColumn<String> get txnTz =>
+      $composableBuilder(column: $table.txnTz, builder: (column) => column);
+
+  GeneratedColumn<String> get timePrecision => $composableBuilder(
+    column: $table.timePrecision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get postedOn =>
+      $composableBuilder(column: $table.postedOn, builder: (column) => column);
+
+  GeneratedColumn<String> get merchant =>
+      $composableBuilder(column: $table.merchant, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get parentTransactionId => $composableBuilder(
+    column: $table.parentTransactionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fingerprint => $composableBuilder(
+    column: $table.fingerprint,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get confirmationLevel => $composableBuilder(
+    column: $table.confirmationLevel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$CardTransactionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CardTransactionsTable,
+          CardTransactionRow,
+          $$CardTransactionsTableFilterComposer,
+          $$CardTransactionsTableOrderingComposer,
+          $$CardTransactionsTableAnnotationComposer,
+          $$CardTransactionsTableCreateCompanionBuilder,
+          $$CardTransactionsTableUpdateCompanionBuilder,
+          (
+            CardTransactionRow,
+            BaseReferences<
+              _$AppDatabase,
+              $CardTransactionsTable,
+              CardTransactionRow
+            >,
+          ),
+          CardTransactionRow,
+          PrefetchHooks Function()
+        > {
+  $$CardTransactionsTableTableManager(
+    _$AppDatabase db,
+    $CardTransactionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CardTransactionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CardTransactionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CardTransactionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> currencyAccountId = const Value.absent(),
+                Value<String?> cardId = const Value.absent(),
+                Value<String> txnType = const Value.absent(),
+                Value<int> amountMinor = const Value.absent(),
+                Value<String> currency = const Value.absent(),
+                Value<String> txnAt = const Value.absent(),
+                Value<String> txnTz = const Value.absent(),
+                Value<String> timePrecision = const Value.absent(),
+                Value<String?> postedOn = const Value.absent(),
+                Value<String?> merchant = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> parentTransactionId = const Value.absent(),
+                Value<String> fingerprint = const Value.absent(),
+                Value<String> sourceKind = const Value.absent(),
+                Value<String> confirmationLevel = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> recordedAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<String?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CardTransactionsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                cardId: cardId,
+                txnType: txnType,
+                amountMinor: amountMinor,
+                currency: currency,
+                txnAt: txnAt,
+                txnTz: txnTz,
+                timePrecision: timePrecision,
+                postedOn: postedOn,
+                merchant: merchant,
+                category: category,
+                status: status,
+                parentTransactionId: parentTransactionId,
+                fingerprint: fingerprint,
+                sourceKind: sourceKind,
+                confirmationLevel: confirmationLevel,
+                rowVersion: rowVersion,
+                recordedAt: recordedAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String currencyAccountId,
+                Value<String?> cardId = const Value.absent(),
+                required String txnType,
+                required int amountMinor,
+                required String currency,
+                required String txnAt,
+                required String txnTz,
+                required String timePrecision,
+                Value<String?> postedOn = const Value.absent(),
+                Value<String?> merchant = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                required String status,
+                Value<String?> parentTransactionId = const Value.absent(),
+                required String fingerprint,
+                required String sourceKind,
+                required String confirmationLevel,
+                Value<int> rowVersion = const Value.absent(),
+                required String recordedAt,
+                required String updatedAt,
+                Value<String?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CardTransactionsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                cardId: cardId,
+                txnType: txnType,
+                amountMinor: amountMinor,
+                currency: currency,
+                txnAt: txnAt,
+                txnTz: txnTz,
+                timePrecision: timePrecision,
+                postedOn: postedOn,
+                merchant: merchant,
+                category: category,
+                status: status,
+                parentTransactionId: parentTransactionId,
+                fingerprint: fingerprint,
+                sourceKind: sourceKind,
+                confirmationLevel: confirmationLevel,
+                rowVersion: rowVersion,
+                recordedAt: recordedAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$CardTransactionsTable, CardTransactionRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $CardTransactionsTable,
+                    CardTransactionRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CardTransactionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CardTransactionsTable,
+      CardTransactionRow,
+      $$CardTransactionsTableFilterComposer,
+      $$CardTransactionsTableOrderingComposer,
+      $$CardTransactionsTableAnnotationComposer,
+      $$CardTransactionsTableCreateCompanionBuilder,
+      $$CardTransactionsTableUpdateCompanionBuilder,
+      (
+        CardTransactionRow,
+        BaseReferences<
+          _$AppDatabase,
+          $CardTransactionsTable,
+          CardTransactionRow
+        >,
+      ),
+      CardTransactionRow,
+      PrefetchHooks Function()
+    >;
+typedef $$StatementVersionsTableCreateCompanionBuilder =
+    StatementVersionsCompanion Function({
+      required String id,
+      required String workspaceId,
+      required String statementId,
+      required int versionNo,
+      required String sourceKind,
+      Value<int?> previousBalanceMinor,
+      required int newBalanceMinor,
+      Value<int?> minDueMinor,
+      Value<int?> paymentsMinor,
+      Value<int?> creditsMinor,
+      Value<int?> feesMinor,
+      Value<int?> interestMinor,
+      Value<int?> installmentDueMinor,
+      Value<int?> creditBalanceMinor,
+      required String dueDate,
+      required String recordedBy,
+      Value<String?> reason,
+      required String recordedAt,
+      Value<int> rowid,
+    });
+typedef $$StatementVersionsTableUpdateCompanionBuilder =
+    StatementVersionsCompanion Function({
+      Value<String> id,
+      Value<String> workspaceId,
+      Value<String> statementId,
+      Value<int> versionNo,
+      Value<String> sourceKind,
+      Value<int?> previousBalanceMinor,
+      Value<int> newBalanceMinor,
+      Value<int?> minDueMinor,
+      Value<int?> paymentsMinor,
+      Value<int?> creditsMinor,
+      Value<int?> feesMinor,
+      Value<int?> interestMinor,
+      Value<int?> installmentDueMinor,
+      Value<int?> creditBalanceMinor,
+      Value<String> dueDate,
+      Value<String> recordedBy,
+      Value<String?> reason,
+      Value<String> recordedAt,
+      Value<int> rowid,
+    });
+
+class $$StatementVersionsTableFilterComposer
+    extends Composer<_$AppDatabase, $StatementVersionsTable> {
+  $$StatementVersionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get statementId => $composableBuilder(
+    column: $table.statementId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get versionNo => $composableBuilder(
+    column: $table.versionNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get previousBalanceMinor => $composableBuilder(
+    column: $table.previousBalanceMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get newBalanceMinor => $composableBuilder(
+    column: $table.newBalanceMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minDueMinor => $composableBuilder(
+    column: $table.minDueMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get paymentsMinor => $composableBuilder(
+    column: $table.paymentsMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get creditsMinor => $composableBuilder(
+    column: $table.creditsMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get feesMinor => $composableBuilder(
+    column: $table.feesMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get interestMinor => $composableBuilder(
+    column: $table.interestMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get installmentDueMinor => $composableBuilder(
+    column: $table.installmentDueMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get creditBalanceMinor => $composableBuilder(
+    column: $table.creditBalanceMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$StatementVersionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $StatementVersionsTable> {
+  $$StatementVersionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get statementId => $composableBuilder(
+    column: $table.statementId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get versionNo => $composableBuilder(
+    column: $table.versionNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get previousBalanceMinor => $composableBuilder(
+    column: $table.previousBalanceMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get newBalanceMinor => $composableBuilder(
+    column: $table.newBalanceMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minDueMinor => $composableBuilder(
+    column: $table.minDueMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get paymentsMinor => $composableBuilder(
+    column: $table.paymentsMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get creditsMinor => $composableBuilder(
+    column: $table.creditsMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get feesMinor => $composableBuilder(
+    column: $table.feesMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get interestMinor => $composableBuilder(
+    column: $table.interestMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get installmentDueMinor => $composableBuilder(
+    column: $table.installmentDueMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get creditBalanceMinor => $composableBuilder(
+    column: $table.creditBalanceMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StatementVersionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StatementVersionsTable> {
+  $$StatementVersionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get statementId => $composableBuilder(
+    column: $table.statementId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get versionNo =>
+      $composableBuilder(column: $table.versionNo, builder: (column) => column);
+
+  GeneratedColumn<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get previousBalanceMinor => $composableBuilder(
+    column: $table.previousBalanceMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get newBalanceMinor => $composableBuilder(
+    column: $table.newBalanceMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get minDueMinor => $composableBuilder(
+    column: $table.minDueMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get paymentsMinor => $composableBuilder(
+    column: $table.paymentsMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get creditsMinor => $composableBuilder(
+    column: $table.creditsMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get feesMinor =>
+      $composableBuilder(column: $table.feesMinor, builder: (column) => column);
+
+  GeneratedColumn<int> get interestMinor => $composableBuilder(
+    column: $table.interestMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get installmentDueMinor => $composableBuilder(
+    column: $table.installmentDueMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get creditBalanceMinor => $composableBuilder(
+    column: $table.creditBalanceMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reason =>
+      $composableBuilder(column: $table.reason, builder: (column) => column);
+
+  GeneratedColumn<String> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$StatementVersionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $StatementVersionsTable,
+          StatementVersionRow,
+          $$StatementVersionsTableFilterComposer,
+          $$StatementVersionsTableOrderingComposer,
+          $$StatementVersionsTableAnnotationComposer,
+          $$StatementVersionsTableCreateCompanionBuilder,
+          $$StatementVersionsTableUpdateCompanionBuilder,
+          (
+            StatementVersionRow,
+            BaseReferences<
+              _$AppDatabase,
+              $StatementVersionsTable,
+              StatementVersionRow
+            >,
+          ),
+          StatementVersionRow,
+          PrefetchHooks Function()
+        > {
+  $$StatementVersionsTableTableManager(
+    _$AppDatabase db,
+    $StatementVersionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StatementVersionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StatementVersionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StatementVersionsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> statementId = const Value.absent(),
+                Value<int> versionNo = const Value.absent(),
+                Value<String> sourceKind = const Value.absent(),
+                Value<int?> previousBalanceMinor = const Value.absent(),
+                Value<int> newBalanceMinor = const Value.absent(),
+                Value<int?> minDueMinor = const Value.absent(),
+                Value<int?> paymentsMinor = const Value.absent(),
+                Value<int?> creditsMinor = const Value.absent(),
+                Value<int?> feesMinor = const Value.absent(),
+                Value<int?> interestMinor = const Value.absent(),
+                Value<int?> installmentDueMinor = const Value.absent(),
+                Value<int?> creditBalanceMinor = const Value.absent(),
+                Value<String> dueDate = const Value.absent(),
+                Value<String> recordedBy = const Value.absent(),
+                Value<String?> reason = const Value.absent(),
+                Value<String> recordedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => StatementVersionsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                statementId: statementId,
+                versionNo: versionNo,
+                sourceKind: sourceKind,
+                previousBalanceMinor: previousBalanceMinor,
+                newBalanceMinor: newBalanceMinor,
+                minDueMinor: minDueMinor,
+                paymentsMinor: paymentsMinor,
+                creditsMinor: creditsMinor,
+                feesMinor: feesMinor,
+                interestMinor: interestMinor,
+                installmentDueMinor: installmentDueMinor,
+                creditBalanceMinor: creditBalanceMinor,
+                dueDate: dueDate,
+                recordedBy: recordedBy,
+                reason: reason,
+                recordedAt: recordedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String statementId,
+                required int versionNo,
+                required String sourceKind,
+                Value<int?> previousBalanceMinor = const Value.absent(),
+                required int newBalanceMinor,
+                Value<int?> minDueMinor = const Value.absent(),
+                Value<int?> paymentsMinor = const Value.absent(),
+                Value<int?> creditsMinor = const Value.absent(),
+                Value<int?> feesMinor = const Value.absent(),
+                Value<int?> interestMinor = const Value.absent(),
+                Value<int?> installmentDueMinor = const Value.absent(),
+                Value<int?> creditBalanceMinor = const Value.absent(),
+                required String dueDate,
+                required String recordedBy,
+                Value<String?> reason = const Value.absent(),
+                required String recordedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => StatementVersionsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                statementId: statementId,
+                versionNo: versionNo,
+                sourceKind: sourceKind,
+                previousBalanceMinor: previousBalanceMinor,
+                newBalanceMinor: newBalanceMinor,
+                minDueMinor: minDueMinor,
+                paymentsMinor: paymentsMinor,
+                creditsMinor: creditsMinor,
+                feesMinor: feesMinor,
+                interestMinor: interestMinor,
+                installmentDueMinor: installmentDueMinor,
+                creditBalanceMinor: creditBalanceMinor,
+                dueDate: dueDate,
+                recordedBy: recordedBy,
+                reason: reason,
+                recordedAt: recordedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$StatementVersionsTable, StatementVersionRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $StatementVersionsTable,
+                    StatementVersionRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$StatementVersionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $StatementVersionsTable,
+      StatementVersionRow,
+      $$StatementVersionsTableFilterComposer,
+      $$StatementVersionsTableOrderingComposer,
+      $$StatementVersionsTableAnnotationComposer,
+      $$StatementVersionsTableCreateCompanionBuilder,
+      $$StatementVersionsTableUpdateCompanionBuilder,
+      (
+        StatementVersionRow,
+        BaseReferences<
+          _$AppDatabase,
+          $StatementVersionsTable,
+          StatementVersionRow
+        >,
+      ),
+      StatementVersionRow,
+      PrefetchHooks Function()
+    >;
+typedef $$StatementsTableCreateCompanionBuilder = StatementsCompanion Function({
+  required String id,
+  required String workspaceId,
+  required String currencyAccountId,
+  required String statementDate,
+  required String dueDate,
+  required String status,
+  Value<String?> currentVersionId,
+  Value<int> rowVersion,
+  required String createdAt,
+  required String updatedAt,
+  Value<int> rowid,
+});
+typedef $$StatementsTableUpdateCompanionBuilder = StatementsCompanion Function({
+  Value<String> id,
+  Value<String> workspaceId,
+  Value<String> currencyAccountId,
+  Value<String> statementDate,
+  Value<String> dueDate,
+  Value<String> status,
+  Value<String?> currentVersionId,
+  Value<int> rowVersion,
+  Value<String> createdAt,
+  Value<String> updatedAt,
+  Value<int> rowid,
+});
+
+class $$StatementsTableFilterComposer
+    extends Composer<_$AppDatabase, $StatementsTable> {
+  $$StatementsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get statementDate => $composableBuilder(
+    column: $table.statementDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currentVersionId => $composableBuilder(
+    column: $table.currentVersionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$StatementsTableOrderingComposer
+    extends Composer<_$AppDatabase, $StatementsTable> {
+  $$StatementsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get statementDate => $composableBuilder(
+    column: $table.statementDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currentVersionId => $composableBuilder(
+    column: $table.currentVersionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StatementsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StatementsTable> {
+  $$StatementsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get statementDate => $composableBuilder(
+    column: $table.statementDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get currentVersionId => $composableBuilder(
+    column: $table.currentVersionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$StatementsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $StatementsTable,
+          StatementRow,
+          $$StatementsTableFilterComposer,
+          $$StatementsTableOrderingComposer,
+          $$StatementsTableAnnotationComposer,
+          $$StatementsTableCreateCompanionBuilder,
+          $$StatementsTableUpdateCompanionBuilder,
+          (
+            StatementRow,
+            BaseReferences<_$AppDatabase, $StatementsTable, StatementRow>,
+          ),
+          StatementRow,
+          PrefetchHooks Function()
+        > {
+  $$StatementsTableTableManager(_$AppDatabase db, $StatementsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StatementsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StatementsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StatementsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> currencyAccountId = const Value.absent(),
+                Value<String> statementDate = const Value.absent(),
+                Value<String> dueDate = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> currentVersionId = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => StatementsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                statementDate: statementDate,
+                dueDate: dueDate,
+                status: status,
+                currentVersionId: currentVersionId,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String currencyAccountId,
+                required String statementDate,
+                required String dueDate,
+                required String status,
+                Value<String?> currentVersionId = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => StatementsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                statementDate: statementDate,
+                dueDate: dueDate,
+                status: status,
+                currentVersionId: currentVersionId,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$StatementsTable, StatementRow>(table),
+                  BaseReferences<_$AppDatabase, $StatementsTable, StatementRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$StatementsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $StatementsTable,
+      StatementRow,
+      $$StatementsTableFilterComposer,
+      $$StatementsTableOrderingComposer,
+      $$StatementsTableAnnotationComposer,
+      $$StatementsTableCreateCompanionBuilder,
+      $$StatementsTableUpdateCompanionBuilder,
+      (
+        StatementRow,
+        BaseReferences<_$AppDatabase, $StatementsTable, StatementRow>,
+      ),
+      StatementRow,
+      PrefetchHooks Function()
+    >;
+typedef $$InstallmentPlansTableCreateCompanionBuilder =
+    InstallmentPlansCompanion Function({
+      required String id,
+      required String workspaceId,
+      required String currencyAccountId,
+      required String transactionId,
+      required int principalMinor,
+      required int periods,
+      required String perPeriodRate,
+      required String feeMode,
+      required String remainderPolicy,
+      required String rounding,
+      required String status,
+      Value<String?> earlySettledAt,
+      Value<int> rowVersion,
+      required String createdAt,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$InstallmentPlansTableUpdateCompanionBuilder =
+    InstallmentPlansCompanion Function({
+      Value<String> id,
+      Value<String> workspaceId,
+      Value<String> currencyAccountId,
+      Value<String> transactionId,
+      Value<int> principalMinor,
+      Value<int> periods,
+      Value<String> perPeriodRate,
+      Value<String> feeMode,
+      Value<String> remainderPolicy,
+      Value<String> rounding,
+      Value<String> status,
+      Value<String?> earlySettledAt,
+      Value<int> rowVersion,
+      Value<String> createdAt,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$InstallmentPlansTableFilterComposer
+    extends Composer<_$AppDatabase, $InstallmentPlansTable> {
+  $$InstallmentPlansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get transactionId => $composableBuilder(
+    column: $table.transactionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get periods => $composableBuilder(
+    column: $table.periods,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get perPeriodRate => $composableBuilder(
+    column: $table.perPeriodRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get feeMode => $composableBuilder(
+    column: $table.feeMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remainderPolicy => $composableBuilder(
+    column: $table.remainderPolicy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get rounding => $composableBuilder(
+    column: $table.rounding,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get earlySettledAt => $composableBuilder(
+    column: $table.earlySettledAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InstallmentPlansTableOrderingComposer
+    extends Composer<_$AppDatabase, $InstallmentPlansTable> {
+  $$InstallmentPlansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get transactionId => $composableBuilder(
+    column: $table.transactionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get periods => $composableBuilder(
+    column: $table.periods,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get perPeriodRate => $composableBuilder(
+    column: $table.perPeriodRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get feeMode => $composableBuilder(
+    column: $table.feeMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remainderPolicy => $composableBuilder(
+    column: $table.remainderPolicy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get rounding => $composableBuilder(
+    column: $table.rounding,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get earlySettledAt => $composableBuilder(
+    column: $table.earlySettledAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InstallmentPlansTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InstallmentPlansTable> {
+  $$InstallmentPlansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get transactionId => $composableBuilder(
+    column: $table.transactionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get periods =>
+      $composableBuilder(column: $table.periods, builder: (column) => column);
+
+  GeneratedColumn<String> get perPeriodRate => $composableBuilder(
+    column: $table.perPeriodRate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get feeMode =>
+      $composableBuilder(column: $table.feeMode, builder: (column) => column);
+
+  GeneratedColumn<String> get remainderPolicy => $composableBuilder(
+    column: $table.remainderPolicy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get rounding =>
+      $composableBuilder(column: $table.rounding, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get earlySettledAt => $composableBuilder(
+    column: $table.earlySettledAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$InstallmentPlansTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $InstallmentPlansTable,
+          InstallmentPlanRow,
+          $$InstallmentPlansTableFilterComposer,
+          $$InstallmentPlansTableOrderingComposer,
+          $$InstallmentPlansTableAnnotationComposer,
+          $$InstallmentPlansTableCreateCompanionBuilder,
+          $$InstallmentPlansTableUpdateCompanionBuilder,
+          (
+            InstallmentPlanRow,
+            BaseReferences<
+              _$AppDatabase,
+              $InstallmentPlansTable,
+              InstallmentPlanRow
+            >,
+          ),
+          InstallmentPlanRow,
+          PrefetchHooks Function()
+        > {
+  $$InstallmentPlansTableTableManager(
+    _$AppDatabase db,
+    $InstallmentPlansTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InstallmentPlansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InstallmentPlansTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InstallmentPlansTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> currencyAccountId = const Value.absent(),
+                Value<String> transactionId = const Value.absent(),
+                Value<int> principalMinor = const Value.absent(),
+                Value<int> periods = const Value.absent(),
+                Value<String> perPeriodRate = const Value.absent(),
+                Value<String> feeMode = const Value.absent(),
+                Value<String> remainderPolicy = const Value.absent(),
+                Value<String> rounding = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> earlySettledAt = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InstallmentPlansCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                transactionId: transactionId,
+                principalMinor: principalMinor,
+                periods: periods,
+                perPeriodRate: perPeriodRate,
+                feeMode: feeMode,
+                remainderPolicy: remainderPolicy,
+                rounding: rounding,
+                status: status,
+                earlySettledAt: earlySettledAt,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String currencyAccountId,
+                required String transactionId,
+                required int principalMinor,
+                required int periods,
+                required String perPeriodRate,
+                required String feeMode,
+                required String remainderPolicy,
+                required String rounding,
+                required String status,
+                Value<String?> earlySettledAt = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => InstallmentPlansCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                transactionId: transactionId,
+                principalMinor: principalMinor,
+                periods: periods,
+                perPeriodRate: perPeriodRate,
+                feeMode: feeMode,
+                remainderPolicy: remainderPolicy,
+                rounding: rounding,
+                status: status,
+                earlySettledAt: earlySettledAt,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$InstallmentPlansTable, InstallmentPlanRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $InstallmentPlansTable,
+                    InstallmentPlanRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InstallmentPlansTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $InstallmentPlansTable,
+      InstallmentPlanRow,
+      $$InstallmentPlansTableFilterComposer,
+      $$InstallmentPlansTableOrderingComposer,
+      $$InstallmentPlansTableAnnotationComposer,
+      $$InstallmentPlansTableCreateCompanionBuilder,
+      $$InstallmentPlansTableUpdateCompanionBuilder,
+      (
+        InstallmentPlanRow,
+        BaseReferences<
+          _$AppDatabase,
+          $InstallmentPlansTable,
+          InstallmentPlanRow
+        >,
+      ),
+      InstallmentPlanRow,
+      PrefetchHooks Function()
+    >;
+typedef $$InstallmentScheduleTableCreateCompanionBuilder =
+    InstallmentScheduleCompanion Function({
+      required String workspaceId,
+      required String planId,
+      required int periodNo,
+      required int principalMinor,
+      required int feeMinor,
+      required String statementDate,
+      required String dueDate,
+      required String status,
+      Value<int> rowid,
+    });
+typedef $$InstallmentScheduleTableUpdateCompanionBuilder =
+    InstallmentScheduleCompanion Function({
+      Value<String> workspaceId,
+      Value<String> planId,
+      Value<int> periodNo,
+      Value<int> principalMinor,
+      Value<int> feeMinor,
+      Value<String> statementDate,
+      Value<String> dueDate,
+      Value<String> status,
+      Value<int> rowid,
+    });
+
+class $$InstallmentScheduleTableFilterComposer
+    extends Composer<_$AppDatabase, $InstallmentScheduleTable> {
+  $$InstallmentScheduleTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get planId => $composableBuilder(
+    column: $table.planId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get periodNo => $composableBuilder(
+    column: $table.periodNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get feeMinor => $composableBuilder(
+    column: $table.feeMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get statementDate => $composableBuilder(
+    column: $table.statementDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InstallmentScheduleTableOrderingComposer
+    extends Composer<_$AppDatabase, $InstallmentScheduleTable> {
+  $$InstallmentScheduleTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get planId => $composableBuilder(
+    column: $table.planId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get periodNo => $composableBuilder(
+    column: $table.periodNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get feeMinor => $composableBuilder(
+    column: $table.feeMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get statementDate => $composableBuilder(
+    column: $table.statementDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InstallmentScheduleTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InstallmentScheduleTable> {
+  $$InstallmentScheduleTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
+
+  GeneratedColumn<int> get periodNo =>
+      $composableBuilder(column: $table.periodNo, builder: (column) => column);
+
+  GeneratedColumn<int> get principalMinor => $composableBuilder(
+    column: $table.principalMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get feeMinor =>
+      $composableBuilder(column: $table.feeMinor, builder: (column) => column);
+
+  GeneratedColumn<String> get statementDate => $composableBuilder(
+    column: $table.statementDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+}
+
+class $$InstallmentScheduleTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $InstallmentScheduleTable,
+          InstallmentScheduleRow,
+          $$InstallmentScheduleTableFilterComposer,
+          $$InstallmentScheduleTableOrderingComposer,
+          $$InstallmentScheduleTableAnnotationComposer,
+          $$InstallmentScheduleTableCreateCompanionBuilder,
+          $$InstallmentScheduleTableUpdateCompanionBuilder,
+          (
+            InstallmentScheduleRow,
+            BaseReferences<
+              _$AppDatabase,
+              $InstallmentScheduleTable,
+              InstallmentScheduleRow
+            >,
+          ),
+          InstallmentScheduleRow,
+          PrefetchHooks Function()
+        > {
+  $$InstallmentScheduleTableTableManager(
+    _$AppDatabase db,
+    $InstallmentScheduleTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InstallmentScheduleTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InstallmentScheduleTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$InstallmentScheduleTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> planId = const Value.absent(),
+                Value<int> periodNo = const Value.absent(),
+                Value<int> principalMinor = const Value.absent(),
+                Value<int> feeMinor = const Value.absent(),
+                Value<String> statementDate = const Value.absent(),
+                Value<String> dueDate = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InstallmentScheduleCompanion(
+                workspaceId: workspaceId,
+                planId: planId,
+                periodNo: periodNo,
+                principalMinor: principalMinor,
+                feeMinor: feeMinor,
+                statementDate: statementDate,
+                dueDate: dueDate,
+                status: status,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String workspaceId,
+                required String planId,
+                required int periodNo,
+                required int principalMinor,
+                required int feeMinor,
+                required String statementDate,
+                required String dueDate,
+                required String status,
+                Value<int> rowid = const Value.absent(),
+              }) => InstallmentScheduleCompanion.insert(
+                workspaceId: workspaceId,
+                planId: planId,
+                periodNo: periodNo,
+                principalMinor: principalMinor,
+                feeMinor: feeMinor,
+                statementDate: statementDate,
+                dueDate: dueDate,
+                status: status,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $InstallmentScheduleTable,
+                    InstallmentScheduleRow
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $InstallmentScheduleTable,
+                    InstallmentScheduleRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InstallmentScheduleTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $InstallmentScheduleTable,
+      InstallmentScheduleRow,
+      $$InstallmentScheduleTableFilterComposer,
+      $$InstallmentScheduleTableOrderingComposer,
+      $$InstallmentScheduleTableAnnotationComposer,
+      $$InstallmentScheduleTableCreateCompanionBuilder,
+      $$InstallmentScheduleTableUpdateCompanionBuilder,
+      (
+        InstallmentScheduleRow,
+        BaseReferences<
+          _$AppDatabase,
+          $InstallmentScheduleTable,
+          InstallmentScheduleRow
+        >,
+      ),
+      InstallmentScheduleRow,
+      PrefetchHooks Function()
+    >;
+typedef $$RepaymentsTableCreateCompanionBuilder = RepaymentsCompanion Function({
+  required String id,
+  required String workspaceId,
+  required String currencyAccountId,
+  Value<String?> cashAccountId,
+  required int amountMinor,
+  required String currency,
+  required String status,
+  required String method,
+  Value<String?> paymentInitiatedAt,
+  Value<String?> expectedDebitOn,
+  Value<String?> cashDebitedAt,
+  Value<String?> creditPostedAt,
+  Value<String?> bankConfirmedAt,
+  Value<String?> evidenceNote,
+  Value<int> rowVersion,
+  required String createdAt,
+  required String updatedAt,
+  Value<String?> deletedAt,
+  Value<int> rowid,
+});
+typedef $$RepaymentsTableUpdateCompanionBuilder = RepaymentsCompanion Function({
+  Value<String> id,
+  Value<String> workspaceId,
+  Value<String> currencyAccountId,
+  Value<String?> cashAccountId,
+  Value<int> amountMinor,
+  Value<String> currency,
+  Value<String> status,
+  Value<String> method,
+  Value<String?> paymentInitiatedAt,
+  Value<String?> expectedDebitOn,
+  Value<String?> cashDebitedAt,
+  Value<String?> creditPostedAt,
+  Value<String?> bankConfirmedAt,
+  Value<String?> evidenceNote,
+  Value<int> rowVersion,
+  Value<String> createdAt,
+  Value<String> updatedAt,
+  Value<String?> deletedAt,
+  Value<int> rowid,
+});
+
+class $$RepaymentsTableFilterComposer
+    extends Composer<_$AppDatabase, $RepaymentsTable> {
+  $$RepaymentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get method => $composableBuilder(
+    column: $table.method,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paymentInitiatedAt => $composableBuilder(
+    column: $table.paymentInitiatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get expectedDebitOn => $composableBuilder(
+    column: $table.expectedDebitOn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cashDebitedAt => $composableBuilder(
+    column: $table.cashDebitedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get creditPostedAt => $composableBuilder(
+    column: $table.creditPostedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bankConfirmedAt => $composableBuilder(
+    column: $table.bankConfirmedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get evidenceNote => $composableBuilder(
+    column: $table.evidenceNote,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RepaymentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RepaymentsTable> {
+  $$RepaymentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currency => $composableBuilder(
+    column: $table.currency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get method => $composableBuilder(
+    column: $table.method,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paymentInitiatedAt => $composableBuilder(
+    column: $table.paymentInitiatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get expectedDebitOn => $composableBuilder(
+    column: $table.expectedDebitOn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cashDebitedAt => $composableBuilder(
+    column: $table.cashDebitedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get creditPostedAt => $composableBuilder(
+    column: $table.creditPostedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bankConfirmedAt => $composableBuilder(
+    column: $table.bankConfirmedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get evidenceNote => $composableBuilder(
+    column: $table.evidenceNote,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RepaymentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RepaymentsTable> {
+  $$RepaymentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cashAccountId => $composableBuilder(
+    column: $table.cashAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currency =>
+      $composableBuilder(column: $table.currency, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get method =>
+      $composableBuilder(column: $table.method, builder: (column) => column);
+
+  GeneratedColumn<String> get paymentInitiatedAt => $composableBuilder(
+    column: $table.paymentInitiatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get expectedDebitOn => $composableBuilder(
+    column: $table.expectedDebitOn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cashDebitedAt => $composableBuilder(
+    column: $table.cashDebitedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get creditPostedAt => $composableBuilder(
+    column: $table.creditPostedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get bankConfirmedAt => $composableBuilder(
+    column: $table.bankConfirmedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get evidenceNote => $composableBuilder(
+    column: $table.evidenceNote,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $$RepaymentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RepaymentsTable,
+          RepaymentRow,
+          $$RepaymentsTableFilterComposer,
+          $$RepaymentsTableOrderingComposer,
+          $$RepaymentsTableAnnotationComposer,
+          $$RepaymentsTableCreateCompanionBuilder,
+          $$RepaymentsTableUpdateCompanionBuilder,
+          (
+            RepaymentRow,
+            BaseReferences<_$AppDatabase, $RepaymentsTable, RepaymentRow>,
+          ),
+          RepaymentRow,
+          PrefetchHooks Function()
+        > {
+  $$RepaymentsTableTableManager(_$AppDatabase db, $RepaymentsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RepaymentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RepaymentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RepaymentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> currencyAccountId = const Value.absent(),
+                Value<String?> cashAccountId = const Value.absent(),
+                Value<int> amountMinor = const Value.absent(),
+                Value<String> currency = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> method = const Value.absent(),
+                Value<String?> paymentInitiatedAt = const Value.absent(),
+                Value<String?> expectedDebitOn = const Value.absent(),
+                Value<String?> cashDebitedAt = const Value.absent(),
+                Value<String?> creditPostedAt = const Value.absent(),
+                Value<String?> bankConfirmedAt = const Value.absent(),
+                Value<String?> evidenceNote = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<String?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RepaymentsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                cashAccountId: cashAccountId,
+                amountMinor: amountMinor,
+                currency: currency,
+                status: status,
+                method: method,
+                paymentInitiatedAt: paymentInitiatedAt,
+                expectedDebitOn: expectedDebitOn,
+                cashDebitedAt: cashDebitedAt,
+                creditPostedAt: creditPostedAt,
+                bankConfirmedAt: bankConfirmedAt,
+                evidenceNote: evidenceNote,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String currencyAccountId,
+                Value<String?> cashAccountId = const Value.absent(),
+                required int amountMinor,
+                required String currency,
+                required String status,
+                required String method,
+                Value<String?> paymentInitiatedAt = const Value.absent(),
+                Value<String?> expectedDebitOn = const Value.absent(),
+                Value<String?> cashDebitedAt = const Value.absent(),
+                Value<String?> creditPostedAt = const Value.absent(),
+                Value<String?> bankConfirmedAt = const Value.absent(),
+                Value<String?> evidenceNote = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<String?> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RepaymentsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                cashAccountId: cashAccountId,
+                amountMinor: amountMinor,
+                currency: currency,
+                status: status,
+                method: method,
+                paymentInitiatedAt: paymentInitiatedAt,
+                expectedDebitOn: expectedDebitOn,
+                cashDebitedAt: cashDebitedAt,
+                creditPostedAt: creditPostedAt,
+                bankConfirmedAt: bankConfirmedAt,
+                evidenceNote: evidenceNote,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RepaymentsTable, RepaymentRow>(table),
+                  BaseReferences<_$AppDatabase, $RepaymentsTable, RepaymentRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RepaymentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RepaymentsTable,
+      RepaymentRow,
+      $$RepaymentsTableFilterComposer,
+      $$RepaymentsTableOrderingComposer,
+      $$RepaymentsTableAnnotationComposer,
+      $$RepaymentsTableCreateCompanionBuilder,
+      $$RepaymentsTableUpdateCompanionBuilder,
+      (
+        RepaymentRow,
+        BaseReferences<_$AppDatabase, $RepaymentsTable, RepaymentRow>,
+      ),
+      RepaymentRow,
+      PrefetchHooks Function()
+    >;
+typedef $$RepaymentAllocationsTableCreateCompanionBuilder =
+    RepaymentAllocationsCompanion Function({
+      required String workspaceId,
+      required String currencyAccountId,
+      required String repaymentId,
+      required String statementId,
+      required int amountMinor,
+      Value<int> rowid,
+    });
+typedef $$RepaymentAllocationsTableUpdateCompanionBuilder =
+    RepaymentAllocationsCompanion Function({
+      Value<String> workspaceId,
+      Value<String> currencyAccountId,
+      Value<String> repaymentId,
+      Value<String> statementId,
+      Value<int> amountMinor,
+      Value<int> rowid,
+    });
+
+class $$RepaymentAllocationsTableFilterComposer
+    extends Composer<_$AppDatabase, $RepaymentAllocationsTable> {
+  $$RepaymentAllocationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get repaymentId => $composableBuilder(
+    column: $table.repaymentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get statementId => $composableBuilder(
+    column: $table.statementId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RepaymentAllocationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RepaymentAllocationsTable> {
+  $$RepaymentAllocationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get repaymentId => $composableBuilder(
+    column: $table.repaymentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get statementId => $composableBuilder(
+    column: $table.statementId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RepaymentAllocationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RepaymentAllocationsTable> {
+  $$RepaymentAllocationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currencyAccountId => $composableBuilder(
+    column: $table.currencyAccountId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get repaymentId => $composableBuilder(
+    column: $table.repaymentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get statementId => $composableBuilder(
+    column: $table.statementId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get amountMinor => $composableBuilder(
+    column: $table.amountMinor,
+    builder: (column) => column,
+  );
+}
+
+class $$RepaymentAllocationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RepaymentAllocationsTable,
+          RepaymentAllocationRow,
+          $$RepaymentAllocationsTableFilterComposer,
+          $$RepaymentAllocationsTableOrderingComposer,
+          $$RepaymentAllocationsTableAnnotationComposer,
+          $$RepaymentAllocationsTableCreateCompanionBuilder,
+          $$RepaymentAllocationsTableUpdateCompanionBuilder,
+          (
+            RepaymentAllocationRow,
+            BaseReferences<
+              _$AppDatabase,
+              $RepaymentAllocationsTable,
+              RepaymentAllocationRow
+            >,
+          ),
+          RepaymentAllocationRow,
+          PrefetchHooks Function()
+        > {
+  $$RepaymentAllocationsTableTableManager(
+    _$AppDatabase db,
+    $RepaymentAllocationsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RepaymentAllocationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RepaymentAllocationsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$RepaymentAllocationsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> currencyAccountId = const Value.absent(),
+                Value<String> repaymentId = const Value.absent(),
+                Value<String> statementId = const Value.absent(),
+                Value<int> amountMinor = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RepaymentAllocationsCompanion(
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                repaymentId: repaymentId,
+                statementId: statementId,
+                amountMinor: amountMinor,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String workspaceId,
+                required String currencyAccountId,
+                required String repaymentId,
+                required String statementId,
+                required int amountMinor,
+                Value<int> rowid = const Value.absent(),
+              }) => RepaymentAllocationsCompanion.insert(
+                workspaceId: workspaceId,
+                currencyAccountId: currencyAccountId,
+                repaymentId: repaymentId,
+                statementId: statementId,
+                amountMinor: amountMinor,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<
+                    $RepaymentAllocationsTable,
+                    RepaymentAllocationRow
+                  >(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $RepaymentAllocationsTable,
+                    RepaymentAllocationRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RepaymentAllocationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RepaymentAllocationsTable,
+      RepaymentAllocationRow,
+      $$RepaymentAllocationsTableFilterComposer,
+      $$RepaymentAllocationsTableOrderingComposer,
+      $$RepaymentAllocationsTableAnnotationComposer,
+      $$RepaymentAllocationsTableCreateCompanionBuilder,
+      $$RepaymentAllocationsTableUpdateCompanionBuilder,
+      (
+        RepaymentAllocationRow,
+        BaseReferences<
+          _$AppDatabase,
+          $RepaymentAllocationsTable,
+          RepaymentAllocationRow
+        >,
+      ),
+      RepaymentAllocationRow,
+      PrefetchHooks Function()
+    >;
+typedef $$ReconciliationItemsTableCreateCompanionBuilder =
+    ReconciliationItemsCompanion Function({
+      required String id,
+      required String workspaceId,
+      required String kind,
+      required String refs,
+      Value<String> status,
+      Value<String?> resolution,
+      Value<String?> resolvedBy,
+      Value<String?> resolvedAt,
+      Value<int> rowVersion,
+      required String createdAt,
+      required String updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ReconciliationItemsTableUpdateCompanionBuilder =
+    ReconciliationItemsCompanion Function({
+      Value<String> id,
+      Value<String> workspaceId,
+      Value<String> kind,
+      Value<String> refs,
+      Value<String> status,
+      Value<String?> resolution,
+      Value<String?> resolvedBy,
+      Value<String?> resolvedAt,
+      Value<int> rowVersion,
+      Value<String> createdAt,
+      Value<String> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$ReconciliationItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $ReconciliationItemsTable> {
+  $$ReconciliationItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get refs => $composableBuilder(
+    column: $table.refs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get resolution => $composableBuilder(
+    column: $table.resolution,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get resolvedBy => $composableBuilder(
+    column: $table.resolvedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get resolvedAt => $composableBuilder(
+    column: $table.resolvedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ReconciliationItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReconciliationItemsTable> {
+  $$ReconciliationItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get refs => $composableBuilder(
+    column: $table.refs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get resolution => $composableBuilder(
+    column: $table.resolution,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get resolvedBy => $composableBuilder(
+    column: $table.resolvedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get resolvedAt => $composableBuilder(
+    column: $table.resolvedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ReconciliationItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReconciliationItemsTable> {
+  $$ReconciliationItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get workspaceId => $composableBuilder(
+    column: $table.workspaceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get refs =>
+      $composableBuilder(column: $table.refs, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get resolution => $composableBuilder(
+    column: $table.resolution,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get resolvedBy => $composableBuilder(
+    column: $table.resolvedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get resolvedAt => $composableBuilder(
+    column: $table.resolvedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get rowVersion => $composableBuilder(
+    column: $table.rowVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ReconciliationItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ReconciliationItemsTable,
+          ReconciliationItemRow,
+          $$ReconciliationItemsTableFilterComposer,
+          $$ReconciliationItemsTableOrderingComposer,
+          $$ReconciliationItemsTableAnnotationComposer,
+          $$ReconciliationItemsTableCreateCompanionBuilder,
+          $$ReconciliationItemsTableUpdateCompanionBuilder,
+          (
+            ReconciliationItemRow,
+            BaseReferences<
+              _$AppDatabase,
+              $ReconciliationItemsTable,
+              ReconciliationItemRow
+            >,
+          ),
+          ReconciliationItemRow,
+          PrefetchHooks Function()
+        > {
+  $$ReconciliationItemsTableTableManager(
+    _$AppDatabase db,
+    $ReconciliationItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReconciliationItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReconciliationItemsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ReconciliationItemsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> workspaceId = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<String> refs = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> resolution = const Value.absent(),
+                Value<String?> resolvedBy = const Value.absent(),
+                Value<String?> resolvedAt = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ReconciliationItemsCompanion(
+                id: id,
+                workspaceId: workspaceId,
+                kind: kind,
+                refs: refs,
+                status: status,
+                resolution: resolution,
+                resolvedBy: resolvedBy,
+                resolvedAt: resolvedAt,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String workspaceId,
+                required String kind,
+                required String refs,
+                Value<String> status = const Value.absent(),
+                Value<String?> resolution = const Value.absent(),
+                Value<String?> resolvedBy = const Value.absent(),
+                Value<String?> resolvedAt = const Value.absent(),
+                Value<int> rowVersion = const Value.absent(),
+                required String createdAt,
+                required String updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ReconciliationItemsCompanion.insert(
+                id: id,
+                workspaceId: workspaceId,
+                kind: kind,
+                refs: refs,
+                status: status,
+                resolution: resolution,
+                resolvedBy: resolvedBy,
+                resolvedAt: resolvedAt,
+                rowVersion: rowVersion,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ReconciliationItemsTable, ReconciliationItemRow>(
+                    table,
+                  ),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ReconciliationItemsTable,
+                    ReconciliationItemRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ReconciliationItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ReconciliationItemsTable,
+      ReconciliationItemRow,
+      $$ReconciliationItemsTableFilterComposer,
+      $$ReconciliationItemsTableOrderingComposer,
+      $$ReconciliationItemsTableAnnotationComposer,
+      $$ReconciliationItemsTableCreateCompanionBuilder,
+      $$ReconciliationItemsTableUpdateCompanionBuilder,
+      (
+        ReconciliationItemRow,
+        BaseReferences<
+          _$AppDatabase,
+          $ReconciliationItemsTable,
+          ReconciliationItemRow
+        >,
+      ),
+      ReconciliationItemRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -18149,4 +27907,20 @@ class $AppDatabaseManager {
       $$ScenariosTableTableManager(_db, _db.scenarios);
   $$ScenarioRunsTableTableManager get scenarioRuns =>
       $$ScenarioRunsTableTableManager(_db, _db.scenarioRuns);
+  $$CardTransactionsTableTableManager get cardTransactions =>
+      $$CardTransactionsTableTableManager(_db, _db.cardTransactions);
+  $$StatementVersionsTableTableManager get statementVersions =>
+      $$StatementVersionsTableTableManager(_db, _db.statementVersions);
+  $$StatementsTableTableManager get statements =>
+      $$StatementsTableTableManager(_db, _db.statements);
+  $$InstallmentPlansTableTableManager get installmentPlans =>
+      $$InstallmentPlansTableTableManager(_db, _db.installmentPlans);
+  $$InstallmentScheduleTableTableManager get installmentSchedule =>
+      $$InstallmentScheduleTableTableManager(_db, _db.installmentSchedule);
+  $$RepaymentsTableTableManager get repayments =>
+      $$RepaymentsTableTableManager(_db, _db.repayments);
+  $$RepaymentAllocationsTableTableManager get repaymentAllocations =>
+      $$RepaymentAllocationsTableTableManager(_db, _db.repaymentAllocations);
+  $$ReconciliationItemsTableTableManager get reconciliationItems =>
+      $$ReconciliationItemsTableTableManager(_db, _db.reconciliationItems);
 }

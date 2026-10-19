@@ -57,6 +57,14 @@ final class DatabaseMeta {
     RecurringOverrides,
     Scenarios,
     ScenarioRuns,
+    CardTransactions,
+    Statements,
+    StatementVersions,
+    InstallmentPlans,
+    InstallmentSchedule,
+    Repayments,
+    RepaymentAllocations,
+    ReconciliationItems,
   ],
 )
 class AppDatabase extends _$AppDatabase {

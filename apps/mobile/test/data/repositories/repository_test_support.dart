@@ -240,3 +240,29 @@ Future<CashSnapshotRow> recordTestCashSnapshot(
     ),
   );
 }
+
+/// 写一行最小的还款（直接写库，状态"已登记"）：现金事件的 `linked_repayment_id` 必须指向同一空间的
+/// 还款（v4 触发器）。没有给 [currencyAccountId] 时新建一张卡、用它的主子账户。返回还款 id。
+Future<String> insertTestRepaymentRow(
+  WorkspaceScope scope, {
+  required String cashAccountId,
+  String? currencyAccountId,
+  String? id,
+  int amount = 100000,
+}) async {
+  final sub =
+      currencyAccountId ??
+      (await primaryCurrencyAccount(
+        scope,
+        (await createTestCard(scope, last4: '9001')).creditAccountId,
+      )).id;
+  final repaymentId = id ?? newUuidV4();
+  const ts = '2026-10-18T09:00:00+08:00';
+  await scope.db.customStatement(
+    'INSERT INTO repayments (id, workspace_id, currency_account_id, cash_account_id, '
+    'amount_minor, currency, status, method, created_at, updated_at) VALUES '
+    "('$repaymentId', '${scope.workspaceId}', '$sub', '$cashAccountId', $amount, 'CNY', "
+    "'recorded', 'manual', '$ts', '$ts')",
+  );
+  return repaymentId;
+}

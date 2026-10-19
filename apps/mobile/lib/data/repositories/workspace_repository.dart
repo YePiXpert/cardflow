@@ -127,15 +127,26 @@ final class WorkspaceRepository {
 /// 带 `workspace_id` 的业务表，按"先子表后父表"的删除顺序排列。新增的业务表必须加进来
 /// （`workspace_isolation_test` 会检查本表覆盖了 sqlite_master 里所有带 workspace_id 的表）。
 const List<String> workspaceDataTables = <String>[
+  // v4（I-1c）：差异项、分配、分期各期与计划；账单版本先于账单（账单的当前版本是延迟检查的外键）。
+  'reconciliation_items',
+  'repayment_allocations',
+  'installment_schedule',
+  'installment_plans',
+  'statement_versions',
+  'statements',
   // v3（I-1b）
   'scenario_runs',
   'scenarios',
   'snapshot_included_events',
   'cash_balance_snapshots',
   'cash_events',
+  // v4：还款在现金事件之后（触发器：仍有未删除的现金事件指向它时不能删除）。
+  'repayments',
   'recurring_overrides',
   'recurring_items',
   'cash_accounts',
+  // v4：交易在卡片与币种子账户之前（分期计划已先删）。
+  'transactions',
   // v2（I-1a）
   'limit_snapshots',
   'billing_rule_versions',

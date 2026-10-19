@@ -207,7 +207,10 @@ void main() {
         final acc = await createTestCashAccount(scope);
         await recordTestCashSnapshot(scope, acc.id, d(2026, 10, 17), 500000);
         await CashEventRepository(scope).planRepaymentDebit(
-          repaymentId: 'r-1',
+          repaymentId: await insertTestRepaymentRow(
+            scope,
+            cashAccountId: acc.id,
+          ),
           cashAccountId: acc.id,
           on: d(2026, 12, 20),
           amountMinor: 120000,

@@ -14,7 +14,7 @@ import 'database_errors.dart';
 /// `test/data/db/schema_test.dart` 要求两条路径得到的 `sqlite_master`（表、列、索引、触发器）
 /// 完全一致，所以改了 `tables.dart` 却没有写迁移、或冻结 SQL 抄错，测试都会失败。
 ///
-/// 加表与迁移（I-1b 的 v3 即照此办理）：
+/// 加表与迁移（I-1b 的 v3、I-1c 的 v4 即照此办理）：
 /// 1. 在 `tables.dart` 加表或加列（drift 表 DSL），`app_database.dart` 的 `@DriftDatabase` 登记新表，
 ///    运行 `dart run build_runner build` 与 `dart format .`；
 /// 2. [LocalSchema.currentSchemaVersion] 加 1；
@@ -33,7 +33,7 @@ import 'database_errors.dart';
 /// 也一律写 `IF NOT EXISTS`，重跑不报错（schema_test 有"重跑 1→2"的测试）。
 abstract final class LocalSchema {
   /// 当前 schema 版本（drift 的 `PRAGMA user_version` 与 meta 表同时记录）。
-  static const int currentSchemaVersion = 3;
+  static const int currentSchemaVersion = 4;
 
   /// v1：meta 表（单行）——schema 版本与建库时间（UTC，ISO-8601）。
   static const String createMetaTable = '''
@@ -810,16 +810,559 @@ BEGIN SELECT RAISE(ABORT, 'scenario_runs: append only'); END''',
   ];
 }
 
+/// v4（I-1c）：交易、账单与账单版本、分期计划与各期、还款与分配、差异项。表定义见 `tables.dart`；这里是
+/// 冻结的 SQL（v3 → v4 的迁移步骤使用；只做 expand：只加表、索引与触发器，不动 v2/v3 的表与数据——
+/// v3 的 `cash_events` 不重建，`linked_repayment_id` 的约束用触发器补上，简报 §6 第 2 条）。
+abstract final class SchemaV4 {
+  /// v4 新增的表（与 drift 由 `tables.dart` 生成的建表语句一字不差，只多了 `IF NOT EXISTS`）。
+  static const List<String> tables = <String>[
+    // transactions
+    'CREATE TABLE IF NOT EXISTS "transactions" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"currency_account_id" TEXT NOT NULL, '
+        '"card_id" TEXT NULL, '
+        '"txn_type" TEXT NOT NULL, '
+        '"amount_minor" INTEGER NOT NULL, '
+        '"currency" TEXT NOT NULL, '
+        '"txn_at" TEXT NOT NULL, '
+        '"txn_tz" TEXT NOT NULL, '
+        '"time_precision" TEXT NOT NULL, '
+        '"posted_on" TEXT NULL, '
+        '"merchant" TEXT NULL, '
+        '"category" TEXT NULL, '
+        '"status" TEXT NOT NULL, '
+        '"parent_transaction_id" TEXT NULL, '
+        '"fingerprint" TEXT NOT NULL, '
+        '"source_kind" TEXT NOT NULL, '
+        '"confirmation_level" TEXT NOT NULL, '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"recorded_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        '"deleted_at" TEXT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "currency_account_id", "id"), '
+        'FOREIGN KEY (workspace_id, currency_account_id, currency) REFERENCES currency_accounts (workspace_id, id, currency), '
+        'FOREIGN KEY (workspace_id, card_id) REFERENCES cards (workspace_id, id), '
+        'FOREIGN KEY (workspace_id, currency_account_id, parent_transaction_id) REFERENCES transactions (workspace_id, currency_account_id, id), '
+        'CHECK (txn_type IN (\'purchase\', \'refund\', \'repayment\', \'transfer\', \'fee\', \'interest\', \'installment_principal\', \'installment_fee\', \'adjustment\')), '
+        'CHECK (amount_minor <> 0 AND amount_minor BETWEEN -10000000000000 AND 10000000000000), '
+        'CHECK ((txn_type IN (\'purchase\', \'fee\', \'interest\', \'installment_principal\', \'installment_fee\') AND amount_minor > 0) OR (txn_type IN (\'refund\', \'repayment\') AND amount_minor < 0) OR txn_type IN (\'transfer\', \'adjustment\')), '
+        'CHECK (currency IN (\'CNY\', \'USD\', \'EUR\', \'HKD\', \'GBP\', \'MOP\', \'TWD\', \'JPY\', \'KRW\', \'VND\', \'KWD\', \'BHD\', \'JOD\')), '
+        'CHECK (txn_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (length(txn_tz) BETWEEN 1 AND 64), '
+        'CHECK (time_precision IN (\'datetime\', \'date\', \'month\')), '
+        'CHECK (posted_on IS NULL OR posted_on GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (merchant IS NULL OR length(merchant) BETWEEN 1 AND 20), '
+        'CHECK (merchant NOT GLOB \'*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\'), '
+        'CHECK (category IS NULL OR length(category) BETWEEN 1 AND 20), '
+        'CHECK (category NOT GLOB \'*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\'), '
+        'CHECK (status IN (\'pending\', \'posted\', \'reversed\')), '
+        'CHECK (parent_transaction_id IS NULL OR parent_transaction_id <> id), '
+        'CHECK (length(fingerprint) = 64 AND fingerprint NOT GLOB \'*[^0-9a-f]*\'), '
+        'CHECK (source_kind IN (\'manual\', \'import\')), '
+        'CHECK (confirmation_level IN (\'system_estimated\', \'user_confirmed\', \'bank_confirmed\')), '
+        'CHECK (recorded_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (updated_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (deleted_at IS NULL OR deleted_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (row_version >= 1)'
+        ') STRICT',
+    // statements
+    'CREATE TABLE IF NOT EXISTS "statements" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"currency_account_id" TEXT NOT NULL, '
+        '"statement_date" TEXT NOT NULL, '
+        '"due_date" TEXT NOT NULL, '
+        '"status" TEXT NOT NULL, '
+        '"current_version_id" TEXT NULL, '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "currency_account_id", "id"), '
+        'UNIQUE ("workspace_id", "currency_account_id", "statement_date"), '
+        'FOREIGN KEY (workspace_id, currency_account_id) REFERENCES currency_accounts (workspace_id, id), '
+        'FOREIGN KEY (workspace_id, id, current_version_id) REFERENCES statement_versions (workspace_id, statement_id, id) DEFERRABLE INITIALLY DEFERRED, '
+        'CHECK (statement_date GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (due_date GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (due_date > statement_date), '
+        'CHECK (status IN (\'predicted\', \'issued\', \'amended\', \'partially_settled\', \'settled\', \'overdue\')), '
+        'CHECK (row_version >= 1), '
+        'CHECK (created_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (updated_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\')'
+        ') STRICT',
+    // statement_versions
+    'CREATE TABLE IF NOT EXISTS "statement_versions" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"statement_id" TEXT NOT NULL, '
+        '"version_no" INTEGER NOT NULL, '
+        '"source_kind" TEXT NOT NULL, '
+        '"previous_balance_minor" INTEGER NULL, '
+        '"new_balance_minor" INTEGER NOT NULL, '
+        '"min_due_minor" INTEGER NULL, '
+        '"payments_minor" INTEGER NULL, '
+        '"credits_minor" INTEGER NULL, '
+        '"fees_minor" INTEGER NULL, '
+        '"interest_minor" INTEGER NULL, '
+        '"installment_due_minor" INTEGER NULL, '
+        '"credit_balance_minor" INTEGER NULL, '
+        '"due_date" TEXT NOT NULL, '
+        '"recorded_by" TEXT NOT NULL, '
+        '"reason" TEXT NULL, '
+        '"recorded_at" TEXT NOT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "statement_id", "id"), '
+        'UNIQUE ("statement_id", "version_no"), '
+        'FOREIGN KEY (workspace_id, statement_id) REFERENCES statements (workspace_id, id), '
+        'CHECK (version_no >= 1), '
+        'CHECK (source_kind IN (\'manual\', \'import\', \'correction\')), '
+        'CHECK (source_kind <> \'correction\' OR version_no > 1), '
+        'CHECK (previous_balance_minor IS NULL OR previous_balance_minor BETWEEN -10000000000000 AND 10000000000000), '
+        'CHECK (new_balance_minor BETWEEN -10000000000000 AND 10000000000000), '
+        'CHECK (min_due_minor IS NULL OR min_due_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (payments_minor IS NULL OR payments_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (credits_minor IS NULL OR credits_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (fees_minor IS NULL OR fees_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (interest_minor IS NULL OR interest_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (installment_due_minor IS NULL OR installment_due_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (credit_balance_minor IS NULL OR credit_balance_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (credit_balance_minor IS NULL OR credit_balance_minor = 0 OR new_balance_minor <= 0), '
+        'CHECK (min_due_minor IS NULL OR min_due_minor <= max(new_balance_minor, 0)), '
+        'CHECK (due_date GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (recorded_by IN (\'user\', \'import\')), '
+        'CHECK (source_kind <> \'correction\' OR reason IS NOT NULL), '
+        'CHECK (reason IS NULL OR length(reason) BETWEEN 1 AND 200), '
+        'CHECK (reason NOT GLOB \'*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\'), '
+        'CHECK (recorded_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\')'
+        ') STRICT',
+    // installment_plans
+    'CREATE TABLE IF NOT EXISTS "installment_plans" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"currency_account_id" TEXT NOT NULL, '
+        '"transaction_id" TEXT NOT NULL, '
+        '"principal_minor" INTEGER NOT NULL, '
+        '"periods" INTEGER NOT NULL, '
+        '"per_period_rate" TEXT NOT NULL, '
+        '"fee_mode" TEXT NOT NULL, '
+        '"remainder_policy" TEXT NOT NULL, '
+        '"rounding" TEXT NOT NULL, '
+        '"status" TEXT NOT NULL, '
+        '"early_settled_at" TEXT NULL, '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "transaction_id"), '
+        'FOREIGN KEY (workspace_id, currency_account_id, transaction_id) REFERENCES transactions (workspace_id, currency_account_id, id), '
+        'CHECK (principal_minor BETWEEN 1 AND 10000000000000), '
+        'CHECK (periods BETWEEN 1 AND 60), '
+        'CHECK (length(per_period_rate) BETWEEN 1 AND 12 AND (per_period_rate = \'0\' OR (per_period_rate GLOB \'0.[0-9]*\' AND substr(per_period_rate, 3) NOT GLOB \'*[^0-9]*\' AND per_period_rate NOT GLOB \'*0\'))), '
+        'CHECK (fee_mode IN (\'per_period\', \'upfront\')), '
+        'CHECK (remainder_policy IN (\'last\', \'first\')), '
+        'CHECK (rounding IN (\'HALF_UP\')), '
+        'CHECK (status IN (\'active\', \'completed\', \'early_settled\', \'cancelled\')), '
+        'CHECK ((status = \'early_settled\') = (early_settled_at IS NOT NULL)), '
+        'CHECK (early_settled_at IS NULL OR early_settled_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (row_version >= 1), '
+        'CHECK (created_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (updated_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\')'
+        ') STRICT',
+    // installment_schedule
+    'CREATE TABLE IF NOT EXISTS "installment_schedule" ('
+        '"workspace_id" TEXT NOT NULL, '
+        '"plan_id" TEXT NOT NULL, '
+        '"period_no" INTEGER NOT NULL, '
+        '"principal_minor" INTEGER NOT NULL, '
+        '"fee_minor" INTEGER NOT NULL, '
+        '"statement_date" TEXT NOT NULL, '
+        '"due_date" TEXT NOT NULL, '
+        '"status" TEXT NOT NULL, '
+        'PRIMARY KEY ("plan_id", "period_no"), '
+        'FOREIGN KEY (workspace_id, plan_id) REFERENCES installment_plans (workspace_id, id), '
+        'CHECK (period_no BETWEEN 1 AND 60), '
+        'CHECK (principal_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (fee_minor BETWEEN 0 AND 10000000000000), '
+        'CHECK (statement_date GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (due_date GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (due_date > statement_date), '
+        'CHECK (status IN (\'scheduled\', \'billed\', \'settled\', \'cancelled\'))'
+        ') STRICT',
+    // repayments
+    'CREATE TABLE IF NOT EXISTS "repayments" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"currency_account_id" TEXT NOT NULL, '
+        '"cash_account_id" TEXT NULL, '
+        '"amount_minor" INTEGER NOT NULL, '
+        '"currency" TEXT NOT NULL, '
+        '"status" TEXT NOT NULL, '
+        '"method" TEXT NOT NULL, '
+        '"payment_initiated_at" TEXT NULL, '
+        '"expected_debit_on" TEXT NULL, '
+        '"cash_debited_at" TEXT NULL, '
+        '"credit_posted_at" TEXT NULL, '
+        '"bank_confirmed_at" TEXT NULL, '
+        '"evidence_note" TEXT NULL, '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        '"deleted_at" TEXT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "currency_account_id", "id"), '
+        'FOREIGN KEY (workspace_id, currency_account_id, currency) REFERENCES currency_accounts (workspace_id, id, currency), '
+        'FOREIGN KEY (workspace_id, cash_account_id, currency) REFERENCES cash_accounts (workspace_id, id, currency), '
+        'CHECK (amount_minor BETWEEN 1 AND 10000000000000), '
+        'CHECK (currency IN (\'CNY\', \'USD\', \'EUR\', \'HKD\', \'GBP\', \'MOP\', \'TWD\', \'JPY\', \'KRW\', \'VND\', \'KWD\', \'BHD\', \'JOD\')), '
+        'CHECK (status IN (\'recorded\', \'processing\', \'cash_debited\', \'credit_posted\', \'bank_confirmed\', \'failed\', \'user_marked_paid\', \'needs_review\', \'reversed\')), '
+        'CHECK (method IN (\'auto_debit\', \'manual\', \'third_party\', \'other\')), '
+        'CHECK (payment_initiated_at IS NULL OR payment_initiated_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (expected_debit_on IS NULL OR expected_debit_on GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]\'), '
+        'CHECK (cash_debited_at IS NULL OR cash_debited_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (credit_posted_at IS NULL OR credit_posted_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (bank_confirmed_at IS NULL OR bank_confirmed_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (status <> \'processing\' OR payment_initiated_at IS NOT NULL), '
+        'CHECK (status NOT IN (\'cash_debited\', \'credit_posted\') OR cash_debited_at IS NOT NULL), '
+        'CHECK (status <> \'credit_posted\' OR credit_posted_at IS NOT NULL), '
+        'CHECK (status NOT IN (\'bank_confirmed\', \'reversed\') OR bank_confirmed_at IS NOT NULL), '
+        'CHECK (evidence_note IS NULL OR length(evidence_note) BETWEEN 1 AND 200), '
+        'CHECK (evidence_note NOT GLOB \'*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*\'), '
+        'CHECK (row_version >= 1), '
+        'CHECK (created_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (updated_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (deleted_at IS NULL OR deleted_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\')'
+        ') STRICT',
+    // repayment_allocations
+    'CREATE TABLE IF NOT EXISTS "repayment_allocations" ('
+        '"workspace_id" TEXT NOT NULL, '
+        '"currency_account_id" TEXT NOT NULL, '
+        '"repayment_id" TEXT NOT NULL, '
+        '"statement_id" TEXT NOT NULL, '
+        '"amount_minor" INTEGER NOT NULL, '
+        'PRIMARY KEY ("repayment_id", "statement_id"), '
+        'FOREIGN KEY (workspace_id, currency_account_id, repayment_id) REFERENCES repayments (workspace_id, currency_account_id, id), '
+        'FOREIGN KEY (workspace_id, currency_account_id, statement_id) REFERENCES statements (workspace_id, currency_account_id, id), '
+        'CHECK (amount_minor BETWEEN 1 AND 10000000000000)'
+        ') STRICT',
+    // reconciliation_items
+    'CREATE TABLE IF NOT EXISTS "reconciliation_items" ('
+        '"id" TEXT NOT NULL, '
+        '"workspace_id" TEXT NOT NULL, '
+        '"kind" TEXT NOT NULL, '
+        '"refs" TEXT NOT NULL, '
+        '"status" TEXT NOT NULL DEFAULT \'open\', '
+        '"resolution" TEXT NULL, '
+        '"resolved_by" TEXT NULL, '
+        '"resolved_at" TEXT NULL, '
+        '"row_version" INTEGER NOT NULL DEFAULT 1, '
+        '"created_at" TEXT NOT NULL, '
+        '"updated_at" TEXT NOT NULL, '
+        'PRIMARY KEY ("id"), '
+        'UNIQUE ("workspace_id", "id"), '
+        'UNIQUE ("workspace_id", "kind", "refs"), '
+        'FOREIGN KEY (workspace_id) REFERENCES workspaces (id), '
+        'CHECK (kind IN (\'amount_mismatch\', \'duplicate_repayment\', \'refund_pending\', \'unmatched_repayment\')), '
+        'CHECK (json_valid(refs) AND json_type(refs) = \'object\'), '
+        'CHECK (status IN (\'open\', \'resolved\', \'dismissed\')), '
+        'CHECK ((status = \'open\') = (resolved_at IS NULL)), '
+        'CHECK ((status = \'open\') = (resolution IS NULL)), '
+        'CHECK ((status = \'open\') = (resolved_by IS NULL)), '
+        'CHECK (resolution IS NULL OR resolution IN (\'distinct\', \'same_payment\', \'offset\', \'not_offset\', \'acknowledged\', \'registered\', \'dismissed\')), '
+        'CHECK (resolved_by IS NULL OR resolved_by IN (\'user\', \'system\')), '
+        'CHECK (resolved_at IS NULL OR resolved_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (row_version >= 1), '
+        'CHECK (created_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\'), '
+        'CHECK (updated_at GLOB \'[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*\')'
+        ') STRICT',
+  ];
+
+  /// v4 的索引：父表上补的 `(workspace_id, id, currency)` 唯一键（交易、还款的币种与账户一致，
+  /// data-model §10.4）、外键子表列、范围查询。
+  static const List<String> indexes = <String>[
+    'CREATE UNIQUE INDEX IF NOT EXISTS currency_accounts_currency_key '
+        'ON currency_accounts (workspace_id, id, currency)',
+    'CREATE UNIQUE INDEX IF NOT EXISTS cash_accounts_currency_key '
+        'ON cash_accounts (workspace_id, id, currency)',
+    // data-model §5：按子账户与入账日的范围查询。
+    'CREATE INDEX IF NOT EXISTS transactions_account_posted '
+        'ON transactions (workspace_id, currency_account_id, posted_on) WHERE deleted_at IS NULL',
+    'CREATE INDEX IF NOT EXISTS transactions_currency '
+        'ON transactions (workspace_id, currency_account_id, currency)',
+    'CREATE INDEX IF NOT EXISTS transactions_card '
+        'ON transactions (workspace_id, card_id)',
+    'CREATE INDEX IF NOT EXISTS transactions_parent '
+        'ON transactions (workspace_id, currency_account_id, parent_transaction_id)',
+    'CREATE INDEX IF NOT EXISTS transactions_fingerprint '
+        'ON transactions (workspace_id, fingerprint)',
+    'CREATE INDEX IF NOT EXISTS installment_plans_transaction '
+        'ON installment_plans (workspace_id, currency_account_id, transaction_id)',
+    'CREATE INDEX IF NOT EXISTS installment_schedule_plan '
+        'ON installment_schedule (workspace_id, plan_id)',
+    'CREATE INDEX IF NOT EXISTS repayments_account '
+        'ON repayments (workspace_id, currency_account_id, currency)',
+    'CREATE INDEX IF NOT EXISTS repayments_cash_account '
+        'ON repayments (workspace_id, cash_account_id, currency)',
+    'CREATE INDEX IF NOT EXISTS repayment_allocations_repayment '
+        'ON repayment_allocations (workspace_id, currency_account_id, repayment_id)',
+    'CREATE INDEX IF NOT EXISTS repayment_allocations_statement '
+        'ON repayment_allocations (workspace_id, currency_account_id, statement_id)',
+    'CREATE INDEX IF NOT EXISTS reconciliation_items_status '
+        'ON reconciliation_items (workspace_id, status)',
+  ];
+
+  /// v4 的触发器：仓库层规则的数据库兜底（错误消息只有表名与规则，不含任何数据）。
+  static const List<String> triggers = <String>[
+    // 交易：归属、介质、币种、类型与来源不可改；删除（tombstone）后不再改动（F-24：换卡不迁移交易）。
+    '''
+CREATE TRIGGER IF NOT EXISTS transactions_immutable
+BEFORE UPDATE ON transactions
+WHEN NEW.id IS NOT OLD.id
+  OR NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.currency_account_id IS NOT OLD.currency_account_id
+  OR NEW.card_id IS NOT OLD.card_id
+  OR NEW.currency IS NOT OLD.currency
+  OR NEW.txn_type IS NOT OLD.txn_type
+  OR NEW.parent_transaction_id IS NOT OLD.parent_transaction_id
+  OR NEW.source_kind IS NOT OLD.source_kind
+  OR NEW.recorded_at IS NOT OLD.recorded_at
+  OR OLD.deleted_at IS NOT NULL
+BEGIN SELECT RAISE(ABORT, 'transactions: immutable column'); END''',
+    // 交易的卡片必须属于该币种子账户所在的信用账户（data-model §10.5）。
+    '''
+CREATE TRIGGER IF NOT EXISTS transactions_card_account
+BEFORE INSERT ON transactions
+WHEN NEW.card_id IS NOT NULL AND NOT EXISTS (
+  SELECT 1 FROM cards AS k
+  JOIN currency_accounts AS c
+    ON c.workspace_id = k.workspace_id AND c.credit_account_id = k.credit_account_id
+  WHERE k.workspace_id = NEW.workspace_id AND k.id = NEW.card_id
+    AND c.id = NEW.currency_account_id
+)
+BEGIN SELECT RAISE(ABORT, 'transactions: card not in the credit account'); END''',
+    // 账单：归属与账单日不可改。
+    '''
+CREATE TRIGGER IF NOT EXISTS statements_immutable
+BEFORE UPDATE ON statements
+WHEN NEW.id IS NOT OLD.id
+  OR NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.currency_account_id IS NOT OLD.currency_account_id
+  OR NEW.statement_date IS NOT OLD.statement_date
+  OR NEW.created_at IS NOT OLD.created_at
+BEGIN SELECT RAISE(ABORT, 'statements: immutable column'); END''',
+    // 账单状态机（PRD §6.2；"已修正后逾期"同"已出账后逾期"，见 README 偏离）。
+    '''
+CREATE TRIGGER IF NOT EXISTS statements_status_transition
+BEFORE UPDATE OF status ON statements
+WHEN NEW.status IS NOT OLD.status AND NOT (
+  (OLD.status = 'predicted' AND NEW.status = 'issued')
+  OR (OLD.status IN ('issued', 'amended')
+    AND NEW.status IN ('amended', 'partially_settled', 'settled', 'overdue'))
+  OR (OLD.status = 'partially_settled' AND NEW.status IN ('settled', 'overdue'))
+  OR (OLD.status = 'overdue' AND NEW.status = 'settled')
+)
+BEGIN SELECT RAISE(ABORT, 'statements: status transition not allowed'); END''',
+    // 当前版本只能前移到版本号更大的版本（旧版本保留，原值可查）。
+    '''
+CREATE TRIGGER IF NOT EXISTS statements_current_version_forward
+BEFORE UPDATE OF current_version_id ON statements
+WHEN NEW.current_version_id IS NOT OLD.current_version_id AND (
+  NEW.current_version_id IS NULL
+  OR (OLD.current_version_id IS NOT NULL AND (
+    SELECT v.version_no FROM statement_versions AS v
+    WHERE v.workspace_id = NEW.workspace_id AND v.id = NEW.current_version_id
+  ) <= (
+    SELECT v.version_no FROM statement_versions AS v
+    WHERE v.workspace_id = OLD.workspace_id AND v.id = OLD.current_version_id
+  ))
+)
+BEGIN SELECT RAISE(ABORT, 'statements: current version only moves forward'); END''',
+    // 账单版本追加只读（R-STMT-07）：任何列都不能 UPDATE；更正 = 新版本。
+    '''
+CREATE TRIGGER IF NOT EXISTS statement_versions_append_only
+BEFORE UPDATE ON statement_versions
+BEGIN SELECT RAISE(ABORT, 'statement_versions: append only; insert a new version'); END''',
+    // 版本号紧接本账单的最新版本（不跳号、不复用）。
+    '''
+CREATE TRIGGER IF NOT EXISTS statement_versions_sequence
+BEFORE INSERT ON statement_versions
+WHEN NEW.version_no <> 1 + COALESCE((
+  SELECT MAX(v.version_no) FROM statement_versions AS v
+  WHERE v.statement_id = NEW.statement_id
+), 0)
+BEGIN SELECT RAISE(ABORT, 'statement_versions: version_no must follow the latest version'); END''',
+    // 到期还款日晚于账单日。
+    '''
+CREATE TRIGGER IF NOT EXISTS statement_versions_due_after_statement
+BEFORE INSERT ON statement_versions
+WHEN NEW.due_date <= (
+  SELECT s.statement_date FROM statements AS s
+  WHERE s.workspace_id = NEW.workspace_id AND s.id = NEW.statement_id
+)
+BEGIN SELECT RAISE(ABORT, 'statement_versions: due date must be after the statement date'); END''',
+    // 分期条款不可改；状态只能从进行中变为已完成、已提前结清或已作废。
+    '''
+CREATE TRIGGER IF NOT EXISTS installment_plans_immutable
+BEFORE UPDATE ON installment_plans
+WHEN NEW.id IS NOT OLD.id
+  OR NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.currency_account_id IS NOT OLD.currency_account_id
+  OR NEW.transaction_id IS NOT OLD.transaction_id
+  OR NEW.principal_minor IS NOT OLD.principal_minor
+  OR NEW.periods IS NOT OLD.periods
+  OR NEW.per_period_rate IS NOT OLD.per_period_rate
+  OR NEW.fee_mode IS NOT OLD.fee_mode
+  OR NEW.remainder_policy IS NOT OLD.remainder_policy
+  OR NEW.rounding IS NOT OLD.rounding
+  OR NEW.created_at IS NOT OLD.created_at
+  OR (NEW.status IS NOT OLD.status AND NOT (
+    OLD.status = 'active' AND NEW.status IN ('completed', 'early_settled', 'cancelled')
+  ))
+BEGIN SELECT RAISE(ABORT, 'installment_plans: terms are immutable'); END''',
+    // 各期只改状态：未出账 → 已出账 → 已结清；未出账或已出账 → 作废。
+    '''
+CREATE TRIGGER IF NOT EXISTS installment_schedule_immutable
+BEFORE UPDATE ON installment_schedule
+WHEN NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.plan_id IS NOT OLD.plan_id
+  OR NEW.period_no IS NOT OLD.period_no
+  OR NEW.principal_minor IS NOT OLD.principal_minor
+  OR NEW.fee_minor IS NOT OLD.fee_minor
+  OR NEW.statement_date IS NOT OLD.statement_date
+  OR NEW.due_date IS NOT OLD.due_date
+  OR (NEW.status IS NOT OLD.status AND NOT (
+    (OLD.status = 'scheduled' AND NEW.status IN ('billed', 'cancelled'))
+    OR (OLD.status = 'billed' AND NEW.status IN ('settled', 'cancelled'))
+  ))
+BEGIN SELECT RAISE(ABORT, 'installment_schedule: only the status may change'); END''',
+    '''
+CREATE TRIGGER IF NOT EXISTS installment_schedule_period_range
+BEFORE INSERT ON installment_schedule
+WHEN NEW.period_no > (
+  SELECT p.periods FROM installment_plans AS p
+  WHERE p.workspace_id = NEW.workspace_id AND p.id = NEW.plan_id
+)
+BEGIN SELECT RAISE(ABORT, 'installment_schedule: period beyond the plan'); END''',
+    // 还款：归属、币种、金额与方式不可改；作废（tombstone）后不再改动。
+    '''
+CREATE TRIGGER IF NOT EXISTS repayments_immutable
+BEFORE UPDATE ON repayments
+WHEN NEW.id IS NOT OLD.id
+  OR NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.currency_account_id IS NOT OLD.currency_account_id
+  OR NEW.currency IS NOT OLD.currency
+  OR NEW.amount_minor IS NOT OLD.amount_minor
+  OR NEW.method IS NOT OLD.method
+  OR NEW.created_at IS NOT OLD.created_at
+  OR OLD.deleted_at IS NOT NULL
+BEGIN SELECT RAISE(ABORT, 'repayments: immutable column'); END''',
+    // 还款状态机（PRD §6.3；"待核对后取得证据"同"用户已标记后取得证据"，见 README 偏离）。
+    '''
+CREATE TRIGGER IF NOT EXISTS repayments_status_transition
+BEFORE UPDATE OF status ON repayments
+WHEN NEW.status IS NOT OLD.status AND NOT (
+  (OLD.status = 'recorded' AND NEW.status IN ('processing', 'user_marked_paid'))
+  OR (OLD.status = 'processing' AND NEW.status IN ('cash_debited', 'failed'))
+  OR (OLD.status = 'cash_debited' AND NEW.status = 'credit_posted')
+  OR (OLD.status = 'credit_posted' AND NEW.status = 'bank_confirmed')
+  OR (OLD.status = 'failed' AND NEW.status = 'recorded')
+  OR (OLD.status = 'user_marked_paid' AND NEW.status IN ('bank_confirmed', 'needs_review'))
+  OR (OLD.status = 'needs_review' AND NEW.status = 'bank_confirmed')
+  OR (OLD.status = 'bank_confirmed' AND NEW.status = 'reversed')
+)
+BEGIN SELECT RAISE(ABORT, 'repayments: status transition not allowed'); END''',
+    // 还款被删除或作废前，指向它的现金事件必须先作废（简报 §6 第 2 条）。
+    '''
+CREATE TRIGGER IF NOT EXISTS repayments_delete_linked
+BEFORE DELETE ON repayments
+WHEN EXISTS (
+  SELECT 1 FROM cash_events AS e
+  WHERE e.workspace_id = OLD.workspace_id AND e.linked_repayment_id = OLD.id
+    AND e.deleted_at IS NULL
+)
+BEGIN SELECT RAISE(ABORT, 'repayments: live cash events still point to it'); END''',
+    '''
+CREATE TRIGGER IF NOT EXISTS repayments_tombstone_linked
+BEFORE UPDATE OF deleted_at ON repayments
+WHEN NEW.deleted_at IS NOT NULL AND EXISTS (
+  SELECT 1 FROM cash_events AS e
+  WHERE e.workspace_id = OLD.workspace_id AND e.linked_repayment_id = OLD.id
+    AND e.deleted_at IS NULL
+)
+BEGIN SELECT RAISE(ABORT, 'repayments: live cash events still point to it'); END''',
+    // v3 的 cash_events.linked_repayment_id：非空值必须指向同一工作空间的还款（简报 §6 第 2 条；
+    // 不重建 cash_events 表，新建库与升级上来的库用同一组触发器）。
+    '''
+CREATE TRIGGER IF NOT EXISTS cash_events_linked_repayment_insert
+BEFORE INSERT ON cash_events
+WHEN NEW.linked_repayment_id IS NOT NULL AND NOT EXISTS (
+  SELECT 1 FROM repayments AS r
+  WHERE r.workspace_id = NEW.workspace_id AND r.id = NEW.linked_repayment_id
+)
+BEGIN SELECT RAISE(ABORT, 'cash_events: linked repayment not in workspace'); END''',
+    '''
+CREATE TRIGGER IF NOT EXISTS cash_events_linked_repayment_update
+BEFORE UPDATE OF linked_repayment_id ON cash_events
+WHEN NEW.linked_repayment_id IS NOT NULL AND NOT EXISTS (
+  SELECT 1 FROM repayments AS r
+  WHERE r.workspace_id = NEW.workspace_id AND r.id = NEW.linked_repayment_id
+)
+BEGIN SELECT RAISE(ABORT, 'cash_events: linked repayment not in workspace'); END''',
+    // 分配合计不超过还款额（F-33 的数据库兜底；界面要求等于）。分配行不改，只删了重写。
+    '''
+CREATE TRIGGER IF NOT EXISTS repayment_allocations_within_amount
+BEFORE INSERT ON repayment_allocations
+WHEN NEW.amount_minor + COALESCE((
+  SELECT SUM(a.amount_minor) FROM repayment_allocations AS a
+  WHERE a.repayment_id = NEW.repayment_id AND a.statement_id <> NEW.statement_id
+), 0) > (
+  SELECT r.amount_minor FROM repayments AS r
+  WHERE r.workspace_id = NEW.workspace_id AND r.id = NEW.repayment_id
+)
+BEGIN SELECT RAISE(ABORT, 'repayment_allocations: total exceeds the repayment'); END''',
+    '''
+CREATE TRIGGER IF NOT EXISTS repayment_allocations_immutable
+BEFORE UPDATE ON repayment_allocations
+BEGIN SELECT RAISE(ABORT, 'repayment_allocations: delete and insert instead'); END''',
+    // 差异项：类型与引用不可改；只有未处理的才能处理一次（不重开）。
+    '''
+CREATE TRIGGER IF NOT EXISTS reconciliation_items_immutable
+BEFORE UPDATE ON reconciliation_items
+WHEN NEW.id IS NOT OLD.id
+  OR NEW.workspace_id IS NOT OLD.workspace_id
+  OR NEW.kind IS NOT OLD.kind
+  OR NEW.refs IS NOT OLD.refs
+  OR NEW.created_at IS NOT OLD.created_at
+  OR OLD.status <> 'open'
+BEGIN SELECT RAISE(ABORT, 'reconciliation_items: only an open item can be resolved once'); END''',
+  ];
+
+  /// v3 → v4 的全部语句（顺序：表、索引、触发器）。
+  static const List<String> migration = <String>[
+    ...tables,
+    ...indexes,
+    ...triggers,
+  ];
+}
+
 /// 新库（[createSchema]）使用的索引：当前版本的完整集合。
 const List<String> latestIndexes = <String>[
   ...SchemaV2.indexes,
   ...SchemaV3.indexes,
+  ...SchemaV4.indexes,
 ];
 
 /// 新库（[createSchema]）使用的触发器：当前版本的完整集合。
 const List<String> latestTriggers = <String>[
   ...SchemaV2.triggers,
   ...SchemaV3.triggers,
+  ...SchemaV4.triggers,
 ];
 
 /// 一步迁移：把库从版本 v 升到 v + 1。
@@ -837,9 +1380,19 @@ Future<void> _migrateV2ToV3(GeneratedDatabase db) async {
   }
 }
 
+Future<void> _migrateV3ToV4(GeneratedDatabase db) async {
+  for (final statement in SchemaV4.migration) {
+    await db.customStatement(statement);
+  }
+}
+
 /// 已登记的迁移步骤：键为旧版本 v，值把库从 v 升到 v + 1。
 const Map<int, SchemaMigrationStep> schemaMigrations =
-    <int, SchemaMigrationStep>{1: _migrateV1ToV2, 2: _migrateV2ToV3};
+    <int, SchemaMigrationStep>{
+      1: _migrateV1ToV2,
+      2: _migrateV2ToV3,
+      3: _migrateV3ToV4,
+    };
 
 /// 新库：在一个事务里建出最新版本的完整结构（meta、`db.allTables` 里的全部 drift 表、当前的
 /// 索引与触发器）、写入 meta，并写 `PRAGMA user_version`。

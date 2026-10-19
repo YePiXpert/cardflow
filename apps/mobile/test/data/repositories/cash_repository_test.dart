@@ -459,7 +459,19 @@ void main() {
   group('给 I-1c 的还款扣款接口', () {
     test('由还款生成计划扣款（planned，linked_repayment_id）；改期改额；确认扣款后按扣款日转为确定', () async {
       final acc = await createTestCashAccount(scope);
-      const repayment = 'repayment-00000000-0000-4000-8000-000000000001';
+      // v4 起 linked_repayment_id 必须指向同一空间的还款（触发器）：不存在的还款被拒绝。
+      await expectRepositoryError<StorageRejectedException>(
+        () => events.planRepaymentDebit(
+          repaymentId: 'no-such-repayment',
+          cashAccountId: acc.id,
+          on: d(2026, 11, 8),
+          amountMinor: 1,
+        ),
+      );
+      final repayment = await insertTestRepaymentRow(
+        scope,
+        cashAccountId: acc.id,
+      );
       final planned = await events.planRepaymentDebit(
         repaymentId: repayment,
         cashAccountId: acc.id,
@@ -513,8 +525,9 @@ void main() {
 
     test('撤销计划扣款：事件作废；扣款时点不能晚于现在', () async {
       final acc = await createTestCashAccount(scope);
+      final r1 = await insertTestRepaymentRow(scope, cashAccountId: acc.id);
       await events.planRepaymentDebit(
-        repaymentId: 'r1',
+        repaymentId: r1,
         cashAccountId: acc.id,
         on: d(2026, 11, 8),
         amountMinor: 1000,
@@ -522,14 +535,14 @@ void main() {
       expect(
         (await expectRepositoryError<ValidationException>(
           () => events.confirmRepaymentDebit(
-            repaymentId: 'r1',
+            repaymentId: r1,
             debitedAt: Timestamp.parse('2026-10-18T13:00:00+08:00'),
           ),
         )).field,
         'debitedAt',
       );
-      await events.cancelRepaymentDebit('r1');
-      expect(await events.byRepayment('r1'), isNull);
+      await events.cancelRepaymentDebit(r1);
+      expect(await events.byRepayment(r1), isNull);
       expect(await events.list(), isEmpty);
     });
   });

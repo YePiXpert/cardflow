@@ -1,5 +1,6 @@
 /// 本地库的业务表（drift 表 DSL；`dart run build_runner build` 生成 `app_database.g.dart`）：
-/// v2（I-1a）的工作空间、银行、信用账户与额度，v3（I-1b）的现金账户、现金事件与情景。
+/// v2（I-1a）的工作空间、银行、信用账户与额度，v3（I-1b）的现金账户、现金事件与情景，v4（I-1c）的
+/// 交易、账单与版本、分期、还款与分配、差异项。
 ///
 /// 约定（data-model §10.14、I-1a 简报 §1）：
 /// - 主键 `id` 是 TEXT 的 UUID v4（`lib/data/ids.dart`）；
@@ -683,7 +684,8 @@ class SnapshotIncludedEvents extends Table {
 /// - 周期事项展开的事件带 `recurring_item_id` + `occurrence_key`（该期原定日期）；
 /// - 调拨是两条事件共享 `transfer_group_id`（转出为负、到账为正，到账日不早于转出日，两端账户
 ///   不同、币种相同；触发器兜底），两条腿只能一起删除；
-/// - `linked_repayment_id`（I-1c 的还款）与 `linked_plan_run_id`（I-2 的计划运行）暂无外键。
+/// - `linked_repayment_id` 指向同一工作空间的还款（v4 起由触发器保证，见 `SchemaV4.triggers`；表本身不
+///   重建）；`linked_plan_run_id`（I-2 的计划运行）暂无约束。
 @DataClassName('CashEventRow')
 class CashEvents extends Table {
   TextColumn get id => text()();
@@ -998,5 +1000,542 @@ class ScenarioRuns extends Table {
     'CHECK (horizon_to >= horizon_from)',
     "CHECK (length(inputs_hash) = 64 AND inputs_hash NOT GLOB '*[^0-9a-f]*')",
     "CHECK (json_valid(result) AND json_type(result) = 'object')",
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// v4（I-1c）：交易、账单与账单版本（追加只读）、分期计划与各期、还款与分配、差异项。约定同上；另见
+// data-model §3/§4、§10.4（同时带账户与币种的表用 `(workspace_id, 账户, currency)` 复合外键保证币种
+// 一致；父表上的 `UNIQUE (workspace_id, id, currency)` 由 v4 的唯一索引补上）、§10.5（同账户一致用
+// 携带账户列的复合外键）。
+// ---------------------------------------------------------------------------
+
+/// 信用卡交易（data-model §3 transactions）：挂在币种子账户上，卡片只是介质（换卡后旧卡交易仍归属
+/// 同一子账户，F-24）。金额"负债增加为正"：消费、费用、利息、分期本金与手续费为正，退款与还款为负，
+/// 互转与调整不限（不为零）。`fingerprint` 是规范化要素的 sha256（导入去重在 I-3 用）。
+///
+/// 表名是 `transactions`；Dart 里叫 [CardTransactions]，免得与数据库事务混淆。
+@DataClassName('CardTransactionRow')
+class CardTransactions extends Table {
+  @override
+  String get tableName => 'transactions';
+
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get currencyAccountId => text()();
+
+  TextColumn get cardId => text().nullable()();
+
+  /// `purchase` / `refund` / `repayment` / `transfer` / `fee` / `interest` /
+  /// `installment_principal` / `installment_fee` / `adjustment`。
+  TextColumn get txnType => text()();
+
+  IntColumn get amountMinor => integer()();
+
+  TextColumn get currency => text()();
+
+  /// 交易时点（RFC 3339，按 [txnTz] 的偏移写出）。
+  TextColumn get txnAt => text()();
+
+  /// 交易的业务时区（信用账户的 `business_tz`）。
+  TextColumn get txnTz => text()();
+
+  /// `datetime` / `date` / `month`。
+  TextColumn get timePrecision => text()();
+
+  /// 银行入账日；空 = 还不知道（按入账延迟区间给出"可能账期"，F-15）。
+  TextColumn get postedOn => text().nullable()();
+
+  TextColumn get merchant => text().nullable()();
+
+  TextColumn get category => text().nullable()();
+
+  /// `pending` / `posted` / `reversed`。
+  TextColumn get status => text()();
+
+  /// 退款、冲正指向的原交易（同一币种子账户）。
+  TextColumn get parentTransactionId => text().nullable()();
+
+  TextColumn get fingerprint => text()();
+
+  /// `manual` / `import`。
+  TextColumn get sourceKind => text()();
+
+  /// `system_estimated` / `user_confirmed` / `bank_confirmed`。
+  TextColumn get confirmationLevel => text()();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get recordedAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  TextColumn get deletedAt => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, currencyAccountId, id},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, currency_account_id, currency) REFERENCES currency_accounts (workspace_id, id, currency)',
+    'FOREIGN KEY (workspace_id, card_id) REFERENCES cards (workspace_id, id)',
+    'FOREIGN KEY (workspace_id, currency_account_id, parent_transaction_id) REFERENCES transactions (workspace_id, currency_account_id, id)',
+    "CHECK (txn_type IN ('purchase', 'refund', 'repayment', 'transfer', 'fee', 'interest', 'installment_principal', 'installment_fee', 'adjustment'))",
+    'CHECK (amount_minor <> 0 AND amount_minor BETWEEN -10000000000000 AND 10000000000000)',
+    "CHECK ((txn_type IN ('purchase', 'fee', 'interest', 'installment_principal', 'installment_fee') AND amount_minor > 0) OR (txn_type IN ('refund', 'repayment') AND amount_minor < 0) OR txn_type IN ('transfer', 'adjustment'))",
+    "CHECK (currency IN ('CNY', 'USD', 'EUR', 'HKD', 'GBP', 'MOP', 'TWD', 'JPY', 'KRW', 'VND', 'KWD', 'BHD', 'JOD'))",
+    "CHECK (txn_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    'CHECK (length(txn_tz) BETWEEN 1 AND 64)',
+    "CHECK (time_precision IN ('datetime', 'date', 'month'))",
+    "CHECK (posted_on IS NULL OR posted_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    'CHECK (merchant IS NULL OR length(merchant) BETWEEN 1 AND 20)',
+    "CHECK (merchant NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')",
+    'CHECK (category IS NULL OR length(category) BETWEEN 1 AND 20)',
+    "CHECK (category NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')",
+    "CHECK (status IN ('pending', 'posted', 'reversed'))",
+    'CHECK (parent_transaction_id IS NULL OR parent_transaction_id <> id)',
+    "CHECK (length(fingerprint) = 64 AND fingerprint NOT GLOB '*[^0-9a-f]*')",
+    "CHECK (source_kind IN ('manual', 'import'))",
+    "CHECK (confirmation_level IN ('system_estimated', 'user_confirmed', 'bank_confirmed'))",
+    "CHECK (recorded_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (updated_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (deleted_at IS NULL OR deleted_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    'CHECK (row_version >= 1)',
+  ];
+}
+
+/// 账单（data-model §3 statements）：挂在币种子账户上（同一信用账户的多张卡只有一份账单，F-21；
+/// `UNIQUE (workspace_id, currency_account_id, statement_date)`）。状态机 PRD §6.2，触发器兜底；
+/// `current_version_id` 指向本账单最新的版本（延迟检查的复合外键：先写账单、再写版本、再指向它）。
+@DataClassName('StatementRow')
+class Statements extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get currencyAccountId => text()();
+
+  TextColumn get statementDate => text()();
+
+  /// 当前版本的到期还款日。
+  TextColumn get dueDate => text()();
+
+  /// `predicted` / `issued` / `amended` / `partially_settled` / `settled` / `overdue`。
+  TextColumn get status => text()();
+
+  TextColumn get currentVersionId => text().nullable()();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, currencyAccountId, id},
+    {workspaceId, currencyAccountId, statementDate},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, currency_account_id) REFERENCES currency_accounts (workspace_id, id)',
+    'FOREIGN KEY (workspace_id, id, current_version_id) REFERENCES statement_versions (workspace_id, statement_id, id) DEFERRABLE INITIALLY DEFERRED',
+    "CHECK (statement_date GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (due_date GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    'CHECK (due_date > statement_date)',
+    "CHECK (status IN ('predicted', 'issued', 'amended', 'partially_settled', 'settled', 'overdue'))",
+    'CHECK (row_version >= 1)',
+    "CHECK (created_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (updated_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+  ];
+}
+
+/// 账单版本（R-STMT-07）：正式账单的每一次来源（手工录入、导入、人工修正）都是一个版本，**追加
+/// 只读**——触发器禁止 UPDATE 任何列，版本号必须紧接上一个；人工修正 = 新版本且理由必填。
+///
+/// 金额列可空：来源未含此项时为空（界面显示"来源未含此项"，不当 0）；`new_balance_minor`（本期应还/
+/// 新余额）必填，可为负（溢缴）；`credit_balance_minor` 是贷方余额（溢缴款，≥0，F-38），有贷方余额时
+/// 新余额不能为正。
+@DataClassName('StatementVersionRow')
+class StatementVersions extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get statementId => text()();
+
+  IntColumn get versionNo => integer()();
+
+  /// `manual` / `import` / `correction`。
+  TextColumn get sourceKind => text()();
+
+  IntColumn get previousBalanceMinor => integer().nullable()();
+
+  IntColumn get newBalanceMinor => integer()();
+
+  IntColumn get minDueMinor => integer().nullable()();
+
+  IntColumn get paymentsMinor => integer().nullable()();
+
+  IntColumn get creditsMinor => integer().nullable()();
+
+  IntColumn get feesMinor => integer().nullable()();
+
+  IntColumn get interestMinor => integer().nullable()();
+
+  IntColumn get installmentDueMinor => integer().nullable()();
+
+  IntColumn get creditBalanceMinor => integer().nullable()();
+
+  TextColumn get dueDate => text()();
+
+  /// `user` / `import`（本地只有一个使用者：`user` 即本机用户）。
+  TextColumn get recordedBy => text()();
+
+  TextColumn get reason => text().nullable()();
+
+  TextColumn get recordedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, statementId, id},
+    {statementId, versionNo},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, statement_id) REFERENCES statements (workspace_id, id)',
+    'CHECK (version_no >= 1)',
+    "CHECK (source_kind IN ('manual', 'import', 'correction'))",
+    "CHECK (source_kind <> 'correction' OR version_no > 1)",
+    'CHECK (previous_balance_minor IS NULL OR previous_balance_minor BETWEEN -10000000000000 AND 10000000000000)',
+    'CHECK (new_balance_minor BETWEEN -10000000000000 AND 10000000000000)',
+    'CHECK (min_due_minor IS NULL OR min_due_minor BETWEEN 0 AND 10000000000000)',
+    'CHECK (payments_minor IS NULL OR payments_minor BETWEEN 0 AND 10000000000000)',
+    'CHECK (credits_minor IS NULL OR credits_minor BETWEEN 0 AND 10000000000000)',
+    'CHECK (fees_minor IS NULL OR fees_minor BETWEEN 0 AND 10000000000000)',
+    'CHECK (interest_minor IS NULL OR interest_minor BETWEEN 0 AND 10000000000000)',
+    'CHECK (installment_due_minor IS NULL OR installment_due_minor BETWEEN 0 AND 10000000000000)',
+    'CHECK (credit_balance_minor IS NULL OR credit_balance_minor BETWEEN 0 AND 10000000000000)',
+    'CHECK (credit_balance_minor IS NULL OR credit_balance_minor = 0 OR new_balance_minor <= 0)',
+    'CHECK (min_due_minor IS NULL OR min_due_minor <= max(new_balance_minor, 0))',
+    "CHECK (due_date GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (recorded_by IN ('user', 'import'))",
+    "CHECK (source_kind <> 'correction' OR reason IS NOT NULL)",
+    'CHECK (reason IS NULL OR length(reason) BETWEEN 1 AND 200)',
+    "CHECK (reason NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')",
+    "CHECK (recorded_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+  ];
+}
+
+/// 分期计划（R-STMT-10）：由一笔交易转成；本金全额占额、逐期释放。条款（本金、期数、每期费率、
+/// 收费方式、尾差策略、取整）建好后不可改（触发器）；每期本金与费用按领域包 `installment.dart`
+/// 计算（与 Python `money.py` 同义）。`per_period_rate` 是规范十进制文本（0 ≤ 费率 < 1，至多 10 位小数）。
+/// 本地另带 `currency_account_id`：用携带账户列的复合外键保证交易属于同一币种子账户。
+@DataClassName('InstallmentPlanRow')
+class InstallmentPlans extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get currencyAccountId => text()();
+
+  TextColumn get transactionId => text()();
+
+  IntColumn get principalMinor => integer()();
+
+  IntColumn get periods => integer()();
+
+  TextColumn get perPeriodRate => text()();
+
+  /// `per_period` / `upfront`。
+  TextColumn get feeMode => text()();
+
+  /// `last` / `first`。
+  TextColumn get remainderPolicy => text()();
+
+  /// `HALF_UP`。
+  TextColumn get rounding => text()();
+
+  /// `active` / `completed` / `early_settled` / `cancelled`（data-model §10.12）。
+  TextColumn get status => text()();
+
+  TextColumn get earlySettledAt => text().nullable()();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, transactionId},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, currency_account_id, transaction_id) REFERENCES transactions (workspace_id, currency_account_id, id)',
+    'CHECK (principal_minor BETWEEN 1 AND 10000000000000)',
+    'CHECK (periods BETWEEN 1 AND 60)',
+    "CHECK (length(per_period_rate) BETWEEN 1 AND 12 AND (per_period_rate = '0' OR (per_period_rate GLOB '0.[0-9]*' AND substr(per_period_rate, 3) NOT GLOB '*[^0-9]*' AND per_period_rate NOT GLOB '*0')))",
+    "CHECK (fee_mode IN ('per_period', 'upfront'))",
+    "CHECK (remainder_policy IN ('last', 'first'))",
+    "CHECK (rounding IN ('HALF_UP'))",
+    "CHECK (status IN ('active', 'completed', 'early_settled', 'cancelled'))",
+    "CHECK ((status = 'early_settled') = (early_settled_at IS NOT NULL))",
+    "CHECK (early_settled_at IS NULL OR early_settled_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    'CHECK (row_version >= 1)',
+    "CHECK (created_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (updated_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+  ];
+}
+
+/// 分期的各期（未来分期本金的来源）：本金、费用、所在账单日与到期日在建计划时算好，之后只改状态
+/// （`scheduled` 未出账 → `billed` 已出账 → `settled` 已结清；`cancelled` 作废）。
+@DataClassName('InstallmentScheduleRow')
+class InstallmentSchedule extends Table {
+  @override
+  String get tableName => 'installment_schedule';
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get planId => text()();
+
+  IntColumn get periodNo => integer()();
+
+  IntColumn get principalMinor => integer()();
+
+  IntColumn get feeMinor => integer()();
+
+  TextColumn get statementDate => text()();
+
+  TextColumn get dueDate => text()();
+
+  /// `scheduled` / `billed` / `settled` / `cancelled`（data-model §10.12）。
+  TextColumn get status => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {planId, periodNo};
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, plan_id) REFERENCES installment_plans (workspace_id, id)',
+    'CHECK (period_no BETWEEN 1 AND 60)',
+    'CHECK (principal_minor BETWEEN 0 AND 10000000000000)',
+    'CHECK (fee_minor BETWEEN 0 AND 10000000000000)',
+    "CHECK (statement_date GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (due_date GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    'CHECK (due_date > statement_date)',
+    "CHECK (status IN ('scheduled', 'billed', 'settled', 'cancelled'))",
+  ];
+}
+
+/// 还款（UF-3，data-model §3 repayments）：状态机 PRD §6.3（仓库实现全部转移，触发器兜底）；双侧时间
+/// （F-31）：`payment_initiated_at` 发起、`expected_debit_on` 预计扣款日、`cash_debited_at` 现金实际扣款、
+/// `credit_posted_at` 银行入账（负债按它核销）、`bank_confirmed_at` 银行确认（结清只由它触发）。
+/// 预计扣款与实际扣款在现金侧是一条 `cash_events`（`linked_repayment_id`，I-1b 的接口）。
+/// `deleted_at`：作废登记（tombstone；有未删除的现金事件指向它时触发器拒绝）。
+@DataClassName('RepaymentRow')
+class Repayments extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  TextColumn get currencyAccountId => text()();
+
+  TextColumn get cashAccountId => text().nullable()();
+
+  IntColumn get amountMinor => integer()();
+
+  TextColumn get currency => text()();
+
+  /// `recorded` / `processing` / `cash_debited` / `credit_posted` / `bank_confirmed` / `failed` /
+  /// `user_marked_paid` / `needs_review` / `reversed`。
+  TextColumn get status => text()();
+
+  /// `auto_debit` / `manual` / `third_party` / `other`。
+  TextColumn get method => text()();
+
+  TextColumn get paymentInitiatedAt => text().nullable()();
+
+  TextColumn get expectedDebitOn => text().nullable()();
+
+  TextColumn get cashDebitedAt => text().nullable()();
+
+  TextColumn get creditPostedAt => text().nullable()();
+
+  TextColumn get bankConfirmedAt => text().nullable()();
+
+  TextColumn get evidenceNote => text().nullable()();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  TextColumn get deletedAt => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, currencyAccountId, id},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, currency_account_id, currency) REFERENCES currency_accounts (workspace_id, id, currency)',
+    'FOREIGN KEY (workspace_id, cash_account_id, currency) REFERENCES cash_accounts (workspace_id, id, currency)',
+    'CHECK (amount_minor BETWEEN 1 AND 10000000000000)',
+    "CHECK (currency IN ('CNY', 'USD', 'EUR', 'HKD', 'GBP', 'MOP', 'TWD', 'JPY', 'KRW', 'VND', 'KWD', 'BHD', 'JOD'))",
+    "CHECK (status IN ('recorded', 'processing', 'cash_debited', 'credit_posted', 'bank_confirmed', 'failed', 'user_marked_paid', 'needs_review', 'reversed'))",
+    "CHECK (method IN ('auto_debit', 'manual', 'third_party', 'other'))",
+    "CHECK (payment_initiated_at IS NULL OR payment_initiated_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (expected_debit_on IS NULL OR expected_debit_on GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]')",
+    "CHECK (cash_debited_at IS NULL OR cash_debited_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (credit_posted_at IS NULL OR credit_posted_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (bank_confirmed_at IS NULL OR bank_confirmed_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (status <> 'processing' OR payment_initiated_at IS NOT NULL)",
+    "CHECK (status NOT IN ('cash_debited', 'credit_posted') OR cash_debited_at IS NOT NULL)",
+    "CHECK (status <> 'credit_posted' OR credit_posted_at IS NOT NULL)",
+    "CHECK (status NOT IN ('bank_confirmed', 'reversed') OR bank_confirmed_at IS NOT NULL)",
+    'CHECK (evidence_note IS NULL OR length(evidence_note) BETWEEN 1 AND 200)',
+    "CHECK (evidence_note NOT GLOB '*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*')",
+    'CHECK (row_version >= 1)',
+    "CHECK (created_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (updated_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (deleted_at IS NULL OR deleted_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+  ];
+}
+
+/// 还款分配到账单（F-33）：Σ 分配 ≤ 还款额（仓库保证，触发器兜底；界面要求 =）。本地另带
+/// `workspace_id`、`currency_account_id`：用携带账户列的复合外键保证还款与账单属于同一币种子账户。
+@DataClassName('RepaymentAllocationRow')
+class RepaymentAllocations extends Table {
+  TextColumn get workspaceId => text()();
+
+  TextColumn get currencyAccountId => text()();
+
+  TextColumn get repaymentId => text()();
+
+  TextColumn get statementId => text()();
+
+  IntColumn get amountMinor => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {repaymentId, statementId};
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id, currency_account_id, repayment_id) REFERENCES repayments (workspace_id, currency_account_id, id)',
+    'FOREIGN KEY (workspace_id, currency_account_id, statement_id) REFERENCES statements (workspace_id, currency_account_id, id)',
+    'CHECK (amount_minor BETWEEN 1 AND 10000000000000)',
+  ];
+}
+
+/// 对账差异项（R-STMT-09）：`amount_mismatch` 金额不符、`duplicate_repayment` 疑似重复还款（F-32）、
+/// `refund_pending` 退款待核对（F-34）、`unmatched_repayment` 未匹配的还款。`refs` 是规范化 JSON 对象
+/// （同一类、同一组引用至多一条：`UNIQUE (workspace_id, kind, refs)`）。处理只能从 `open` 到
+/// `resolved`/`dismissed`，不重开；`resolution` 是处理结果代码，`resolved_by` 是处理者。
+@DataClassName('ReconciliationItemRow')
+class ReconciliationItems extends Table {
+  TextColumn get id => text()();
+
+  TextColumn get workspaceId => text()();
+
+  /// `amount_mismatch` / `duplicate_repayment` / `refund_pending` / `unmatched_repayment`。
+  TextColumn get kind => text()();
+
+  TextColumn get refs => text()();
+
+  /// `open` / `resolved` / `dismissed`。
+  TextColumn get status => text().withDefault(const Constant('open'))();
+
+  TextColumn get resolution => text().nullable()();
+
+  /// `user` / `system`。
+  TextColumn get resolvedBy => text().nullable()();
+
+  TextColumn get resolvedAt => text().nullable()();
+
+  IntColumn get rowVersion => integer().withDefault(const Constant(1))();
+
+  TextColumn get createdAt => text()();
+
+  TextColumn get updatedAt => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+
+  @override
+  List<Set<Column<Object>>> get uniqueKeys => [
+    {workspaceId, id},
+    {workspaceId, kind, refs},
+  ];
+
+  @override
+  bool get isStrict => true;
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (workspace_id) REFERENCES workspaces (id)',
+    "CHECK (kind IN ('amount_mismatch', 'duplicate_repayment', 'refund_pending', 'unmatched_repayment'))",
+    "CHECK (json_valid(refs) AND json_type(refs) = 'object')",
+    "CHECK (status IN ('open', 'resolved', 'dismissed'))",
+    "CHECK ((status = 'open') = (resolved_at IS NULL))",
+    "CHECK ((status = 'open') = (resolution IS NULL))",
+    "CHECK ((status = 'open') = (resolved_by IS NULL))",
+    "CHECK (resolution IS NULL OR resolution IN ('distinct', 'same_payment', 'offset', 'not_offset', 'acknowledged', 'registered', 'dismissed'))",
+    "CHECK (resolved_by IS NULL OR resolved_by IN ('user', 'system'))",
+    "CHECK (resolved_at IS NULL OR resolved_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    'CHECK (row_version >= 1)',
+    "CHECK (created_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
+    "CHECK (updated_at GLOB '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]*')",
   ];
 }

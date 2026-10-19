@@ -202,6 +202,54 @@ Future<void> createV2DatabaseFile(
   await legacy.close();
 }
 
+/// I-1b（schema v3）的 App 建出的库：meta + 冻结的 v2、v3 结构（`SchemaV2`、`SchemaV3`），
+/// `user_version = 3`。[seed] 在建好结构后写入 v3 的数据（升级后应原样保留）。
+class LegacyV3Database extends GeneratedDatabase {
+  LegacyV3Database(super.executor, {this.seed = const <String>[]});
+
+  final List<String> seed;
+
+  @override
+  int get schemaVersion => 3;
+
+  @override
+  Iterable<TableInfo<Table, Object?>> get allTables =>
+      const <TableInfo<Table, Object?>>[];
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await customStatement(LocalSchema.createMetaTable);
+      await customStatement(
+        'INSERT INTO meta (id, schema_version, created_at) VALUES (1, 3, ?)',
+        <Object>[testCreatedAt.toIso8601String()],
+      );
+      for (final statement in <String>[
+        ...SchemaV2.migration,
+        ...SchemaV3.migration,
+        ...seed,
+      ]) {
+        await customStatement(statement);
+      }
+    },
+  );
+}
+
+/// 在 [location] 用密钥 [keyHex] 建一个 v3 的加密库文件并关闭（模拟 I-1b 版本 App 留下的库）。
+Future<void> createV3DatabaseFile(
+  DatabaseLocation location,
+  String keyHex, {
+  String fileName = appDatabaseFileName,
+  List<String> seed = const <String>[],
+}) async {
+  final legacy = LegacyV3Database(
+    encryptedConnection(location, keyHex, fileName: fileName),
+    seed: seed,
+  );
+  await legacy.customSelect('SELECT 1').get();
+  await legacy.close();
+}
+
 /// 直接建一个加密连接（不经 openAppDatabase 的检查与迁移），供测试用各种 schema 版本打开。
 QueryExecutor encryptedConnection(
   DatabaseLocation location,

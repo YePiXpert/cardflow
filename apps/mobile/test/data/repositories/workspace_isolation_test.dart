@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/demo/demo_workspace.dart';
+import 'package:cardflow/data/ids.dart';
 import 'package:cardflow/data/repositories/bank_repository.dart';
 import 'package:cardflow/data/repositories/billing_rule_repository.dart';
 import 'package:cardflow/data/repositories/card_repository.dart';
@@ -43,6 +44,8 @@ void _log(String line) {
 const Map<String, String> _rowKeys = <String, String>{
   'snapshot_included_events': "snapshot_id || '/' || cash_event_id",
   'recurring_overrides': "recurring_item_id || '/' || occurrence_key",
+  'installment_schedule': "plan_id || '/' || period_no",
+  'repayment_allocations': "repayment_id || '/' || statement_id",
 };
 
 /// 某工作空间里全部业务行的 id（按表；复合主键的表是 `键1/键2`）。
@@ -327,6 +330,58 @@ Future<void> _enrich(WorkspaceScope scope) async {
     newLast4: '1009',
     effectiveFrom: LocalDate(2026, 10, 16),
   );
+  await _enrichLedger(scope, first.id);
+}
+
+/// v4 的表各写一行（直接写库）：交易、账单与版本、分期与一期、还款与分配、差异项。
+Future<void> _enrichLedger(WorkspaceScope scope, String creditAccountId) async {
+  final db = scope.db;
+  final ws = scope.workspaceId;
+  final sub = await primaryCurrencyAccount(scope, creditAccountId);
+  final card = (await CardRepository(
+    scope,
+  ).list(creditAccountId: creditAccountId)).first;
+  final cash = (await CashAccountRepository(scope).list()).first;
+  const ts = '2026-10-16T09:00:00+08:00';
+  final txn = newUuidV4();
+  final statement = newUuidV4();
+  final version = newUuidV4();
+  final plan = newUuidV4();
+  final repayment = newUuidV4();
+  for (final sql in <String>[
+    'INSERT INTO transactions (id, workspace_id, currency_account_id, card_id, txn_type, '
+        'amount_minor, currency, txn_at, txn_tz, time_precision, posted_on, status, '
+        'fingerprint, source_kind, confirmation_level, recorded_at, updated_at) VALUES '
+        "('$txn', '$ws', '${sub.id}', '${card.id}', 'purchase', 600000, 'CNY', '$ts', "
+        "'Asia/Shanghai', 'datetime', '2026-09-21', 'posted', '${'ab' * 32}', 'manual', "
+        "'user_confirmed', '$ts', '$ts')",
+    'INSERT INTO statements (id, workspace_id, currency_account_id, statement_date, '
+        "due_date, status, created_at, updated_at) VALUES ('$statement', '$ws', '${sub.id}', "
+        "'2026-09-30', '2026-10-25', 'issued', '$ts', '$ts')",
+    'INSERT INTO statement_versions (id, workspace_id, statement_id, version_no, '
+        'source_kind, new_balance_minor, due_date, recorded_by, recorded_at) VALUES '
+        "('$version', '$ws', '$statement', 1, 'manual', 100000, '2026-10-25', 'user', '$ts')",
+    "UPDATE statements SET current_version_id = '$version' WHERE id = '$statement'",
+    'INSERT INTO installment_plans (id, workspace_id, currency_account_id, transaction_id, '
+        'principal_minor, periods, per_period_rate, fee_mode, remainder_policy, rounding, '
+        "status, created_at, updated_at) VALUES ('$plan', '$ws', '${sub.id}', '$txn', 600000, "
+        "6, '0.006', 'per_period', 'last', 'HALF_UP', 'active', '$ts', '$ts')",
+    'INSERT INTO installment_schedule (workspace_id, plan_id, period_no, principal_minor, '
+        "fee_minor, statement_date, due_date, status) VALUES ('$ws', '$plan', 1, 100000, "
+        "3600, '2026-09-30', '2026-10-25', 'billed')",
+    'INSERT INTO repayments (id, workspace_id, currency_account_id, cash_account_id, '
+        'amount_minor, currency, status, method, created_at, updated_at) VALUES '
+        "('$repayment', '$ws', '${sub.id}', '${cash.id}', 100000, 'CNY', 'recorded', "
+        "'manual', '$ts', '$ts')",
+    'INSERT INTO repayment_allocations (workspace_id, currency_account_id, repayment_id, '
+        "statement_id, amount_minor) VALUES ('$ws', '${sub.id}', '$repayment', '$statement', "
+        '100000)',
+    'INSERT INTO reconciliation_items (id, workspace_id, kind, refs, created_at, '
+        "updated_at) VALUES ('${newUuidV4()}', '$ws', 'unmatched_repayment', "
+        '\'{"repayment_id":"$repayment"}\', \'$ts\', \'$ts\')',
+  ]) {
+    await db.customStatement(sql);
+  }
 }
 
 void main() {
@@ -412,7 +467,7 @@ void main() {
     expect(await idsByTable(db, real.workspaceId), realIds);
   });
 
-  test('两个空间都有数据：各自只看到自己的行；清除演示数据只删演示空间', () async {
+  test('两个空间都有数据：各自只看到自己的行；清除演示数据只删演示空间（含 v4 的全部表）', () async {
     final real = await createTestWorkspace(db);
     await createTestCard(real, bank: '演示银行甲', last4: '1001');
     final demoRow = await ensureDemoWorkspace(db);
@@ -421,6 +476,7 @@ void main() {
       workspaceId: demoRow.id,
       clock: demoClock,
     );
+    await _enrich(demo);
 
     final realIds = await idsByTable(db, real.workspaceId);
     final demoIds = await idsByTable(db, demo.workspaceId);

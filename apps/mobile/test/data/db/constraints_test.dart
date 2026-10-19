@@ -98,6 +98,8 @@ void main() {
       'cash_accounts',
       'credit_pools',
       'currency_accounts',
+      'repayments',
+      'transactions',
     });
     for (final row in checks) {
       final listed = RegExp(r'currency IN \(([^)]*)\)')
