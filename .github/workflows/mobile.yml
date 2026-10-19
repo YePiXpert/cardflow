@@ -20,6 +20,10 @@
 #
 # 不存放任何签名材料：没有证书、描述文件、团队 ID，也没有签名相关的 secret。
 # 签名由用户在安装前用自己的证书完成（见根 README"移动端"一节）。
+#
+# 供应链（BL-14）：4 个第三方 action 固定到 40 位提交 SHA，行尾注释是该提交对应的版本标签；SHA 由
+#   gh api repos/<owner>/<repo>/git/ref/tags/<tag> 查得（带注释的 tag 再经 git/tags/<sha> 解引用到提交），
+#   查询原文见 evidence/i1/I1-c/ci-pins.txt。升级时按同样方法查新标签的提交 SHA，同时改 SHA 与注释。
 
 name: mobile
 
@@ -70,9 +74,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
@@ -119,16 +123,26 @@ jobs:
     defaults:
       run:
         working-directory: .
+    env:
+      # 期望的产出文件数（BL-14：写死，少了或多了都失败；加 fixture、case 或改随机样本数时同步改这里）。
+      # golden：packages/rules-protocol/fixtures/ 下唯一的 regression_2026-10-16_10000.v1.json，expected 里
+      #   cycles 1 个 + verify 2 个 = 3（另 3 个 plan case 需要 CP-SAT，两端运行器都不写出）。
+      EXPECTED_GOLDEN_OUTPUTS: '3'
+      # 随机：tool/gen_parity_fixtures.dart --count 300，每份 fixture 1 个 cycles + 3 个 verify = 1200。
+      EXPECTED_RANDOM_OUTPUTS: '1200'
+      # Schema 校验的 Dart 输出：cycles 1 + 300 = 301，verify 2 + 900 = 902（上面两组之和）。
+      EXPECTED_SCHEMA_CYCLES: '301'
+      EXPECTED_SCHEMA_VERIFY: '902'
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: astral-sh/setup-uv@v10.3.0
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           version: ${{ env.UV_VERSION }}
           python-version: '3.13'
           cache-dependency-glob: services/api/uv.lock
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
@@ -154,9 +168,11 @@ jobs:
         run: |
           set -euo pipefail
           n="$(find build/parity/golden/python -name '*.json' | wc -l)"
-          test "$n" -gt 0 || { echo "::error::the Python runner dumped no outputs"; exit 1; }
+          test "$n" -eq "$EXPECTED_GOLDEN_OUTPUTS" || { echo "::error::expected $EXPECTED_GOLDEN_OUTPUTS golden outputs from the Python runner, found $n"; exit 1; }
+          m="$(find build/parity/golden/dart -name '*.json' | wc -l)"
+          test "$m" -eq "$EXPECTED_GOLDEN_OUTPUTS" || { echo "::error::expected $EXPECTED_GOLDEN_OUTPUTS golden outputs from the Dart runner, found $m"; exit 1; }
           diff -r build/parity/golden/python build/parity/golden/dart
-          echo "golden fixtures: $n cycles/verify outputs byte-identical"
+          echo "golden fixtures: $n cycles/verify outputs byte-identical (expected $EXPECTED_GOLDEN_OUTPUTS)"
           (cd build/parity/golden/dart && find . -name '*.json' -exec sha256sum {} + | sort -k 2)
 
       - name: Random fixtures (300, seed 20261018) -- generate
@@ -176,13 +192,14 @@ jobs:
             "$GITHUB_WORKSPACE/build/parity/random/fixtures" > "$GITHUB_WORKSPACE/build/parity/random/dart.log")
           tail -n 1 build/parity/random/dart.log
           n="$(find build/parity/random/python -name '*.json' | wc -l)"
-          test "$n" -eq 1200 || { echo "::error::expected 1200 dumped outputs, found $n"; exit 1; }
+          test "$n" -eq "$EXPECTED_RANDOM_OUTPUTS" || { echo "::error::expected $EXPECTED_RANDOM_OUTPUTS dumped outputs, found $n"; exit 1; }
           diff -r build/parity/random/python build/parity/random/dart
-          echo "random fixtures: $n cycles/verify outputs byte-identical"
+          echo "random fixtures: $n cycles/verify outputs byte-identical (expected $EXPECTED_RANDOM_OUTPUTS)"
 
       - name: Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)
         run: |
           uv run --project services/api python - build/parity <<'EOF'
+          import os
           import sys
           from pathlib import Path
 
@@ -208,12 +225,18 @@ jobs:
                   failed += 1
                   print(f"::error::{path}: " + "; ".join(errors[:5]))
           print(f"validated {len(files)} Dart outputs: {checked}; {failed} invalid")
-          sys.exit(1 if failed or not files else 0)
+          expected = {
+              "cycles": int(os.environ["EXPECTED_SCHEMA_CYCLES"]),
+              "verify": int(os.environ["EXPECTED_SCHEMA_VERIFY"]),
+          }
+          if checked != expected:
+              print(f"::error::expected {expected} Dart outputs, validated {checked}")
+          sys.exit(1 if failed or checked != expected else 0)
           EOF
 
       - name: Upload parity outputs
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: protocol-parity-${{ github.run_id }}-${{ github.run_attempt }}
           path: build/parity/
@@ -227,9 +250,9 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
@@ -329,7 +352,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload unsigned IPA
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ steps.ipa.outputs.base }}
           path: apps/mobile/${{ steps.ipa.outputs.name }}
@@ -351,7 +374,7 @@ jobs:
 
       - name: Upload build logs
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ios-build-logs-${{ github.run_id }}-${{ github.run_attempt }}
           path: apps/mobile/build-logs/
