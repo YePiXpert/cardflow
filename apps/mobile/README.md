@@ -434,6 +434,11 @@ P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线�
   同一来源 `appDiagnosticsProvider`，即 package_info_plus）、公测说明、源码地址 `github.com/YePiXpert/cardflow`（可选中的纯文本 +
   「复制源码地址」；App 内不打开浏览器，不加依赖）、反馈方式"我的 › 诊断信息 › 复制诊断信息，附上问题描述发到 GitHub Issues"与
   「打开诊断信息」。
+- 隐私清单（BL-16）：ios-unsigned 构建后扫描主二进制与 `Frameworks/` 下每个二进制（`nm -u` 与 `strings`）的四类 Required Reason
+  API，并查每个 framework 是否自带隐私清单（artifact `required-reason-scan`）。按"主二进制或没有自带清单的 framework 命中的类别
+  留在 App 清单"：`ios/Runner/PrivacyInfo.xcprivacy` 保留 FileTimestamp（C617.1：主二进制的 `NSFileCreationDate`、sqlite3mc 的
+  `stat`/`fstat`/`lstat`）、SystemBootTime（35F9.1：sqlite3mc 的 `sysctlbyname`，见偏离）、DiskSpace（E174.1：sqlite3mc 的
+  `statfs`/`fstatfs`），删除没有任何命中的 UserDefaults（CA92.1）。Flutter.framework 与两个插件资源包自带清单。
 - 打 `ios-v*` 标签与建 GitHub 预发布版由主会话在验收后进行。
 
 ## I-1a 的偏离与约定（主会话裁决前的保守做法）
@@ -503,6 +508,8 @@ P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线�
 - 交易"是否已出账"按"所有可能账单日都不晚于最近一期已出账单的账单日"判断；没有规则时按入账日（未知时交易日）比较。
 - "记一笔"不提供分期本金/手续费类型（由分期各期表示）；"还款入账（银行记录）"只用于核对，不进入负债计算。
 - 资金日历尾部责任里分期一期的金额 = 本金 + 费用（现金要付的）；负债四分法的"未来分期本金"不含费用（费用单列）。
+- 隐私清单的 SystemBootTime：扫描规则把 `sysctlbyname` 算作命中，sqlite3mc 导入了它，但二进制里只有 `hw.ncpu`、没有
+  `kern.boottime`（实际不是读开机时间）；按扫描规则与"多报不影响安装"保守保留 35F9.1，删除与否请主会话裁决（删了要再构建一次）。
 - 公测版：界面上未开放的功能统一写"后续版本提供"（原来写内部阶段代号）；需求编号（如"（F-33）""（R-CASH-01）"）与页面编号
   （"（P-06）"）仍出现在少数提示里，简报只要求去掉阶段代号，未改，见汇报的已知问题。
 

@@ -2,12 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
   卡序 App 自身的隐私清单。不跟踪、不收集数据（数据只在本机）。
-  Required Reason API 按 Flutter 应用的常见用法登记：
-    UserDefaults  CA92.1  只读写本 App 自己的偏好设置
-    FileTimestamp C617.1  读取 App 容器内文件的时间戳与大小
-    SystemBootTime 35F9.1 计算 App 内事件之间的时间间隔
-    DiskSpace     E174.1  写文件前检查剩余空间
-  Flutter 引擎与各插件自带各自的隐私清单，不在此重复。
+  Required Reason API 按 BL-16 的二进制扫描结论登记（CI ios-unsigned 的 Required Reason API 扫描，
+  结论见 evidence/i1/I1-c/required-reason-scan.txt）：只登记主二进制或没有自带清单的 framework 用到的类别。
+    FileTimestamp  C617.1  主二进制（NSFileCreationDate，读 App 容器内文件的时间戳）；sqlite3mc（stat/fstat/lstat）
+    SystemBootTime 35F9.1  sqlite3mc（sysctlbyname，实读 hw.ncpu、未见 kern.boottime；按扫描规则保守保留）
+    DiskSpace      E174.1  sqlite3mc（statfs/fstatfs）
+  UserDefaults（CA92.1）：主二进制与各 framework 都没有用到，已删除。
+  Flutter 引擎（Flutter.framework）与各插件（资源包）自带各自的隐私清单，不在此重复。
 -->
 <plist version="1.0">
 <dict>
@@ -19,14 +20,6 @@
 	<array/>
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
-		<dict>
-			<key>NSPrivacyAccessedAPIType</key>
-			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
-			<key>NSPrivacyAccessedAPITypeReasons</key>
-			<array>
-				<string>CA92.1</string>
-			</array>
-		</dict>
 		<dict>
 			<key>NSPrivacyAccessedAPIType</key>
 			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>

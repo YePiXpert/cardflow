@@ -250,9 +250,8 @@ void main() {
       );
     });
 
-    test('登记 Flutter 应用常见的 Required Reason API', () {
+    test('按 BL-16 的二进制扫描结论登记 Required Reason API（多余的类别已删除）', () {
       const expected = <String, String>{
-        'NSPrivacyAccessedAPICategoryUserDefaults': 'CA92.1',
         'NSPrivacyAccessedAPICategoryFileTimestamp': 'C617.1',
         'NSPrivacyAccessedAPICategorySystemBootTime': '35F9.1',
         'NSPrivacyAccessedAPICategoryDiskSpace': 'E174.1',
@@ -269,6 +268,12 @@ void main() {
           ),
           reason: category,
         );
+      }
+      // 扫描结论里不需要由 App 清单承担的类别（evidence/i1/I1-c/required-reason-scan.txt）。
+      for (final category in const <String>[
+        'NSPrivacyAccessedAPICategoryUserDefaults',
+      ]) {
+        expect(manifest, isNot(contains(category)), reason: category);
       }
     });
 
