@@ -1,6 +1,6 @@
 # 接续说明（handoff）
 
-> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-19（公测版 0.0.1 真机回传、I-1 阶段末审查派发后）。
+> 新会话或上下文压缩后从这里开始。读完本文与 `ios-first-plan.md` 即可继续，不需要翻历史对话。最后更新：2026-10-19（0.0.1 真机回传、I-1 审查派发、0.0.2 界面重做设计稿与简报写好后）。
 
 ## 1. 当前状态
 
@@ -31,8 +31,9 @@
 
 1. **等用户真机走通 UF-1/UF-3/UF-5**（诊断信息已回传且全部达标，见 §1）：建卡与账期、登记还款到银行确认、资金日历与情景对比；记下卡住的地方，连同诊断信息回传。这是 I-1 退出条件里唯一还差的一项。
 2. **I-1 阶段末审查进行中**（2026-10-19 派发，简报 `briefs/review-i1.md`，只读，报告写到 `evidence/i1/review-i1.md` 与 `evidence/i1/review-i1/`，由主会话提交）：范围 I1-a/b/c 全部，重点数据丢失与迁移、空间隔离、金额日期、追加只读、公测首次体验。交回后：blocker/major 写成 0.0.2 的修复简报派一个实现代理，其余进 backlog；修完按 §3 第 4 条发 0.0.2。
-3. **I-2**：第一个任务 I2-0（BL-15 有限搜索漏报 + BL-23 交叉规则改为领域包公开函数），然后消费规划（`ios-first-plan.md` §3）。
-4. 发下一个公测版的步骤：main 上 CI 绿 → `git tag -a ios-v<版本> <提交> -m ...` → 推送标签触发 ios-unsigned → `gh run download` 到新空目录，用 `evidence/i1/I1-c/ipa-inspect.txt` 文末的 inspect_ipa.py 检查 → `gh release create <标签> --verify-tag --prerelease --notes-file ... <ipa>` → 下载回来复核 sha256。版本号改 `apps/mobile/pubspec.yaml` 与 `lib/features/settings/public_beta.dart` 的 `PublicBeta.version`（测试会断言两者一致）。
+3. **0.0.2 界面重做（U-1）**：用户 2026-10-19 反馈 0.0.1"界面太丑，没有使用欲望"，并拿正在用的信用卡小程序对比"能看出多少钱和日期"。主会话在 iPhone 尺寸下渲染核对后出了设计稿 `docs/50-ui/mockups/0.0.2/`（卡账首页深/浅色、卡片详情、现金），写好简报 `briefs/U-1.md`：4 个标签（卡账/现金/规划/我的），首页每张卡一行显示待还、账单、N 天后出账、N 天后还款，"今天刷哪张"免息天数，快捷"记本期账单""还清本期"，现金余额曲线，新颜色与数字字号。审查交回并裁决后派发（审查的 blocker/major 先修或追加到简报末尾）；完成后主会话截图验收，按第 5 条发 0.0.2。
+4. **I-2**：第一个任务 I2-0（BL-15 有限搜索漏报 + BL-23 交叉规则改为领域包公开函数），然后消费规划（`ios-first-plan.md` §3）。
+5. 发下一个公测版的步骤：main 上 CI 绿 → `git tag -a ios-v<版本> <提交> -m ...` → 推送标签触发 ios-unsigned → `gh run download` 到新空目录，用 `evidence/i1/I1-c/ipa-inspect.txt` 文末的 inspect_ipa.py 检查 → `gh release create <标签> --verify-tag --prerelease --notes-file ... <ipa>` → 下载回来复核 sha256。版本号改 `apps/mobile/pubspec.yaml` 与 `lib/features/settings/public_beta.dart` 的 `PublicBeta.version`（测试会断言两者一致）。
 
 ## 4. 执行规则（已与用户约定）
 

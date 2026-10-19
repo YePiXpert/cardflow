@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#2b2f36;font-family:"WenQuanYi Micro Hei",sans-serif}
+.num{font-family:"DejaVu Sans","WenQuanYi Micro Hei",sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.screen{position:relative;width:393px;height:852px;overflow:hidden;display:inline-block;vertical-align:top;margin:0}
+/* ---------- dark tokens ---------- */
+.dark{--bg:#0b0d10;--surf:#16191e;--surf2:#1e2228;--line:#262b33;--t1:#f2f4f7;--t2:#9aa3ae;--t3:#6b7480;
+  --accent:#5b9bff;--accentBg:rgba(91,155,255,.14);--amber:#f2c14e;--amberBg:rgba(242,193,78,.14);
+  --danger:#ff7b72;--dangerBg:rgba(255,123,114,.14);--bank:#7aa7ff;--bankBg:rgba(122,167,255,.14)}
+.light{--bg:#f2f3f6;--surf:#ffffff;--surf2:#f6f7f9;--line:#e8eaee;--t1:#15181c;--t2:#5f6874;--t3:#8a929c;
+  --accent:#1f5bb8;--accentBg:#e8f0fd;--amber:#8a5a00;--amberBg:#fff3d6;
+  --danger:#b3261e;--dangerBg:#fce8e6;--bank:#1c4fa0;--bankBg:#e6eefa}
+.screen{background:var(--bg);color:var(--t1)}
+.sb{height:47px;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px 34px;font-size:15px;font-weight:700}
+.sb .r{font-size:12px;letter-spacing:1px}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:6px 18px 0 18px;height:52px}
+.nav h1{margin:0;font-size:32px;font-weight:700;letter-spacing:.5px}
+.nav .icons{display:flex;gap:16px;color:var(--accent);font-size:24px;font-weight:300}
+.ico{width:34px;height:34px;border-radius:17px;background:var(--surf2);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent)}
+.content{padding:6px 16px 0 16px}
+.hero{border-radius:22px;padding:16px 18px 14px;background:linear-gradient(135deg,#21407a 0%,#172c55 55%,#121f3d 100%);color:#fff;position:relative;overflow:hidden}
+.light .hero{background:linear-gradient(135deg,#2f6fd6 0%,#2156b0 60%,#1b4691 100%)}
+.hero::after{content:"";position:absolute;right:-60px;top:-70px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.14),rgba(255,255,255,0) 70%)}
+.hero .lbl{font-size:13px;opacity:.75}
+.hero .big{font-size:38px;font-weight:700;margin:2px 0 2px;line-height:1.1}
+.hero .sub{font-size:13px;opacity:.85}
+.hero .row{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.14)}
+.hero .kv .k{font-size:11px;opacity:.7}.hero .kv .v{font-size:16px;font-weight:700;margin-top:2px}
+.tip{margin-top:12px;border-radius:16px;background:var(--surf);padding:11px 14px;display:flex;align-items:center;gap:12px}
+.tip .t{flex:1}.tip .t b{font-size:15px}.tip .t div{font-size:12px;color:var(--t2);margin-top:2px}
+.tip .days{text-align:right}.tip .days .n{font-size:26px;font-weight:700;color:var(--accent);line-height:1}.tip .days .u{font-size:11px;color:var(--t2)}
+.badge{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700;flex:none}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:16px 4px 8px}
+.sec h2{margin:0;font-size:17px;font-weight:700}.sec span{font-size:13px;color:var(--accent)}
+.list{border-radius:18px;background:var(--surf);overflow:hidden}
+.item{padding:12px 14px 12px 14px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item .top{display:flex;align-items:center;gap:10px}
+.item .top .name{font-size:15px;font-weight:700}
+.item .top .prod{margin-left:auto;font-size:12px;color:var(--t3)}
+.item .body{display:flex;align-items:flex-end;margin-top:8px}
+.item .amt{flex:1.15}
+.item .amt .k{font-size:11px;color:var(--t2)}
+.item .amt .due{font-size:24px;font-weight:700;line-height:1.15}
+.item .amt .bill{font-size:12px;color:var(--t2);margin-top:1px}
+.item .cell{flex:1;text-align:left;padding-left:10px;border-left:1px solid var(--line)}
+.item .cell .n{font-size:24px;font-weight:700;line-height:1.1}
+.item .cell .n small{font-size:12px;font-weight:400;color:var(--t2);margin-left:2px}
+.item .cell .d{font-size:11px;color:var(--t2);margin-top:2px}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:700;vertical-align:middle}
+.pill.paid{background:var(--bankBg);color:var(--bank)}
+.pill.soon{background:var(--amberBg);color:var(--amber)}
+.pill.over{background:var(--dangerBg);color:var(--danger)}
+.today .n{color:var(--amber)}
+.muted .due{color:var(--t3)}
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:83px;background:color-mix(in srgb,var(--surf) 78%,transparent);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding-top:8px}
+.tabbar div{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--t3);width:70px}
+.tabbar div i{font-style:normal;font-size:22px;line-height:24px}
+.tabbar .on{color:var(--accent)}
+/* detail */
+.back{color:var(--accent);font-size:16px;display:flex;align-items:center;gap:2px}
+.face{margin:8px 16px 0;height:196px;border-radius:20px;padding:18px;color:#fff;position:relative;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.35)}
+.face .bk{font-size:18px;font-weight:700}.face .pd{font-size:12px;opacity:.8;margin-top:2px}
+.face .chip{position:absolute;left:18px;top:74px;width:44px;height:33px;border-radius:7px;background:linear-gradient(135deg,#f6d77f,#c4901f)}
+.face .pan{position:absolute;left:18px;bottom:46px;font-size:20px;letter-spacing:3px}
+.face .lim{position:absolute;left:18px;right:18px;bottom:14px;display:flex;justify-content:space-between;font-size:12px;opacity:.9}
+.face .bar{position:absolute;left:18px;right:18px;bottom:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.25)}
+.face .bar i{display:block;height:4px;border-radius:2px;background:#fff;width:25%}
+.cycle{margin:14px 16px 0;background:var(--surf);border-radius:18px;padding:14px}
+.cycle .h{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}
+.track{position:relative;height:6px;border-radius:3px;background:var(--line);margin:14px 2px 8px}
+.track i{position:absolute;left:0;top:0;height:6px;border-radius:3px;background:var(--accent)}
+.track b{position:absolute;top:-5px;width:16px;height:16px;border-radius:8px;background:var(--surf);border:3px solid var(--accent)}
+.cycle .ends{display:flex;justify-content:space-between;font-size:12px}
+.cycle .ends span:last-child{text-align:right}
+.cycle .left{font-size:13px;margin-top:10px}
+.grid{margin:12px 16px 0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid .c{background:var(--surf);border-radius:16px;padding:12px 14px}
+.grid .c .k{font-size:12px;color:var(--t2)}.grid .c .v{font-size:22px;font-weight:700;margin-top:4px}
+.grid .c.main{grid-column:1 / span 2;display:flex;justify-content:space-between;align-items:center}
+.grid .c.main .v{font-size:30px}
+.btns{margin:12px 16px 0;display:flex;gap:10px}
+.btns div{flex:1;text-align:center;padding:12px 0;border-radius:14px;font-size:15px;font-weight:700;background:var(--surf);color:var(--accent)}
+.btns div.p{background:var(--accent);color:#fff}
+.light .btns div.p{color:#fff}
+.hist{margin:12px 16px 0;background:var(--surf);border-radius:18px;padding:4px 14px}
+.hist .r{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.hist .r:last-child{border-bottom:0}
+.hist .r .s{font-size:12px;color:var(--t2)}
+/* calendar */
+.seg{display:flex;background:var(--surf);border-radius:10px;padding:2px;margin:4px 16px 0}
+.seg div{flex:1;text-align:center;font-size:13px;padding:6px 0;border-radius:8px;color:var(--t2)}
+.seg .on{background:var(--surf2);color:var(--t1);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.chart{margin:12px 16px 0;background:var(--surf);border-radius:18px;padding:12px 12px 8px}
+.chart .h{display:flex;justify-content:space-between;align-items:baseline}
+.chart .h .v{font-size:26px;font-weight:700;color:var(--danger)}
+.chart .h .k{font-size:12px;color:var(--t2)}
+.ev{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ev:last-child{border-bottom:0}
+.ev .dt{width:44px;text-align:center}
+.ev .dt .m{font-size:10px;color:var(--t2)}.ev .dt .dd{font-size:18px;font-weight:700}
+.ev .tx{flex:1;font-size:14px}.ev .tx div{font-size:11px;color:var(--t2);margin-top:1px}
+.ev .am{font-size:15px;font-weight:700}
+.pos{color:var(--accent)}
+</style></head><body>
+
+<!-- ============ HOME (dark) ============ -->
+<div class="screen dark" id="home-dark">
+  <div class="sb"><span>9:41</span><span class="r">●●●● ▮▮</span></div>
+  <div class="nav"><h1>卡账</h1><div class="icons"><div class="ico">⌕</div><div class="ico">＋</div></div></div>
+  <div class="content">
+    <div class="hero">
+      <div class="lbl">本期待还 · 3 张卡</div>
+      <div class="big num">¥23,730</div>
+      <div class="sub">最近一笔 10-25 到期 · 民生 ¥12,300</div>
+      <div class="row">
+        <div class="kv"><div class="k">3 天内到期</div><div class="v num">0 笔</div></div>
+        <div class="kv"><div class="k">总额度</div><div class="v num">¥286,000</div></div>
+        <div class="kv"><div class="k">可用</div><div class="v num">¥238,700</div></div>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="badge" style="background:#f26b21">平</div>
+      <div class="t"><b>今天刷平安 ···· 9012</b><div>11-16 出账 · 12-04 还款</div></div>
+      <div class="days"><div class="n num">46</div><div class="u">天免息</div></div>
+    </div>
+    <div class="sec"><h2>按还款日</h2><span>排序 ▾</span></div>
+    <div class="list">
+      <div class="item">
+        <div class="top"><div class="badge" style="background:#0f8f88">民</div><span class="name">民生 ···· 5521</span><span class="prod">白金卡</span></div>
+        <div class="body">
+          <div class="amt"><div class="k">待还</div><div class="due num">¥12,300</div><div class="bill">账单 ¥12,300</div></div>
+          <div class="cell"><div class="n num">17<small>天后出账</small></div><div class="d">11-05</div></div>
+          <div class="cell"><div class="n num">6<small>天后还款</small></div><div class="d">10-25</div></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="top"><div class="badge" style="background:#1e3f8a">交</div><span class="name">交行 ···· 7788</span><span class="prod">标准白金卡</span></div>
+        <div class="body">
+          <div class="amt"><div class="k">待还</div><div class="due num">¥3,450</div><div class="bill">账单 ¥3,450</div></div>
+          <div class="cell"><div class="n num">21<small>天后出账</small></div><div class="d">11-09</div></div>
+          <div class="cell"><div class="n num">15<small>天后还款</small></div><div class="d">11-03</div></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="top"><div class="badge" style="background:#b5121b">中</div><span class="name">中行 ···· 3306</span><span class="prod">长城白金卡</span></div>
+        <div class="body">
+          <div class="amt"><div class="k">待还 <span class="pill soon">已还一部分</span></div><div class="due num">¥7,980</div><div class="bill">账单 ¥9,980</div></div>
+          <div class="cell"><div class="n num">26<small>天后出账</small></div><div class="d">11-14</div></div>
+          <div class="cell"><div class="n num">15<small>天后还款</small></div><div class="d">11-03</div></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="top"><div class="badge" style="background:#c8102e">工</div><span class="name">工行 ···· 1234</span><span class="prod">银联白金卡</span></div>
+        <div class="body muted">
+          <div class="amt"><div class="k">待还 <span class="pill paid">✓ 已还清</span></div><div class="due num">¥0</div><div class="bill">账单 ¥8,620</div></div>
+          <div class="cell"><div class="n num">7<small>天后出账</small></div><div class="d">10-26</div></div>
+          <div class="cell today"><div class="n">今天<small>还款日</small></div><div class="d">10-19</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar"><div class="on"><i>▤</i>卡账</div><div><i>◔</i>现金</div><div><i>✦</i>规划</div><div><i>◯</i>我的</div></div>
+</div>
+
+<!-- ============ HOME (light) ============ -->
+<div class="screen light" id="home-light">
+  <div class="sb"><span>9:41</span><span class="r">●●●● ▮▮</span></div>
+  <div class="nav"><h1>卡账</h1><div class="icons"><div class="ico">⌕</div><div class="ico">＋</div></div></div>
+  <div class="content">
+    <div class="hero">
+      <div class="lbl">本期待还 · 3 张卡</div>
+      <div class="big num">¥23,730</div>
+      <div class="sub">最近一笔 10-25 到期 · 民生 ¥12,300</div>
+      <div class="row">
+        <div class="kv"><div class="k">3 天内到期</div><div class="v num">0 笔</div></div>
+        <div class="kv"><div class="k">总额度</div><div class="v num">¥286,000</div></div>
+        <div class="kv"><div class="k">可用</div><div class="v num">¥238,700</div></div>
+      </div>
+    </div>
+    <div class="tip">
+      <div class="badge" style="background:#f26b21">平</div>
+      <div class="t"><b>今天刷平安 ···· 9012</b><div>11-16 出账 · 12-04 还款</div></div>
+      <div class="days"><div class="n num">46</div><div class="u">天免息</div></div>
+    </div>
+    <div class="sec"><h2>按还款日</h2><span>排序 ▾</span></div>
+    <div class="list">
+      <div class="item">
+        <div class="top"><div class="badge" style="background:#0f8f88">民</div><span class="name">民生 ···· 5521</span><span class="prod">白金卡</span></div>
+        <div class="body">
+          <div class="amt"><div class="k">待还</div><div class="due num">¥12,300</div><div class="bill">账单 ¥12,300</div></div>
+          <div class="cell"><div class="n num">17<small>天后出账</small></div><div class="d">11-05</div></div>
+          <div class="cell"><div class="n num">6<small>天后还款</small></div><div class="d">10-25</div></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="top"><div class="badge" style="background:#1e3f8a">交</div><span class="name">交行 ···· 7788</span><span class="prod">标准白金卡</span></div>
+        <div class="body">
+          <div class="amt"><div class="k">待还</div><div class="due num">¥3,450</div><div class="bill">账单 ¥3,450</div></div>
+          <div class="cell"><div class="n num">21<small>天后出账</small></div><div class="d">11-09</div></div>
+          <div class="cell"><div class="n num">15<small>天后还款</small></div><div class="d">11-03</div></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="top"><div class="badge" style="background:#b5121b">中</div><span class="name">中行 ···· 3306</span><span class="prod">长城白金卡</span></div>
+        <div class="body">
+          <div class="amt"><div class="k">待还 <span class="pill soon">已还一部分</span></div><div class="due num">¥7,980</div><div class="bill">账单 ¥9,980</div></div>
+          <div class="cell"><div class="n num">26<small>天后出账</small></div><div class="d">11-14</div></div>
+          <div class="cell"><div class="n num">15<small>天后还款</small></div><div class="d">11-03</div></div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="top"><div class="badge" style="background:#c8102e">工</div><span class="name">工行 ···· 1234</span><span class="prod">银联白金卡</span></div>
+        <div class="body muted">
+          <div class="amt"><div class="k">待还 <span class="pill paid">✓ 已还清</span></div><div class="due num">¥0</div><div class="bill">账单 ¥8,620</div></div>
+          <div class="cell"><div class="n num">7<small>天后出账</small></div><div class="d">10-26</div></div>
+          <div class="cell today"><div class="n">今天<small>还款日</small></div><div class="d">10-19</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar"><div class="on"><i>▤</i>卡账</div><div><i>◔</i>现金</div><div><i>✦</i>规划</div><div><i>◯</i>我的</div></div>
+</div>
+
+<!-- ============ CARD DETAIL (dark) ============ -->
+<div class="screen dark" id="card-dark">
+  <div class="sb"><span>9:41</span><span class="r">●●●● ▮▮</span></div>
+  <div class="nav" style="height:44px"><div class="back">‹ 卡账</div><div class="icons"><div class="ico">⋯</div></div></div>
+  <div class="face" style="background:linear-gradient(135deg,#14a39b,#0b5f5a)">
+    <div class="bk">民生银行</div><div class="pd">白金卡 · 主卡</div>
+    <div class="chip"></div>
+    <div class="pan num">···· ···· ···· 5521</div>
+    <div class="bar"><i></i></div>
+    <div class="lim"><span>额度 ¥50,000</span><span>可用 ¥37,700</span></div>
+  </div>
+  <div class="cycle">
+    <div class="h"><span>本期账单</span><span>还剩 <b style="color:var(--t1)">6</b> 天还款</span></div>
+    <div class="track"><i style="width:70%"></i><b style="left:calc(70% - 8px)"></b></div>
+    <div class="ends"><span>10-05 出账</span><span style="color:var(--t2)">今天 10-19</span><span>10-25 还款</span></div>
+  </div>
+  <div class="grid">
+    <div class="c main"><div><div class="k">待还</div><div class="v num">¥12,300</div></div><div style="text-align:right"><div class="k">最低还款</div><div class="v num" style="font-size:18px">¥1,230</div></div></div>
+    <div class="c"><div class="k">本期账单</div><div class="v num">¥12,300</div></div>
+    <div class="c"><div class="k">未出账 · 3 笔</div><div class="v num">¥2,180</div></div>
+  </div>
+  <div class="btns"><div class="p">登记还款</div><div>记一笔</div><div>更新额度</div></div>
+  <div class="hist">
+    <div class="r"><span>10-05 账单</span><span><span class="num">¥12,300</span> <span class="pill soon">待还</span></span></div>
+    <div class="r"><span>09-05 账单</span><span><span class="num">¥8,950</span> <span class="pill paid">✓ 已还清</span></span></div>
+    <div class="r"><span>08-05 账单</span><span><span class="num">¥10,420</span> <span class="pill paid">✓ 已还清</span></span></div>
+  </div>
+</div>
+
+<!-- ============ CASH (dark) ============ -->
+<div class="screen dark" id="cash-dark">
+  <div class="sb"><span>9:41</span><span class="r">●●●● ▮▮</span></div>
+  <div class="nav"><h1>现金</h1><div class="icons"><div class="ico">＋</div></div></div>
+  <div class="seg"><div>7 天</div><div class="on">30 天</div><div>90 天</div><div>180 天</div></div>
+  <div class="chart">
+    <div class="h"><div><div class="k">30 天内最低</div><div class="v num">−¥3,200</div></div><div class="k" style="text-align:right">11-15 · 工资卡<br>缺口 1 处</div></div>
+    <svg viewBox="0 0 345 150" width="345" height="150" style="display:block;margin-top:6px">
+      <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5b9bff" stop-opacity=".35"/><stop offset="1" stop-color="#5b9bff" stop-opacity="0"/></linearGradient></defs>
+      <line x1="0" y1="110" x2="345" y2="110" stroke="#3a414b" stroke-width="1"/>
+      <text x="2" y="106" fill="#6b7480" font-size="9">0</text>
+      <line x1="0" y1="92" x2="345" y2="92" stroke="#f2c14e" stroke-width="1" stroke-dasharray="4 4" opacity=".7"/>
+      <text x="300" y="88" fill="#f2c14e" font-size="9">储备 5,000</text>
+      <path d="M0,40 L40,46 L70,52 L95,60 L120,75 L150,82 L175,96 L190,126 L200,126 L205,38 L240,46 L270,58 L300,64 L345,70 L345,150 L0,150 Z" fill="url(#g)"/>
+      <path d="M0,40 L40,46 L70,52 L95,60 L120,75 L150,82 L175,96 L190,126 L200,126 L205,38 L240,46 L270,58 L300,64 L345,70" fill="none" stroke="#5b9bff" stroke-width="2.2" stroke-linejoin="round"/>
+      <rect x="180" y="110" width="25" height="18" fill="#ff7b72" opacity=".25"/>
+      <circle cx="195" cy="126" r="4" fill="#ff7b72"/>
+      <text x="168" y="142" fill="#ff7b72" font-size="10">▲ 11-15</text>
+      <text x="0" y="148" fill="#6b7480" font-size="9">10-19</text><text x="310" y="148" fill="#6b7480" font-size="9">11-18</text>
+    </svg>
+  </div>
+  <div class="sec" style="margin:14px 20px 6px"><h2>接下来</h2><span>全部 ›</span></div>
+  <div class="hist" style="padding:2px 14px">
+    <div class="ev"><div class="dt"><div class="m">10月</div><div class="dd num">25</div></div><div class="tx">民生还款<div>工资卡 · 计划扣款</div></div><div class="am num">−12,300</div></div>
+    <div class="ev"><div class="dt"><div class="m">10月</div><div class="dd num">27</div></div><div class="tx">工资<div>工资卡 · 预计</div></div><div class="am num pos">+21,000</div></div>
+    <div class="ev"><div class="dt"><div class="m">11月</div><div class="dd num">03</div></div><div class="tx">交行 + 中行还款<div>工资卡 · 2 笔</div></div><div class="am num">−11,430</div></div>
+    <div class="ev"><div class="dt"><div class="m">11月</div><div class="dd num">14</div></div><div class="tx">房租<div>工资卡 · 每月</div></div><div class="am num">−4,800</div></div>
+    <div class="ev"><div class="dt"><div class="m">11月</div><div class="dd num" style="color:var(--danger)">15</div></div><div class="tx" style="color:var(--danger)">缺口 −¥3,200<div>先支出后收入的保守算法</div></div><div class="am num" style="color:var(--danger)">▲</div></div>
+  </div>
+  <div class="tabbar"><div><i>▤</i>卡账</div><div class="on"><i>◔</i>现金</div><div><i>✦</i>规划</div><div><i>◯</i>我的</div></div>
+</div>
+</body></html>
