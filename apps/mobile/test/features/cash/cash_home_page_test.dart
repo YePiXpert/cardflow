@@ -166,7 +166,11 @@ void main() {
         if (series.below(i)) series.dayAt(i),
     ];
     expect(below.first, LocalDate(2026, 11, 1));
-    expect(below.last, LocalDate(2026, 11, 6), reason: '11-06 只有工资流入：当日最低点仍是流入之前的 300');
+    expect(
+      below.last,
+      LocalDate(2026, 11, 6),
+      reason: '11-06 只有工资流入：当日最低点仍是流入之前的 300',
+    );
     expect(CashBasis.baseline.label, '基准预期');
   });
 }
