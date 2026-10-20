@@ -43,7 +43,7 @@ void mockPackageInfo() {
   PackageInfo.setMockInitialValues(
     appName: '卡序',
     packageName: 'li.yep.cardflow',
-    version: '0.0.1',
+    version: '0.0.2',
     buildNumber: '7',
     buildSignature: '',
   );

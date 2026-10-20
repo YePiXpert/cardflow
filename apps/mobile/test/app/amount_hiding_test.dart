@@ -9,7 +9,7 @@ import '../test_helpers.dart';
 import 'accessibility_test.dart' show allPages;
 
 /// 像金额的写法：¥ 或币种代码后跟数字、带千分位的数字、两位小数（后面不是数字、% 或点：费率、年化与
-/// "6.12.111"一类版本号不算）。
+/// "17.10.2"一类版本号不算）。
 final RegExp amountPattern = RegExp(
   r'¥\s?\d|\b(?:CNY|USD|EUR|HKD|GBP|MOP|TWD|JPY|KRW|VND|KWD|BHD|JOD) \d'
   r'|\d{1,3}(?:,\d{3})+|(?<![\d.])\d+\.\d{2}(?![\d%.])',
@@ -45,7 +45,7 @@ void main() {
       '43 天免息',
       '版本 0.0.2（构建 7）',
       'SQLite3 Multiple Ciphers 2.6.1',
-      '内核 6.12.111',
+      '系统 17.10.2',
       '3 项待处理',
     ]) {
       test('不命中：$text', () => expect(amountPattern.hasMatch(text), isFalse));
