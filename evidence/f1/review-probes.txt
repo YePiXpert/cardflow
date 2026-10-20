@@ -1,5 +1,5 @@
 # review-probes.txt：I-1 阶段末审查探针改写的正式测试（断言修正后的期望值），逐个运行的输出
-# 生成时间：2026-10-20T01:18:34Z；源码提交：8ef814d（= origin/main：8ef814d）
+# 生成时间：2026-10-20T01:31:12Z；源码提交：1432661（= origin/main：1432661）
 # 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/f1/scripts/filt.sh；其余为工具原文，未删节。
 
 # 对应：P1/P1b → ledger_test 的 F-30 已出账消费转分期两例（R-01）；P3/P3b/P4、冲正、M1–M4、Q-3、F-33 → review_probes_test（R-02/R-03/R-06/R-07/R-08）；
@@ -32,9 +32,9 @@ $ cd /projects/cardflow/apps/mobile && flutter test test/data/repositories/revie
 00:00 +7: R-07 删除与作废后由系统处理差异项 M4 同日同额的自动扣款与手工还款（疑似重复）→ 在还款详情直接「作废登记」手工那笔 → 差异项由系统标为已处理（写明"引用的还款登记已作废"）；按差异项"同一笔"作废时仍记为本机用户的处理
 00:00 +8: R-08 删除币种子账户 M3 USD 子账户已有一笔交易 → 删除被拒并说明（ConflictException，不是未包装的数据库异常）；交易删除（tombstone）后仍被引用，照样拒绝；没有任何记录的可以删除
 00:00 +9: R-08 删除币种子账户 有账单的子账户同样拒绝，说明写出是哪类记录
-00:00 +10: Q-3 入账日未知的交易 可能账期跨过本期账单日（10-10 或 11-10）→ "可能已出账"，负债按未出账计；补入账日（10-11）后归入 11-10、列在"不在已录账单里的交易"；补成 10-10 则归入本期账单
-00:00 +11: F-33 还款只分配到本期 分到已并入下一期的 9 月账单被拒；分到本期（10 月）可以，本期已还清后再分配也可以（多还形成贷方余额）
-00:00 +12: All tests passed!
+00:01 +10: Q-3 入账日未知的交易 可能账期跨过本期账单日（10-10 或 11-10）→ "可能已出账"，负债按未出账计；补入账日（10-11）后归入 11-10、列在"不在已录账单里的交易"；补成 10-10 则归入本期账单
+00:01 +11: F-33 还款只分配到本期 分到已并入下一期的 9 月账单被拒；分到本期（10 月）可以，本期已还清后再分配也可以（多还形成贷方余额）
+00:01 +12: All tests passed!
 [exit=0]
 
 $ cd /projects/cardflow/apps/mobile && flutter test test/data/repositories/statement_standing_test.dart --reporter expanded
@@ -67,8 +67,8 @@ $ cd /projects/cardflow/apps/mobile && flutter test test/features/statements/ins
 00:00 +0: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
 00:04 +1: 按计划 id 记忆化：同一计划读两次只算一次（条款与各期金额都不可改）
 00:05 +2: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
-R-04 计时：打开账单详情 190 ms；表单改期数与两次费率并等去抖 122 ms；对照——在主 isolate 上算一次 60 期 IRR 2647 ms
-00:14 +3: All tests passed!
+R-04 计时：打开账单详情 195 ms；表单改期数与两次费率并等去抖 122 ms；对照——在主 isolate 上算一次 60 期 IRR 2417 ms
+00:13 +3: All tests passed!
 [exit=0]
 
 $ cd /projects/cardflow/apps/mobile && flutter test test/app/workspace_switch_test.dart --reporter expanded
@@ -82,7 +82,7 @@ $ cd /projects/cardflow/apps/mobile && flutter test test/app/workspace_switch_te
 $ cd /projects/cardflow/apps/mobile && flutter test test/features/statements/ledger_actions_test.dart --reporter expanded
 00:00 +0: loading /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart
 00:00 +0: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
-00:02 +1: 账单详情：入账日未知、可能账期跨过本期账单日的机票标"可能已出账，请补入账日"；分期卡片「作废（录错了）」确认后计划作废，原消费回到未出账
+00:01 +1: 账单详情：入账日未知、可能账期跨过本期账单日的机票标"可能已出账，请补入账日"；分期卡片「作废（录错了）」确认后计划作废，原消费回到未出账
 00:02 +2: All tests passed!
 [exit=0]
 

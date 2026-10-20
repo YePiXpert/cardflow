@@ -1,10 +1,12 @@
 # ci-dart-run.txt：CI（.github/workflows/mobile.yml）在 F-1 期间的 push 运行，与最后一次代码提交的运行详情（各 job 与步骤的结论）
-# 生成时间：2026-10-20T01:22:16Z；源码提交：8ef814d（= origin/main：8ef814d）
+# 生成时间：2026-10-20T01:32:32Z；源码提交：1432661（= origin/main：1432661）
 # 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/f1/scripts/filt.sh；其余为工具原文，未删节。
 
-# 范围：F-1 第 1 步 7071101 起；只改 evidence/ 的提交不触发本工作流。步骤结论由 gh run view --json 取得（不含日志正文与 runner 镜像信息）。
+# 范围：F-1 第 1 步 7071101 起（共 9 次 push 运行，全部 success）；只改 evidence/ 的提交（先前的证据提交 bdd90de 与本次证据提交）不触发本工作流。步骤结论由 gh run view --json 取得（不含日志正文与 runner 镜像信息）。
 
 $ cd /projects/cardflow && gh run list --workflow mobile.yml --event push --limit 10 --json databaseId,number,headSha,displayTitle,status,conclusion,createdAt --jq '.[] | select(.createdAt >= "2026-10-19T16:00:00Z") | "\(.databaseId) #\(.number) \(.headSha[0:7]) \(.status) \(.conclusion) \(.createdAt)\n    \(.displayTitle)"'
+39353296856 #64 1432661 completed success 2026-10-20T01:24:57Z
+    移动端测试（F-1）：账单接续的文案按简报 P3 的原话断言——9 月账单在 10 月出账后显示"已并入 10-10 账单"
 39352552643 #63 8ef814d completed success 2026-10-20T01:16:54Z
     文档（F-1 第 8 步）：apps/mobile README 按新语义重写"账单、分期与还款"，新增"F-1 的偏离与约定"，I-1c…
 39352094718 #62 c7d7607 completed success 2026-10-20T01:12:04Z
@@ -23,11 +25,11 @@ $ cd /projects/cardflow && gh run list --workflow mobile.yml --event push --limi
     移动端读模型（F-1 第 1 步，审查 R-01/R-02/R-03/R-06）：账单接续、本期剩余应还、已出账消费转分期调整与有效状态，…
 [exit=0]
 
-$ cd /projects/cardflow && gh run view 39352552643 --json number,headSha,event,headBranch,status,conclusion --jq '"#\(.number) \(.event) \(.headBranch) \(.headSha[0:7]) \(.status) \(.conclusion)"'
-#63 push main 8ef814d completed success
+$ cd /projects/cardflow && gh run view 39353296856 --json number,headSha,event,headBranch,status,conclusion --jq '"#\(.number) \(.event) \(.headBranch) \(.headSha[0:7]) \(.status) \(.conclusion)"'
+#64 push main 1432661 completed success
 [exit=0]
 
-$ cd /projects/cardflow && gh run view 39352552643 --json jobs --jq '.jobs[] | "== \(.name)：\(.conclusion)", (.steps[] | "   \(.number). \(.name)：\(.conclusion)")'
+$ cd /projects/cardflow && gh run view 39353296856 --json jobs --jq '.jobs[] | "== \(.name)：\(.conclusion)", (.steps[] | "   \(.number). \(.name)：\(.conclusion)")'
 == protocol-parity (Python engine vs Dart domain)：success
    1. Set up job：success
    2. Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
@@ -79,20 +81,20 @@ $ cd /projects/cardflow && gh run view 39352552643 --json jobs --jq '.jobs[] | "
 [exit=0]
 
 # 缓存（审查 R-11）：dart job 日志里与 action 下载、actions/cache 的执行与命中有关的行（grep；行首是日志时间戳）。
-$ cd /projects/cardflow && gh api repos/YePiXpert/cardflow/actions/jobs/118399856147/logs | grep -E "Download action repository|Run actions/cache|Run subosito/flutter-action|Cache restored from key|Cache hit for|Cache not found|Cache saved|not saving cache"
-2026-10-20T01:16:59.3042296Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
-2026-10-20T01:16:59.4154218Z Download action repository 'subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
-2026-10-20T01:16:59.6944978Z Download action repository 'actions/cache@caa296126883cff596d87d8935842f9db880ef25' (SHA:caa296126883cff596d87d8935842f9db880ef25)
-2026-10-20T01:16:59.9983396Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
-2026-10-20T01:17:01.7944564Z ##[group]Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
-2026-10-20T01:17:02.1914494Z ##[group]Run actions/cache@caa296126883cff596d87d8935842f9db880ef25
-2026-10-20T01:17:02.4500653Z Cache hit for: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
-2026-10-20T01:17:18.4907696Z Cache restored from key: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
-2026-10-20T01:17:18.7849004Z ##[group]Run actions/cache@caa296126883cff596d87d8935842f9db880ef25
-2026-10-20T01:17:19.0599625Z Cache hit for: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6
-2026-10-20T01:17:19.9962377Z Cache restored from key: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6
-2026-10-20T01:17:20.0180067Z ##[group]Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
-2026-10-20T01:21:39.9956690Z Cache hit occurred on the primary key flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6, not saving cache.
-2026-10-20T01:21:40.1408056Z Cache hit occurred on the primary key flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8, not saving cache.
+$ cd /projects/cardflow && gh api repos/YePiXpert/cardflow/actions/jobs/118402261619/logs | grep -E "Download action repository|Run actions/cache|Run subosito/flutter-action|Cache restored from key|Cache hit for|Cache not found|Cache saved|not saving cache"
+2026-10-20T01:25:02.5983210Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-20T01:25:02.8834032Z Download action repository 'subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+2026-10-20T01:25:03.3057543Z Download action repository 'actions/cache@caa296126883cff596d87d8935842f9db880ef25' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+2026-10-20T01:25:03.7491563Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+2026-10-20T01:25:06.2573496Z ##[group]Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+2026-10-20T01:25:06.5133143Z ##[group]Run actions/cache@caa296126883cff596d87d8935842f9db880ef25
+2026-10-20T01:25:06.8308701Z Cache hit for: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
+2026-10-20T01:25:32.6140166Z Cache restored from key: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
+2026-10-20T01:25:32.9367532Z ##[group]Run actions/cache@caa296126883cff596d87d8935842f9db880ef25
+2026-10-20T01:25:33.2678526Z Cache hit for: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6
+2026-10-20T01:25:34.5190152Z Cache restored from key: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6
+2026-10-20T01:25:34.5381512Z ##[group]Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+2026-10-20T01:29:17.7607324Z Cache hit occurred on the primary key flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6, not saving cache.
+2026-10-20T01:29:17.8812499Z Cache hit occurred on the primary key flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8, not saving cache.
 [exit=0]
 

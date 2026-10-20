@@ -1,9 +1,15 @@
 # git-log.txt：F-1 的提交（9a44df1 之后，均已推送到 origin/main），及署名扫描
-# 生成时间：2026-10-20T01:22:45Z；本地 HEAD：8ef814d（本文件随后的证据提交不在列表中）
+# 生成时间：2026-10-20T01:32:40Z；本地 HEAD：1432661（本文件随后的证据提交不在列表中）
 # 过滤：无；以下为 git 原文。扫描用的正则把模型/厂商名里的一个字母写成字符类，避免证据里出现这些名字本身。
 # 说明：脚本开了 pipefail，grep 没有匹配时管道的退出码是 1（计数为 0 即没有署名字样）。
 
 $ cd /projects/cardflow && git log --date=iso-strict --format='%h %ad %an <%ae>%n    %s%n    trailers:[%(trailers:only,separator=; )]' 9a44df1..HEAD
+1432661 2026-10-20T02:24:53+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端测试（F-1）：账单接续的文案按简报 P3 的原话断言——9 月账单在 10 月出账后显示"已并入 10-10 账单"
+    trailers:[]
+bdd90de 2026-10-20T02:22:45+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    证据（F-1）：格式、静态分析、App 533 项与领域包 279 项测试、审查探针改写的正式测试输出、Web 编译、CI 运行（8 步全部绿与缓存命中）、提交列表与署名扫描
+    trailers:[]
 8ef814d 2026-10-20T02:16:51+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
     文档（F-1 第 8 步）：apps/mobile README 按新语义重写"账单、分期与还款"，新增"F-1 的偏离与约定"，I-1c 中与新语义矛盾的条目改为指向新节
     trailers:[]
@@ -31,12 +37,12 @@ ae02412 2026-10-19T17:09:53+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
 [exit=0]
 
 $ cd /projects/cardflow && git rev-parse HEAD origin/main
-8ef814dab4431805e3eded08ac4811de7984ea01
-8ef814dab4431805e3eded08ac4811de7984ea01
+1432661519305a3d08091fc3aa4c1054402668e7
+1432661519305a3d08091fc3aa4c1054402668e7
 [exit=0]
 
 $ cd /projects/cardflow && git log 9a44df1..HEAD --format='%an <%ae> | %cn <%ce>' | sort | uniq -c
-      8 YePiXpert <YePiXpert@users.noreply.github.com> | YePiXpert <YePiXpert@users.noreply.github.com>
+     10 YePiXpert <YePiXpert@users.noreply.github.com> | YePiXpert <YePiXpert@users.noreply.github.com>
 [exit=0]
 
 $ cd /projects/cardflow && git log 9a44df1..HEAD --format='%B' | grep -ciE 'cl[a]ude|anthr[o]pic|co-auth[o]red-by|generat[e]d with'
@@ -52,15 +58,13 @@ $ cd /projects/cardflow && git diff --stat 9a44df1 HEAD -- apps/mobile/lib/data/
 [exit=0]
 
 $ cd /projects/cardflow && git status --short
-?? evidence/f1/analyze.txt
-?? evidence/f1/build-web.txt
-?? evidence/f1/ci-dart-run.txt
-?? evidence/f1/format.txt
-?? evidence/f1/git-log.txt
-?? evidence/f1/review-probes.txt
-?? evidence/f1/scripts/filt.sh
-?? evidence/f1/scripts/gen_evidence.sh
-?? evidence/f1/scripts/hdr.sh
-?? evidence/f1/test.txt
+ M evidence/f1/analyze.txt
+ M evidence/f1/build-web.txt
+ M evidence/f1/ci-dart-run.txt
+ M evidence/f1/format.txt
+ M evidence/f1/git-log.txt
+ M evidence/f1/review-probes.txt
+ M evidence/f1/scripts/gen_evidence.sh
+ M evidence/f1/test.txt
 [exit=0]
 

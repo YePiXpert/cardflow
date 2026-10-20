@@ -57,7 +57,7 @@ fi
 if [ "$part" = all ] || [ "$part" = ci ]; then
 {
   $H ci-dart-run.txt "CI（.github/workflows/mobile.yml）在 F-1 期间的 push 运行，与最后一次代码提交的运行详情（各 job 与步骤的结论）"
-  echo "# 范围：F-1 第 1 步 7071101 起；只改 evidence/ 的提交不触发本工作流。步骤结论由 gh run view --json 取得（不含日志正文与 runner 镜像信息）。"
+  echo "# 范围：F-1 第 1 步 7071101 起（共 9 次 push 运行，全部 success）；只改 evidence/ 的提交（先前的证据提交 bdd90de 与本次证据提交）不触发本工作流。步骤结论由 gh run view --json 取得（不含日志正文与 runner 镜像信息）。"
   echo
   run "cd $R && gh run list --workflow mobile.yml --event push --limit 10 --json databaseId,number,headSha,displayTitle,status,conclusion,createdAt --jq '.[] | select(.createdAt >= \"2026-10-19T16:00:00Z\") | \"\\(.databaseId) #\\(.number) \\(.headSha[0:7]) \\(.status) \\(.conclusion) \\(.createdAt)\\n    \\(.displayTitle)\"'"
   last="$(cd $R && gh run list --workflow mobile.yml --event push --limit 1 --json databaseId --jq '.[0].databaseId')"

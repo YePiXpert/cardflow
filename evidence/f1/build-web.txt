@@ -1,5 +1,5 @@
 # build-web.txt：Web 编译烟雾测试（含 off_main_isolate 的条件导入：Web 不引入 dart:isolate）
-# 生成时间：2026-10-20T01:17:42Z；源码提交：8ef814d（= origin/main：8ef814d）
+# 生成时间：2026-10-20T01:30:28Z；源码提交：1432661（= origin/main：1432661）
 # 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/f1/scripts/filt.sh；其余为工具原文，未删节。
 
 $ cd /projects/cardflow/apps/mobile && flutter build web --release
@@ -8,7 +8,7 @@ Wasm dry run succeeded. Consider building and testing your application with the 
 Use --no-wasm-dry-run to disable these warnings.
 Expected to find fonts for (MaterialIcons, packages/cupertino_icons/CupertinoIcons), but found (MaterialIcons). This usually means you are referring to font families in an IconData class but not including them in the assets section of your pubspec.yaml, are missing the package that would include them, or are missing "uses-material-design: true".
 Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 15976 bytes (99.0% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
-Compiling lib/main.dart for the Web...                             43.1s
+Compiling lib/main.dart for the Web...                             43.3s
 ✓ Built build/web
 [exit=0]
 
