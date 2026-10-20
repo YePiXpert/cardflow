@@ -1,0 +1,81 @@
+# ci-pins.txt：.github/workflows/mobile.yml 新增的第三方 action actions/cache 固定到 40 位提交 SHA（审查 R-11，简报 F-1 第 9 条）
+# 生成时间：2026-10-20T01:07:04Z；本地源码提交：764258b（workflow 改动随第 7 步提交）
+# 过滤：无；以下为 gh api 原文（JSON 一行一个对象）。方法同 evidence/i1/I1-c/ci-pins.txt：ref/tags/<tag> 的 object.type 为 commit
+#   即提交 SHA；行尾注释的精确版本号取同一主版本下指向同一提交的版本标签（matching-refs）。
+# 为什么要它：flutter-action 1a449444（v2.23.0）的 action.yaml 在 cache: true 时内部用 actions/cache@v5（标签，未固定 SHA）；
+#   现在三处 flutter-action 都 cache: false，Flutter SDK 与 pub 缓存改由下面这个固定 SHA 的 actions/cache 自行缓存。
+
+## actions/cache@v5
+$ gh api repos/actions/cache/git/ref/tags/v5
+{"ref":"refs/tags/v5","node_id":"MDM6UmVmMjE1NTY2NDYyOnJlZnMvdGFncy92NQ==","url":"https://api.github.com/repos/actions/cache/git/refs/tags/v5","object":{"sha":"caa296126883cff596d87d8935842f9db880ef25","type":"commit","url":"https://api.github.com/repos/actions/cache/git/commits/caa296126883cff596d87d8935842f9db880ef25"}}[exit=0]
+# object.type = commit：已是提交，无需解引用
+$ gh api repos/actions/cache/git/matching-refs/tags/v5 --jq '.[] | "\(.ref) \(.object.type) \(.object.sha)"'
+refs/tags/v5 commit caa296126883cff596d87d8935842f9db880ef25
+refs/tags/v5.0.0 commit a7833574556fa59680c1b7cb190c1735db73ebf0
+refs/tags/v5.0.1 commit 9255dc7a253b0ccc959486e2bca901246202afeb
+refs/tags/v5.0.2 commit 8b402f58fbc84540c8b491a91e594a4576fec3d7
+refs/tags/v5.0.3 commit cdf6c1fa76f9f475f3d7449005a359c84ca0f306
+refs/tags/v5.0.4 commit 668228422ae6a00e4ad889ee87cd7109ec5666a7
+refs/tags/v5.0.5 commit 27d5ce7f107fe9357f9df03efb73ab90386fccae
+refs/tags/v5.1.0 commit caa296126883cff596d87d8935842f9db880ef25
+[exit=0]
+# 指向同一提交的版本标签：v5.1.0 → uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+
+## flutter-action 1a449444 内部对 actions/cache 的引用（cache: true 时才执行；现在不再走到）
+$ gh api "repos/subosito/flutter-action/contents/action.yaml?ref=1a449444c387b1966244ae4d4f8c696479add0b2" --jq .content | base64 -d | grep -n -B2 -A4 "actions/cache"
+121-    - name: Cache Flutter
+122-      id: cache-flutter
+123:      uses: actions/cache@v5
+124-      if: ${{ inputs.cache == 'true' }}
+125-      with:
+126-        path: ${{ steps.flutter-action.outputs.CACHE-PATH }}
+127-        key: ${{ steps.flutter-action.outputs.CACHE-KEY }}
+128-
+129-    - name: Cache pub dependencies
+130:      uses: actions/cache@v5
+131-      id: cache-pub
+132-      if: ${{ (inputs.pub-cache == '' && inputs.cache == 'true') || inputs.pub-cache == 'true' }}
+133-      with:
+134-        path: ${{ steps.flutter-action.outputs.PUB-CACHE-PATH }}
+[exit=0]
+
+## workflow 里现在的全部 uses:（应全是 40 位 SHA）
+$ grep -n "uses:" .github/workflows/mobile.yml
+82:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+89:        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+97:        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+103:        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+108:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+166:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+168:      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+179:        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+187:        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+193:        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+198:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+292:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+306:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+313:        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+321:        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+327:        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+332:      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+455:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+570:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+591:        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+[exit=0]
+$ grep -n "uses:" .github/workflows/mobile.yml | grep -Ev "@[0-9a-f]{40} # v[0-9.]+$" || echo "（没有未固定 SHA 的 uses）"
+（没有未固定 SHA 的 uses）
+$ grep -n "cache: \|dry-run:" .github/workflows/mobile.yml
+30:#   提交 SHA，同时改 SHA 与注释。flutter-action 自带的缓存不用（cache: false：它内部的 actions/cache@v5 没有固定
+85:      # 不用它（cache: false）；先 dry-run 取得 SDK 与 pub 缓存的路径和键，再用固定 SHA 的 actions/cache 自行缓存，
+93:          cache: false
+94:          dry-run: true
+112:          cache: false
+175:      # 不用它（cache: false）；先 dry-run 取得 SDK 与 pub 缓存的路径和键，再用固定 SHA 的 actions/cache 自行缓存，
+183:          cache: false
+184:          dry-run: true
+202:          cache: false
+309:      # 不用它（cache: false）；先 dry-run 取得 SDK 与 pub 缓存的路径和键，再用固定 SHA 的 actions/cache 自行缓存，
+317:          cache: false
+318:          dry-run: true
+336:          cache: false
+[exit=0]

@@ -1,0 +1,70 @@
+# ci-r11-local.txt：ios-unsigned 新增断言（审查 R-11）在本机的模拟——本任务不触发 iOS 构建，下次推 ios-v* 标签时才在 macOS 上真正运行
+# 生成时间：2026-10-20T01:07:22Z；本地源码提交：764258b（workflow 改动随第 7 步提交）
+# 过滤：无；以下为脚本与命令输出原文。脚本在 evidence/f1/scripts/：check_version.sh 是 Verify IPA 里版本断言的原样语句；
+#   scan_verdict.sh 的结论循环由 workflow 原文截取（Required Reason 扫描的'== 结论'一段与缺登记判失败）。
+#   hits.tsv 是模拟的扫描命中（按 0.0.1 发版构建的扫描结论：主二进制 FileTimestamp，sqlite3mc 三类，Flutter.framework 自带清单）。
+
+$ cat evidence/f1/scripts/check_version.sh
+#!/usr/bin/env bash
+# 本机模拟 Verify IPA 的版本断言（与 workflow 里同样的语句）；参数：pubspec 文件、IPA 版本、IPA 构建号。
+set -euo pipefail
+pubspec="$1"; version="$2"; build="$3"
+pubspec_version="$(sed -nE 's/^version:[[:space:]]*([^+[:space:]]+).*$/\1/p' "$pubspec")"
+test -n "$pubspec_version" || { echo "::error::cannot read the version name from pubspec.yaml"; exit 1; }
+test "$version" = "$pubspec_version" || { echo "::error::CFBundleShortVersionString is $version, expected $pubspec_version (pubspec.yaml)"; exit 1; }
+version_checked="pubspec.yaml $pubspec_version"
+if [[ "$GITHUB_REF" == refs/tags/ios-v* ]]; then
+  tag_version="${GITHUB_REF#refs/tags/ios-v}"
+  test "$version" = "$tag_version" || { echo "::error::CFBundleShortVersionString is $version, expected $tag_version (tag ios-v$tag_version)"; exit 1; }
+  version_checked="$version_checked, tag ios-v$tag_version"
+fi
+test "$build" = "$RUN_NUMBER" || { echo "::error::CFBundleVersion is $build, expected $RUN_NUMBER (github.run_number)"; exit 1; }
+echo "CFBundleShortVersionString $version matches $version_checked; CFBundleVersion $build matches run number $RUN_NUMBER"
+
+$ printf 'name: cardflow\nversion: 0.0.2+1\n' > pub2.yaml
+$ GITHUB_REF=refs/heads/main RUN_NUMBER=61 ./check_version.sh pub2.yaml 0.0.2 61
+CFBundleShortVersionString 0.0.2 matches pubspec.yaml 0.0.2; CFBundleVersion 61 matches run number 61
+[exit=0]
+$ GITHUB_REF=refs/tags/ios-v0.0.2 RUN_NUMBER=62 ./check_version.sh pub2.yaml 0.0.2 62
+CFBundleShortVersionString 0.0.2 matches pubspec.yaml 0.0.2, tag ios-v0.0.2; CFBundleVersion 62 matches run number 62
+[exit=0]
+$ GITHUB_REF=refs/tags/ios-v0.0.3 RUN_NUMBER=63 ./check_version.sh pub2.yaml 0.0.2 63
+::error::CFBundleShortVersionString is 0.0.2, expected 0.0.3 (tag ios-v0.0.3)
+[exit=1]
+$ GITHUB_REF=refs/heads/main RUN_NUMBER=64 ./check_version.sh pub2.yaml 0.0.1 64
+::error::CFBundleShortVersionString is 0.0.1, expected 0.0.2 (pubspec.yaml)
+[exit=1]
+$ GITHUB_REF=refs/heads/main RUN_NUMBER=65 ./check_version.sh pub2.yaml 0.0.2 1
+::error::CFBundleVersion is 1, expected 65 (github.run_number)
+[exit=1]
+$ GITHUB_REF=refs/tags/ios-v0.0.1 RUN_NUMBER=55 ./check_version.sh apps/mobile/pubspec.yaml 0.0.1 55   # 0.0.1 发版构建 #55 的取值
+CFBundleShortVersionString 0.0.1 matches pubspec.yaml 0.0.1, tag ios-v0.0.1; CFBundleVersion 55 matches run number 55
+[exit=0]
+
+$ cat hits.tsv
+Runner.app/Runner（主二进制）	main	FileTimestamp
+Frameworks/sqlite3.framework/sqlite3	no	SystemBootTime
+Frameworks/sqlite3.framework/sqlite3	no	DiskSpace
+Frameworks/sqlite3.framework/sqlite3	no	FileTimestamp
+Frameworks/Flutter.framework/Flutter	yes	UserDefaults
+$ ./scan_verdict.sh hits.tsv apps/mobile/ios/Runner/PrivacyInfo.xcprivacy   # 现在的 App 清单
+== 结论：主二进制或没有自带清单的 framework 命中的类别留在 ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）
+  UserDefaults：App 清单未登记；须由 App 清单承担的命中：无；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 删除
+  FileTimestamp：App 清单已登记；须由 App 清单承担的命中：Runner.app/Runner（主二进制） Frameworks/sqlite3.framework/sqlite3 ；自带清单的 framework 命中：无 → 保留
+  SystemBootTime：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3.framework/sqlite3 ；自带清单的 framework 命中：无 → 保留
+  DiskSpace：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3.framework/sqlite3 ；自带清单的 framework 命中：无 → 保留
+[exit=0]
+$ grep -v SystemBootTime apps/mobile/ios/Runner/PrivacyInfo.xcprivacy > nosys.xcprivacy; ./scan_verdict.sh hits.tsv nosys.xcprivacy   # 少登记一类
+== 结论：主二进制或没有自带清单的 framework 命中的类别留在 ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）
+  UserDefaults：App 清单未登记；须由 App 清单承担的命中：无；自带清单的 framework 命中：Frameworks/Flutter.framework/Flutter  → 删除
+  FileTimestamp：App 清单已登记；须由 App 清单承担的命中：Runner.app/Runner（主二进制） Frameworks/sqlite3.framework/sqlite3 ；自带清单的 framework 命中：无 → 保留
+  SystemBootTime：App 清单未登记；须由 App 清单承担的命中：Frameworks/sqlite3.framework/sqlite3 ；自带清单的 framework 命中：无 → 缺登记（失败）
+  DiskSpace：App 清单已登记；须由 App 清单承担的命中：Frameworks/sqlite3.framework/sqlite3 ；自带清单的 framework 命中：无 → 保留
+::error::Required Reason API categories hit by the main binary or a framework without its own privacy manifest, but not declared in ios/Runner/PrivacyInfo.xcprivacy: SystemBootTime 
+[exit=1]
+
+$ python3 -c "import yaml; ..."   # workflow 能解析，三个 job 的前几步
+dart ['actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1', 'Flutter SDK cache path and key (flutter-action dry run)', 'Cache Flutter SDK', 'Cache pub dependencies', 'subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2']
+protocol-parity ['actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1', 'astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884', 'Flutter SDK cache path and key (flutter-action dry run)', 'Cache Flutter SDK', 'Cache pub dependencies']
+ios-unsigned ['actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1', 'Flutter SDK cache path and key (flutter-action dry run)', 'Cache Flutter SDK', 'Cache pub dependencies', 'subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2']
+[exit=0]

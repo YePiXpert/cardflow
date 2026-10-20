@@ -15,17 +15,20 @@
 #
 # ios-unsigned（macos-26）：只在手动触发（workflow_dispatch）或推送 ios-v* 标签时运行；
 #   flutter build ios --release --no-codesign → 把 Runner.app 打成未签名 IPA → 检查（Bundle ID、最低系统、
-#   隐私清单、App 图标、加密库 framework）→ 上传为 artifact → Required Reason API 扫描（BL-16，artifact
-#   required-reason-scan）。
+#   版本名 = pubspec.yaml 的版本名且标签构建时 = 标签去掉 ios-v、构建号 = 运行序号、隐私清单、App 图标、加密库
+#   framework）→ 上传为 artifact → Required Reason API 扫描（BL-16，artifact required-reason-scan；须由 App 清单
+#   承担、App 清单却未登记的类别判失败）。
 #   macOS runner 的分钟按 Linux 的 10 倍计。本仓库公开，目前不计费，但仍只在阶段交付或修复
 #   iOS 原生配置时手动触发；日常验证走 dart job。
 #
 # 不存放任何签名材料：没有证书、描述文件、团队 ID，也没有签名相关的 secret。
 # 签名由用户在安装前用自己的证书完成（见根 README"移动端"一节）。
 #
-# 供应链（BL-14）：4 个第三方 action 固定到 40 位提交 SHA，行尾注释是该提交对应的版本标签；SHA 由
+# 供应链（BL-14）：第三方 action 固定到 40 位提交 SHA，行尾注释是该提交对应的版本标签；SHA 由
 #   gh api repos/<owner>/<repo>/git/ref/tags/<tag> 查得（带注释的 tag 再经 git/tags/<sha> 解引用到提交），
-#   查询原文见 evidence/i1/I1-c/ci-pins.txt。升级时按同样方法查新标签的提交 SHA，同时改 SHA 与注释。
+#   查询原文见 evidence/i1/I1-c/ci-pins.txt 与 evidence/f1/ci-pins.txt（actions/cache）。升级时按同样方法查新标签的
+#   提交 SHA，同时改 SHA 与注释。flutter-action 自带的缓存不用（cache: false：它内部的 actions/cache@v5 没有固定
+#   SHA），Flutter SDK 与 pub 缓存由固定 SHA 的 actions/cache 自行缓存（审查 R-11）。
 
 name: mobile
 
@@ -78,11 +81,35 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # Flutter SDK 与 pub 缓存（审查 R-11）：flutter-action 自带的缓存内部引用 actions/cache@v5（标签、未固定 SHA），
+      # 不用它（cache: false）；先 dry-run 取得 SDK 与 pub 缓存的路径和键，再用固定 SHA 的 actions/cache 自行缓存，
+      # 最后由 flutter-action 在缓存未命中时下载 SDK。
+      - name: Flutter SDK cache path and key (flutter-action dry run)
+        id: flutter-paths
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: false
+          dry-run: true
+
+      - name: Cache Flutter SDK
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ${{ steps.flutter-paths.outputs.CACHE-PATH }}
+          key: ${{ steps.flutter-paths.outputs.CACHE-KEY }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ${{ steps.flutter-paths.outputs.PUB-CACHE-PATH }}
+          key: ${{ steps.flutter-paths.outputs.PUB-CACHE-KEY }}-${{ hashFiles('**/pubspec.lock') }}
+
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
-          cache: true
+          cache: false
 
       - name: flutter --version
         run: flutter --version
@@ -144,11 +171,35 @@ jobs:
           python-version: '3.13'
           cache-dependency-glob: services/api/uv.lock
 
+      # Flutter SDK 与 pub 缓存（审查 R-11）：flutter-action 自带的缓存内部引用 actions/cache@v5（标签、未固定 SHA），
+      # 不用它（cache: false）；先 dry-run 取得 SDK 与 pub 缓存的路径和键，再用固定 SHA 的 actions/cache 自行缓存，
+      # 最后由 flutter-action 在缓存未命中时下载 SDK。
+      - name: Flutter SDK cache path and key (flutter-action dry run)
+        id: flutter-paths
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: false
+          dry-run: true
+
+      - name: Cache Flutter SDK
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ${{ steps.flutter-paths.outputs.CACHE-PATH }}
+          key: ${{ steps.flutter-paths.outputs.CACHE-KEY }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ${{ steps.flutter-paths.outputs.PUB-CACHE-PATH }}
+          key: ${{ steps.flutter-paths.outputs.PUB-CACHE-KEY }}-${{ hashFiles('**/pubspec.lock') }}
+
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
-          cache: true
+          cache: false
 
       - name: uv sync --locked (services/api)
         run: uv sync --locked --project services/api
@@ -254,11 +305,35 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # Flutter SDK 与 pub 缓存（审查 R-11）：flutter-action 自带的缓存内部引用 actions/cache@v5（标签、未固定 SHA），
+      # 不用它（cache: false）；先 dry-run 取得 SDK 与 pub 缓存的路径和键，再用固定 SHA 的 actions/cache 自行缓存，
+      # 最后由 flutter-action 在缓存未命中时下载 SDK。
+      - name: Flutter SDK cache path and key (flutter-action dry run)
+        id: flutter-paths
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: false
+          dry-run: true
+
+      - name: Cache Flutter SDK
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ${{ steps.flutter-paths.outputs.CACHE-PATH }}
+          key: ${{ steps.flutter-paths.outputs.CACHE-KEY }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ${{ steps.flutter-paths.outputs.PUB-CACHE-PATH }}
+          key: ${{ steps.flutter-paths.outputs.PUB-CACHE-KEY }}-${{ hashFiles('**/pubspec.lock') }}
+
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
-          cache: true
+          cache: false
 
       - name: Toolchain versions
         run: |
@@ -303,6 +378,8 @@ jobs:
           echo "name=$name" >> "$GITHUB_OUTPUT"
 
       - name: Verify IPA
+        env:
+          RUN_NUMBER: ${{ github.run_number }}
         run: |
           set -euo pipefail
           name="${{ steps.ipa.outputs.name }}"
@@ -316,6 +393,19 @@ jobs:
           echo "CFBundleIdentifier=$bundle_id MinimumOSVersion=$min_os version=$version build=$build"
           test "$bundle_id" = "$BUNDLE_ID" || { echo "::error::CFBundleIdentifier is $bundle_id, expected $BUNDLE_ID"; exit 1; }
           test "$min_os" = "$MIN_IOS" || { echo "::error::MinimumOSVersion is $min_os, expected $MIN_IOS"; exit 1; }
+          # 版本与构建号（审查 R-11）：版本名 = pubspec.yaml 的版本名（构建号部分不算）；推 ios-v* 标签构建时还要
+          # 等于标签去掉 ios-v；构建号 = 本次运行序号（flutter build --build-number）。
+          pubspec_version="$(sed -nE 's/^version:[[:space:]]*([^+[:space:]]+).*$/\1/p' pubspec.yaml)"
+          test -n "$pubspec_version" || { echo "::error::cannot read the version name from pubspec.yaml"; exit 1; }
+          test "$version" = "$pubspec_version" || { echo "::error::CFBundleShortVersionString is $version, expected $pubspec_version (pubspec.yaml)"; exit 1; }
+          version_checked="pubspec.yaml $pubspec_version"
+          if [[ "$GITHUB_REF" == refs/tags/ios-v* ]]; then
+            tag_version="${GITHUB_REF#refs/tags/ios-v}"
+            test "$version" = "$tag_version" || { echo "::error::CFBundleShortVersionString is $version, expected $tag_version (tag ios-v$tag_version)"; exit 1; }
+            version_checked="$version_checked, tag ios-v$tag_version"
+          fi
+          test "$build" = "$RUN_NUMBER" || { echo "::error::CFBundleVersion is $build, expected $RUN_NUMBER (github.run_number)"; exit 1; }
+          echo "CFBundleShortVersionString $version matches $version_checked; CFBundleVersion $build matches run number $RUN_NUMBER"
           test ! -e Payload/Runner.app/embedded.mobileprovision || { echo "::error::unexpected embedded.mobileprovision"; exit 1; }
           test -f Payload/Runner.app/PrivacyInfo.xcprivacy || { echo "::error::PrivacyInfo.xcprivacy missing from Runner.app"; exit 1; }
           test -d Payload/Runner.app/Frameworks/Flutter.framework
@@ -375,8 +465,10 @@ jobs:
       # strings 查 ObjC 选择器、常量名与 sysctl 名（C 函数名只看 nm -u，避免"stat"一类子串误报）；同时查每个
       # framework 是否自带 PrivacyInfo.xcprivacy。规则：主二进制或没有自带清单的 framework 命中的类别留在
       # ios/Runner/PrivacyInfo.xcprivacy，其余删除（理由码不变）；结论见 evidence/i1/I1-c/required-reason-scan.txt。
-      # 命中是正常结果，只报告不判失败；工具出错才失败。
+      # 命中本身是正常结果；须由 App 清单承担、App 清单却未登记的类别判失败（审查 R-11），工具出错也失败。
+      # 登记了而没有命中的只报告（建议删除，由人决定）。
       - name: Required Reason API scan (BL-16)
+        id: scan
         run: |
           set -euo pipefail
           export LC_ALL=C  # 二进制里的字符串不一定是合法 UTF-8：grep/sort 按字节处理
@@ -451,9 +543,17 @@ jobs:
               covered="$(awk -F '\t' -v c="$c" '$3 == c && $2 == "yes" {printf "%s ", $1}' "$hits")"
               if grep -q "NSPrivacyAccessedAPICategory$c<" ios/Runner/PrivacyInfo.xcprivacy; then declared=已登记; else declared=未登记; fi
               if [ -n "$need" ]; then verdict=保留; else verdict=删除; fi
+              if [ -n "$need" ] && [ "$declared" = 未登记 ]; then
+                verdict="缺登记（失败）"
+                echo "$c" >> "$out/missing.txt"
+              fi
               echo "  $c：App 清单$declared；须由 App 清单承担的命中：${need:-无}；自带清单的 framework 命中：${covered:-无} → $verdict"
             done
           } | tee "$out/required-reason-scan.txt"
+          if [ -s "$out/missing.txt" ]; then
+            echo "::error::Required Reason API categories hit by the main binary or a framework without its own privacy manifest, but not declared in ios/Runner/PrivacyInfo.xcprivacy: $(tr '\n' ' ' < "$out/missing.txt")"
+            missing_scan=1
+          fi
           {
             echo "### Required Reason API scan (BL-16)"
             echo ""
@@ -461,8 +561,12 @@ jobs:
             sed -n '/^== 结论/,$p' "$out/required-reason-scan.txt"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+          if [ "${missing_scan:-0}" = 1 ]; then
+            exit 1
+          fi
 
       - name: Upload Required Reason API scan
+        if: ${{ !cancelled() && (steps.scan.outcome == 'success' || steps.scan.outcome == 'failure') }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: required-reason-scan
