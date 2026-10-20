@@ -66,6 +66,14 @@ final class ConflictException extends RepositoryException {
   final String message;
 }
 
+/// 表单打开以后切换了工作空间（进入/退出演示、切换空间）：保存被拒绝，不写进另一个空间（审查 R-15）。
+final class WorkspaceChangedException extends RepositoryException {
+  const WorkspaceChangedException();
+
+  @override
+  String get message => '已切换空间：这张表单是在另一个空间里打开的，没有保存。请在当前空间重新打开。';
+}
+
 /// 数据库约束或触发器拒绝了写入（仓库自己的校验应已先拦下，走到这里说明有遗漏）。
 final class StorageRejectedException extends RepositoryException {
   const StorageRejectedException(this.sqliteResultCode);

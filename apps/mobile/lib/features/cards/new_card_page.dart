@@ -8,6 +8,7 @@ import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
+import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
 import '../../data/repositories/card_repository.dart';
@@ -50,7 +51,8 @@ class NewCardPage extends ConsumerStatefulWidget {
   ConsumerState<NewCardPage> createState() => _NewCardPageState();
 }
 
-class _NewCardPageState extends ConsumerState<NewCardPage> {
+class _NewCardPageState extends ConsumerState<NewCardPage>
+    with WorkspaceBoundForm {
   final String _cardId = newUuidV4();
   final String _accountId = newUuidV4();
 
@@ -168,7 +170,15 @@ class _NewCardPageState extends ConsumerState<NewCardPage> {
     var joinAccountId = _target == _AccountTarget.existing
         ? _joinAccountId
         : null;
-    final repo = await ref.read(cardRepositoryProvider.future);
+    final CardRepository repo;
+    try {
+      repo = await boundRepository(cardRepositoryProvider.future);
+    } on RepositoryException catch (error) {
+      if (mounted) {
+        setState(() => _saveError = error.message);
+      }
+      return;
+    }
     if (!mounted) {
       return;
     }

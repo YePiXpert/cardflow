@@ -14,6 +14,7 @@ import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
 import '../../app/widgets/workspace_badges.dart';
+import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
 import '../../data/mapping/cash_mapping.dart';
@@ -416,7 +417,8 @@ class ScenarioEditorPage extends ConsumerStatefulWidget {
   ConsumerState<ScenarioEditorPage> createState() => _ScenarioEditorPageState();
 }
 
-class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
+class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage>
+    with WorkspaceBoundForm {
   final String _id = newUuidV4();
   final TextEditingController _name = TextEditingController();
   final TextEditingController _delay = TextEditingController(text: '0');
@@ -500,7 +502,7 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage> {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(scenarioRepositoryProvider.future);
+      final repo = await boundRepository(scenarioRepositoryProvider.future);
       final id = widget.scenarioId;
       if (id == null) {
         await repo.create(draft, id: _id);

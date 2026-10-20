@@ -10,6 +10,7 @@ import '../../app/theme/tokens.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
+import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
 import '../../data/mapping/domain_mapping.dart';
@@ -269,7 +270,8 @@ class StatementEntryPage extends ConsumerStatefulWidget {
   ConsumerState<StatementEntryPage> createState() => _StatementEntryPageState();
 }
 
-class _StatementEntryPageState extends ConsumerState<StatementEntryPage> {
+class _StatementEntryPageState extends ConsumerState<StatementEntryPage>
+    with WorkspaceBoundForm {
   final String _id = newUuidV4();
   final _FigureFields _fields = _FigureFields();
   late String? _sub = widget.currencyAccountId;
@@ -311,7 +313,7 @@ class _StatementEntryPageState extends ConsumerState<StatementEntryPage> {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(statementRepositoryProvider.future);
+      final repo = await boundRepository(statementRepositoryProvider.future);
       final row = await repo.recordIssued(
         StatementEntryDraft(
           currencyAccountId: sub!,
@@ -430,7 +432,8 @@ class StatementCorrectionPage extends ConsumerStatefulWidget {
 }
 
 class _StatementCorrectionPageState
-    extends ConsumerState<StatementCorrectionPage> {
+    extends ConsumerState<StatementCorrectionPage>
+    with WorkspaceBoundForm {
   final _FigureFields _fields = _FigureFields();
   final TextEditingController _reason = TextEditingController();
   LocalDate? _dueDate;
@@ -464,7 +467,7 @@ class _StatementCorrectionPageState
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(statementRepositoryProvider.future);
+      final repo = await boundRepository(statementRepositoryProvider.future);
       final version = await repo.correct(
         widget.statementId,
         figures: figures,
@@ -584,7 +587,8 @@ class TransactionFormPage extends ConsumerStatefulWidget {
       _TransactionFormPageState();
 }
 
-class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
+class _TransactionFormPageState extends ConsumerState<TransactionFormPage>
+    with WorkspaceBoundForm {
   final String _id = newUuidV4();
   final TextEditingController _amount = TextEditingController();
   final TextEditingController _time = TextEditingController();
@@ -658,7 +662,7 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(transactionRepositoryProvider.future);
+      final repo = await boundRepository(transactionRepositoryProvider.future);
       await repo.create(
         TransactionDraft(
           currencyAccountId: sub,
@@ -852,7 +856,8 @@ class InstallmentFormPage extends ConsumerStatefulWidget {
       _InstallmentFormPageState();
 }
 
-class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage> {
+class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage>
+    with WorkspaceBoundForm {
   final String _id = newUuidV4();
   final TextEditingController _periods = TextEditingController(text: '12');
   final TextEditingController _rate = TextEditingController();
@@ -965,7 +970,7 @@ class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage> {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(installmentRepositoryProvider.future);
+      final repo = await boundRepository(installmentRepositoryProvider.future);
       await repo.create(
         InstallmentDraft(
           transactionId: widget.transactionId,

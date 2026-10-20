@@ -10,6 +10,7 @@ import '../../app/theme/tokens.dart';
 import '../../app/widgets/confirm_dialog.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
+import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
 import '../../data/mapping/cash_mapping.dart' show cashTimeZone;
@@ -60,7 +61,8 @@ class RepaymentFormPage extends ConsumerStatefulWidget {
   ConsumerState<RepaymentFormPage> createState() => _RepaymentFormPageState();
 }
 
-class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
+class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage>
+    with WorkspaceBoundForm {
   final String _id = newUuidV4();
   final TextEditingController _amount = TextEditingController();
   final TextEditingController _time = TextEditingController();
@@ -204,7 +206,7 @@ class _RepaymentFormPageState extends ConsumerState<RepaymentFormPage> {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(repaymentRepositoryProvider.future);
+      final repo = await boundRepository(repaymentRepositoryProvider.future);
       final row = await repo.create(
         RepaymentDraft(
           currencyAccountId: sub,

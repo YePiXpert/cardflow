@@ -10,6 +10,7 @@ import '../../app/theme/tokens.dart';
 import '../../app/widgets/confirm_dialog.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
+import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
 import '../../data/mapping/cash_mapping.dart';
@@ -110,7 +111,8 @@ class CashEventFormPage extends ConsumerStatefulWidget {
   ConsumerState<CashEventFormPage> createState() => _CashEventFormPageState();
 }
 
-class _CashEventFormPageState extends ConsumerState<CashEventFormPage> {
+class _CashEventFormPageState extends ConsumerState<CashEventFormPage>
+    with WorkspaceBoundForm {
   final String _id = newUuidV4();
   final TextEditingController _amount = TextEditingController();
   final TextEditingController _time = TextEditingController();
@@ -178,7 +180,7 @@ class _CashEventFormPageState extends ConsumerState<CashEventFormPage> {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(cashEventRepositoryProvider.future);
+      final repo = await boundRepository(cashEventRepositoryProvider.future);
       final eventId = widget.eventId;
       if (eventId == null) {
         await repo.create(
@@ -229,7 +231,7 @@ class _CashEventFormPageState extends ConsumerState<CashEventFormPage> {
   Future<void> _markPosted(String eventId) async {
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(cashEventRepositoryProvider.future);
+      final repo = await boundRepository(cashEventRepositoryProvider.future);
       await repo.markPosted(eventId);
       showFeedback(messenger, '已标记为已发生（确定）');
     } on RepositoryException catch (error) {
@@ -252,7 +254,7 @@ class _CashEventFormPageState extends ConsumerState<CashEventFormPage> {
       return;
     }
     try {
-      final repo = await ref.read(cashEventRepositoryProvider.future);
+      final repo = await boundRepository(cashEventRepositoryProvider.future);
       await repo.delete(eventId);
       showFeedback(messenger, CashPage.savedMessage);
       if (mounted) {
@@ -403,7 +405,8 @@ class TransferFormPage extends ConsumerStatefulWidget {
   ConsumerState<TransferFormPage> createState() => _TransferFormPageState();
 }
 
-class _TransferFormPageState extends ConsumerState<TransferFormPage> {
+class _TransferFormPageState extends ConsumerState<TransferFormPage>
+    with WorkspaceBoundForm {
   final String _group = newUuidV4();
   final TextEditingController _amount = TextEditingController();
   final TextEditingController _outTime = TextEditingController();
@@ -474,7 +477,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(cashEventRepositoryProvider.future);
+      final repo = await boundRepository(cashEventRepositoryProvider.future);
       await repo.createTransfer(
         TransferDraft(
           fromAccountId: _from!,
@@ -628,7 +631,8 @@ class RecurringFormPage extends ConsumerStatefulWidget {
   ConsumerState<RecurringFormPage> createState() => _RecurringFormPageState();
 }
 
-class _RecurringFormPageState extends ConsumerState<RecurringFormPage> {
+class _RecurringFormPageState extends ConsumerState<RecurringFormPage>
+    with WorkspaceBoundForm {
   final String _id = newUuidV4();
   final TextEditingController _label = TextEditingController();
   final TextEditingController _amount = TextEditingController();
@@ -710,7 +714,9 @@ class _RecurringFormPageState extends ConsumerState<RecurringFormPage> {
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(recurringItemRepositoryProvider.future);
+      final repo = await boundRepository(
+        recurringItemRepositoryProvider.future,
+      );
       final itemId = widget.itemId;
       if (itemId == null) {
         await repo.create(draft, id: _id);

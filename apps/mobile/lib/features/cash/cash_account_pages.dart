@@ -11,6 +11,7 @@ import '../../app/theme/tokens.dart';
 import '../../app/widgets/confirm_dialog.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
+import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
 import '../../data/mapping/cash_mapping.dart';
@@ -65,7 +66,8 @@ class NewCashAccountPage extends ConsumerStatefulWidget {
   ConsumerState<NewCashAccountPage> createState() => _NewCashAccountPageState();
 }
 
-class _NewCashAccountPageState extends ConsumerState<NewCashAccountPage> {
+class _NewCashAccountPageState extends ConsumerState<NewCashAccountPage>
+    with WorkspaceBoundForm {
   /// 预先生成：重试保存不重复建账户。
   final String _id = newUuidV4();
   final TextEditingController _name = TextEditingController();
@@ -146,7 +148,9 @@ class _NewCashAccountPageState extends ConsumerState<NewCashAccountPage> {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final today = ref.read(clockProvider).today(cashTimeZone);
-      final accounts = await ref.read(cashAccountRepositoryProvider.future);
+      final accounts = await boundRepository(
+        cashAccountRepositoryProvider.future,
+      );
       final row = await accounts.create(
         NewCashAccount(
           id: _id,
@@ -160,7 +164,9 @@ class _NewCashAccountPageState extends ConsumerState<NewCashAccountPage> {
       );
       if (balance != null) {
         final date = _balanceDate ?? today;
-        final snapshots = await ref.read(cashSnapshotRepositoryProvider.future);
+        final snapshots = await boundRepository(
+          cashSnapshotRepositoryProvider.future,
+        );
         await snapshots.record(
           CashSnapshotDraft(
             cashAccountId: row.id,
@@ -717,8 +723,8 @@ class RecordCashSnapshotPage extends ConsumerStatefulWidget {
       _RecordCashSnapshotPageState();
 }
 
-class _RecordCashSnapshotPageState
-    extends ConsumerState<RecordCashSnapshotPage> {
+class _RecordCashSnapshotPageState extends ConsumerState<RecordCashSnapshotPage>
+    with WorkspaceBoundForm {
   final TextEditingController _balance = TextEditingController();
   final TextEditingController _time = TextEditingController();
   LocalDate? _date;
@@ -775,7 +781,7 @@ class _RecordCashSnapshotPageState
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      final repo = await ref.read(cashSnapshotRepositoryProvider.future);
+      final repo = await boundRepository(cashSnapshotRepositoryProvider.future);
       await repo.record(
         CashSnapshotDraft(
           cashAccountId: account.id,

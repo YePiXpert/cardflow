@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../data/repositories/cash_models.dart';
+import '../data/repositories/providers.dart';
 import '../features/calendar/cash_calendar_page.dart';
 import '../features/cards/account_detail_page.dart';
 import '../features/cards/account_settings_page.dart';
@@ -460,12 +461,22 @@ GoRouter createAppRouter({
 
 /// 全局路由。每次位置变化记一条诊断日志（只记路由模板，如 `/cards/accounts/:accountId`，
 /// 不记参数）。启动分流跟随 [appGateProvider]。
+///
+/// 切换工作空间（进入/退出演示、切换空间、清除演示数据后回到真实空间）之后统一回到首页（总览）：根导航器上
+/// 的全屏表单与当前 Tab 的页面栈一并清掉，其余 Tab 的栈在下次进入时从根页开始（`HomeShell`，审查 R-15）。
+/// 从没有工作空间（P-22）进入时由调用方决定去哪（例如「手工建卡」去新建卡片）。
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
   final log = ref.watch(diagnosticLogProvider);
   final gate = AppGateNotifier(ref.read(appGateProvider));
   ref.listen(appGateProvider, (_, next) => gate.value = next);
   final router = createAppRouter(gate: gate);
+  ref.listen(currentWorkspaceProvider, (previous, next) {
+    final from = previous?.value?.id;
+    if (from != null && next.hasValue && next.value?.id != from) {
+      router.go(AppRoutes.overview);
+    }
+  });
   void onRouteChanged() {
     final configuration = router.routerDelegate.currentConfiguration;
     log.info(
