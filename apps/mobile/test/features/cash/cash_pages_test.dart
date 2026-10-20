@@ -90,6 +90,8 @@ void main() {
   testWidgets('成功（演示）：账户、可用性（受限资金不计入）、收支计划、周期事项（单期例外）、调拨', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
     await goTo(tester, AppRoutes.cash);
+    // 现金账户与收支计划在余额曲线与"接下来"下面。
+    await _scrollTo(tester, find.text('不计入可用现金（受限资金，未设可用日期）'));
     expect(find.text('工资卡'), findsOneWidget);
     expect(find.text('可用于还款'), findsOneWidget);
     expect(find.text('定期存款'), findsOneWidget);

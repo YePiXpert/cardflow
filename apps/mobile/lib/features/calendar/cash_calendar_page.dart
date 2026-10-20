@@ -16,6 +16,7 @@ import '../../data/repositories/providers.dart';
 import '../../data/repositories/scenario_repository.dart';
 import '../cards/card_formatting.dart';
 import '../cash/cash_formatting.dart';
+import '../cash/uncounted_dues.dart';
 import 'calendar_providers.dart';
 
 /// P-07 资金日历（ui-spec P-07）：控制条（7/30/90/180 天、账户、口径 已确认/基准/压力情景、情景选择）→ 摘要
@@ -23,8 +24,8 @@ import 'calendar_providers.dart';
 /// 全部缺口（含造成缺口的事件）→ 尾部责任（窗口外的计划事件）→ 假设（先支出后收入、快照包含、陈旧 →
 /// "假设分析"）。始终逐账户计算，账户之间不互抵；数据变化自动重算（provider 依赖）。
 ///
-/// 无缺口用中性色，不用绿色，不出现"安全/稳妥"（ui-spec §4.5、P-07 九态"成功"）。图表视图后续提供，
-/// 本期只有表格。
+/// 无缺口用中性色，不用绿色，不出现"安全/稳妥"（ui-spec §4.5、P-07 九态"成功"）。这里是表格视图；曲线在
+/// 现金页（`cash_home_page.dart`）。摘要下面一行"未计入：信用卡本期应还"（简报 U-1 §9 Q-1）。
 class CashCalendarPage extends ConsumerStatefulWidget {
   const CashCalendarPage({
     super.key,
@@ -227,6 +228,11 @@ class _CashCalendarPageState extends ConsumerState<CashCalendarPage> {
       else ...<Widget>[
         for (final summary in f.summaries)
           _SummaryCard(forecast: f, summary: summary),
+        // 简报 U-1 §9 Q-1：信用卡本期应还还没登记还款的部分不在日历里。
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: CfSpace.md),
+          child: UncountedDuesTile(),
+        ),
         for (final account in f.accounts)
           ..._accountSection(context, f, account),
         SectionTitle('全部缺口（${f.gaps.length}）'),
@@ -309,7 +315,7 @@ class _CashCalendarPageState extends ConsumerState<CashCalendarPage> {
               semanticsPrefix: '快照余额',
               textAlign: TextAlign.start,
             ),
-            const Text('· 表格视图（图表后续提供）'),
+            const Text('· 表格视图（曲线在现金页）'),
           ],
         ),
       ),

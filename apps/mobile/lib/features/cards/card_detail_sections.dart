@@ -662,49 +662,54 @@ class StatementHistory extends StatelessWidget {
             children: <Widget>[
               for (final s in statements.take(shown))
                 if (data.balances[s.id] case final b?)
-                  InkWell(
-                    onTap: () => context.go(
-                      AppRoutes.statement(s.id, accountId: row.creditAccountId),
-                    ),
-                    child: Container(
-                      alignment: AlignmentDirectional.centerStart,
-                      constraints: const BoxConstraints(
-                        minHeight: CfTouch.listRowMinHeight + CfSpace.xs,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: CfSpace.md,
-                          vertical: CfSpace.xs,
+                  MergeSemantics(
+                    child: InkWell(
+                      onTap: () => context.go(
+                        AppRoutes.statement(
+                          s.id,
+                          accountId: row.creditAccountId,
                         ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: Wrap(
-                            alignment: WrapAlignment.spaceBetween,
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            spacing: CfSpace.sm,
-                            runSpacing: CfSpace.xxs,
-                            children: <Widget>[
-                              Text(
-                                '${formatShortDate(b.statementDate, row.today)} 账单',
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                              Wrap(
-                                spacing: CfSpace.xs,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: <Widget>[
-                                  MoneyText(
-                                    minor: b.basis,
-                                    currency: row.currency,
-                                    compact: true,
-                                    negativeLabel: '贷方',
-                                    negativeTone: MoneyTone.neutral,
-                                    semanticsPrefix: '新增账单',
-                                    style: theme.textTheme.bodyLarge,
-                                  ),
-                                  effectiveStatusBadge(b),
-                                ],
-                              ),
-                            ],
+                      ),
+                      child: Container(
+                        alignment: AlignmentDirectional.centerStart,
+                        constraints: const BoxConstraints(
+                          minHeight: CfTouch.listRowMinHeight + CfSpace.xs,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: CfSpace.md,
+                            vertical: CfSpace.xs,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Wrap(
+                              alignment: WrapAlignment.spaceBetween,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: CfSpace.sm,
+                              runSpacing: CfSpace.xxs,
+                              children: <Widget>[
+                                Text(
+                                  '${formatShortDate(b.statementDate, row.today)} 账单',
+                                  style: theme.textTheme.bodyLarge,
+                                ),
+                                Wrap(
+                                  spacing: CfSpace.xs,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: <Widget>[
+                                    MoneyText(
+                                      minor: b.basis,
+                                      currency: row.currency,
+                                      compact: true,
+                                      negativeLabel: '贷方',
+                                      negativeTone: MoneyTone.neutral,
+                                      semanticsPrefix: '新增账单',
+                                      style: theme.textTheme.bodyLarge,
+                                    ),
+                                    effectiveStatusBadge(b),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

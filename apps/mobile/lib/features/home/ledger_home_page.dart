@@ -273,118 +273,121 @@ class SummaryHeroCard extends StatelessWidget {
     final others = currencies.skip(1).toList();
     final nearest = s.nearest;
     final today = home.rows.first.today;
-    return Material(
-      color: Colors.transparent,
-      child: Ink(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: colors.hero,
-          ),
-          borderRadius: BorderRadius.circular(CfRadius.card),
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(CfRadius.card),
-          onTap: () => unawaited(_showLiabilities(context)),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CfSpace.md + CfSpace.xxs / 2,
-              CfSpace.md,
-              CfSpace.md + CfSpace.xxs / 2,
-              CfSpace.sm,
+    // 整张汇总卡是一个读屏单元（点开是负债明细）。
+    return MergeSemantics(
+      child: Material(
+        color: Colors.transparent,
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: colors.hero,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  s.owingCards > 0 ? '本期待还 · ${s.owingCards} 张卡' : '本期待还',
-                  style: secondary,
-                ),
-                MoneyText(
-                  minor: s.dueByCurrency[mainCurrency] ?? 0,
-                  currency: mainCurrency,
-                  compact: true,
-                  semanticsPrefix: '本期待还合计',
-                  textAlign: TextAlign.start,
-                  style: CfType.amountHero.toTextStyle().copyWith(
-                    color: colors.heroText,
-                  ),
-                ),
-                for (final c in others)
-                  MoneyText(
-                    minor: s.dueByCurrency[c],
-                    currency: c,
-                    compact: true,
-                    semanticsPrefix: '另有',
-                    textAlign: TextAlign.start,
+            borderRadius: BorderRadius.circular(CfRadius.card),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(CfRadius.card),
+            onTap: () => unawaited(_showLiabilities(context)),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                CfSpace.md + CfSpace.xxs / 2,
+                CfSpace.md,
+                CfSpace.md + CfSpace.xxs / 2,
+                CfSpace.sm,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    s.owingCards > 0 ? '本期待还 · ${s.owingCards} 张卡' : '本期待还',
                     style: secondary,
                   ),
-                const SizedBox(height: CfSpace.xxs),
-                if (nearest != null)
-                  Wrap(
-                    spacing: CfSpace.xxs,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        nearest.overdue
-                            ? '最近一笔 ${formatShortDate(nearest.dueDate, today)} 到期（已逾期）·'
-                                  ' ${nearest.row.bankShort}'
-                            : '最近一笔 ${formatShortDate(nearest.dueDate, today)} 到期 ·'
-                                  ' ${nearest.row.bankShort}',
-                        style: secondary,
-                      ),
-                      MoneyText(
-                        minor: nearest.amount,
-                        currency: nearest.currency,
-                        compact: true,
-                        semanticsPrefix: '金额',
-                        textAlign: TextAlign.start,
-                        style: secondary,
-                      ),
-                    ],
-                  )
-                else
-                  Text('没有要还的账单', style: secondary),
-                if (s.missedStatements > 0)
-                  Text('${s.missedStatements} 张卡有账单出了还没录入', style: secondary),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: CfSpace.sm),
-                  child: Divider(
-                    height: CfStroke.hairline,
-                    color: colors.heroTextSecondary.withValues(alpha: 0.3),
+                  MoneyText(
+                    minor: s.dueByCurrency[mainCurrency] ?? 0,
+                    currency: mainCurrency,
+                    compact: true,
+                    semanticsPrefix: '本期待还合计',
+                    textAlign: TextAlign.start,
+                    style: CfType.amountHero.toTextStyle().copyWith(
+                      color: colors.heroText,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  child: Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    spacing: CfSpace.md,
-                    runSpacing: CfSpace.xs,
-                    children: <Widget>[
-                      KeyValueColumn(
-                        label: '3 天内到期',
-                        labelColor: colors.heroTextSecondary,
-                        value: Text('${s.dueSoon} 笔', style: value),
-                      ),
-                      _LimitValue(
-                        label: '总额度',
-                        minor: s.totalLimit,
-                        missing: s.missingLimit,
-                        style: value,
-                        labelColor: colors.heroTextSecondary,
-                      ),
-                      _LimitValue(
-                        label: '可用',
-                        minor: s.available,
-                        missing: s.missingLimit,
-                        style: value,
-                        labelColor: colors.heroTextSecondary,
-                      ),
-                    ],
+                  for (final c in others)
+                    MoneyText(
+                      minor: s.dueByCurrency[c],
+                      currency: c,
+                      compact: true,
+                      semanticsPrefix: '另有',
+                      textAlign: TextAlign.start,
+                      style: secondary,
+                    ),
+                  const SizedBox(height: CfSpace.xxs),
+                  if (nearest != null)
+                    Wrap(
+                      spacing: CfSpace.xxs,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          nearest.overdue
+                              ? '最近一笔 ${formatShortDate(nearest.dueDate, today)} 到期（已逾期）·'
+                                    ' ${nearest.row.bankShort}'
+                              : '最近一笔 ${formatShortDate(nearest.dueDate, today)} 到期 ·'
+                                    ' ${nearest.row.bankShort}',
+                          style: secondary,
+                        ),
+                        MoneyText(
+                          minor: nearest.amount,
+                          currency: nearest.currency,
+                          compact: true,
+                          semanticsPrefix: '金额',
+                          textAlign: TextAlign.start,
+                          style: secondary,
+                        ),
+                      ],
+                    )
+                  else
+                    Text('没有要还的账单', style: secondary),
+                  if (s.missedStatements > 0)
+                    Text('${s.missedStatements} 张卡有账单出了还没录入', style: secondary),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: CfSpace.sm),
+                    child: Divider(
+                      height: CfStroke.hairline,
+                      color: colors.heroTextSecondary.withValues(alpha: 0.3),
+                    ),
                   ),
-                ),
-              ],
+                  SizedBox(
+                    width: double.infinity,
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      spacing: CfSpace.md,
+                      runSpacing: CfSpace.xs,
+                      children: <Widget>[
+                        KeyValueColumn(
+                          label: '3 天内到期',
+                          labelColor: colors.heroTextSecondary,
+                          value: Text('${s.dueSoon} 笔', style: value),
+                        ),
+                        _LimitValue(
+                          label: '总额度',
+                          minor: s.totalLimit,
+                          missing: s.missingLimit,
+                          style: value,
+                          labelColor: colors.heroTextSecondary,
+                        ),
+                        _LimitValue(
+                          label: '可用',
+                          minor: s.available,
+                          missing: s.missingLimit,
+                          style: value,
+                          labelColor: colors.heroTextSecondary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -533,60 +536,62 @@ class TodayPickTile extends StatelessWidget {
     final colors = CardFlowColors.of(context);
     final theme = Theme.of(context);
     final today = pick.row.today;
-    return Material(
-      color: colors.surface,
-      borderRadius: BorderRadius.circular(CfRadius.tile),
-      child: InkWell(
+    return MergeSemantics(
+      child: Material(
+        color: colors.surface,
         borderRadius: BorderRadius.circular(CfRadius.tile),
-        onTap: () => unawaited(_showCandidates(context)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CfSpace.md,
-            vertical: CfSpace.sm,
-          ),
-          child: Row(
-            children: <Widget>[
-              BankBadge(bankName: pick.row.bankName),
-              const SizedBox(width: CfSpace.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(CfRadius.tile),
+          onTap: () => unawaited(_showCandidates(context)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CfSpace.md,
+              vertical: CfSpace.sm,
+            ),
+            child: Row(
+              children: <Widget>[
+                BankBadge(bankName: pick.row.bankName),
+                const SizedBox(width: CfSpace.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        '今天刷${pick.row.title}',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        '${formatShortDate(pick.cycle.statementDate, today)} 出账 · '
+                        '${formatShortDate(pick.cycle.dueDate, today)} 还款',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: CfSpace.xs),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
                     Text(
-                      '今天刷${pick.row.title}',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
+                      '${pick.freeDays}',
+                      style: CfType.amountRow.toTextStyle().copyWith(
+                        color: colors.action,
                       ),
                     ),
                     Text(
-                      '${formatShortDate(pick.cycle.statementDate, today)} 出账 · '
-                      '${formatShortDate(pick.cycle.dueDate, today)} 还款',
+                      '天免息',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.textSecondary,
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(width: CfSpace.xs),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    '${pick.freeDays}',
-                    style: CfType.amountRow.toTextStyle().copyWith(
-                      color: colors.action,
-                    ),
-                  ),
-                  Text(
-                    '天免息',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -680,95 +685,99 @@ class CardLedgerRowTile extends ConsumerWidget {
         ? <Widget>[_RuleCell(row: row)]
         : <Widget>[_StatementCellView(row: row), _DueCellView(row: row)];
     final pending = row.pending;
-    return InkWell(
-      onTap: () => context.go(AppRoutes.account(row.creditAccountId)),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          CfSpace.md,
-          CfSpace.sm,
-          CfSpace.md,
-          CfSpace.sm,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                BankBadge(bankName: row.bankName),
-                const SizedBox(width: CfSpace.sm),
-                Expanded(
-                  child: Wrap(
-                    spacing: CfSpace.xs,
-                    runSpacing: CfSpace.xxs,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        row.title,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (row.currency != 'CNY')
+    // 一行是一个读屏单元（点按进卡片详情）；行里的「设置账期」「银行已入账」是单独的按钮。
+    return Semantics(
+      container: true,
+      child: InkWell(
+        onTap: () => context.go(AppRoutes.account(row.creditAccountId)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CfSpace.md,
+            CfSpace.sm,
+            CfSpace.md,
+            CfSpace.sm,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  BankBadge(bankName: row.bankName),
+                  const SizedBox(width: CfSpace.sm),
+                  Expanded(
+                    child: Wrap(
+                      spacing: CfSpace.xs,
+                      runSpacing: CfSpace.xxs,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: <Widget>[
                         Text(
-                          row.currency,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.textSecondary,
+                          row.title,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                      if (row.frozen)
-                        const StatusBadge(
-                          label: '已冻结',
-                          icon: Icons.ac_unit,
-                          tone: NoticeTone.unknown,
+                        if (row.currency != 'CNY')
+                          Text(
+                            row.currency,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colors.textSecondary,
+                            ),
+                          ),
+                        if (row.frozen)
+                          const StatusBadge(
+                            label: '已冻结',
+                            icon: Icons.ac_unit,
+                            tone: NoticeTone.unknown,
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (row.productName != null && !stacked) ...<Widget>[
+                    const SizedBox(width: CfSpace.xs),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: CfTouch.minTarget * 3,
+                      ),
+                      child: Text(
+                        row.productName!,
+                        textAlign: TextAlign.end,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colors.textTertiary,
                         ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: CfSpace.xs),
+              if (stacked) ...<Widget>[
+                amount,
+                const SizedBox(height: CfSpace.xs),
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      for (final cell in cells) Expanded(child: cell),
                     ],
                   ),
                 ),
-                if (row.productName != null && !stacked) ...<Widget>[
-                  const SizedBox(width: CfSpace.xs),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      maxWidth: CfTouch.minTarget * 3,
-                    ),
-                    child: Text(
-                      row.productName!,
-                      textAlign: TextAlign.end,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.textTertiary,
-                      ),
-                    ),
+              ] else
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Expanded(flex: 23, child: amount),
+                      for (final cell in cells)
+                        Expanded(flex: 40 ~/ cells.length, child: cell),
+                    ],
                   ),
-                ],
+                ),
+              if (pending != null) ...<Widget>[
+                const SizedBox(height: CfSpace.xs),
+                PendingRepaymentStrip(row: row),
               ],
-            ),
-            const SizedBox(height: CfSpace.xs),
-            if (stacked) ...<Widget>[
-              amount,
-              const SizedBox(height: CfSpace.xs),
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    for (final cell in cells) Expanded(child: cell),
-                  ],
-                ),
-              ),
-            ] else
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Expanded(flex: 23, child: amount),
-                    for (final cell in cells)
-                      Expanded(flex: 40 ~/ cells.length, child: cell),
-                  ],
-                ),
-              ),
-            if (pending != null) ...<Widget>[
-              const SizedBox(height: CfSpace.xs),
-              PendingRepaymentStrip(row: row),
             ],
-          ],
+          ),
         ),
       ),
     );

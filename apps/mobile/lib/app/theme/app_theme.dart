@@ -180,7 +180,6 @@ ThemeData buildCardFlowTheme(
       minTileHeight: CfTouch.listRowMinHeight,
       contentPadding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
       iconColor: c.textSecondary,
-      textColor: c.textPrimary,
     ),
     dividerTheme: DividerThemeData(
       color: c.divider,

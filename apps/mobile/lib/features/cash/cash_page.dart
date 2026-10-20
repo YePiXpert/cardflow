@@ -41,7 +41,13 @@ class CashPlanSections extends ConsumerWidget {
   final CashPlanView view;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: children(context, view),
+  );
+
+  /// 各块（直接放进页面的滚动列表：每块是一个读屏单元）。
+  static List<Widget> children(BuildContext context, CashPlanView view) {
     final theme = Theme.of(context);
     final colors = CardFlowColors.of(context);
     final secondary = theme.textTheme.bodyMedium?.copyWith(
@@ -58,142 +64,139 @@ class CashPlanSections extends ConsumerWidget {
     String currencyOf(String accountId) =>
         view.account(accountId)?.row.currency ?? 'CNY';
     String nameOf(String accountId) => view.account(accountId)?.row.name ?? '';
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        SectionTitle(
-          '现金账户',
-          trailing: TextButton(
-            onPressed: () => context.go(AppRoutes.newCashAccount),
-            child: const Text('添加账户'),
-          ),
+    return <Widget>[
+      SectionTitle(
+        '现金账户',
+        trailing: TextButton(
+          onPressed: () => context.go(AppRoutes.newCashAccount),
+          child: const Text('添加账户'),
         ),
-        GroupCard(
+      ),
+      GroupCard(
+        children: <Widget>[
+          for (final account in active)
+            _AccountTile(summary: account, today: view.today),
+        ],
+      ),
+      if (closed.isNotEmpty)
+        ExpansionTile(
+          title: Text('已停用（${closed.length}）'),
+          subtitle: const Text('不进入资金日历，历史保留'),
           children: <Widget>[
-            for (final account in active)
+            for (final account in closed)
               _AccountTile(summary: account, today: view.today),
           ],
         ),
-        if (closed.isNotEmpty)
-          ExpansionTile(
-            title: Text('已停用（${closed.length}）'),
-            subtitle: const Text('不进入资金日历，历史保留'),
+      SectionTitle(
+        '收支计划',
+        trailing: TextButton(
+          onPressed: active.isEmpty
+              ? null
+              : () => context.go(AppRoutes.newCashEvent()),
+          child: const Text('新增收支'),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CfSpace.md + CfSpace.xxs,
+        ),
+        child: Text('每笔收支须选层级（确定/预计），不设概率；已确认口径只算确定的。', style: secondary),
+      ),
+      if (view.plan.isEmpty)
+        Padding(
+          padding: const EdgeInsets.all(CfSpace.md),
+          child: Text('还没有收支计划。', style: secondary),
+        ),
+      for (final type in <CashPlanType?>[...CashPlanType.values, null])
+        if (byType[type] case final rows?) ...<Widget>[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CfSpace.md + CfSpace.xxs,
+              CfSpace.sm,
+              CfSpace.md,
+              CfSpace.xxs,
+            ),
+            child: Semantics(
+              header: true,
+              child: Text(
+                type?.label ?? '其他',
+                style: theme.textTheme.titleSmall,
+              ),
+            ),
+          ),
+          GroupCard(
             children: <Widget>[
-              for (final account in closed)
-                _AccountTile(summary: account, today: view.today),
+              for (final row in rows)
+                _EventTile(
+                  row: row,
+                  today: view.today,
+                  currency: currencyOf(row.cashAccountId),
+                  accountName: nameOf(row.cashAccountId),
+                ),
             ],
           ),
-        SectionTitle(
-          '收支计划',
-          trailing: TextButton(
-            onPressed: active.isEmpty
-                ? null
-                : () => context.go(AppRoutes.newCashEvent()),
-            child: const Text('新增收支'),
-          ),
+        ],
+      SectionTitle(
+        '周期事项',
+        trailing: TextButton(
+          onPressed: active.isEmpty
+              ? null
+              : () => context.go(AppRoutes.newRecurring),
+          child: const Text('新增周期事项'),
         ),
+      ),
+      if (view.recurring.isEmpty)
         Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: CfSpace.md + CfSpace.xxs,
           ),
-          child: Text('每笔收支须选层级（确定/预计），不设概率；已确认口径只算确定的。', style: secondary),
-        ),
-        if (view.plan.isEmpty)
-          Padding(
-            padding: const EdgeInsets.all(CfSpace.md),
-            child: Text('还没有收支计划。', style: secondary),
-          ),
-        for (final type in <CashPlanType?>[...CashPlanType.values, null])
-          if (byType[type] case final rows?) ...<Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CfSpace.md + CfSpace.xxs,
-                CfSpace.sm,
-                CfSpace.md,
-                CfSpace.xxs,
+          child: Text('还没有周期事项。每期可单独覆盖或跳过，不影响其他各期。', style: secondary),
+        )
+      else
+        GroupCard(
+          children: <Widget>[
+            for (final item in view.recurring)
+              _RecurringTile(
+                item: item,
+                today: view.today,
+                currency: currencyOf(item.row.cashAccountId),
+                accountName: nameOf(item.row.cashAccountId),
               ),
-              child: Semantics(
-                header: true,
-                child: Text(
-                  type?.label ?? '其他',
-                  style: theme.textTheme.titleSmall,
-                ),
-              ),
-            ),
-            GroupCard(
-              children: <Widget>[
-                for (final row in rows)
-                  _EventTile(
-                    row: row,
-                    today: view.today,
-                    currency: currencyOf(row.cashAccountId),
-                    accountName: nameOf(row.cashAccountId),
-                  ),
-              ],
-            ),
           ],
-        SectionTitle(
-          '周期事项',
-          trailing: TextButton(
-            onPressed: active.isEmpty
-                ? null
-                : () => context.go(AppRoutes.newRecurring),
-            child: const Text('新增周期事项'),
-          ),
         ),
-        if (view.recurring.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CfSpace.md + CfSpace.xxs,
-            ),
-            child: Text('还没有周期事项。每期可单独覆盖或跳过，不影响其他各期。', style: secondary),
-          )
-        else
-          GroupCard(
-            children: <Widget>[
-              for (final item in view.recurring)
-                _RecurringTile(
-                  item: item,
-                  today: view.today,
-                  currency: currencyOf(item.row.cashAccountId),
-                  accountName: nameOf(item.row.cashAccountId),
-                ),
-            ],
-          ),
-        SectionTitle(
-          '调拨',
-          trailing: TextButton(
-            onPressed: active.length < 2
-                ? null
-                : () => context.go(AppRoutes.newTransfer),
-            child: const Text('新增调拨'),
-          ),
+      SectionTitle(
+        '调拨',
+        trailing: TextButton(
+          onPressed: active.length < 2
+              ? null
+              : () => context.go(AppRoutes.newTransfer),
+          child: const Text('新增调拨'),
         ),
-        if (view.transfers.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CfSpace.md + CfSpace.xxs,
-            ),
-            child: Text(
-              active.length < 2 ? '有两个以上的现金账户时才能登记调拨（转出与到账两端）。' : '还没有调拨。',
-              style: secondary,
-            ),
-          )
-        else
-          GroupCard(
-            children: <Widget>[
-              for (final transfer in view.transfers)
-                _TransferTile(
-                  transfer: transfer,
-                  today: view.today,
-                  currency: currencyOf(transfer.out.cashAccountId),
-                  fromName: nameOf(transfer.out.cashAccountId),
-                  toName: nameOf(transfer.into.cashAccountId),
-                ),
-            ],
+      ),
+      if (view.transfers.isEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CfSpace.md + CfSpace.xxs,
           ),
-      ],
-    );
+          child: Text(
+            active.length < 2 ? '有两个以上的现金账户时才能登记调拨（转出与到账两端）。' : '还没有调拨。',
+            style: secondary,
+          ),
+        )
+      else
+        GroupCard(
+          children: <Widget>[
+            for (final transfer in view.transfers)
+              _TransferTile(
+                transfer: transfer,
+                today: view.today,
+                currency: currencyOf(transfer.out.cashAccountId),
+                fromName: nameOf(transfer.out.cashAccountId),
+                toName: nameOf(transfer.into.cashAccountId),
+              ),
+          ],
+        ),
+    ];
   }
 }
 
