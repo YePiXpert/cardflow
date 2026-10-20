@@ -42,6 +42,7 @@ class MoneyText extends ConsumerWidget {
     this.hidden,
     this.style,
     this.textAlign = TextAlign.end,
+    this.compact = false,
   });
 
   /// 整数最小单位（CNY 为分、JPY 为元、KWD 为 1/1000）。null 表示没有金额。
@@ -68,6 +69,9 @@ class MoneyText extends ConsumerWidget {
   /// 对齐方式，金额默认右对齐。
   final TextAlign textAlign;
 
+  /// 整元时省略小数部分（"¥12,300"；有角分时照常显示，"¥12,300.50"）。读屏照常读完整金额。
+  final bool compact;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isHidden = hidden ?? ref.watch<bool>(amountsHiddenProvider);
@@ -77,6 +81,7 @@ class MoneyText extends ConsumerWidget {
       hidden: isHidden,
       negativeLabel: negativeLabel,
       semanticsPrefix: semanticsPrefix,
+      compact: compact,
     );
     final colors = CardFlowColors.of(context);
     final toneColor = !display.isNegative

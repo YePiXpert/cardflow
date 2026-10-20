@@ -67,6 +67,18 @@ String formatMinorAbs(int minor, String currency) {
   return '$integerPart.${abs.substring(abs.length - digits)}';
 }
 
+/// 同 [formatMinorAbs]，但小数部分为 0 时省略（"12,300"），不为 0 时照常显示全部小数位（"12,300.50"）。
+/// 给卡账首页、详情页的大字金额用（设计稿：整元金额不写 .00）。
+String formatMinorCompact(int minor, String currency) {
+  final digits = minorDigitsOf(currency);
+  final unit = BigInt.from(10).pow(digits);
+  if (digits > 0 && BigInt.from(minor).remainder(unit) == BigInt.zero) {
+    final full = formatMinorAbs(minor, currency);
+    return full.substring(0, full.length - digits - 1);
+  }
+  return formatMinorAbs(minor, currency);
+}
+
 /// 币种标记：CNY 为"¥"，其他为"ISO 代码 + 空格"。
 String currencyMarker(String currency) {
   minorDigitsOf(currency);
@@ -105,12 +117,14 @@ class MoneyDisplay {
 /// - 负数：显示"语义词 −¥2,000.00"。[negativeLabel] 必须由调用方给出
 ///   （如"缺口""超限""贷方余额"）；漏传时 debug 断言失败，release 用"负数"兜底。
 /// - [semanticsPrefix]：读屏前缀，如"本期应还"→"本期应还 人民币 8,000.00 元"。
+/// - [compact]：整元时省略小数部分（[formatMinorCompact]）；读屏照常读完整金额。
 MoneyDisplay describeMoney({
   required int? minor,
   required String currency,
   bool hidden = false,
   String? negativeLabel,
   String? semanticsPrefix,
+  bool compact = false,
 }) {
   final marker = currencyMarker(currency);
   final prefix = semanticsPrefix == null ? '' : '$semanticsPrefix ';
@@ -135,7 +149,9 @@ MoneyDisplay describeMoney({
       isNegative: isNegative,
     );
   }
-  final number = formatMinorAbs(minor, currency);
+  final number = compact
+      ? formatMinorCompact(minor, currency)
+      : formatMinorAbs(minor, currency);
   final sign = isNegative ? minusSign : '';
   return MoneyDisplay(
     text: '$labelPrefix$sign$marker$number',

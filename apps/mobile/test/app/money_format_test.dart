@@ -99,6 +99,47 @@ void main() {
     });
   });
 
+  group('formatMinorCompact（卡账首页的大字金额：整元省略 .00）', () {
+    test('整元省略小数部分，有角分时照常显示全部小数位', () {
+      expect(formatMinorCompact(1230000, 'CNY'), '12,300');
+      expect(formatMinorCompact(1230050, 'CNY'), '12,300.50');
+      expect(formatMinorCompact(1230001, 'CNY'), '12,300.01');
+      expect(formatMinorCompact(0, 'CNY'), '0');
+      expect(formatMinorCompact(-30000, 'CNY'), '300');
+    });
+
+    test('0 位与 3 位小数币种', () {
+      expect(formatMinorCompact(1235, 'JPY'), '1,235');
+      expect(formatMinorCompact(5000, 'KWD'), '5');
+      expect(formatMinorCompact(5001, 'KWD'), '5.001');
+    });
+
+    test('describeMoney(compact)：屏幕上省略、读屏照常读完整金额；隐藏与负数语义词不变', () {
+      final shown = describeMoney(
+        minor: 1230000,
+        currency: 'CNY',
+        compact: true,
+        semanticsPrefix: '待还',
+      );
+      expect(shown.text, '¥12,300');
+      expect(shown.semanticsLabel, '待还 人民币 12,300.00 元');
+      final hidden = describeMoney(
+        minor: 1230000,
+        currency: 'CNY',
+        compact: true,
+        hidden: true,
+      );
+      expect(hidden.text, hiddenAmountText);
+      final negative = describeMoney(
+        minor: -320000,
+        currency: 'CNY',
+        compact: true,
+        negativeLabel: '缺口',
+      );
+      expect(negative.text, '缺口 −¥3,200');
+    });
+  });
+
   group('describeMoney', () {
     test('CNY 用 ¥，其他币种用 ISO 代码', () {
       expect(describeMoney(minor: 123456, currency: 'CNY').text, '¥1,234.56');

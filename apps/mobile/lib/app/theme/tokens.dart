@@ -166,6 +166,44 @@ abstract final class CfType {
   ];
 }
 
+/// 银行徽标的颜色（简报 U-1 §5：常见银行固定品牌色，其余按名称哈希取调色板）。都是近似色相，不是商标；
+/// 白字（[mark]）对每一色都不低于 4.5:1（`test/app/bank_badge_test.dart`）。调色板不用绿色，避免与"稳妥"混淆。
+abstract final class CfBankColors {
+  /// 徽标上的字。
+  static const Color mark = Color(0xFFFFFFFF);
+
+  static const Color icbc = Color(0xFFC8102E);
+  static const Color ccb = Color(0xFF0A4EA2);
+  static const Color abc = Color(0xFF00796B);
+  static const Color bocom = Color(0xFF1E3F8A);
+  static const Color cmb = Color(0xFFD7000F);
+  static const Color spdb = Color(0xFF00418D);
+  static const Color cmbc = Color(0xFF0B766F);
+  static const Color cib = Color(0xFF004B9C);
+  static const Color ceb = Color(0xFF5C2D91);
+  static const Color citic = Color(0xFFB81C22);
+  static const Color pingan = Color(0xFFC2410C);
+  static const Color cgb = Color(0xFFB4232A);
+  static const Color hxb = Color(0xFFC41E24);
+  static const Color psbc = Color(0xFF00703C);
+  static const Color czb = Color(0xFF8C6A1F);
+  static const Color boc = Color(0xFFB5121B);
+
+  /// 其余银行的调色板。
+  static const List<Color> palette = <Color>[
+    Color(0xFF3B5BA9),
+    Color(0xFF7B3FA0),
+    Color(0xFFA8323E),
+    Color(0xFF2E6E80),
+    Color(0xFF8A5A00),
+    Color(0xFF5B4BB5),
+    Color(0xFF9C3B72),
+    Color(0xFF4E6A85),
+    Color(0xFF2F5D8A),
+    Color(0xFF7A4E2D),
+  ];
+}
+
 /// 一组前景/底色（ui-spec §3.1 中"前景/底色"成对出现的语义色）。
 @immutable
 class CfTone {

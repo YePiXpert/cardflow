@@ -152,8 +152,9 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
+      // 分组标题 17 粗，比卡片内容多缩进 4（设计稿 .sec）。
       padding: const EdgeInsets.fromLTRB(
-        CfSpace.md,
+        CfSpace.md + CfSpace.xxs,
         CfSpace.lg,
         CfSpace.md,
         CfSpace.xs,
@@ -210,7 +211,7 @@ class NoticeCard extends StatelessWidget {
       padding: const EdgeInsets.all(CfSpace.sm),
       decoration: BoxDecoration(
         color: tones.bg,
-        borderRadius: BorderRadius.circular(CfRadius.md),
+        borderRadius: BorderRadius.circular(CfRadius.lg),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -268,28 +269,31 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = toneColors(CardFlowColors.of(context), tone);
+    final style = Theme.of(context).textTheme.labelMedium;
+    // 胶囊形状态标签（设计稿 .pill）：图标 + 文字 + 颜色，颜色不单独承载含义。
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: CfSpace.xs,
-        vertical: CfSpace.xxs,
+        vertical: CfSpace.xxs / 2,
       ),
-      decoration: BoxDecoration(
+      decoration: ShapeDecoration(
         color: colors.bg,
-        borderRadius: BorderRadius.circular(CfRadius.sm),
+        shape: const StadiumBorder(),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ExcludeSemantics(
-            child: Icon(icon, size: CfIconSize.sm, color: colors.fg),
+            child: Icon(
+              icon,
+              size: MediaQuery.textScalerOf(context)
+                  .scale(style?.fontSize ?? CfIconSize.sm),
+              color: colors.fg,
+            ),
           ),
           const SizedBox(width: CfSpace.xxs),
           Flexible(
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.labelMedium
-                  ?.copyWith(color: colors.fg),
-            ),
+            child: Text(label, style: style?.copyWith(color: colors.fg)),
           ),
         ],
       ),
