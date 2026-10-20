@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/forbidden_ui.dart' show forEachScreen;
 import '../test_helpers.dart';
 
 /// 有数据（演示空间）时可到达的全部页面。P-03/P-04 用"卡 A"的账户（含两张卡、规则、快照）
@@ -123,7 +124,43 @@ void _expectUnclamped(WidgetTester tester, double scale, String page) {
   );
 }
 
+/// 把当前页面从顶滚到底，每一屏都没有布局溢出等框架错误（[forEachScreen]）。
+Future<void> _expectEachScreenLaidOut(WidgetTester tester, String page) =>
+    forEachScreen(
+      tester,
+      () => expect(tester.takeException(), isNull, reason: '$page（逐屏滚动）'),
+    );
+
 void main() {
+  testWidgets('自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报', (tester) async {
+    Future<TestFailure?> failureOf(List<Widget> tail) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ListView(
+              children: <Widget>[
+                for (var i = 0; i < 60; i++) Text('第 $i 行'),
+                ...tail,
+              ],
+            ),
+          ),
+        ),
+      );
+      try {
+        await _expectEachScreenLaidOut(tester, '自检');
+      } on TestFailure catch (failure) {
+        return failure;
+      }
+      return null;
+    }
+
+    final overflow = await failureOf(<Widget>[
+      const Row(children: <Widget>[SizedBox(width: 2000, height: 10)]),
+    ]);
+    expect(overflow, isNotNull);
+    expect(await failureOf(const <Widget>[Text('末行')]), isNull);
+  });
+
   for (final brightness in Brightness.values) {
     testWidgets('全部页面（$brightness）满足触控尺寸、标签与文字对比度要求（演示数据）', (tester) async {
       final handle = tester.ensureSemantics();
@@ -180,9 +217,10 @@ void main() {
     handle.dispose();
   });
 
-  // ui-spec §3.3：跟随系统字体缩放，不做低于 2.0 倍的钳制；放大后换行而不截断、不溢出。
+  // ui-spec §3.3：跟随系统字体缩放，不做低于 2.0 倍的钳制；放大后换行而不截断、不溢出。每一页从顶滚到底、
+  // 逐屏检查（审查 R-12：ListView 只构建可见的子项，只看首屏会漏掉下面的内容）。
   for (final scale in <double>[2.0, 3.0]) {
-    testWidgets('文字放大到 ${scale}x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22）', (
+    testWidgets('文字放大到 ${scale}x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22），逐屏滚到底', (
       tester,
     ) async {
       await pumpCardFlowApp(
@@ -190,13 +228,16 @@ void main() {
         textScale: scale,
         workspace: TestWorkspace.demo,
       );
-      for (final page in await allPages(tester)) {
+      final pages = await allPages(tester);
+      for (final page in pages) {
         await goTo(tester, page);
         _expectUnclamped(tester, scale, page);
+        await _expectEachScreenLaidOut(tester, page);
       }
+      expect(pages, hasLength(46));
     });
 
-    testWidgets('文字放大到 ${scale}x：首次空白、首次使用页与启动页', (tester) async {
+    testWidgets('文字放大到 ${scale}x：首次空白、首次使用页与启动页，逐屏滚到底', (tester) async {
       await pumpCardFlowApp(tester, textScale: scale);
       for (final page in <String>[
         AppRoutes.overview,
@@ -209,6 +250,7 @@ void main() {
       ]) {
         await goTo(tester, page);
         _expectUnclamped(tester, scale, page);
+        await _expectEachScreenLaidOut(tester, page);
       }
     });
 
