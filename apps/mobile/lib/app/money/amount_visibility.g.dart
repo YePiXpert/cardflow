@@ -50,7 +50,7 @@ final class AmountsHiddenProvider
   }
 }
 
-String _$amountsHiddenHash() => r'ba9ef4531ca8c6e9c855a60058132283112158be';
+String _$amountsHiddenHash() => r'a25eaf6545f56544a4cb2e1d7f693f372e5a0c87';
 
 /// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03；简报 U-1 §9 R-09）：开启后 [MoneyText] 一律显示固定 4 个"•"，
 /// 读屏读"金额已隐藏"。"我的"页有开关；状态存在 `app_settings`（键 [amountsHiddenSettingKey]，两个空间共用），
@@ -74,20 +74,20 @@ abstract class _$AmountsHidden extends $Notifier<bool> {
   }
 }
 
-/// 启动时读回"隐藏金额"开关一次。启动分流（`app_gate.dart`）等它完成才进入主导航：打开隐藏后冷启动，页面
-/// 不会先露出金额。读不到时照常完成（按当前值，即不隐藏）。
+/// 读回"隐藏金额"开关：启动时一次，本机数据库重新打开（重置本地数据、重试打开）之后再一次。启动分流
+/// （`app_gate.dart`）等它完成才进入主导航：打开隐藏后冷启动，页面不会先露出金额。读不到时照常完成。
 
 @ProviderFor(amountsHiddenRestored)
 final amountsHiddenRestoredProvider = AmountsHiddenRestoredProvider._();
 
-/// 启动时读回"隐藏金额"开关一次。启动分流（`app_gate.dart`）等它完成才进入主导航：打开隐藏后冷启动，页面
-/// 不会先露出金额。读不到时照常完成（按当前值，即不隐藏）。
+/// 读回"隐藏金额"开关：启动时一次，本机数据库重新打开（重置本地数据、重试打开）之后再一次。启动分流
+/// （`app_gate.dart`）等它完成才进入主导航：打开隐藏后冷启动，页面不会先露出金额。读不到时照常完成。
 
 final class AmountsHiddenRestoredProvider
     extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
     with $FutureModifier<void>, $FutureProvider<void> {
-  /// 启动时读回"隐藏金额"开关一次。启动分流（`app_gate.dart`）等它完成才进入主导航：打开隐藏后冷启动，页面
-  /// 不会先露出金额。读不到时照常完成（按当前值，即不隐藏）。
+  /// 读回"隐藏金额"开关：启动时一次，本机数据库重新打开（重置本地数据、重试打开）之后再一次。启动分流
+  /// （`app_gate.dart`）等它完成才进入主导航：打开隐藏后冷启动，页面不会先露出金额。读不到时照常完成。
   AmountsHiddenRestoredProvider._()
     : super(
         from: null,
@@ -114,4 +114,4 @@ final class AmountsHiddenRestoredProvider
 }
 
 String _$amountsHiddenRestoredHash() =>
-    r'75cd8b53c7cda1edeee631bcfbde3395c209810b';
+    r'685fdd2150956a055258ee4048362c4ba38b7c27';

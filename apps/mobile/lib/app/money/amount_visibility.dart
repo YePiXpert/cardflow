@@ -25,12 +25,15 @@ class AmountsHidden extends _$AmountsHidden {
   /// 切换隐藏/显示。
   void toggle() => setHidden(!state);
 
-  /// 读回记下的开关。读不到时保持当前值。
-  Future<void> restore() async {
+  /// 读回记下的开关：记着"1"为隐藏，其余（含从没记过、重置本地数据之后的新库）为不隐藏。读不到时保持
+  /// 当前值。[repository] 为空时取当前的仓库。
+  Future<void> restore([WorkspaceRepository? repository]) async {
     try {
-      final repo = await ref.read(workspaceRepositoryProvider.future);
+      final repo = await (repository == null
+          ? ref.read(workspaceRepositoryProvider.future)
+          : Future<WorkspaceRepository>.value(repository));
       final value = await repo.setting(amountsHiddenSettingKey);
-      if (ref.mounted && value != null) {
+      if (ref.mounted) {
         state = value == '1';
       }
     } on Object {
@@ -48,11 +51,19 @@ class AmountsHidden extends _$AmountsHidden {
   }
 }
 
-/// 启动时读回"隐藏金额"开关一次。启动分流（`app_gate.dart`）等它完成才进入主导航：打开隐藏后冷启动，页面
-/// 不会先露出金额。读不到时照常完成（按当前值，即不隐藏）。
+/// 读回"隐藏金额"开关：启动时一次，本机数据库重新打开（重置本地数据、重试打开）之后再一次。启动分流
+/// （`app_gate.dart`）等它完成才进入主导航：打开隐藏后冷启动，页面不会先露出金额。读不到时照常完成。
 @Riverpod(keepAlive: true)
-Future<void> amountsHiddenRestored(Ref ref) =>
-    ref.read(amountsHiddenProvider.notifier).restore();
+Future<void> amountsHiddenRestored(Ref ref) async {
+  final WorkspaceRepository repo;
+  try {
+    repo = await ref.watch(workspaceRepositoryProvider.future);
+  } on Object {
+    // 数据库打不开：启动分流显示错误页；重新打开后这里会再运行。
+    return;
+  }
+  await ref.read(amountsHiddenProvider.notifier).restore(repo);
+}
 
 /// 不经 [MoneyText] 的文字里的金额（句子里的"支出 30.00"一类）：隐藏时换成固定 4 个"•"。
 String amountInText(String text, {required bool hidden}) =>

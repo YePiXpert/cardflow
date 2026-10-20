@@ -13,6 +13,7 @@ import 'package:cardflow/features/home/ledger_home_page.dart';
 import 'package:cardflow/features/settings/public_beta.dart';
 import 'package:cardflow/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderContainer;
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
@@ -132,6 +133,27 @@ void main() {
     expect(appContainer(tester).read(amountsHiddenProvider), isTrue);
     expect(find.text('¥2,393.33'), findsNothing);
     expect(find.text('••••'), findsWidgets);
+  });
+
+  test('本机数据库重新打开（重置本地数据之后）时按新库读回开关：新库没有记过 → 不隐藏', () async {
+    final before = openMemoryTestDatabase();
+    addTearDown(before.close);
+    await WorkspaceRepository(before).setSetting(amountsHiddenSettingKey, '1');
+    final fresh = openMemoryTestDatabase();
+    addTearDown(fresh.close);
+    var current = before;
+    final container = ProviderContainer(
+      overrides: <Override>[
+        databaseProvider.overrideWith((ref) async => current),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(amountsHiddenRestoredProvider.future);
+    expect(container.read(amountsHiddenProvider), isTrue);
+    current = fresh;
+    container.invalidate(databaseProvider);
+    await container.read(amountsHiddenRestoredProvider.future);
+    expect(container.read(amountsHiddenProvider), isFalse);
   });
 
   testWidgets('演示空间：当前是演示空间，可「退出演示」与「清除演示数据」', (tester) async {
