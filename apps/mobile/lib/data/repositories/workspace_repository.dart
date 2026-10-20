@@ -8,6 +8,9 @@ import 'models.dart';
 /// `app_settings` 里记录当前工作空间的键。
 const String currentWorkspaceSettingKey = 'current_workspace_id';
 
+/// `app_settings` 里记录"隐藏金额"开关的键（值 `1`/`0`；全局，两个空间共用）。
+const String amountsHiddenSettingKey = 'amounts_hidden';
+
 /// 工作空间（真实/演示）与"当前工作空间"指针。不属于任何工作空间的全局仓库。
 ///
 /// 规则（R-SYS-13、ui-spec §4.2）：真实空间与演示空间各最多一个未删除的；两者的数据互不可见
@@ -73,6 +76,24 @@ final class WorkspaceRepository {
             key: currentWorkspaceSettingKey,
             value: workspaceId,
           ),
+        );
+  }
+
+  /// 读一个全局设置（`app_settings`）；没有时为 null。
+  Future<String?> setting(String key) async => (await (_db.select(
+    _db.appSettings,
+  )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
+
+  /// 写一个全局设置（null = 删除）。不用于当前工作空间（那个用 [setCurrent]）。
+  Future<void> setSetting(String key, String? value) async {
+    if (value == null) {
+      await (_db.delete(_db.appSettings)..where((s) => s.key.equals(key))).go();
+      return;
+    }
+    await _db
+        .into(_db.appSettings)
+        .insertOnConflictUpdate(
+          AppSettingsCompanion.insert(key: key, value: value),
         );
   }
 

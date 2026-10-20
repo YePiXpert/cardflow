@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/money/amount_visibility.dart';
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
 import '../../app/widgets/cf_layout.dart';
@@ -614,6 +615,8 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage>
     List<(String, String, String)> creditAccounts,
     LocalDate today,
   ) {
+    // 句子里的金额不经 MoneyText：隐藏金额时换成固定 4 个点（简报 U-1 §9 R-09）。
+    final hidden = ref.watch(amountsHiddenProvider);
     final rows = board.inputs.eventRows;
     final accounts = {for (final a in board.inputs.accountRows) a.id: a};
     String currencyOfEvent(String id) {
@@ -630,7 +633,7 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage>
       }
       final currency = accounts[row.cashAccountId]?.currency ?? 'CNY';
       return '${formatShortDate(LocalDate.parse(row.eventOn), today)} ${cashEventTitle(row)} '
-          '${row.amountMinor < 0 ? '支出' : '收入'} ${amountText(row.amountMinor.abs(), currency)}';
+          '${row.amountMinor < 0 ? '支出' : '收入'} ${amountInText(amountText(row.amountMinor.abs(), currency), hidden: hidden)}';
     }
 
     return ListView(
@@ -691,7 +694,7 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage>
               <String>[
                 if (o.on != null) '改到 ${o.on}',
                 if (o.amountMinor != null)
-                  '金额改为 ${amountText(o.amountMinor!.abs(), currencyOfEvent(o.eventId))}',
+                  '金额改为 ${amountInText(amountText(o.amountMinor!.abs(), currencyOfEvent(o.eventId)), hidden: hidden)}',
               ].join(' · '),
             ),
             trailing: IconButton(
@@ -726,7 +729,7 @@ class _ScenarioEditorPageState extends ConsumerState<ScenarioEditorPage>
             ),
             subtitle: Text(
               '${c.on} 起 · ${c.changeMinor < 0 ? '降额' : '提额'} '
-              '${amountText(c.changeMinor.abs(), creditAccounts.where((a) => a.$1 == c.creditAccountId).firstOrNull?.$3 ?? 'CNY')}',
+              '${amountInText(amountText(c.changeMinor.abs(), creditAccounts.where((a) => a.$1 == c.creditAccountId).firstOrNull?.$3 ?? 'CNY'), hidden: hidden)}',
             ),
             trailing: IconButton(
               tooltip: '移除这项额度变化',

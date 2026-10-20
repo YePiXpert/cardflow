@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/money/amount_visibility.dart';
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
 import '../../app/widgets/confirm_dialog.dart';
@@ -859,6 +860,8 @@ class _RecordCashSnapshotPageState extends ConsumerState<RecordCashSnapshotPage>
     LocalDate date,
     AsyncValue<SameDayEvents> sameDay,
   ) {
+    // 句子里的金额不经 MoneyText：隐藏金额时换成固定 4 个点（简报 U-1 §9 R-09）。
+    final hidden = ref.watch(amountsHiddenProvider);
     final theme = Theme.of(context);
     final colors = CardFlowColors.of(context);
     final secondary = theme.textTheme.bodyMedium?.copyWith(
@@ -935,7 +938,7 @@ class _RecordCashSnapshotPageState extends ConsumerState<RecordCashSnapshotPage>
               label:
                   '余额是否已包含「${cashEventTitle(e)}」'
                   '${e.eventAt == null ? '' : '（${e.eventAt!.substring(11, 16)}）'}'
-                  '：${e.amountMinor < 0 ? '支出' : '收入'} ${amountText(e.amountMinor.abs(), account.currency)}？',
+                  '：${e.amountMinor < 0 ? '支出' : '收入'} ${amountInText(amountText(e.amountMinor.abs(), account.currency), hidden: hidden)}？',
               values: const <bool>[true, false],
               selected: _answers[e.id],
               labelOf: (v) => v ? '已包含' : '未包含',

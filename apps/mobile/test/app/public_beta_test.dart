@@ -295,13 +295,14 @@ void main() {
   });
 
   group('公测说明与「关于」', () {
-    /// 简报 I1-c2 §2 第 2 条给出的说明原文（版本号按用户要求改为 0.0.1）。
+    /// 简报 U-1 §9（R-10、Q-2、BL-26）给出的说明原文；版本号取 PublicBeta.version。
     const briefNote =
-        '公测版 0.0.1：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。'
-        '删除 App 或「重置本地数据」会永久删除全部数据；目前还没有备份与导出，后续版本提供。';
+        '公测版 ${PublicBeta.version}：数据只保存在这台 iPhone 上，加密存储，卡序不会上传到任何服务器。'
+        '删除 App 或在"我的"里「重置本地数据」会删除全部数据；iPhone 自身的备份里可能留有加密副本，'
+        '但换到别的手机无法打开。卡序目前还没有自己的备份与导出，后续版本提供。';
 
     test(
-      '说明原文（公测版 0.0.1）；说明里的版本号就是 PublicBeta.version，且与 pubspec.yaml 的版本名相同',
+      '说明原文（简报 U-1 §9）；说明里的版本号就是 PublicBeta.version，且与 pubspec.yaml 的版本名相同',
       () {
         expect(PublicBeta.note, briefNote);
         expect(PublicBeta.version, '0.0.1');

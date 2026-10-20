@@ -17,10 +17,12 @@ abstract final class PublicBeta {
   /// 公测说明的标题。
   static const String noteTitle = '公测说明';
 
-  /// 公测说明：数据只在本机、删除即永久丢失、还没有备份与导出。
+  /// 公测说明（简报 U-1 §9 R-10、Q-2、BL-26 的原文）：数据只在本机且加密、删除 App 或"我的"里「重置本地数据」会
+  /// 删除全部数据、iPhone 自身的备份里的加密副本换手机打不开、还没有自己的备份与导出。
   static const String note =
-      '公测版 $version：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。'
-      '删除 App 或「重置本地数据」会永久删除全部数据；目前还没有备份与导出，后续版本提供。';
+      '公测版 $version：数据只保存在这台 iPhone 上，加密存储，卡序不会上传到任何服务器。'
+      '删除 App 或在"我的"里「重置本地数据」会删除全部数据；iPhone 自身的备份里可能留有加密副本，'
+      '但换到别的手机无法打开。卡序目前还没有自己的备份与导出，后续版本提供。';
 
   /// 源码地址（纯文本，可选中复制；App 内不打开浏览器）。
   static const String sourceAddress = 'github.com/YePiXpert/cardflow';

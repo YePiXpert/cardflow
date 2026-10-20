@@ -447,6 +447,15 @@ GoRouter createAppRouter({
                     pageBuilder: (context, state) =>
                         _page(state, const WelcomePage()),
                   ),
+                  GoRoute(
+                    path: 'reset',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      const ResetLocalDataPage(fromSettings: true),
+                      fullscreenDialog: true,
+                    ),
+                  ),
                 ],
               ),
             ],

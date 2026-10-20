@@ -8,21 +8,21 @@ part of 'amount_visibility.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03）。[MoneyText] 默认跟随它。
-///
-/// 本阶段只保存在内存中；"我的"页的开关与持久化随 I-4（应用锁、金额隐藏、遮罩）接入。
+/// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03；简报 U-1 §9 R-09）：开启后 [MoneyText] 一律显示固定 4 个"•"，
+/// 读屏读"金额已隐藏"。"我的"页有开关；状态存在 `app_settings`（键 [amountsHiddenSettingKey]，两个空间共用），
+/// 本机数据库打开后由外壳调用 [restore] 读回。
 
 @ProviderFor(AmountsHidden)
 final amountsHiddenProvider = AmountsHiddenProvider._();
 
-/// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03）。[MoneyText] 默认跟随它。
-///
-/// 本阶段只保存在内存中；"我的"页的开关与持久化随 I-4（应用锁、金额隐藏、遮罩）接入。
+/// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03；简报 U-1 §9 R-09）：开启后 [MoneyText] 一律显示固定 4 个"•"，
+/// 读屏读"金额已隐藏"。"我的"页有开关；状态存在 `app_settings`（键 [amountsHiddenSettingKey]，两个空间共用），
+/// 本机数据库打开后由外壳调用 [restore] 读回。
 final class AmountsHiddenProvider
     extends $NotifierProvider<AmountsHidden, bool> {
-  /// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03）。[MoneyText] 默认跟随它。
-  ///
-  /// 本阶段只保存在内存中；"我的"页的开关与持久化随 I-4（应用锁、金额隐藏、遮罩）接入。
+  /// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03；简报 U-1 §9 R-09）：开启后 [MoneyText] 一律显示固定 4 个"•"，
+  /// 读屏读"金额已隐藏"。"我的"页有开关；状态存在 `app_settings`（键 [amountsHiddenSettingKey]，两个空间共用），
+  /// 本机数据库打开后由外壳调用 [restore] 读回。
   AmountsHiddenProvider._()
     : super(
         from: null,
@@ -50,11 +50,11 @@ final class AmountsHiddenProvider
   }
 }
 
-String _$amountsHiddenHash() => r'9705cad5b29dbc4e6a53a10148b537354dab816d';
+String _$amountsHiddenHash() => r'ba9ef4531ca8c6e9c855a60058132283112158be';
 
-/// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03）。[MoneyText] 默认跟随它。
-///
-/// 本阶段只保存在内存中；"我的"页的开关与持久化随 I-4（应用锁、金额隐藏、遮罩）接入。
+/// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03；简报 U-1 §9 R-09）：开启后 [MoneyText] 一律显示固定 4 个"•"，
+/// 读屏读"金额已隐藏"。"我的"页有开关；状态存在 `app_settings`（键 [amountsHiddenSettingKey]，两个空间共用），
+/// 本机数据库打开后由外壳调用 [restore] 读回。
 
 abstract class _$AmountsHidden extends $Notifier<bool> {
   bool build();
