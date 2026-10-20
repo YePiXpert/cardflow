@@ -295,41 +295,44 @@ class _CashHomePageState extends ConsumerState<CashHomePage> {
     final chosen = await showModalBottomSheet<(CashBasis, String?)>(
       context: context,
       useRootNavigator: true,
+      isScrollControlled: true,
       builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            for (final b in <CashBasis>[
-              CashBasis.confirmed,
-              CashBasis.baseline,
-            ])
-              ListTile(
-                title: Text(b.label),
-                subtitle: Text(
-                  b == CashBasis.confirmed ? '只算确定的收支' : '预计收支按期发生',
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              for (final b in <CashBasis>[
+                CashBasis.confirmed,
+                CashBasis.baseline,
+              ])
+                ListTile(
+                  title: Text(b.label),
+                  subtitle: Text(
+                    b == CashBasis.confirmed ? '只算确定的收支' : '预计收支按期发生',
+                  ),
+                  selected: _basis == b,
+                  trailing: _basis == b ? const Icon(Icons.check) : null,
+                  onTap: () => Navigator.of(sheetContext).pop((b, null)),
                 ),
-                selected: _basis == b,
-                trailing: _basis == b ? const Icon(Icons.check) : null,
-                onTap: () => Navigator.of(sheetContext).pop((b, null)),
-              ),
-            for (final s in stress)
-              ListTile(
-                title: Text('压力情景：${s.name}'),
-                selected: _basis == CashBasis.stress && _scenarioKey == s.key,
-                trailing: _basis == CashBasis.stress && _scenarioKey == s.key
-                    ? const Icon(Icons.check)
-                    : null,
-                onTap: () =>
-                    Navigator.of(sheetContext).pop((CashBasis.stress, s.key)),
-              ),
-            if (stress.isEmpty)
-              ListTile(
-                title: const Text('压力情景'),
-                subtitle: const Text('还没有：去"规划"新建一个'),
-                onTap: () =>
-                    Navigator.of(sheetContext).pop((CashBasis.stress, null)),
-              ),
-          ],
+              for (final s in stress)
+                ListTile(
+                  title: Text('压力情景：${s.name}'),
+                  selected: _basis == CashBasis.stress && _scenarioKey == s.key,
+                  trailing: _basis == CashBasis.stress && _scenarioKey == s.key
+                      ? const Icon(Icons.check)
+                      : null,
+                  onTap: () =>
+                      Navigator.of(sheetContext).pop((CashBasis.stress, s.key)),
+                ),
+              if (stress.isEmpty)
+                ListTile(
+                  title: const Text('压力情景'),
+                  subtitle: const Text('还没有：去"规划"新建一个'),
+                  onTap: () =>
+                      Navigator.of(sheetContext).pop((CashBasis.stress, null)),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -345,26 +348,29 @@ class _CashHomePageState extends ConsumerState<CashHomePage> {
     final target = await showModalBottomSheet<String>(
       context: context,
       useRootNavigator: true,
+      isScrollControlled: true,
       builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            for (final (icon, label, route) in <(IconData, String, String)>[
-              (
-                Icons.account_balance_outlined,
-                '添加现金账户',
-                AppRoutes.newCashAccount,
-              ),
-              (Icons.add_card, '新增收支', AppRoutes.newCashEvent()),
-              (Icons.event_repeat, '新增周期事项', AppRoutes.newRecurring),
-              (Icons.swap_horiz, '新增调拨', AppRoutes.newTransfer),
-            ])
-              ListTile(
-                leading: Icon(icon),
-                title: Text(label),
-                onTap: () => Navigator.of(sheetContext).pop(route),
-              ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              for (final (icon, label, route) in <(IconData, String, String)>[
+                (
+                  Icons.account_balance_outlined,
+                  '添加现金账户',
+                  AppRoutes.newCashAccount,
+                ),
+                (Icons.add_card, '新增收支', AppRoutes.newCashEvent()),
+                (Icons.event_repeat, '新增周期事项', AppRoutes.newRecurring),
+                (Icons.swap_horiz, '新增调拨', AppRoutes.newTransfer),
+              ])
+                ListTile(
+                  leading: Icon(icon),
+                  title: Text(label),
+                  onTap: () => Navigator.of(sheetContext).pop(route),
+                ),
+            ],
+          ),
         ),
       ),
     );

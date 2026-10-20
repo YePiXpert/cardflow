@@ -92,6 +92,10 @@ class UncountedDuesTile extends ConsumerWidget {
 class UncountedDuesSheet extends ConsumerWidget {
   const UncountedDuesSheet({super.key});
 
+  /// 弹层底部的说明。
+  static const String explanation =
+      '这些卡本期还欠着，但还没有登记还款，资金日历里没有它们的扣款。登记还款（或「还清本期」）后，扣款按预计扣款日计入。';
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final home = ref.watch(ledgerHomeProvider).value;
@@ -111,20 +115,6 @@ class UncountedDuesSheet extends ConsumerWidget {
               child: Semantics(
                 header: true,
                 child: Text('未计入现金的信用卡应还', style: theme.textTheme.titleMedium),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CfSpace.md,
-                CfSpace.xxs,
-                CfSpace.md,
-                CfSpace.xs,
-              ),
-              child: Text(
-                '这些卡本期还欠着，但还没有登记还款，资金日历里没有它们的扣款。登记还款（或「还清本期」）后，扣款按预计扣款日计入。',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
-                ),
               ),
             ),
             for (final u in items)
@@ -157,6 +147,16 @@ class UncountedDuesSheet extends ConsumerWidget {
                   child: const Text(QuickPaySheet.title),
                 ),
               ),
+            // 说明放在卡片列表之后：放大字号时也能先看到要处理的卡。
+            Padding(
+              padding: const EdgeInsets.all(CfSpace.md),
+              child: Text(
+                explanation,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.textSecondary,
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -82,6 +82,11 @@ class ScenariosPage extends ConsumerStatefulWidget {
   /// 情景区块的标题。
   static const String sectionTitle = '情景与假设对比';
 
+  /// "ⓘ"里的说明。
+  static const String explanation =
+      '内置"已确认""基准预期"不可修改。压力情景只允许变差：收入延迟、收入减少、生活支出增加；'
+      '「重算」生成新版本，旧版本保留用于对比；数据或参数变了，版本标"已过期"。';
+
   /// ui-spec P-09 九态"首次空白"。
   static const String firstRunMessage = '只有内置口径';
 
@@ -167,8 +172,6 @@ class _ScenariosPageState extends ConsumerState<ScenariosPage> {
   }
 
   Widget _list(BuildContext context, ScenarioBoard board) {
-    final secondary = Theme.of(context).textTheme.bodyMedium
-        ?.copyWith(color: CardFlowColors.of(context).textSecondary);
     return ListView(
       padding: const EdgeInsets.only(bottom: CfSpace.xl),
       children: <Widget>[
@@ -188,7 +191,31 @@ class _ScenariosPageState extends ConsumerState<ScenariosPage> {
               ),
           ],
         ),
-        const SectionTitle(ScenariosPage.sectionTitle),
+        // 长说明收进"ⓘ"弹层（简报 U-1 §5）。
+        SectionTitle(
+          ScenariosPage.sectionTitle,
+          trailing: IconButton(
+            tooltip: '说明',
+            icon: const Icon(Icons.info_outline),
+            onPressed: () => unawaited(
+              showDialog<void>(
+                context: context,
+                builder: (dialogContext) => AlertDialog(
+                  title: const Text(ScenariosPage.sectionTitle),
+                  content: const SingleChildScrollView(
+                    child: Text(ScenariosPage.explanation),
+                  ),
+                  actions: <Widget>[
+                    FilledButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      child: const Text('知道了'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
         if (_recomputing > 0)
           Padding(
             padding: const EdgeInsets.all(CfSpace.md),
@@ -200,14 +227,6 @@ class _ScenariosPageState extends ConsumerState<ScenariosPage> {
             tone: NoticeTone.danger,
             text: '重算失败（$_error），上一版保留。',
           ),
-        Padding(
-          padding: const EdgeInsets.all(CfSpace.md),
-          child: Text(
-            '内置"已确认""基准预期"不可修改。压力情景只允许变差：收入延迟、收入减少、生活支出增加；'
-            '「重算」生成新版本，旧版本保留用于对比；数据或参数变了，版本标"已过期"。',
-            style: secondary,
-          ),
-        ),
         if (board.stressItems.isEmpty)
           FirstRunEmptyState(
             icon: Icons.tune,

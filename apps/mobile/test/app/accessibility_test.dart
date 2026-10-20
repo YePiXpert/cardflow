@@ -88,6 +88,7 @@ Future<List<String>> allPages(WidgetTester tester) async {
     AppRoutes.diagnostics,
     AppRoutes.about,
     AppRoutes.welcome,
+    AppRoutes.settingsReset,
   ];
 }
 
@@ -234,7 +235,7 @@ void main() {
         _expectUnclamped(tester, scale, page);
         await _expectEachScreenLaidOut(tester, page);
       }
-      expect(pages, hasLength(46));
+      expect(pages, hasLength(47));
     });
 
     testWidgets('文字放大到 ${scale}x：首次空白、首次使用页与启动页，逐屏滚到底', (tester) async {

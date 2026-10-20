@@ -88,22 +88,25 @@ class _LedgerHomePageState extends ConsumerState<LedgerHomePage> {
     final target = await showModalBottomSheet<String>(
       context: context,
       useRootNavigator: true,
+      isScrollControlled: true,
       builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            for (final (icon, label, route) in <(IconData, String, String)>[
-              (Icons.credit_card, '添加卡片', AppRoutes.newCard),
-              (Icons.edit_note, '记一笔', AppRoutes.newTransaction()),
-              (Icons.receipt_long_outlined, '录入账单', AppRoutes.newStatement()),
-              (Icons.payments_outlined, '登记还款', AppRoutes.newRepayment()),
-            ])
-              ListTile(
-                leading: Icon(icon),
-                title: Text(label),
-                onTap: () => Navigator.of(sheetContext).pop(route),
-              ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              for (final (icon, label, route) in <(IconData, String, String)>[
+                (Icons.credit_card, '添加卡片', AppRoutes.newCard),
+                (Icons.edit_note, '记一笔', AppRoutes.newTransaction()),
+                (Icons.receipt_long_outlined, '录入账单', AppRoutes.newStatement()),
+                (Icons.payments_outlined, '登记还款', AppRoutes.newRepayment()),
+              ])
+                ListTile(
+                  leading: Icon(icon),
+                  title: Text(label),
+                  onTap: () => Navigator.of(sheetContext).pop(route),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -226,23 +229,26 @@ class _HomeList extends StatelessWidget {
     final chosen = await showModalBottomSheet<LedgerSort>(
       context: context,
       useRootNavigator: true,
+      isScrollControlled: true,
       builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            for (final s in LedgerSort.values)
-              ListTile(
-                title: Text(s.label),
-                trailing: s == sort
-                    ? Icon(
-                        Icons.check,
-                        color: CardFlowColors.of(sheetContext).action,
-                      )
-                    : null,
-                selected: s == sort,
-                onTap: () => Navigator.of(sheetContext).pop(s),
-              ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              for (final s in LedgerSort.values)
+                ListTile(
+                  title: Text(s.label),
+                  trailing: s == sort
+                      ? Icon(
+                          Icons.check,
+                          color: CardFlowColors.of(sheetContext).action,
+                        )
+                      : null,
+                  selected: s == sort,
+                  onTap: () => Navigator.of(sheetContext).pop(s),
+                ),
+            ],
+          ),
         ),
       ),
     );

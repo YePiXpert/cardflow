@@ -335,6 +335,19 @@ class _CardDetail extends StatelessWidget {
             text: '额度释放时滞未知：银行入账后暂不计入可用容量，以新的额度快照为准。',
           ),
         ],
+        if (liability != null)
+          Padding(
+            padding: const EdgeInsets.only(top: CfSpace.sm),
+            child: GroupCard(
+              children: <Widget>[
+                ExpansionTile(
+                  title: const Text('负债明细'),
+                  subtitle: const Text('负债四分法：本期应还、未出账、未来分期本金'),
+                  children: <Widget>[LiabilitySection.of(liability)],
+                ),
+              ],
+            ),
+          ),
         const SectionTitle('卡片'),
         GroupCard(
           children: <Widget>[
@@ -350,16 +363,10 @@ class _CardDetail extends StatelessWidget {
                 _CardRowTile(card: card, account: account),
             ],
           ),
-        const SectionTitle('更多信息'),
+        const SectionTitle('额度与账期规则'),
         GroupCard(
           dividerIndent: 0,
           children: <Widget>[
-            if (liability != null)
-              ExpansionTile(
-                title: const Text('负债明细'),
-                subtitle: const Text('负债四分法：本期应还、未出账、未来分期本金'),
-                children: <Widget>[LiabilitySection.of(liability)],
-              ),
             ExpansionTile(
               title: const Text('额度详情'),
               subtitle: Text(
