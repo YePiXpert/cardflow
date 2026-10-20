@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cardflow_domain/cardflow_domain.dart' show LocalDate;
+import 'package:cardflow_domain/cardflow_domain.dart' show LocalDate, Rational;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +17,7 @@ import '../../data/repositories/ledger_reader.dart';
 import '../../data/repositories/providers.dart';
 import '../../data/repositories/reconciliation_repository.dart';
 import '../cards/card_formatting.dart';
+import 'installment_cost.dart';
 import 'ledger_actions.dart';
 import 'ledger_formatting.dart';
 
@@ -860,13 +861,24 @@ class InstallmentPlanCard extends ConsumerWidget {
   /// 作废入口的文案（录错了的分期）。
   static const String cancelLabel = '作废（录错了）';
 
+  /// 实际年化在后台算好之前的文字。
+  static const String computingText = '计算中…';
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final txn = data.transaction(plan.transactionId);
     final currency = data.currencyAccounts[plan.currencyAccountId]!.currency;
     final periods = data.periods[plan.id] ?? const <InstallmentScheduleRow>[];
-    final cost = data.costOf(plan);
+    // 每期费率与名义年化是简单乘法，当场算；实际年化与月 IRR 是有理数 IRR，按计划 id 记忆化、在后台 isolate
+    // 里算（审查 R-04），算好之前显示"计算中"。
+    final rate = Rational.parseDecimal(plan.perPeriodRate);
+    final cost = ref.watch(installmentCostProvider(plan.id));
+    String irrText(Rational Function(InstallmentCost c) pick) => switch (cost) {
+      AsyncData(:final value) => percentText(pick(value)),
+      AsyncError() => '暂时算不出（不影响负债与还款）',
+      _ => InstallmentPlanCard.computingText,
+    };
     final status = InstallmentPlanStatus.of(plan.status);
     final remainderPeriod = plan.remainderPolicy == 'last'
         ? periods.lastOrNull
@@ -900,7 +912,7 @@ class InstallmentPlanCard extends ConsumerWidget {
               LabeledValue(
                 label: '每期费率',
                 value: Text(
-                  '${percentText(cost.perPeriodRate)}（${InstallmentFeeMode.of(plan.feeMode).label}，取整 ${plan.rounding}）',
+                  '${percentText(rate)}（${InstallmentFeeMode.of(plan.feeMode).label}，取整 ${plan.rounding}）',
                 ),
               ),
               if (remainder == 0)
@@ -914,15 +926,15 @@ class InstallmentPlanCard extends ConsumerWidget {
                 ),
               LabeledValue(
                 label: '名义年化（每期费率 × 12，不是实际成本）',
-                value: Text(percentText(cost.nominal)),
+                value: Text(percentText(rate.timesInt(12))),
               ),
               LabeledValue(
                 label: '实际年化（复利，按各期现金流 IRR）',
-                value: Text(percentText(cost.effective)),
+                value: Text(irrText((c) => c.effective)),
               ),
               LabeledValue(
                 label: '月 IRR',
-                value: Text(percentText(cost.monthlyIrr)),
+                value: Text(irrText((c) => c.monthlyIrr)),
               ),
               ExpansionTile(
                 title: Text('每期本金与费用（${periods.length} 期）'),

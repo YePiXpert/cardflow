@@ -263,18 +263,13 @@ final class LedgerData {
             p,
       ];
 
-  /// 分期计划的成本（F-37）。
-  InstallmentCost costOf(InstallmentPlanRow plan) {
-    final rows = periods[plan.id] ?? const <InstallmentScheduleRow>[];
-    return InstallmentCost.of(
-      principalMinor: plan.principalMinor,
-      perPeriodRate: Rational.parseDecimal(plan.perPeriodRate),
-      periods: <InstallmentPeriod>[
-        for (final p in rows)
-          (periodNo: p.periodNo, principal: p.principalMinor, fee: p.feeMinor),
-      ],
-    );
-  }
+  /// 分期计划的成本（F-37），在调用它的 isolate 里同步计算（有理数 IRR，60 期要秒级）。只给测试与工具用：
+  /// 界面一律经 `installmentCostProvider`（按计划 id 记忆化、后台 isolate，审查 R-04）。
+  InstallmentCost costOf(InstallmentPlanRow plan) =>
+      InstallmentCostInput.ofPlan(
+        plan,
+        periods[plan.id] ?? const <InstallmentScheduleRow>[],
+      ).compute();
 
   /// 某币种子账户的账单，账单日新的在前。
   List<StatementRow> statementsOf(String currencyAccountId) => <StatementRow>[

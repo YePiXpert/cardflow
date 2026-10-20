@@ -586,6 +586,45 @@ List<InstallmentPeriod> installmentPeriodsOf({
   ];
 }
 
+/// 当前 isolate 里 [InstallmentCost.of]（有理数 IRR）被调用的次数。审查 R-04 的测试用它断言界面线程（主
+/// isolate）上不做 IRR：在后台 isolate 里的调用不计入主 isolate 的这个数。
+@visibleForTesting
+int installmentCostEvaluations = 0;
+
+/// 分期成本的输入：本金、每期费率与各期（本金、费用）。只含整数与有理数，可以发到后台 isolate（审查 R-04）。
+@immutable
+final class InstallmentCostInput {
+  const InstallmentCostInput({
+    required this.principalMinor,
+    required this.perPeriodRate,
+    required this.periods,
+  });
+
+  /// 分期计划与它的各期。
+  factory InstallmentCostInput.ofPlan(
+    InstallmentPlanRow plan,
+    List<InstallmentScheduleRow> rows,
+  ) => InstallmentCostInput(
+    principalMinor: plan.principalMinor,
+    perPeriodRate: Rational.parseDecimal(plan.perPeriodRate),
+    periods: <InstallmentPeriod>[
+      for (final p in rows)
+        (periodNo: p.periodNo, principal: p.principalMinor, fee: p.feeMinor),
+    ],
+  );
+
+  final int principalMinor;
+  final Rational perPeriodRate;
+  final List<InstallmentPeriod> periods;
+
+  /// 算成本（含有理数 IRR：60 期在手机上要秒级，界面上一律经后台 isolate 调用）。
+  InstallmentCost compute() => InstallmentCost.of(
+    principalMinor: principalMinor,
+    perPeriodRate: perPeriodRate,
+    periods: periods,
+  );
+}
+
 /// 分期成本（F-37）：名义 = 每期费率 × 12（不是实际年化）；实际年化 = 各期现金流的月 IRR 按复利折成年。
 @immutable
 final class InstallmentCost {
@@ -596,12 +635,14 @@ final class InstallmentCost {
     required this.effective,
   });
 
-  /// 各期（本金 + 费用）的成本。
+  /// 各期（本金 + 费用）的成本。有理数 IRR 在期数多时很慢（审查 R-04：60 期约 2 秒），界面上经
+  /// `installmentCostProvider`（按计划 id 记忆化、后台 isolate）取，不在界面线程上直接调用。
   factory InstallmentCost.of({
     required int principalMinor,
     required Rational perPeriodRate,
     required List<InstallmentPeriod> periods,
   }) {
+    installmentCostEvaluations++;
     final irr = irrMonthly(installmentIrrFlows(principalMinor, periods));
     return InstallmentCost(
       perPeriodRate: perPeriodRate,

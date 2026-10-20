@@ -11,6 +11,7 @@ import 'package:cardflow/data/repositories/workspace_repository.dart';
 import 'package:cardflow/data/repositories/workspace_scope.dart';
 import 'package:cardflow/data/time/clock.dart';
 import 'package:cardflow/features/diagnostics/crypto_status.dart';
+import 'package:cardflow/features/statements/installment_cost.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -172,11 +173,17 @@ List<Override> testDatabaseOverrides(AppDatabase db, {AppClock? realClock}) =>
       }),
     ];
 
+/// 组件测试里的分期成本就地计算：伪时钟里等不到后台 isolate 的结果（审查 R-04 的测试另用真正的后台
+/// isolate，见 `installment_cost_test.dart`）。
+final Override inlineInstallmentCosts = installmentCostRunnerProvider
+    .overrideWithValue((input) async => input.compute());
+
 /// 启动完整 App（真实路由、主题与 Provider），可选覆盖。
 ///
 /// 默认：加密库状态用 [fakeDatabaseOverrides]，本地库用内存库并预置 [workspace]（默认一个空的
 /// 真实空间，启动后停在总览）。[databaseOverrides] 替换加密库状态；要用真实加密库（钥匙串与目录
-/// 的替身）时同时传 `useMemoryDatabase: false`。
+/// 的替身）时同时传 `useMemoryDatabase: false`。分期成本默认就地计算（[inlineInstallmentCosts]）；
+/// [backgroundCosts] 为真时保留 App 的后台 isolate 计算。
 Future<void> pumpCardFlowApp(
   WidgetTester tester, {
   double textScale = 1.0,
@@ -187,6 +194,7 @@ Future<void> pumpCardFlowApp(
   Future<void> Function(WorkspaceScope scope)? seed,
   bool useMemoryDatabase = true,
   AppClock? realClock,
+  bool backgroundCosts = false,
 }) async {
   mockPackageInfo();
   usePhoneSurface(tester, textScale: textScale, brightness: brightness);
@@ -208,6 +216,7 @@ Future<void> pumpCardFlowApp(
       overrides: <Override>[
         ...(databaseOverrides ?? fakeDatabaseOverrides()),
         ...memory,
+        if (!backgroundCosts) inlineInstallmentCosts,
         ...overrides,
       ],
       child: const CardFlowApp(),

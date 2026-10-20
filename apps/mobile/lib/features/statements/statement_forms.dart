@@ -26,7 +26,9 @@ import '../cards/amount_input.dart';
 import '../cards/card_dialogs.dart';
 import '../cards/card_formatting.dart';
 import '../cash/cash_form_fields.dart';
+import 'installment_cost.dart';
 import 'ledger_formatting.dart';
+import 'statement_pages.dart' show InstallmentPlanCard;
 
 /// 关闭全屏表单：能返回就返回，否则回到 [fallback]。
 void closeLedgerForm(BuildContext context, String fallback) {
@@ -830,8 +832,9 @@ class _TransactionFormPageState extends ConsumerState<TransactionFormPage> {
   }
 }
 
-/// 转分期（R-STMT-10）：期数、每期费率（%）、收费方式、尾差策略、首期账单日；实时预览每期本金与费用、
-/// 名义与实际年化（F-36/F-37，领域包 installment.dart）。
+/// 转分期（R-STMT-10）：期数、每期费率（%）、收费方式、尾差策略、首期账单日；预览每期本金与费用、名义与实际
+/// 年化（F-36/F-37，领域包 installment.dart）。拆分与名义年化当场算；实际年化（有理数 IRR）改动停下
+/// [installmentCostDebounce] 之后在后台 isolate 里算（审查 R-04：界面线程上不做 IRR），算好之前显示"计算中"。
 class InstallmentFormPage extends ConsumerStatefulWidget {
   const InstallmentFormPage({
     super.key,
@@ -860,11 +863,77 @@ class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage> {
   String? _saveError;
   bool _saving = false;
 
+  /// 实际年化的去抖计时器与最近一次请求（只认最后一次请求的结果）。
+  Timer? _costTimer;
+  int _costRequest = 0;
+
+  /// 算好的成本与它对应的条款（[_termsKey]）；条款变了就不再显示旧结果。
+  InstallmentCost? _cost;
+  String? _costKey;
+  bool _costFailed = false;
+
   @override
   void dispose() {
+    _costTimer?.cancel();
     _periods.dispose();
     _rate.dispose();
     super.dispose();
+  }
+
+  /// 条款的签名（期数、费率原文、收费方式、尾差）。
+  String _termsKey() =>
+      '${_periods.text.trim()}|${_rate.text.trim()}|${_feeMode.code}|${_remainder.code}';
+
+  /// 条款变了：预览当场重画；实际年化等停下 [installmentCostDebounce] 之后再算。
+  void _termsChanged() {
+    setState(() {});
+    _costTimer?.cancel();
+    _costTimer = Timer(
+      installmentCostDebounce,
+      () => unawaited(_computeCost()),
+    );
+  }
+
+  Future<void> _computeCost() async {
+    final txn = ref
+        .read(ledgerProvider)
+        .value
+        ?.transaction(widget.transactionId);
+    final terms = _terms();
+    if (txn == null || terms == null) {
+      return;
+    }
+    final key = _termsKey();
+    final request = ++_costRequest;
+    final input = InstallmentCostInput(
+      principalMinor: txn.amountMinor,
+      perPeriodRate: terms.$2,
+      periods: installmentPeriodsOf(
+        principalMinor: txn.amountMinor,
+        periods: terms.$1,
+        perPeriodRate: terms.$2,
+        feeMode: _feeMode,
+        remainderTo: _remainder,
+      ),
+    );
+    try {
+      final cost = await ref.read(installmentCostRunnerProvider)(input);
+      if (mounted && request == _costRequest) {
+        setState(() {
+          _cost = cost;
+          _costKey = key;
+          _costFailed = false;
+        });
+      }
+    } on Object {
+      if (mounted && request == _costRequest) {
+        setState(() {
+          _cost = null;
+          _costKey = key;
+          _costFailed = true;
+        });
+      }
+    }
   }
 
   /// 期数与每期费率（%）；不合格时为 null。
@@ -977,13 +1046,11 @@ class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage> {
                 feeMode: _feeMode,
                 remainderTo: _remainder,
               );
-        final cost = terms == null || preview == null
-            ? null
-            : InstallmentCost.of(
-                principalMinor: txn.amountMinor,
-                perPeriodRate: terms.$2,
-                periods: preview,
-              );
+        final costText = _costKey != _termsKey()
+            ? InstallmentPlanCard.computingText
+            : _costFailed || _cost == null
+            ? '暂时算不出'
+            : percentText(_cost!.effective);
         final today = data.todayByCurrencyAccount[txn.currencyAccountId]!;
         body = ListView(
           padding: const EdgeInsets.only(bottom: CfSpace.xl),
@@ -999,7 +1066,7 @@ class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage> {
               label: '期数（1–60）',
               error: _errors['terms'],
               keyboardType: TextInputType.number,
-              onChanged: (_) => setState(() {}),
+              onChanged: (_) => _termsChanged(),
             ),
             FormTextField(
               controller: _rate,
@@ -1007,21 +1074,27 @@ class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              onChanged: (_) => setState(() {}),
+              onChanged: (_) => _termsChanged(),
             ),
             ChoiceWrap<InstallmentFeeMode>(
               label: '手续费',
               values: InstallmentFeeMode.values,
               selected: _feeMode,
               labelOf: (m) => m.label,
-              onSelected: (m) => setState(() => _feeMode = m),
+              onSelected: (m) {
+                _feeMode = m;
+                _termsChanged();
+              },
             ),
             ChoiceWrap<RemainderTo>(
               label: '尾差（各期四舍五入后的差额）',
               values: RemainderTo.values,
               selected: _remainder,
               labelOf: (r) => r == RemainderTo.last ? '加到末期' : '加到首期',
-              onSelected: (r) => setState(() => _remainder = r),
+              onSelected: (r) {
+                _remainder = r;
+                _termsChanged();
+              },
             ),
             if (candidates.isNotEmpty)
               ChoiceWrap<LocalDate?>(
@@ -1033,7 +1106,7 @@ class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage> {
                     : '${formatShortDate(d, today)} 出账',
                 onSelected: (d) => setState(() => _first = d),
               ),
-            if (preview != null && cost != null) ...<Widget>[
+            if (terms != null && preview != null) ...<Widget>[
               const SectionTitle('预览'),
               LedgerAmountRow(
                 label: '第 1 期（本金 + 费用）',
@@ -1052,12 +1125,9 @@ class _InstallmentFormPageState extends ConsumerState<InstallmentFormPage> {
               ),
               LabeledValue(
                 label: '名义年化（每期费率 × 12，不是实际成本）',
-                value: Text(percentText(cost.nominal)),
+                value: Text(percentText(terms.$2.timesInt(12))),
               ),
-              LabeledValue(
-                label: '实际年化（复利，按各期现金流 IRR）',
-                value: Text(percentText(cost.effective)),
-              ),
+              LabeledValue(label: '实际年化（复利，按各期现金流 IRR）', value: Text(costText)),
             ],
             ledgerSaveError(_saveError),
             formPadded(
