@@ -1,0 +1,107 @@
+# review-probes.txt：I-1 阶段末审查探针改写的正式测试（断言修正后的期望值），逐个运行的输出
+# 生成时间：2026-10-20T01:18:34Z；源码提交：8ef814d（= origin/main：8ef814d）
+# 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/f1/scripts/filt.sh；其余为工具原文，未删节。
+
+# 对应：P1/P1b → ledger_test 的 F-30 已出账消费转分期两例（R-01）；P3/P3b/P4、冲正、M1–M4、Q-3、F-33 → review_probes_test（R-02/R-03/R-06/R-07/R-08）；
+#   有效状态表驱动 → statement_standing_test（R-03/R-06）；R-04 计时 → installment_cost_test；演示退出 → workspace_switch_test（R-15）；
+#   撤销入口 → ledger_actions_test（R-16、Q-3）；逐屏滚动 → accessibility_test 的文字放大与自检（R-12）。
+# 审查时的探针输出（错误行为）见 evidence/i1/review-i1/ledger-probe.txt、reversal-probe.txt、misc-probe.txt、demo-exit-probe.txt、perf-probe.txt、textscale-scroll.txt。
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/data/repositories/ledger_test.dart --plain-name 已出账消费转分期 --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart
+00:00 +0: F-30 负债四分法：一笔 12 期分期的归属 已出账消费转分期（默认首期，审查 P1）：10-05 的 12,000 已计入 10-10 账单的新增账单，账单录入之后才转 12 期（每期 0.6%），首期默认在 11-10 → 10-10 剩余应还 = 12,000 − 12,000 = 0、有效状态"已转分期"、未来分期本金 12,000、总负债 12,000（本金不重计）；之后录入的修正版本视为已反映分期、不再调整
+00:00 +1: F-30 负债四分法：一笔 12 期分期的归属 已出账消费转分期（首期 = 消费所在的 10-10 账单，审查 P1b）：10-10 剩余应还 = 12,000 − 12,000 + 第 1 期（1,000 + 72）= 1,072、"待还"；未来分期本金只计账单日晚于 10-10 的 11 期 = 11,000；总负债 12,072
+00:00 +2: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/data/repositories/ledger_test.dart --plain-name 同一时刻 --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/repositories/ledger_test.dart
+00:00 +0: F-30 负债四分法：一笔 12 期分期的归属 同一时刻录入的账单与计划不调整（只有"版本录入早于计划建立"才调整；分不出先后时按新增账单原值，负债偏大、不偏小）
+00:00 +1: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/data/repositories/review_probes_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/repositories/review_probes_test.dart
+00:00 +0: R-02 账单接续与本期剩余应还 P3 迟付：9 月 1,000 没还，10 月新增账单 1,500（含 9 月）；9 月那笔 10-12 入账 → 10 月剩余应还 500、"已还一部分"、总负债 500；9 月"已并入 10-10 账单"，不计入负债、不进近期到期
+00:00 +1: R-02 账单接续与本期剩余应还 0.0.1 已存的、分配到旧账单的还款照常读出：金额按入账日期计算，不按分配
+00:00 +2: R-02 账单接续与本期剩余应还 P3b 10 月按全额 1,500 还清（10-12 入账、银行确认）→ 10 月"已还清"、总负债 0；9 月不在近期到期
+00:00 +3: R-02 账单接续与本期剩余应还 P4 09-25 就还过的 1,500（10 月新增账单 800 已扣除它）补登并分配到 10 月 → 10 月剩余应还仍 800、"待还"、在近期到期里；总负债 800
+00:00 +4: R-03 冲正 10-10 账单 1,000 → 银行确认还清 → 冲正：10-18 剩余应还 1,000、"待还"、在近期到期里；11-05（已过 10-28 到期日）→ "已逾期"、仍在近期到期里
+00:00 +5: R-06 人工修正后重新推导 M1 账单 1,000、银行确认还了 800（"已还一部分"）→ 银行调整后修正为 800 → "已还清"、剩余应还 0、不在近期到期
+00:00 +6: R-07 删除与作废后由系统处理差异项 M2 删除一笔退款交易 → 它的"退款待核对"由系统标为已处理（处理者系统、写明"引用的交易已删除"），不再计入待办
+00:00 +7: R-07 删除与作废后由系统处理差异项 M4 同日同额的自动扣款与手工还款（疑似重复）→ 在还款详情直接「作废登记」手工那笔 → 差异项由系统标为已处理（写明"引用的还款登记已作废"）；按差异项"同一笔"作废时仍记为本机用户的处理
+00:00 +8: R-08 删除币种子账户 M3 USD 子账户已有一笔交易 → 删除被拒并说明（ConflictException，不是未包装的数据库异常）；交易删除（tombstone）后仍被引用，照样拒绝；没有任何记录的可以删除
+00:00 +9: R-08 删除币种子账户 有账单的子账户同样拒绝，说明写出是哪类记录
+00:00 +10: Q-3 入账日未知的交易 可能账期跨过本期账单日（10-10 或 11-10）→ "可能已出账"，负债按未出账计；补入账日（10-11）后归入 11-10、列在"不在已录账单里的交易"；补成 10-10 则归入本期账单
+00:00 +11: F-33 还款只分配到本期 分到已并入下一期的 9 月账单被拒；分到本期（10 月）可以，本期已还清后再分配也可以（多还形成贷方余额）
+00:00 +12: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/data/repositories/statement_standing_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/repositories/statement_standing_test.dart
+00:00 +0: 没有还款、未到期 → 待还
+00:00 +1: 到期日当天仍是待还（过了才逾期） → 待还
+00:00 +2: 入账一部分、未到期 → 已还一部分
+00:00 +3: 入账一部分且已确认、未到期 → 已还一部分
+00:00 +4: 没有还款、过了到期日 → 已逾期
+00:00 +5: 还了一部分、过了到期日 → 已逾期
+00:00 +6: 银行确认足额 → 已还清
+00:00 +7: 银行确认足额、过了到期日也不算逾期 → 已还清
+00:00 +8: 多还（贷方余额 200）且银行确认 → 已还清
+00:00 +9: 足额但只有入账、没有银行确认 → 已入账（待银行确认）
+00:00 +10: 足额，其中银行确认的只够一部分 → 已入账（待银行确认）
+00:00 +11: 已出账消费整笔转分期、首期在下一期 → 已转分期
+00:00 +12: 转分期后多出来的还款仍是"已转分期"（贷方余额） → 已转分期
+00:00 +13: 首期就在这一期：还剩首期本金与手续费 → 待还
+00:00 +14: 转分期后其余部分由银行确认的还款结清 → 已还清
+00:00 +15: 新增账单为 0、没有还款 → 无需还款
+00:00 +16: 溢缴（新增账单为负）、没有还款 → 无需还款
+00:00 +17: 溢缴后又入账一笔、银行确认 → 已还清
+00:00 +18: 还欠着的只有"待还""已还一部分""已逾期"（近期到期与负债只看它们）
+00:00 +19: 有效状态覆盖了表里的每一种（已并入下一期另在 review_probes_test 的 P3 里经读模型测）
+00:00 +20: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/features/statements/installment_cost_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart
+00:00 +0: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:04 +1: 按计划 id 记忆化：同一计划读两次只算一次（条款与各期金额都不可改）
+00:05 +2: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+R-04 计时：打开账单详情 190 ms；表单改期数与两次费率并等去抖 122 ms；对照——在主 isolate 上算一次 60 期 IRR 2647 ms
+00:14 +3: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/app/workspace_switch_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/app/workspace_switch_test.dart
+00:00 +0: 演示退出：演示空间里打开"新建现金账户"并填写 → 横幅「退出演示」→ 表单已关闭、回到首页；真实空间没有新行，演示空间不变
+00:01 +1: 切换空间前留在其他 Tab 的页面栈作废：在演示空间打开卡 A 的详情 → 退出演示 → 再点「卡包」从卡包根页开始（不再露出演示空间的页面）
+00:02 +2: 第二道防线：表单打开时记下工作空间，之后切换了空间（表单还在屏幕上）→ 保存被拒绝并提示，不写进真实空间
+00:02 +3: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/features/statements/ledger_actions_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart
+00:00 +0: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:02 +1: 账单详情：入账日未知、可能账期跨过本期账单日的机票标"可能已出账，请补入账日"；分期卡片「作废（录错了）」确认后计划作废，原消费回到未出账
+00:02 +2: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/app/accessibility_test.dart --plain-name 文字放大 --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/app/accessibility_test.dart
+00:00 +0: 文字放大到 2.0x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22），逐屏滚到底
+00:05 +1: 文字放大到 2.0x：首次空白、首次使用页与启动页，逐屏滚到底
+00:05 +2: 文字放大到 2.0x：P-22 首次使用页
+00:05 +3: 文字放大到 2.0x：启动页（打开中）
+00:05 +4: 文字放大到 3.0x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22），逐屏滚到底
+00:07 +5: 文字放大到 3.0x：首次空白、首次使用页与启动页，逐屏滚到底
+00:08 +6: 文字放大到 3.0x：P-22 首次使用页
+00:08 +7: 文字放大到 3.0x：启动页（打开中）
+00:08 +8: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile && flutter test test/app/accessibility_test.dart --plain-name 自检 --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/app/accessibility_test.dart
+00:00 +0: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +1: All tests passed!
+[exit=0]
+

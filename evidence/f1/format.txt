@@ -1,0 +1,12 @@
+# format.txt：格式检查（App 与领域包）
+# 生成时间：2026-10-20T01:16:58Z；源码提交：8ef814d（= origin/main：8ef814d）
+# 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/f1/scripts/filt.sh；其余为工具原文，未删节。
+
+$ cd /projects/cardflow/apps/mobile && dart format --output=none --set-exit-if-changed .
+Formatted 242 files (0 changed) in 1.30 seconds.
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile/packages/cardflow_domain && dart format --output=none --set-exit-if-changed .
+Formatted 46 files (0 changed) in 0.16 seconds.
+[exit=0]
+

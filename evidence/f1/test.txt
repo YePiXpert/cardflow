@@ -1,0 +1,849 @@
+# test.txt：App 全部测试（真实 sqlite3mc；--reporter expanded）与领域包全部测试
+# 生成时间：2026-10-20T01:17:02Z；源码提交：8ef814d（= origin/main：8ef814d）
+# 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/f1/scripts/filt.sh；其余为工具原文，未删节。
+
+$ cd /projects/cardflow/apps/mobile && flutter test --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart
+00:00 +0: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +1: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +2: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +3: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +4: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +5: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +6: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +7: /projects/cardflow/apps/mobile/test/support/forbidden_ui_test.dart: 发现：文案"还款成功"
+00:00 +8: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +9: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +10: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +11: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +12: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +13: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +14: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +15: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +16: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +17: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +18: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +19: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +20: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:00 +21: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:01 +22: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:01 +23: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 首次空白："还没有现金账户"「添加」
+00:01 +24: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 首次空白："本期还没有还款记录"「登记还款」进入表单
+00:01 +25: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 首次空白："本期还没有还款记录"「登记还款」进入表单
+00:01 +26: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:01 +27: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:01 +28: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:01 +29: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:02 +30: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 显示版本、构建号、Bundle ID、构建类型、系统、加密库状态与密钥状态
+00:02 +31: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认
+00:02 +32: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认
+00:02 +33: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认
+00:02 +34: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 体验演示：生成演示空间并进入总览；横幅常驻、没有关闭按钮；退出须确认
+00:02 +35: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 切换口径与窗口：已确认 2 个缺口；压力情景（收入推迟 3 天）；180 天基准 2 个缺口；只看一个账户
+00:02 +36: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 切换口径与窗口：已确认 2 个缺口；压力情景（收入推迟 3 天）；180 天基准 2 个缺口；只看一个账户
+00:03 +37: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 切换口径与窗口：已确认 2 个缺口；压力情景（收入推迟 3 天）；180 天基准 2 个缺口；只看一个账户
+00:03 +38: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 切换口径与窗口：已确认 2 个缺口；压力情景（收入推迟 3 天）；180 天基准 2 个缺口；只看一个账户
+00:03 +38: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:cardflow/data/db/app_database.g.dart:18722:36)
+#4      new AppDatabase._ (package:cardflow/data/db/app_database.dart)
+#5      openAppDatabase (package:cardflow/data/db/app_database.dart:205:28)
+<asynchronous suspension>
+#6      openedDatabase (package:cardflow/data/db/database_providers.dart:50:20)
+<asynchronous suspension>
+#7      ElementWithFuture.handleFuture.<anonymous closure>.<anonymous closure> (package:riverpod/src/core/element.dart:232:17)
+<asynchronous suspension>
+#8      ElementWithFuture.handleFuture.<anonymous closure>.<anonymous closure> (package:riverpod/src/core/element.dart:237:29)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:03 +39: /projects/cardflow/apps/mobile/test/features/calendar/cash_calendar_page_test.dart: 切换口径与窗口：已确认 2 个缺口；压力情景（收入推迟 3 天）；180 天基准 2 个缺口；只看一个账户
+00:03 +40: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥
+00:03 +41: /projects/cardflow/apps/mobile/test/features/diagnostics/diagnostics_page_test.dart: 真实加密库：诊断页显示 sqlite3mc 与"已生成"，报告里没有密钥
+00:03 +42: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 清除演示数据：确认框写明影响数量；清除后回到真实空间
+00:03 +43: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 清除演示数据：确认框写明影响数量；清除后回到真实空间
+00:03 +44: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 清除演示数据：确认框写明影响数量；清除后回到真实空间
+00:03 +45: /projects/cardflow/apps/mobile/test/features/onboarding/welcome_page_test.dart: 清除演示数据：确认框写明影响数量；清除后回到真实空间
+00:03 +46: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已还一部分、已还清、已逾期、已入账（待银行确认）、已并入下一期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +47: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已还一部分、已还清、已逾期、已入账（待银行确认）、已并入下一期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +48: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已还一部分、已还清、已逾期、已入账（待银行确认）、已并入下一期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +49: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已还一部分、已还清、已逾期、已入账（待银行确认）、已并入下一期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:03 +50: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已还一部分、已还清、已逾期、已入账（待银行确认）、已并入下一期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:04 +51: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 每种还款状态（9 种）与已还一部分、已还清、已逾期、已入账（待银行确认）、已并入下一期的账单：还款详情、还款与核对、账单中心、账单详情、信用账户详情与总览都没有"还款成功"、没有绿色（robust 色 token）
+00:04 +52: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 首次空白："只有内置口径"「新建」；内置两条在列表里，尚未计算
+00:04 +53: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 首次空白："添加还款用现金账户"，「添加账户」进入添加页；分段标签在顶部
+00:04 +54: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 首次空白："添加还款用现金账户"，「添加账户」进入添加页；分段标签在顶部
+00:05 +55: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 首次空白："添加还款用现金账户"，「添加账户」进入添加页；分段标签在顶部
+00:05 +56: /projects/cardflow/apps/mobile/test/features/repayments/repayment_pages_test.dart: 登记还款：从账单进入预填剩余应还；分配合计 ≠ 还款额时禁止保存（F-33）；超过本期剩余应还时提示并在保存前要求确认；须选现金账户；保存 → "已登记（待银行确认）"，没有"还款成功"、没有绿色
+00:05 +57: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:05 +58: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:05 +59: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:05 +60: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:05 +61: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:05 +62: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:05 +63: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:06 +64: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:06 +65: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单中心列出不在已录账单里的交易；「补入账日」写入入账日；「删除」已转分期的先提示作废分期，确认后计划作废、交易删除；删除退款后"退款待核对"由系统标为已处理（写明原因）；整页没有"还款成功"与绿色
+00:06 +66: /projects/cardflow/apps/mobile/test/features/cash/cash_pages_test.dart: 添加账户：理财默认不可当日还款；填了余额却没填实际时点不能保存；保存后建账户与快照
+00:06 +67: /projects/cardflow/apps/mobile/test/features/scenarios/scenarios_page_test.dart: 编辑器校验：延迟 0–180、收入比例 0–100%、支出比例 ≥100%、不与内置同名；合规的保存后列出
+00:06 +68: /projects/cardflow/apps/mobile/test/features/statements/ledger_actions_test.dart: 账单详情：入账日未知、可能账期跨过本期账单日的机票标"可能已出账，请补入账日"；分期卡片「作废（录错了）」确认后计划作废，原消费回到未出账
+00:06 +69: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:07 +70: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:07 +71: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:07 +72: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:07 +73: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:07 +74: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:07 +75: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +76: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +77: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +78: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +79: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +80: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +81: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +82: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +83: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +84: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +85: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:08 +86: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:09 +87: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:09 +88: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:09 +89: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:09 +90: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:09 +91: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:09 +92: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:10 +93: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:10 +94: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:10 +95: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:10 +96: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:10 +97: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:10 +98: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:10 +99: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +100: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +101: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +102: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +103: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +104: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +105: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +106: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +107: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 默认的成本计算在后台 isolate 里（Isolate.run）：主 isolate 不调用 IRR，结果与就地计算相同（60 期）
+00:11 +108: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 首次空白与 3 期预览：账单日 31、账单后 20 天（F-16 月末截断）
+00:11 +109: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 首次空白与 3 期预览：账单日 31、账单后 20 天（F-16 月末截断）
+00:11 +110: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 首次空白与 3 期预览：账单日 31、账单后 20 天（F-16 月末截断）
+00:11 +111: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-04 信用账户设置 首次空白与 3 期预览：账单日 31、账单后 20 天（F-16 月末截断）
+00:12 +112: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:12 +113: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:12 +114: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:12 +115: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +116: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +117: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +118: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +119: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +120: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +121: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +122: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +123: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +124: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +125: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +126: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +127: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +128: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +129: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +130: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +131: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +132: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +133: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +134: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +135: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +136: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +137: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +138: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +139: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +140: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +141: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +142: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +143: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +144: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +145: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +146: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:13 +147: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +148: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +149: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +150: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +151: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +152: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +153: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +154: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +155: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +156: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +157: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +158: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +159: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +160: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +161: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +162: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +163: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +164: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +165: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +166: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +167: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +168: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +169: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +170: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +171: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +172: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +173: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +174: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +175: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:14 +176: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +177: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +178: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +179: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +180: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +181: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +182: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +183: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +184: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +185: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +186: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +187: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +188: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +189: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +190: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +191: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +192: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +193: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +194: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +195: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +196: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +197: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +198: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +199: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +200: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +201: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +202: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +203: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +204: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +205: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +206: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +207: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:15 +208: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +209: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +210: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +211: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +212: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +213: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +214: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +215: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +216: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +217: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +218: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +219: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +220: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +221: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +222: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +223: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +224: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +225: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +226: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +227: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +228: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +229: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +230: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +231: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +232: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +233: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +234: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +235: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +236: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +237: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +238: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +239: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +240: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +241: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +242: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +243: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +244: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +245: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:16 +246: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +247: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +248: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +249: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +250: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +251: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +252: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +253: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +254: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +255: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +256: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +257: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +258: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +259: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +260: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +261: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +262: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +263: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +264: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +265: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +266: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +267: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +268: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +269: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +270: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +271: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +272: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +273: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +274: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +275: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +276: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:17 +277: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +278: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +279: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +280: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +281: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +282: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +283: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +284: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +285: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +286: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +287: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +288: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +289: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +290: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +291: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +292: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +293: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +294: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +295: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:18 +296: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +297: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +298: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +299: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +300: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +301: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +302: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +303: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +304: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +305: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +306: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +307: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +308: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +309: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +310: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +311: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +312: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +313: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +314: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +315: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +316: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +317: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +318: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +319: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +320: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +321: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +322: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +323: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +324: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +325: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +326: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +327: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +328: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +329: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +330: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +331: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +332: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +333: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +334: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +335: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +336: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +337: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +338: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +339: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:19 +340: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +341: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +342: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +343: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +344: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +345: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +346: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +347: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +348: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +349: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +350: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +351: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +352: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +353: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +354: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +355: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +356: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +357: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +358: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +359: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +360: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +361: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +362: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +363: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:20 +364: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +365: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +366: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +367: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +368: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +369: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +370: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +371: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +372: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +373: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+R-04 计时：打开账单详情 234 ms；表单改期数与两次费率并等去抖 122 ms；对照——在主 isolate 上算一次 60 期 IRR 2817 ms
+00:21 +374: /projects/cardflow/apps/mobile/test/features/statements/installment_cost_test.dart: 计时：60 期的计划打开账单详情、转分期表单改费率时，主 isolate 不调用 IRR；打开详情的耗时小于在界面线程上算一次 60 期 IRR；表单停下 300 ms 之后才请求一次、算好后显示实际年化
+00:21 +375: /projects/cardflow/apps/mobile/test/data/repositories/review_probes_test.dart: F-33 还款只分配到本期 分到已并入下一期的 9 月账单被拒；分到本期（10 月）可以，本期已还清后再分配也可以（多还形成贷方余额）
+00:21 +376: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 各期的生成 每月"同一日"：小月截到月末，闰年 2 月 29 日
+00:21 +377: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 各期的生成 每月"最后一天"；每年（2 月 29 日在平年是 2 月 28 日）
+00:21 +378: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 各期的生成 每周/每两周从锚定日起；只取 [起始日, 结束日] 与查询区间的交集
+00:21 +379: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 新建即展开到今天 + 180 天（2027-04-16）；重复展开不写库；每期的金额、类别与期键
+00:21 +380: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: F-26：负可用原值原样保存，容量截为 0，读模型标"超限"
+00:21 +381: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: F-26：负可用原值原样保存，容量截为 0，读模型标"超限"
+00:21 +382: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 单期跳过/覆盖/恢复只影响那一期；跳过的期不会被重新展开
+00:21 +383: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: F-25：已含预授权时不再扣减；未含时扣减一次（同一账户两张卡也只扣一次）
+00:21 +384: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 已发生的期不能跳过或覆盖
+00:21 +385: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +386: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +387: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +388: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +389: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +390: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +391: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +392: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +393: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +394: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +395: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +396: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +397: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +398: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、未标记为已包含的事件计入当日（并记假设）
+00:21 +399: /projects/cardflow/apps/mobile/test/data/repositories/recurring_test.dart: 展开与单期例外 情景覆盖指向的单期被跳过后"未生效"，不交给领域包
+00:21 +400: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: G3 与表单规则：时点不晚于现在、实际时点不晚于观测时点；临额须到期日；专项须用途；金额范围
+00:22 +401: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 快照当天、标记为已包含的事件被跳过
+00:22 +402: /projects/cardflow/apps/mobile/test/data/repositories/limits_and_capacity_test.dart: 币种子账户：增删（主子账户不可删，有快照的不可删）、币种只允许 13 种
+00:22 +403: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 同日只有日期：先支出后收入，捕捉当日最低点并记假设
+00:22 +404: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-04 快照包含关系与同日顺序 情景按时刻排序且当日事件都有时刻：按时刻（无假设）
+00:22 +405: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-01/F-02 已确认口径与收入延迟情景 F-01：内置"已确认"口径排除全部预计收入
+00:22 +406: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-01/F-02 已确认口径与收入延迟情景 F-02：压力情景（收入延迟 3 天、收入减半）的日终余额按期望变化
+00:22 +407: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-05：列出全部缺口点与距零/距储备两种缺口，最低点与首个低于零的点
+00:22 +408: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-03：两账户隔离，另一个账户的余额从不抵补本账户的扣款
+00:22 +409: /projects/cardflow/apps/mobile/test/data/repositories/cash_parity_test.dart: F-07：快照 14 天前 → STALE_SNAPSHOT（与领域包直算一致）、"假设分析"；不补零；缺快照的账户不计入
+00:22 +410: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +411: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +412: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +413: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +414: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +415: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +416: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +417: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +418: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +419: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:22 +420: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +421: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +422: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +423: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +424: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +425: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +426: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +427: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +428: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +429: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +430: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +431: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +432: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +433: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +434: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +435: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +436: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +437: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +438: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +439: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +440: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +441: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +441: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: lib/ 全部 Dart 源码的字符串字面量（注释除外）都不含阶段代号与规格编号
+扫描了 137 个文件，含阶段代号的字符串字面量：0 处
+00:23 +442: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +443: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:23 +444: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:24 +445: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:24 +446: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:24 +447: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:24 +448: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:25 +449: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:25 +450: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:25 +451: /projects/cardflow/apps/mobile/test/app/log_privacy_test.dart: 建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名
+00:25 +452: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +453: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +454: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +455: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +456: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +457: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +458: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +459: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +460: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +461: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +462: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:25 +463: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:26 +464: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:27 +465: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:27 +466: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:27 +467: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:27 +468: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:27 +469: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:27 +470: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:27 +471: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +472: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +473: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +474: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +475: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +476: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +477: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +478: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +479: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +480: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +481: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +482: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +483: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +484: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +485: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +486: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +487: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +488: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +489: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +490: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +491: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +492: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +493: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +494: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +495: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +496: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +497: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +498: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +499: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +500: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +501: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +502: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +503: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +504: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +505: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +506: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +507: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +508: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +509: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:28 +510: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+00:29 +511: /projects/cardflow/apps/mobile/test/app/public_beta_test.dart: 演示空间的全部页面（每页滚到底）没有文字含阶段代号或规格编号
+检查了演示空间的 46 个页面
+00:29 +512: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:29 +513: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:29 +514: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:29 +515: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:29 +516: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:30 +517: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:30 +518: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:30 +519: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:30 +520: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:30 +521: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:30 +522: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 首次空白与首次使用页（Brightness.light）满足同样的要求
+00:31 +523: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: P-22 首次使用页（没有工作空间）满足同样的要求
+00:31 +524: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 启动页（打不开：wrong_key）满足同样的要求
+00:31 +525: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22），逐屏滚到底
+00:34 +526: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：首次空白、首次使用页与启动页，逐屏滚到底
+00:34 +527: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：P-22 首次使用页
+00:34 +528: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：启动页（打开中）
+00:34 +529: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22），逐屏滚到底
+00:36 +530: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：首次空白、首次使用页与启动页，逐屏滚到底
+00:36 +531: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：P-22 首次使用页
+00:36 +532: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：启动页（打开中）
+00:37 +533: All tests passed!
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile/packages/cardflow_domain && dart test --reporter expanded
+00:00 +0: loading test/no_double_test.dart
+00:00 +0: test/no_double_test.dart: the scanner flags floating point in code double type
+00:00 +1: test/no_double_test.dart: the scanner flags floating point in code num type
+00:00 +2: test/no_double_test.dart: the scanner flags floating point in code toDouble
+00:00 +3: test/no_double_test.dart: the scanner flags floating point in code roundToDouble
+00:00 +4: test/no_double_test.dart: the scanner flags floating point in code decimal literal
+00:00 +5: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +6: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +7: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +8: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +9: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +10: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +11: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +12: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +13: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +14: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +15: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +16: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +17: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +18: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +19: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +20: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +21: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +22: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +23: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +24: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +25: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +26: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +27: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +28: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +29: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +30: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +31: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +32: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +33: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +34: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +35: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +36: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +37: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +38: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +39: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +40: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +41: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +42: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +43: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +44: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +45: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +46: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +47: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +48: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +49: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +50: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +51: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +52: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +53: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +54: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +55: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +56: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +57: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +58: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +59: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+no-double scan: 29 files, 7774 lines in lib/, bin/, tool/; 0 violation(s)
+00:00 +60: test/time_test.dart: LocalDate epoch days agree with DateTime.utc for every day of 1900..2100 and the range ends
+00:00 +61: test/time_test.dart: LocalDate leaving 0001..9999 is a DateRangeError, like Python OverflowError
+00:00 +62: test/time_test.dart: LocalDate strict ISO parsing and real calendar days
+00:00 +63: test/time_test.dart: LocalDate leap years, month lengths, clamping and month addition
+00:00 +64: test/time_test.dart: LocalDate ordering and differences
+00:00 +65: test/time_test.dart: Timestamp the date is taken in the timestamp's own offset (R3E-14)
+00:00 +66: test/time_test.dart: Timestamp ordering is by absolute instant; equal instants compare equal
+00:00 +67: test/time_test.dart: Timestamp isoformat is Python datetime.isoformat()
+00:00 +68: test/time_test.dart: Timestamp rejects what RFC 3339 / protocol v1 rejects
+00:00 +69: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +70: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +71: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +72: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +73: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +74: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +75: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +76: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +77: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +78: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +79: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +80: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +81: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +82: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +83: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +84: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +85: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +86: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +87: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +88: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +89: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +90: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +91: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +92: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +93: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +94: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +95: test/protocol_adapter_test.dart: the unmodified F-18 document is valid
+00:00 +96: test/protocol_adapter_test.dart: the unmodified F-18 document is valid
+00:00 +97: test/protocol_adapter_test.dart: the unmodified F-18 document is valid
+00:00 +98: test/protocol_adapter_test.dart: the unmodified F-18 document is valid
+00:00 +99: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +100: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +101: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +102: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +103: test/protocol_adapter_test.dart: rejected by schema AND adapter (test_rejections.py BOTH; pointer prefix) float-balance
+00:00 +104: test/search_test.dart: time budget a fake clock that jumps 1 s per reading stops the search within the 2 s budget
+00:00 +105: test/protocol_adapter_test.dart: rejected by schema AND adapter (test_rejections.py BOTH; pointer prefix) float-rate
+00:00 +106: test/search_test.dart: time budget a zero budget evaluates nothing and says "not found locally"
+00:00 +107: test/protocol_adapter_test.dart: rejected by schema AND adapter (test_rejections.py BOTH; pointer prefix) rate-exponent
+00:00 +108: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +109: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +110: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +111: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +112: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +113: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +114: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +115: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +116: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +117: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +118: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +119: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +120: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +121: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +122: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +123: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +124: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +125: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +126: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +127: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +128: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +129: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +130: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +131: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +132: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +133: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +134: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +135: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +136: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +137: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +138: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +139: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +140: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +141: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +142: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +143: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +144: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +145: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +146: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +147: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +148: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +149: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +150: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +151: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +152: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +153: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +154: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +155: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +156: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +157: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +158: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +159: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +160: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +161: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +162: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +163: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +164: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +165: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +166: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +167: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +168: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +169: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +170: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +171: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +172: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +173: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +174: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +175: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +176: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +177: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +178: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +179: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +180: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +181: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +182: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +183: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +184: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +185: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +186: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +187: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +188: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +189: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +190: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +191: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +192: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +193: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +194: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +195: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +196: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +197: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +198: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +199: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +200: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +201: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +202: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +203: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +204: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +205: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +206: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +207: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +208: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +209: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +210: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +211: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +212: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +213: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +214: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +215: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +216: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +217: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +218: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +219: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +220: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +221: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +222: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +223: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +224: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +225: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +226: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +227: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +228: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +229: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +230: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +231: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +232: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +233: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +234: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_1：本金 632318231、22 期、每期费率 0.0186、尾差 last
+00:00 +235: test/classify_test.dart: eligibleInfos keeps the input order and can skip rule errors (date-shift search)
+00:00 +236: test/canonical_json_test.dart: README / test_adapter.py vectors integers are exact decimal, beyond 64 bits too
+00:00 +237: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +238: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +239: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +240: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +241: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +242: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +243: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +244: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +245: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +246: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +247: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +248: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +249: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +250: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +251: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +252: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +253: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +254: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +255: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +256: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +257: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +258: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +259: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +260: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +261: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +262: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +263: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +264: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +265: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +266: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +267: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +268: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +269: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +270: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +271: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +272: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +273: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +274: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +275: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +276: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +277: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:00 +278: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_3：本金 286486519、3 期、每期费率 0.009、尾差 last
+00:00 +279: All tests passed!
+[exit=0]
+

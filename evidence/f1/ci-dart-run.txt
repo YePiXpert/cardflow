@@ -1,0 +1,98 @@
+# ci-dart-run.txt：CI（.github/workflows/mobile.yml）在 F-1 期间的 push 运行，与最后一次代码提交的运行详情（各 job 与步骤的结论）
+# 生成时间：2026-10-20T01:22:16Z；源码提交：8ef814d（= origin/main：8ef814d）
+# 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/f1/scripts/filt.sh；其余为工具原文，未删节。
+
+# 范围：F-1 第 1 步 7071101 起；只改 evidence/ 的提交不触发本工作流。步骤结论由 gh run view --json 取得（不含日志正文与 runner 镜像信息）。
+
+$ cd /projects/cardflow && gh run list --workflow mobile.yml --event push --limit 10 --json databaseId,number,headSha,displayTitle,status,conclusion,createdAt --jq '.[] | select(.createdAt >= "2026-10-19T16:00:00Z") | "\(.databaseId) #\(.number) \(.headSha[0:7]) \(.status) \(.conclusion) \(.createdAt)\n    \(.displayTitle)"'
+39352552643 #63 8ef814d completed success 2026-10-20T01:16:54Z
+    文档（F-1 第 8 步）：apps/mobile README 按新语义重写"账单、分期与还款"，新增"F-1 的偏离与约定"，I-1c…
+39352094718 #62 c7d7607 completed success 2026-10-20T01:12:04Z
+    CI（F-1 第 7 步，审查 R-11）：IPA 版本名与构建号断言、Required Reason 扫描缺登记即失败、Flutter …
+39351574613 #61 764258b completed success 2026-10-20T01:06:33Z
+    移动端可访问性测试逐屏滚到底（F-1 第 6 步，审查 R-12）：2.0x/3.0x 字号下演示空间 46 个页面与首次空白页逐屏检查
+39351152117 #60 defe1f6 completed success 2026-10-20T01:02:11Z
+    移动端切换空间不再写进另一个空间（F-1 第 5 步，审查 R-15）：切换后回到首页并清空页面栈，全屏表单保存时核对打开时的工作空间
+39350540760 #59 293e2b1 completed success 2026-10-20T00:55:53Z
+    移动端分期成本移出界面线程（F-1 第 4 步，审查 R-04）：按计划 id 记忆化、Isolate.run 计算、转分期表单预览去抖 …
+39349607416 #58 35e153d completed success 2026-10-20T00:46:18Z
+    移动端撤销入口（F-1 第 3 步，审查 R-16、Q-3）：交易「删除」「补入账日」、分期「作废（录错了）」、可能已出账提示、不在已录账…
+39349121876 #57 ae02412 completed success 2026-10-20T00:41:22Z
+    移动端仓库规则（F-1 第 2 步，审查 R-02/R-06/R-07/R-08）：还款只分配到本期、已还清看有效状态、删除与作废后系统处…
+39282375649 #56 7071101 completed success 2026-10-19T16:02:26Z
+    移动端读模型（F-1 第 1 步，审查 R-01/R-02/R-03/R-06）：账单接续、本期剩余应还、已出账消费转分期调整与有效状态，…
+[exit=0]
+
+$ cd /projects/cardflow && gh run view 39352552643 --json number,headSha,event,headBranch,status,conclusion --jq '"#\(.number) \(.event) \(.headBranch) \(.headSha[0:7]) \(.status) \(.conclusion)"'
+#63 push main 8ef814d completed success
+[exit=0]
+
+$ cd /projects/cardflow && gh run view 39352552643 --json jobs --jq '.jobs[] | "== \(.name)：\(.conclusion)", (.steps[] | "   \(.number). \(.name)：\(.conclusion)")'
+== protocol-parity (Python engine vs Dart domain)：success
+   1. Set up job：success
+   2. Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
+   3. Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884：success
+   4. Flutter SDK cache path and key (flutter-action dry run)：success
+   5. Cache Flutter SDK：success
+   6. Cache pub dependencies：success
+   7. Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2：success
+   8. uv sync --locked (services/api)：success
+   9. dart pub get (cardflow_domain)：success
+   10. Golden fixtures -- Python runner --dump：success
+   11. Golden fixtures -- Dart runner --dump：success
+   12. Golden fixtures -- outputs byte-identical：success
+   13. Random fixtures (300, seed 20261018) -- generate：success
+   14. Random fixtures -- both runners --dump, outputs byte-identical：success
+   15. Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)：success
+   16. Upload parity outputs：skipped
+   27. Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2：success
+   28. Post Cache pub dependencies：success
+   29. Post Cache Flutter SDK：success
+   30. Post Flutter SDK cache path and key (flutter-action dry run)：success
+   31. Post Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884：success
+   32. Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
+   33. Complete job：success
+== dart (format · analyze · test · web build)：success
+   1. Set up job：success
+   2. Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
+   3. Flutter SDK cache path and key (flutter-action dry run)：success
+   4. Cache Flutter SDK：success
+   5. Cache pub dependencies：success
+   6. Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2：success
+   7. flutter --version：success
+   8. flutter pub get：success
+   9. dart pub get (cardflow_domain)：success
+   10. dart format：success
+   11. dart format (cardflow_domain)：success
+   12. flutter analyze：success
+   13. dart analyze (cardflow_domain)：success
+   14. flutter test：success
+   15. dart test (cardflow_domain, incl. the no-double scan)：success
+   16. flutter build web (compile smoke test)：success
+   28. Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2：success
+   29. Post Cache pub dependencies：success
+   30. Post Cache Flutter SDK：success
+   31. Post Flutter SDK cache path and key (flutter-action dry run)：success
+   32. Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
+   33. Complete job：success
+== ios-unsigned (IPA without codesign)：skipped
+[exit=0]
+
+# 缓存（审查 R-11）：dart job 日志里与 action 下载、actions/cache 的执行与命中有关的行（grep；行首是日志时间戳）。
+$ cd /projects/cardflow && gh api repos/YePiXpert/cardflow/actions/jobs/118399856147/logs | grep -E "Download action repository|Run actions/cache|Run subosito/flutter-action|Cache restored from key|Cache hit for|Cache not found|Cache saved|not saving cache"
+2026-10-20T01:16:59.3042296Z Download action repository 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-20T01:16:59.4154218Z Download action repository 'subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2' (SHA:1a449444c387b1966244ae4d4f8c696479add0b2)
+2026-10-20T01:16:59.6944978Z Download action repository 'actions/cache@caa296126883cff596d87d8935842f9db880ef25' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+2026-10-20T01:16:59.9983396Z Download action repository 'actions/cache@v5' (SHA:caa296126883cff596d87d8935842f9db880ef25)
+2026-10-20T01:17:01.7944564Z ##[group]Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+2026-10-20T01:17:02.1914494Z ##[group]Run actions/cache@caa296126883cff596d87d8935842f9db880ef25
+2026-10-20T01:17:02.4500653Z Cache hit for: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
+2026-10-20T01:17:18.4907696Z Cache restored from key: flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8
+2026-10-20T01:17:18.7849004Z ##[group]Run actions/cache@caa296126883cff596d87d8935842f9db880ef25
+2026-10-20T01:17:19.0599625Z Cache hit for: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6
+2026-10-20T01:17:19.9962377Z Cache restored from key: flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6
+2026-10-20T01:17:20.0180067Z ##[group]Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+2026-10-20T01:21:39.9956690Z Cache hit occurred on the primary key flutter-pub-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8-77f8b8db7602d98093675128de7519dd23bd7e739f8a671220298dfe2a9869e6, not saving cache.
+2026-10-20T01:21:40.1408056Z Cache hit occurred on the primary key flutter-linux-stable-3.47.7-x64-abaf9c523780a608bd46686fd5e53740a07077f8, not saving cache.
+[exit=0]
+
