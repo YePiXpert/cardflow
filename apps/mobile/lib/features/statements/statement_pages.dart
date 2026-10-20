@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/cf_layout.dart';
 import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
@@ -332,22 +333,18 @@ class _StatementTile extends StatelessWidget {
                     ],
                   ),
                 const SizedBox(height: CfSpace.xxs),
+                // 一行至多一个状态标签（简报 U-1 §5）：有效状态用胶囊，确认层级、版本数与差异数写成文字。
                 Wrap(
                   spacing: CfSpace.xs,
                   runSpacing: CfSpace.xxs,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
                     if (balance != null) effectiveStatusBadge(balance),
-                    confirmationBadge(data.confirmationOf(statement.id)),
-                    StatusBadge(
-                      label: '$versions 个版本',
-                      icon: Icons.layers_outlined,
+                    ConfirmationText(
+                      data.confirmationOf(statement.id),
+                      suffix:
+                          ' · $versions 个版本${items > 0 ? ' · 差异 $items' : ''}',
                     ),
-                    if (items > 0)
-                      StatusBadge(
-                        label: '差异 $items',
-                        icon: Icons.rule,
-                        tone: NoticeTone.attention,
-                      ),
                   ],
                 ),
               ],
@@ -461,9 +458,10 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
           child: Wrap(
             spacing: CfSpace.xs,
             runSpacing: CfSpace.xxs,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: <Widget>[
               effectiveStatusBadge(balance),
-              confirmationBadge(data.confirmationOf(s.id)),
+              ConfirmationText(data.confirmationOf(s.id)),
             ],
           ),
         ),
@@ -529,77 +527,42 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
               ],
             ),
           ),
-        if (versions.length > 1)
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CfSpace.md,
-              vertical: CfSpace.xxs,
-            ),
-            child: Text('修正只生成新版本，原值保留可查。', style: secondary),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CfSpace.md + CfSpace.xxs,
+            CfSpace.xxs,
+            CfSpace.md,
+            CfSpace.xs,
           ),
-        LedgerAmountRow(
-          label: '上期余额',
-          minor: selected.previousBalanceMinor,
-          currency: currency,
-          source: sourceText,
-          negativeLabel: '贷方',
-        ),
-        LedgerAmountRow(
-          label: '本期应还（新余额）',
-          minor: selected.newBalanceMinor,
-          currency: currency,
-          source: sourceText,
-          negativeLabel: '贷方余额',
-        ),
-        LedgerAmountRow(
-          label: '最低还款额',
-          minor: selected.minDueMinor,
-          currency: currency,
-          source: sourceText,
-        ),
-        LedgerAmountRow(
-          label: '本期还款',
-          minor: selected.paymentsMinor,
-          currency: currency,
-          source: sourceText,
-        ),
-        LedgerAmountRow(
-          label: '退款与贷记',
-          minor: selected.creditsMinor,
-          currency: currency,
-          source: sourceText,
-        ),
-        LedgerAmountRow(
-          label: '费用（含年费）',
-          minor: selected.feesMinor,
-          currency: currency,
-          source: sourceText,
-        ),
-        LedgerAmountRow(
-          label: '利息',
-          minor: selected.interestMinor,
-          currency: currency,
-          source: sourceText,
-        ),
-        LedgerAmountRow(
-          label: '分期应还（本期）',
-          minor: selected.installmentDueMinor,
-          currency: currency,
-          source: sourceText,
-        ),
-        LedgerAmountRow(
-          label: '贷方余额（溢缴款）',
-          minor: selected.creditBalanceMinor,
-          currency: currency,
-          source: sourceText,
-        ),
-        for (final label in <String>['历史逾期', '撤销', '预授权释放'])
-          LedgerAmountRow(
-            label: label,
-            minor: null,
-            currency: currency,
-            source: sourceText,
+          child: Text(
+            versions.length > 1 ? '$sourceText。修正只生成新版本，原值保留可查。' : sourceText,
+            style: secondary,
           ),
+        ),
+        GroupCard(
+          children: <Widget>[
+            for (final (label, minor, negative) in <(String, int?, String?)>[
+              ('上期余额', selected.previousBalanceMinor, '贷方'),
+              ('本期应还（新余额）', selected.newBalanceMinor, '贷方余额'),
+              ('最低还款额', selected.minDueMinor, null),
+              ('本期还款', selected.paymentsMinor, null),
+              ('退款与贷记', selected.creditsMinor, null),
+              ('费用（含年费）', selected.feesMinor, null),
+              ('利息', selected.interestMinor, null),
+              ('分期应还（本期）', selected.installmentDueMinor, null),
+              ('贷方余额（溢缴款）', selected.creditBalanceMinor, null),
+              ('历史逾期', null, null),
+              ('撤销', null, null),
+              ('预授权释放', null, null),
+            ])
+              LedgerAmountRow(
+                label: label,
+                minor: minor,
+                currency: currency,
+                negativeLabel: negative,
+              ),
+          ],
+        ),
         if (!balance.isCurrent)
           NoticeCard(
             icon: Icons.merge_type,

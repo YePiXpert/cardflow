@@ -190,7 +190,7 @@ void main() {
     expect(find.widgetWithText(FilledButton, '重新加载'), findsOneWidget);
   });
 
-  testWidgets('成功：列表行（剩余应还、到期、有效状态"待还"、确认层级、2 个版本、差异 1）→ 详情：版本切换与原值、来源与版本、'
+  testWidgets('成功：列表行（剩余应还、到期、有效状态"待还"、一行文字写确认层级、2 个版本、差异 1）→ 详情：版本切换与原值、来源与版本、'
       '"来源未含此项"、负债四分法、交易与退款待核对、分期成本并列；整页没有"还款成功"、没有绿色', (tester) async {
     await pumpCardFlowApp(tester, seed: seedLedger);
     await goTo(tester, AppRoutes.statements());
@@ -199,9 +199,8 @@ void main() {
     expect(find.text('到期 10-28'), findsOneWidget);
     expect(find.text('待还'), findsNWidgets(2), reason: '状态筛选标签与行里的徽标（有效状态）');
     expect(find.text('已修正'), findsNothing, reason: '存储状态只是动作记录，界面用有效状态');
-    expect(find.text('你已确认'), findsOneWidget);
-    expect(find.text('2 个版本'), findsOneWidget);
-    expect(find.text('差异 1'), findsOneWidget);
+    // 一行至多一个状态标签：确认层级、版本数、差异数写成一行文字。
+    expect(find.text('你已确认 · 2 个版本 · 差异 1'), findsOneWidget);
     // 筛选：状态"已逾期"没有账单 → 不出现这个筛选项；选"待还"仍有一行。
     expect(find.widgetWithText(ChoiceChip, '已逾期'), findsNothing);
     await tester.tap(find.widgetWithText(ChoiceChip, '待还'));
@@ -215,7 +214,11 @@ void main() {
     await _scrollTo(tester, find.text('账单要素（v2）'));
     expect(find.text('v2 人工修正（当前）'), findsOneWidget);
     expect(find.text('¥157.20'), findsOneWidget, reason: 'v2 的最低还款额');
-    expect(find.text('来源：人工修正 · v2（理由：最低还款额抄错，按账单更正）'), findsWidgets);
+    // 来源与版本写一次（不再每一行重复）。
+    expect(
+      find.textContaining('来源：人工修正 · v2（理由：最低还款额抄错，按账单更正）'),
+      findsOneWidget,
+    );
     // 来源未含的项（利息、费用……）显示"来源未含此项"，不当 0。
     expect(find.text(LedgerAmountRow.missingText), findsWidgets);
     // 切到 v1：原值可查。

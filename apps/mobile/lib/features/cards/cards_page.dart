@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/bank_badge.dart';
 import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
@@ -199,46 +200,46 @@ class AccountTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Text(account.displayName, style: theme.textTheme.titleMedium),
+                Row(
+                  children: <Widget>[
+                    BankBadge(bankName: account.bank.name),
+                    const SizedBox(width: CfSpace.sm),
+                    Expanded(
+                      child: Text(
+                        account.displayName,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: CfSpace.xxs),
                 Text(
                   <String>[
                     account.bank.name,
                     ?account.account.productName,
+                    source == null ? '账期规则未设置' : source.label,
                   ].join(' · '),
                   style: secondary,
                 ),
-                const SizedBox(height: CfSpace.xs),
-                Wrap(
-                  spacing: CfSpace.xs,
-                  runSpacing: CfSpace.xxs,
-                  children: <Widget>[
-                    if (source == null)
-                      const StatusBadge(
-                        label: '账期规则未设置',
-                        icon: Icons.checklist,
-                        tone: NoticeTone.attention,
-                      )
-                    else
-                      StatusBadge(
-                        label: source.label,
-                        icon: Icons.person_outline,
-                        tone: NoticeTone.unknown,
-                      ),
-                    if (primary.overLimit)
-                      const StatusBadge(
-                        label: '超限',
-                        icon: Icons.warning_amber_outlined,
-                        tone: NoticeTone.danger,
-                      ),
-                    if (primary.stale)
-                      StatusBadge(
-                        label: '额度 ${ageText(primary.snapshotAgeDays!)}',
-                        icon: Icons.schedule,
-                        tone: NoticeTone.attention,
-                      ),
-                  ],
-                ),
+                // 一行至多一个状态标签（简报 U-1 §5）：超限 > 缺账期规则 > 额度快照陈旧。
+                if (primary.overLimit)
+                  const _AccountStatus(
+                    label: '超限',
+                    icon: Icons.warning_amber_outlined,
+                    tone: NoticeTone.danger,
+                  )
+                else if (source == null)
+                  const _AccountStatus(
+                    label: '账期规则未设置',
+                    icon: Icons.checklist,
+                    tone: NoticeTone.attention,
+                  )
+                else if (primary.stale)
+                  _AccountStatus(
+                    label: '额度 ${ageText(primary.snapshotAgeDays!)}',
+                    icon: Icons.schedule,
+                    tone: NoticeTone.attention,
+                  ),
                 const SizedBox(height: CfSpace.xs),
                 Wrap(
                   alignment: WrapAlignment.spaceBetween,
@@ -292,4 +293,26 @@ class AccountTile extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 账户的状态标签（一行一个）。
+class _AccountStatus extends StatelessWidget {
+  const _AccountStatus({
+    required this.label,
+    required this.icon,
+    required this.tone,
+  });
+
+  final String label;
+  final IconData icon;
+  final NoticeTone tone;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: CfSpace.xs),
+    child: Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: StatusBadge(label: label, icon: icon, tone: tone),
+    ),
+  );
 }

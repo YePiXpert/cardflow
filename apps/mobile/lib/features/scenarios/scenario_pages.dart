@@ -292,11 +292,10 @@ class _ScenarioCard extends StatelessWidget {
       child: Material(
         color: colors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(CfRadius.lg),
-          side: BorderSide(color: colors.borderInput, width: CfStroke.hairline),
+          borderRadius: BorderRadius.circular(CfRadius.card),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(CfSpace.sm),
+          padding: const EdgeInsets.all(CfSpace.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -1120,11 +1119,7 @@ class _ScenarioComparePageState extends ConsumerState<ScenarioComparePage> {
               padding: const EdgeInsets.all(CfSpace.sm),
               decoration: BoxDecoration(
                 color: CardFlowColors.of(context).surface,
-                borderRadius: BorderRadius.circular(CfRadius.lg),
-                border: Border.all(
-                  color: CardFlowColors.of(context).borderInput,
-                  width: CfStroke.hairline,
-                ),
+                borderRadius: BorderRadius.circular(CfRadius.card),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

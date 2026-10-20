@@ -96,6 +96,13 @@ final List<Shot> shots = <Shot>[
     ),
     more: 0,
   ),
+  // 其余页面（套用新样式后的样子）。
+  ('09-statements', (_) async => AppRoutes.statements(), more: 0),
+  ('10-repayments', (_) async => AppRoutes.repayments(), more: 0),
+  ('11-manage-cards', (_) async => AppRoutes.cards, more: 0),
+  ('12-calendar', (_) async => AppRoutes.cashCalendar, more: 0),
+  ('13-welcome', (_) async => AppRoutes.welcome, more: 0),
+  ('14-about', (_) async => AppRoutes.about, more: 0),
 ];
 
 /// 把页面的主滚动区往下滚 80% 屏；已经到底时返回 false。

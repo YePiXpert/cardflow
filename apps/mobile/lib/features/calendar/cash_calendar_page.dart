@@ -475,8 +475,7 @@ class _SummaryCard extends StatelessWidget {
       padding: const EdgeInsets.all(CfSpace.md),
       decoration: BoxDecoration(
         color: tone.bg,
-        borderRadius: BorderRadius.circular(CfRadius.lg),
-        border: Border.all(color: colors.borderInput, width: CfStroke.hairline),
+        borderRadius: BorderRadius.circular(CfRadius.card),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

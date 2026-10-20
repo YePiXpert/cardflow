@@ -68,18 +68,43 @@ StatusBadge repaymentStatusBadge(RepaymentStatus status) => StatusBadge(
   },
 );
 
-/// 确认层级徽标（ui-spec §4.3）。
-StatusBadge confirmationBadge(ConfirmationShown level) => StatusBadge(
-  label: level.label,
-  icon: switch (level) {
-    ConfirmationShown.systemEstimated => Icons.calculate_outlined,
-    ConfirmationShown.userConfirmed => Icons.how_to_reg_outlined,
-    ConfirmationShown.bankConfirmed => Icons.approval_outlined,
-  },
-  tone: level == ConfirmationShown.bankConfirmed
-      ? NoticeTone.bank
-      : NoticeTone.unknown,
-);
+/// 确认层级的文字（图标 + 文字，次要文字色）：和状态标签放在同一行时用它，一行至多一个胶囊标签（简报 U-1 §5）。
+class ConfirmationText extends StatelessWidget {
+  const ConfirmationText(this.level, {super.key, this.suffix});
+
+  final ConfirmationShown level;
+
+  /// 跟在后面的说明（"· 2 个版本 · 差异 1"）。
+  final String? suffix;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = CardFlowColors.of(context);
+    final style = Theme.of(context).textTheme.bodySmall?.copyWith(
+      color: level == ConfirmationShown.bankConfirmed
+          ? colors.bank.fg
+          : colors.textSecondary,
+    );
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        ExcludeSemantics(
+          child: Icon(
+            switch (level) {
+              ConfirmationShown.systemEstimated => Icons.calculate_outlined,
+              ConfirmationShown.userConfirmed => Icons.how_to_reg_outlined,
+              ConfirmationShown.bankConfirmed => Icons.approval_outlined,
+            },
+            size: CfIconSize.sm,
+            color: style?.color,
+          ),
+        ),
+        const SizedBox(width: CfSpace.xxs),
+        Flexible(child: Text('${level.label}${suffix ?? ''}', style: style)),
+      ],
+    );
+  }
+}
 
 /// 差异项状态徽标。
 StatusBadge reconciliationBadge(ReconciliationStatus status) => StatusBadge(

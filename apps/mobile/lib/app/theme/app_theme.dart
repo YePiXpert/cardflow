@@ -153,6 +153,8 @@ ThemeData buildCardFlowTheme(
         textStyle: button,
         backgroundColor: c.action,
         foregroundColor: c.onAction,
+        disabledBackgroundColor: c.divider,
+        disabledForegroundColor: c.textTertiary,
       ),
     ),
     // 次要按钮：强调色浅底 + 强调色文字（设计稿的"记一笔""更新额度"），不再用 0.0.1 的灰边框。
@@ -164,6 +166,8 @@ ThemeData buildCardFlowTheme(
         textStyle: button,
         backgroundColor: c.actionTint,
         foregroundColor: c.action,
+        disabledBackgroundColor: c.divider,
+        disabledForegroundColor: c.textTertiary,
         side: BorderSide.none,
       ),
     ),
