@@ -43,7 +43,12 @@ Future<void> _scrollTo(
   WidgetTester tester,
   Finder finder, {
   double delta = 200,
-}) => tester.scrollUntilVisible(finder, delta, scrollable: _formScrollable);
+}) async {
+  await tester.scrollUntilVisible(finder, delta, scrollable: _formScrollable);
+  // scrollUntilVisible 只保证已构建（可能还在顶栏下面），再整个滚进可见区。
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+}
 
 Future<void> _save(WidgetTester tester) async {
   final save = find.widgetWithText(FilledButton, '保存');

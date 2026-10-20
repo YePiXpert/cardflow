@@ -227,7 +227,23 @@ class _AccountTile extends StatelessWidget {
     final snapshot = summary.latestSnapshot;
     return ListTile(
       onTap: () => context.go(AppRoutes.cashAccount(row.id)),
-      title: Text(row.name),
+      // 余额放在标题行里（可换行），放大到 3 倍时不会挤掉说明。
+      title: Wrap(
+        spacing: CfSpace.xs,
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: <Widget>[
+          Text(row.name),
+          if (snapshot == null)
+            const Text('—')
+          else
+            BalanceText(
+              minor: snapshot.balanceMinor,
+              currency: row.currency,
+              semanticsPrefix: '余额',
+            ),
+        ],
+      ),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: CfSpace.xxs),
         child: Wrap(
@@ -268,13 +284,6 @@ class _AccountTile extends StatelessWidget {
           ],
         ),
       ),
-      trailing: snapshot == null
-          ? const Text('—')
-          : BalanceText(
-              minor: snapshot.balanceMinor,
-              currency: row.currency,
-              semanticsPrefix: '余额',
-            ),
     );
   }
 }

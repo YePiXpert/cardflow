@@ -12,76 +12,131 @@ double contrast(Color a, Color b) {
   return (math.max(la, lb) + 0.05) / (math.min(la, lb) + 0.05);
 }
 
-/// ui-spec §3.1 的口径：前景对自身底色、surface、canvas 的最小值，浅色深色取小，
-/// 再向下取一位小数。
-double specMinimum(
-  Color Function(CardFlowColors c) fg, [
-  Color Function(CardFlowColors c)? ownBg,
-]) {
-  double worst(CardFlowColors c) {
-    final ratios = <double>[
-      contrast(fg(c), c.surface),
-      contrast(fg(c), c.canvas),
-      if (ownBg != null) contrast(fg(c), ownBg(c)),
-    ];
-    return ratios.reduce(math.min);
-  }
-
-  final value = math.min(
-    worst(CardFlowColors.light),
-    worst(CardFlowColors.dark),
-  );
-  return (value * 10).floor() / 10;
-}
+/// 两种模式。
+const Map<String, CardFlowColors> modes = <String, CardFlowColors>{
+  '浅色': CardFlowColors.light,
+  '深色': CardFlowColors.dark,
+};
 
 void main() {
-  group('语义色与 ui-spec §3.1 对比度表一致（逐项核对 token 抄录）', () {
-    final expected =
-        <
-          String,
-          (
-            double,
-            Color Function(CardFlowColors),
-            Color Function(CardFlowColors)?,
-          )
-        >{
-          'text.primary': (13.6, (c) => c.textPrimary, null),
-          'text.secondary': (6.2, (c) => c.textSecondary, null),
-          'action': (5.9, (c) => c.action, null),
-          'risk.robust': (5.6, (c) => c.robust.fg, (c) => c.robust.bg),
-          'risk.attention': (6.5, (c) => c.attention.fg, (c) => c.attention.bg),
-          'risk.danger': (5.5, (c) => c.danger.fg, (c) => c.danger.bg),
-          'risk.unknown': (6.9, (c) => c.unknown.fg, (c) => c.unknown.bg),
-          'risk.defect': (6.7, (c) => c.defect.fg, (c) => c.defect.bg),
-          'confirm.bank': (6.7, (c) => c.bank.fg, (c) => c.bank.bg),
-          'border.input': (3.5, (c) => c.borderInput, null),
-        };
-    for (final MapEntry(key: name, value: (ratio, fg, bg))
-        in expected.entries) {
-      test(name, () => expect(specMinimum(fg, bg), ratio));
-    }
-
-    test('demo（横幅文字对横幅底色）', () {
-      final value = math.min(
-        contrast(CardFlowColors.light.demo.fg, CardFlowColors.light.demo.bg),
-        contrast(CardFlowColors.dark.demo.fg, CardFlowColors.dark.demo.bg),
-      );
-      expect((value * 10).floor() / 10, 9.8);
+  group('颜色 token 与简报 U-1 §5 一致（逐项核对抄录；第三级文字按偏离调色）', () {
+    test('深色', () {
+      const c = CardFlowColors.dark;
+      expect(c.canvas, const Color(0xFF0B0D10));
+      expect(c.surface, const Color(0xFF16191E));
+      expect(c.surfaceRaised, const Color(0xFF1E2228));
+      expect(c.divider, const Color(0xFF262B33));
+      expect(c.textPrimary, const Color(0xFFF2F4F7));
+      expect(c.textSecondary, const Color(0xFF9AA3AE));
+      // 简报 #6B7480 对表面只有 3.7:1，调成 #808996（README"U-1 的偏离与约定"）。
+      expect(c.textTertiary, const Color(0xFF808996));
+      expect(c.action, const Color(0xFF5B9BFF));
     });
 
-    test('文字类 token 不低于 4.5:1，非文本控件边不低于 3:1', () {
-      for (final c in <CardFlowColors>[
-        CardFlowColors.light,
-        CardFlowColors.dark,
-      ]) {
-        expect(contrast(c.onAction, c.action), greaterThanOrEqualTo(4.5));
-        for (final text in <Color>[c.textPrimary, c.textSecondary, c.action]) {
-          expect(contrast(text, c.surface), greaterThanOrEqualTo(4.5));
-          expect(contrast(text, c.canvas), greaterThanOrEqualTo(4.5));
+    test('浅色', () {
+      const c = CardFlowColors.light;
+      expect(c.canvas, const Color(0xFFF2F3F6));
+      expect(c.surface, const Color(0xFFFFFFFF));
+      expect(c.surfaceRaised, const Color(0xFFF6F7F9));
+      expect(c.divider, const Color(0xFFE8EAEE));
+      expect(c.textPrimary, const Color(0xFF15181C));
+      expect(c.textSecondary, const Color(0xFF5F6874));
+      // 简报 #8A929C 对白底只有 3.2:1，调成 #676F7A。
+      expect(c.textTertiary, const Color(0xFF676F7A));
+      expect(c.action, const Color(0xFF1F5BB8));
+    });
+
+    test('注意、危险、银行确认、演示沿用 ui-spec §3.1 的前景色', () {
+      expect(CardFlowColors.light.attention.fg, const Color(0xFF7A4D00));
+      expect(CardFlowColors.dark.attention.fg, const Color(0xFFF2C14E));
+      expect(CardFlowColors.light.danger.fg, const Color(0xFFB3261E));
+      expect(CardFlowColors.dark.danger.fg, const Color(0xFFFF8F85));
+      expect(CardFlowColors.light.bank.fg, const Color(0xFF1C4FA0));
+      expect(CardFlowColors.dark.bank.fg, const Color(0xFF9DBEFF));
+      expect(CardFlowColors.light.demo.bg, const Color(0xFF4A2E8C));
+      expect(CardFlowColors.dark.demo.bg, const Color(0xFFCBB7FF));
+    });
+  });
+
+  group('对比度（WCAG 2.x）：文字 ≥ 4.5:1，两种模式都核对', () {
+    for (final MapEntry(key: mode, value: c) in modes.entries) {
+      final backgrounds = <String, Color>{
+        '页底': c.canvas,
+        '表面': c.surface,
+        '次级表面': c.surfaceRaised,
+      };
+
+      test('$mode：三级文字与强调色对页底、表面、次级表面', () {
+        for (final MapEntry(key: name, value: fg) in <String, Color>{
+          '主文字': c.textPrimary,
+          '次要文字': c.textSecondary,
+          '第三级文字': c.textTertiary,
+          '强调色': c.action,
+        }.entries) {
+          for (final MapEntry(key: where, value: bg) in backgrounds.entries) {
+            expect(
+              contrast(fg, bg),
+              greaterThanOrEqualTo(4.5),
+              reason: '$mode $name 对 $where',
+            );
+          }
         }
+      });
+
+      test('$mode：语义色的前景对自身底色、页底、表面、次级表面', () {
+        for (final MapEntry(key: name, value: tone) in <String, CfTone>{
+          '注意': c.attention,
+          '危险': c.danger,
+          '银行确认': c.bank,
+          '中性': c.unknown,
+          '缺陷': c.defect,
+          '稳妥（仅 FEASIBLE_ROBUST）': c.robust,
+        }.entries) {
+          for (final MapEntry(key: where, value: bg) in <String, Color>{
+            '自身底色': tone.bg,
+            ...backgrounds,
+          }.entries) {
+            expect(
+              contrast(tone.fg, bg),
+              greaterThanOrEqualTo(4.5),
+              reason: '$mode $name 对 $where',
+            );
+          }
+          // 正文与次要文字也会出现在语义色的底色上（提示块里的说明）。
+          expect(
+            contrast(c.textPrimary, tone.bg),
+            greaterThanOrEqualTo(4.5),
+            reason: '$mode 主文字对 $name 底色',
+          );
+        }
+      });
+
+      test('$mode：按钮、演示横幅、汇总卡', () {
+        expect(contrast(c.onAction, c.action), greaterThanOrEqualTo(4.5));
+        expect(contrast(c.action, c.actionTint), greaterThanOrEqualTo(4.5));
+        expect(
+          contrast(c.textPrimary, c.actionTint),
+          greaterThanOrEqualTo(4.5),
+        );
+        expect(contrast(c.demo.fg, c.demo.bg), greaterThanOrEqualTo(4.5));
+        for (final stop in c.hero) {
+          expect(contrast(c.heroText, stop), greaterThanOrEqualTo(4.5));
+          expect(
+            contrast(c.heroTextSecondary, stop),
+            greaterThanOrEqualTo(4.5),
+          );
+        }
+      });
+
+      test('$mode：输入框边对表面与页底不低于 3:1（非文本）', () {
         expect(contrast(c.borderInput, c.surface), greaterThanOrEqualTo(3));
-      }
-    });
+        expect(contrast(c.borderInput, c.canvas), greaterThanOrEqualTo(3));
+        expect(
+          contrast(c.borderInput, c.surfaceRaised),
+          greaterThanOrEqualTo(3),
+        );
+      });
+    }
   });
 
   group('ThemeData', () {
@@ -101,17 +156,44 @@ void main() {
         expect(theme.colorScheme.onSurfaceVariant, c.textSecondary);
         expect(theme.colorScheme.error, c.danger.fg);
         expect(theme.scaffoldBackgroundColor, c.canvas);
+        expect(theme.dividerTheme.color, c.divider);
+        expect(theme.cardTheme.color, c.surface);
       });
 
-      test('$brightness：字号阶梯来自 token，所有文字样式使用等宽数字', () {
+      test('$brightness：surfaceContainer 各级是不同的层次，不全等于 surface', () {
+        final s = buildCardFlowTheme(brightness).colorScheme;
+        final levels = <Color>[
+          s.surfaceContainerLowest,
+          s.surfaceContainerLow,
+          s.surfaceContainer,
+          s.surfaceContainerHigh,
+          s.surfaceContainerHighest,
+        ];
+        expect(levels.toSet().length, greaterThanOrEqualTo(4));
+        expect(levels.where((l) => l == s.surface), hasLength(lessThan(2)));
+        // 由低到高单调：深色越来越亮，浅色越来越暗。
+        final luminance = levels.map((l) => l.computeLuminance()).toList();
+        for (var i = 1; i < luminance.length; i++) {
+          if (brightness == Brightness.dark) {
+            expect(luminance[i], greaterThanOrEqualTo(luminance[i - 1]));
+          } else {
+            expect(luminance[i], lessThanOrEqualTo(luminance[i - 1]));
+          }
+        }
+      });
+
+      test('$brightness：字号阶梯来自 token（简报 U-1 §5），所有文字样式使用等宽数字', () {
         final textTheme = buildCardFlowTheme(brightness).textTheme;
-        expect(textTheme.displaySmall?.fontSize, CfType.numDisplay.size);
-        expect(textTheme.titleLarge?.fontSize, CfType.titleL.size);
-        expect(textTheme.titleMedium?.fontSize, CfType.titleM.size);
-        expect(textTheme.bodyLarge?.fontSize, CfType.bodyL.size);
-        expect(textTheme.bodyMedium?.fontSize, CfType.bodyM.size);
+        expect(textTheme.headlineLarge?.fontSize, 32);
+        expect(textTheme.headlineLarge?.fontWeight, FontWeight.w700);
+        expect(textTheme.titleMedium?.fontSize, 17);
+        expect(textTheme.titleMedium?.fontWeight, FontWeight.w700);
+        expect(textTheme.titleLarge?.fontSize, CfType.navTitle.size);
+        expect(textTheme.bodyLarge?.fontSize, 15);
+        expect(textTheme.bodyMedium?.fontSize, CfType.bodySecondary.size);
+        expect(textTheme.bodySmall?.fontSize, 12);
         expect(textTheme.labelMedium?.fontSize, CfType.label.size);
-        expect(textTheme.bodySmall?.fontSize, CfType.caption.size);
+        expect(textTheme.displaySmall?.fontSize, CfType.numDisplay.size);
         final styles = <TextStyle?>[
           textTheme.displayLarge,
           textTheme.displayMedium,
@@ -138,6 +220,24 @@ void main() {
         }
       });
 
+      test('$brightness：金额字号 38/30/24（简报 U-1 §5）', () {
+        expect(CfType.amountHero.size, 38);
+        expect(CfType.amountDetail.size, 30);
+        expect(CfType.amountRow.size, 24);
+        for (final spec in <CfTypeSpec>[
+          CfType.amountHero,
+          CfType.amountDetail,
+          CfType.amountTile,
+          CfType.amountRow,
+          CfType.amountInline,
+        ]) {
+          expect(
+            spec.toTextStyle().fontFeatures,
+            contains(const FontFeature.tabularFigures()),
+          );
+        }
+      });
+
       test('$brightness：触控目标不小于 48', () {
         final theme = buildCardFlowTheme(brightness);
         expect(theme.materialTapTargetSize, MaterialTapTargetSize.padded);
@@ -152,10 +252,28 @@ void main() {
         }
         expect(theme.listTileTheme.minTileHeight, CfTouch.listRowMinHeight);
       });
+
+      test('$brightness：截图工具可以指定字体族，每一种文字样式都用它', () {
+        final theme = buildCardFlowTheme(
+          brightness,
+          fontFamily: 'TestFamily',
+          fontFamilyFallback: const <String>['Fallback'],
+        );
+        for (final style in <TextStyle?>[
+          theme.textTheme.headlineLarge,
+          theme.textTheme.titleLarge,
+          theme.textTheme.bodyLarge,
+          theme.textTheme.labelLarge,
+          theme.appBarTheme.titleTextStyle,
+        ]) {
+          expect(style?.fontFamily, 'TestFamily');
+          expect(style?.fontFamilyFallback, const <String>['Fallback']);
+        }
+      });
     }
   });
 
-  test('间距取 4pt 网格', () {
+  test('间距与圆角取 4pt 网格；银行徽标按简报取 34', () {
     for (final value in <double>[
       CfSpace.xxs,
       CfSpace.xs,
@@ -166,13 +284,20 @@ void main() {
       CfRadius.sm,
       CfRadius.md,
       CfRadius.lg,
+      CfRadius.tile,
+      CfRadius.card,
       CfIconSize.sm,
       CfIconSize.md,
       CfIconSize.lg,
+      CfSize.iconCircle,
+      CfSize.tabBar,
+      CfSize.chart,
       CfTouch.minTarget,
       CfTouch.listRowMinHeight,
     ]) {
       expect(value % 4, 0, reason: '$value');
     }
+    expect(CfRadius.card, inInclusiveRange(18, 22));
+    expect(CfSize.bankBadge, 34);
   });
 }

@@ -71,47 +71,57 @@ class _DemoBanner extends StatelessWidget {
 
   final VoidCallback onExit;
 
+  /// 横幅是常驻的外框（同底部导航），文字放大最多到 2 倍（ui-spec §3.3：不做低于 2.0 倍的钳制），
+  /// 放大到 3 倍时不至于占去半屏。
+  static const double maxTextScale = 2;
+
   @override
   Widget build(BuildContext context) {
     final colors = CardFlowColors.of(context);
     final theme = Theme.of(context);
+    // 简报 U-1 §1：紫色横幅保留，可以更细——一行，高度就是一个触控目标（48）。
     return Material(
       color: colors.demo.bg,
       child: SafeArea(
         bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CfSpace.md,
-            vertical: CfSpace.xxs,
-          ),
-          child: Row(
-            children: <Widget>[
-              ExcludeSemantics(
-                child: Icon(
-                  Icons.science_outlined,
-                  size: CfIconSize.md,
-                  color: colors.demo.fg,
-                ),
-              ),
-              const SizedBox(width: CfSpace.xs),
-              Expanded(
-                child: Semantics(
-                  header: true,
-                  child: Text(
-                    demoBannerText,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+        child: MediaQuery.withClampedTextScaling(
+          maxScaleFactor: maxTextScale,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: CfTouch.minTarget),
+            child: Padding(
+              padding: const EdgeInsets.only(left: CfSpace.md),
+              child: Row(
+                children: <Widget>[
+                  ExcludeSemantics(
+                    child: Icon(
+                      Icons.science_outlined,
+                      size: CfIconSize.sm,
                       color: colors.demo.fg,
                     ),
                   ),
-                ),
+                  const SizedBox(width: CfSpace.xs),
+                  Expanded(
+                    child: Semantics(
+                      header: true,
+                      child: Text(
+                        demoBannerText,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: colors.demo.fg,
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: colors.demo.fg,
+                      textStyle: theme.textTheme.labelMedium,
+                    ),
+                    onPressed: onExit,
+                    child: const Text('退出演示'),
+                  ),
+                ],
               ),
-              const SizedBox(width: CfSpace.xs),
-              TextButton(
-                style: TextButton.styleFrom(foregroundColor: colors.demo.fg),
-                onPressed: onExit,
-                child: const Text('退出演示'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
