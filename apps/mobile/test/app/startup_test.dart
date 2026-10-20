@@ -10,8 +10,8 @@ import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_errors.dart';
 import 'package:cardflow/data/db/database_providers.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_page.dart';
+import 'package:cardflow/features/home/ledger_home_page.dart';
 import 'package:cardflow/features/onboarding/welcome_page.dart';
-import 'package:cardflow/features/overview/overview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -60,7 +60,7 @@ void main() {
     expect(find.byType(BackButton), findsNothing);
     expect(find.byType(NavigationBar), findsNothing);
     for (final path in <String>[
-      AppRoutes.overview,
+      AppRoutes.home,
       AppRoutes.cards,
       AppRoutes.settings,
       AppRoutes.welcome,
@@ -73,11 +73,11 @@ void main() {
     expect(appBarTitle(DiagnosticsPage.title), findsOneWidget);
   });
 
-  testWidgets('有工作空间：启动停在总览，启动页与首次使用页都不停留', (tester) async {
+  testWidgets('有工作空间：启动停在卡账，启动页与首次使用页都不停留', (tester) async {
     await pumpCardFlowApp(tester);
-    expect(appBarTitle(OverviewPage.title), findsOneWidget);
+    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
     await goTo(tester, AppRoutes.startup);
-    expect(appBarTitle(OverviewPage.title), findsOneWidget);
+    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
   });
 
   testWidgets('打开中：启动页显示"正在打开本机加密数据…"（加载态，无动画）', (tester) async {

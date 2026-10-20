@@ -72,8 +72,8 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
         (AsyncData(), _) when account == null => ErrorBlock(
           title: '已不存在',
           detail: '这个信用账户不在当前空间里（可能已切换空间）。',
-          onRetry: () => context.go(AppRoutes.cards),
-          retryLabel: '回到卡包',
+          onRetry: () => context.go(AppRoutes.home),
+          retryLabel: '回到卡账',
         ),
         (AsyncData(value: final w), AsyncData(value: final data)) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

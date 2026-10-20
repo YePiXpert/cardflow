@@ -7,11 +7,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/cf_layout.dart';
 import '../../app/widgets/confirm_dialog.dart';
 import '../../app/widgets/feedback.dart';
-import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/state_views.dart';
-import '../../app/widgets/workspace_badges.dart';
 import '../../data/db/app_database.dart';
 import '../../data/repositories/cash_event_repository.dart';
 import '../../data/repositories/cash_models.dart';
@@ -19,17 +18,12 @@ import '../../data/repositories/cash_plan_reader.dart';
 import '../../data/repositories/providers.dart';
 import '../../data/repositories/repository_errors.dart';
 import '../cards/card_formatting.dart';
-import '../planner/planner_segments.dart';
 import 'cash_formatting.dart';
 
-/// P-08 现金账户与收支计划（ui-spec P-08）：账户列表（最新快照、"{n} 天前"、可用性、储备）、收支计划
-/// （确定/预计收入、固定生活支出、其他债务、一次性支出）、周期事项（逐期覆盖/跳过在详情里）、调拨。
-///
-/// 四态：首次空白"添加还款用现金账户"、加载（骨架）、错误（「重试」）、成功；叠加态：余额陈旧
-/// "{n} 天前" +「记录新快照」，没有快照"未计入规划"。
-class CashPage extends ConsumerWidget {
-  const CashPage({super.key});
-
+/// P-08 现金账户与收支计划（ui-spec P-08）的文案；内容在现金页（`cash_home_page.dart`）的下半部分
+/// （[CashPlanSections]）：账户列表（最新快照、"{n} 天前"、可用性、储备）、收支计划（确定/预计收入、固定生活
+/// 支出、其他债务、一次性支出）、周期事项（逐期覆盖/跳过在详情里）、调拨。
+abstract final class CashPage {
   static const String title = '现金与收支';
 
   /// ui-spec P-08 九态"首次空白"。
@@ -37,46 +31,12 @@ class CashPage extends ConsumerWidget {
 
   /// 保存成功的轻提示（ui-spec P-08 九态"成功"）。
   static const String savedMessage = '已保存，日历已更新';
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final plan = ref.watch(cashPlanProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text(title)),
-      body: switch (plan) {
-        AsyncData(:final value) when value.isEmpty => ListView(
-          children: <Widget>[
-            const PlannerSegmentBar(current: PlannerSegment.cash),
-            const RootPageBadges(),
-            FirstRunEmptyState(
-              icon: Icons.account_balance_wallet_outlined,
-              message: firstRunMessage,
-              purpose: '维护现金账户、余额快照、可用性、储备与收支计划；资金日历据此逐账户计算。',
-              actions: <EmptyStateAction>[
-                EmptyStateAction(
-                  label: '添加账户',
-                  onPressed: () => context.go(AppRoutes.newCashAccount),
-                ),
-              ],
-              scrollable: false,
-            ),
-          ],
-        ),
-        AsyncData(:final value) => _CashPlanList(view: value),
-        AsyncError(:final error) => ErrorBlock(
-          title: '现金与收支读取失败',
-          code: '${error.runtimeType}',
-          detail: '本机数据没有改动。',
-          onRetry: () => ref.invalidate(cashPlanProvider),
-        ),
-        _ => const LoadingSkeleton(),
-      },
-    );
-  }
 }
 
-class _CashPlanList extends ConsumerWidget {
-  const _CashPlanList({required this.view});
+/// 现金账户与收支计划（P-08 的内容，嵌在现金页里，不自带滚动）。叠加态：余额陈旧"{n} 天前" +「记录新快照」，
+/// 没有快照"未计入规划"。
+class CashPlanSections extends ConsumerWidget {
+  const CashPlanSections({super.key, required this.view});
 
   final CashPlanView view;
 
@@ -98,11 +58,9 @@ class _CashPlanList extends ConsumerWidget {
     String currencyOf(String accountId) =>
         view.account(accountId)?.row.currency ?? 'CNY';
     String nameOf(String accountId) => view.account(accountId)?.row.name ?? '';
-    return ListView(
-      padding: const EdgeInsets.only(bottom: CfSpace.xl),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        const PlannerSegmentBar(current: PlannerSegment.cash),
-        const RootPageBadges(),
         SectionTitle(
           '现金账户',
           trailing: TextButton(
@@ -110,8 +68,12 @@ class _CashPlanList extends ConsumerWidget {
             child: const Text('添加账户'),
           ),
         ),
-        for (final account in active)
-          _AccountTile(summary: account, today: view.today),
+        GroupCard(
+          children: <Widget>[
+            for (final account in active)
+              _AccountTile(summary: account, today: view.today),
+          ],
+        ),
         if (closed.isNotEmpty)
           ExpansionTile(
             title: Text('已停用（${closed.length}）'),
@@ -131,7 +93,9 @@ class _CashPlanList extends ConsumerWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
+          padding: const EdgeInsets.symmetric(
+            horizontal: CfSpace.md + CfSpace.xxs,
+          ),
           child: Text('每笔收支须选层级（确定/预计），不设概率；已确认口径只算确定的。', style: secondary),
         ),
         if (view.plan.isEmpty)
@@ -143,10 +107,10 @@ class _CashPlanList extends ConsumerWidget {
           if (byType[type] case final rows?) ...<Widget>[
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                CfSpace.md,
+                CfSpace.md + CfSpace.xxs,
                 CfSpace.sm,
                 CfSpace.md,
-                0,
+                CfSpace.xxs,
               ),
               child: Semantics(
                 header: true,
@@ -156,13 +120,17 @@ class _CashPlanList extends ConsumerWidget {
                 ),
               ),
             ),
-            for (final row in rows)
-              _EventTile(
-                row: row,
-                today: view.today,
-                currency: currencyOf(row.cashAccountId),
-                accountName: nameOf(row.cashAccountId),
-              ),
+            GroupCard(
+              children: <Widget>[
+                for (final row in rows)
+                  _EventTile(
+                    row: row,
+                    today: view.today,
+                    currency: currencyOf(row.cashAccountId),
+                    accountName: nameOf(row.cashAccountId),
+                  ),
+              ],
+            ),
           ],
         SectionTitle(
           '周期事项',
@@ -175,15 +143,22 @@ class _CashPlanList extends ConsumerWidget {
         ),
         if (view.recurring.isEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
+            padding: const EdgeInsets.symmetric(
+              horizontal: CfSpace.md + CfSpace.xxs,
+            ),
             child: Text('还没有周期事项。每期可单独覆盖或跳过，不影响其他各期。', style: secondary),
-          ),
-        for (final item in view.recurring)
-          _RecurringTile(
-            item: item,
-            today: view.today,
-            currency: currencyOf(item.row.cashAccountId),
-            accountName: nameOf(item.row.cashAccountId),
+          )
+        else
+          GroupCard(
+            children: <Widget>[
+              for (final item in view.recurring)
+                _RecurringTile(
+                  item: item,
+                  today: view.today,
+                  currency: currencyOf(item.row.cashAccountId),
+                  accountName: nameOf(item.row.cashAccountId),
+                ),
+            ],
           ),
         SectionTitle(
           '调拨',
@@ -196,19 +171,26 @@ class _CashPlanList extends ConsumerWidget {
         ),
         if (view.transfers.isEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
+            padding: const EdgeInsets.symmetric(
+              horizontal: CfSpace.md + CfSpace.xxs,
+            ),
             child: Text(
               active.length < 2 ? '有两个以上的现金账户时才能登记调拨（转出与到账两端）。' : '还没有调拨。',
               style: secondary,
             ),
-          ),
-        for (final transfer in view.transfers)
-          _TransferTile(
-            transfer: transfer,
-            today: view.today,
-            currency: currencyOf(transfer.out.cashAccountId),
-            fromName: nameOf(transfer.out.cashAccountId),
-            toName: nameOf(transfer.into.cashAccountId),
+          )
+        else
+          GroupCard(
+            children: <Widget>[
+              for (final transfer in view.transfers)
+                _TransferTile(
+                  transfer: transfer,
+                  today: view.today,
+                  currency: currencyOf(transfer.out.cashAccountId),
+                  fromName: nameOf(transfer.out.cashAccountId),
+                  toName: nameOf(transfer.into.cashAccountId),
+                ),
+            ],
           ),
       ],
     );

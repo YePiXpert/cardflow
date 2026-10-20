@@ -98,13 +98,13 @@ void main() {
       expect(find.text('重试'), findsOneWidget);
     });
 
-    testWidgets('不在当前空间的账户："已不存在"，可回到卡包', (tester) async {
+    testWidgets('不在当前空间的账户："已不存在"，可回到卡账', (tester) async {
       await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
       await goTo(tester, AppRoutes.account('no-such-account'));
       expect(find.text('已不存在'), findsOneWidget);
-      await tester.tap(find.text('回到卡包'));
+      await tester.tap(find.text('回到卡账'));
       await tester.pumpAndSettle();
-      expect(appBarTitle('卡包'), findsOneWidget);
+      expect(appBarTitle('卡账'), findsOneWidget);
     });
 
     testWidgets('成功（卡 A）：预测账期（未出账）、系统估计、本期账单（演示 10-10）、额度、两张卡', (tester) async {
@@ -134,7 +134,7 @@ void main() {
       await goTo(tester, AppRoutes.account(await _demoAccount(tester, '卡 D')));
       await _scrollTo(tester, find.textContaining('超限：银行可用额为负'));
       expect(find.textContaining('超限：银行可用额为负'), findsOneWidget);
-      expect(find.textContaining('共享授信池「乙行共享额度」'), findsOneWidget);
+      expect(find.textContaining('共享授信池「长江共享额度」'), findsOneWidget);
     });
 
     testWidgets('没有规则："账期规则：未设置" ›「去设置」到 P-04', (tester) async {

@@ -6,8 +6,8 @@ import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/app/widgets/demo_banner.dart';
 import 'package:cardflow/data/repositories/models.dart';
 import 'package:cardflow/data/repositories/providers.dart';
+import 'package:cardflow/features/home/ledger_home_page.dart';
 import 'package:cardflow/features/onboarding/welcome_page.dart';
-import 'package:cardflow/features/overview/overview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -103,7 +103,7 @@ void main() {
     await tester.tap(_option('体验演示'));
     await tester.pumpAndSettle();
 
-    expect(appBarTitle(OverviewPage.title), findsOneWidget);
+    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
     expect(find.text(demoBannerText), findsOneWidget);
     expect(find.byIcon(Icons.close), findsNothing);
     final workspace = appContainer(tester).read(currentWorkspaceProvider).value;
@@ -120,7 +120,7 @@ void main() {
     }
 
     // 诊断页不受启动分流约束（数据库打不开时它是唯一的反馈渠道），所以回到总览再退出。
-    await goTo(tester, AppRoutes.overview);
+    await goTo(tester, AppRoutes.home);
     await tester.tap(find.text('退出演示'));
     await tester.pumpAndSettle();
     expect(find.text('退出演示？'), findsOneWidget);
@@ -156,7 +156,7 @@ void main() {
     await tester.tap(find.text('进入演示'));
     await tester.pumpAndSettle();
     expect(find.text(demoBannerText), findsOneWidget);
-    expect(appBarTitle(OverviewPage.title), findsOneWidget);
+    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
   });
 
   testWidgets('清除演示数据：确认框写明影响数量；清除后回到真实空间', (tester) async {

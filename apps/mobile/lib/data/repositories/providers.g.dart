@@ -1470,12 +1470,12 @@ final class LedgerProvider
 
 String _$ledgerHash() => r'17803145dfc1d93cd4518f81b5b252f2e91b36d7';
 
-/// 卡账首页（简报 U-1 §2）的读模型：账单读模型变化时自动重算；[sort] 决定行的顺序。
+/// 卡账首页（简报 U-1 §2）的读模型（默认按还款日排序；其他排序用 `sortRows`）：账单读模型变化时自动重算。
 
 @ProviderFor(ledgerHome)
-final ledgerHomeProvider = LedgerHomeFamily._();
+final ledgerHomeProvider = LedgerHomeProvider._();
 
-/// 卡账首页（简报 U-1 §2）的读模型：账单读模型变化时自动重算；[sort] 决定行的顺序。
+/// 卡账首页（简报 U-1 §2）的读模型（默认按还款日排序；其他排序用 `sortRows`）：账单读模型变化时自动重算。
 
 final class LedgerHomeProvider
     extends
@@ -1485,27 +1485,20 @@ final class LedgerHomeProvider
           FutureOr<LedgerHome>
         >
     with $FutureModifier<LedgerHome>, $FutureProvider<LedgerHome> {
-  /// 卡账首页（简报 U-1 §2）的读模型：账单读模型变化时自动重算；[sort] 决定行的顺序。
-  LedgerHomeProvider._({
-    required LedgerHomeFamily super.from,
-    required LedgerSort super.argument,
-  }) : super(
-         retry: noDatabaseRetry,
-         name: r'ledgerHomeProvider',
-         isAutoDispose: true,
-         dependencies: null,
-         $allTransitiveDependencies: null,
-       );
+  /// 卡账首页（简报 U-1 §2）的读模型（默认按还款日排序；其他排序用 `sortRows`）：账单读模型变化时自动重算。
+  LedgerHomeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: noDatabaseRetry,
+        name: r'ledgerHomeProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$ledgerHomeHash();
-
-  @override
-  String toString() {
-    return r'ledgerHomeProvider'
-        ''
-        '($argument)';
-  }
 
   @$internal
   @override
@@ -1514,41 +1507,8 @@ final class LedgerHomeProvider
 
   @override
   FutureOr<LedgerHome> create(Ref ref) {
-    final argument = this.argument as LedgerSort;
-    return ledgerHome(ref, argument);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is LedgerHomeProvider && other.argument == argument;
-  }
-
-  @override
-  int get hashCode {
-    return argument.hashCode;
+    return ledgerHome(ref);
   }
 }
 
-String _$ledgerHomeHash() => r'eb7a467adc8d72a3e0f983f7fa5ef4073fdf03b3';
-
-/// 卡账首页（简报 U-1 §2）的读模型：账单读模型变化时自动重算；[sort] 决定行的顺序。
-
-final class LedgerHomeFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<LedgerHome>, LedgerSort> {
-  LedgerHomeFamily._()
-    : super(
-        retry: noDatabaseRetry,
-        name: r'ledgerHomeProvider',
-        dependencies: null,
-        $allTransitiveDependencies: null,
-        isAutoDispose: true,
-      );
-
-  /// 卡账首页（简报 U-1 §2）的读模型：账单读模型变化时自动重算；[sort] 决定行的顺序。
-
-  LedgerHomeProvider call(LedgerSort sort) =>
-      LedgerHomeProvider._(argument: sort, from: this);
-
-  @override
-  String toString() => r'ledgerHomeProvider';
-}
+String _$ledgerHomeHash() => r'1dcb410e97914f6f06140c268983a8c47b62355c';

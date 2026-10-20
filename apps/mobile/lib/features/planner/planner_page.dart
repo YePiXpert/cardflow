@@ -3,18 +3,15 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/widgets/first_run_empty_state.dart';
-import '../../app/widgets/workspace_badges.dart';
-import 'planner_segments.dart';
 
-/// P-10 规划输入（规划 Tab 根页，ui-spec §6）。本阶段只有"首次空白"态；顶部是规划 Tab 的分段
-/// （消费规划｜资金日历｜现金与收支｜情景）。
+/// P-10 消费规划（规划 › 消费规划，ui-spec §6）。本期只有"首次空白"态：消费规划在后续版本提供。
 class PlannerPage extends StatelessWidget {
   const PlannerPage({super.key});
 
-  /// 页名，同时是底部导航的标签。
-  static const String title = '规划';
+  /// 页名。
+  static const String title = '消费规划';
 
-  /// ui-spec P-10 九态表"首次空白"：无账户→"先添加账户"。
+  /// ui-spec P-10 九态"首次空白"：无账户→"先添加账户"。
   static const String firstRunMessage = '先添加账户';
 
   @override
@@ -23,15 +20,13 @@ class PlannerPage extends StatelessWidget {
       appBar: AppBar(title: const Text(title)),
       body: ListView(
         children: <Widget>[
-          const PlannerSegmentBar(current: PlannerSegment.plan),
-          const RootPageBadges(),
           FirstRunEmptyState(
-            icon: Icons.event_note_outlined,
+            icon: Icons.shopping_bag_outlined,
             message: firstRunMessage,
             purpose: '录入计划消费及约束，计算前做数据检查（消费规划在后续版本提供）。',
             actions: <EmptyStateAction>[
               EmptyStateAction(
-                label: '去卡包添加账户',
+                label: '去管理卡片',
                 onPressed: () => context.go(AppRoutes.cards),
               ),
             ],

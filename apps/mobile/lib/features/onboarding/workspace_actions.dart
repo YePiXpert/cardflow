@@ -8,10 +8,10 @@ import '../../data/repositories/providers.dart';
 
 /// 切换到演示空间的确认文案。
 const String enterDemoConfirmMessage =
-    '演示数据是合成的示例（卡 A/B/C，"今天"固定为 2026-10-16），与你的真实数据隔离、互不可见，'
+    '演示数据是合成的示例（虚构的银行与卡，"今天"固定为 2026-10-16），与你的真实数据隔离、互不可见，'
     '不会同步或导出。可随时「退出演示」回到真实数据。';
 
-/// 体验演示（ui-spec §4.2）：从真实空间切换须确认；首次进入时生成合成数据；完成后转到总览。
+/// 体验演示（ui-spec §4.2）：从真实空间切换须确认；首次进入时生成合成数据；完成后转到卡账。
 /// 返回是否进入了演示空间。生成失败时抛出（真实空间不受影响），由调用方显示错误与「重试生成」。
 Future<bool> enterDemoWorkspace(BuildContext context, WidgetRef ref) async {
   final current = ref.read(currentWorkspaceProvider).value;
@@ -28,7 +28,7 @@ Future<bool> enterDemoWorkspace(BuildContext context, WidgetRef ref) async {
   }
   await ref.read(currentWorkspaceProvider.notifier).enterDemo();
   if (context.mounted) {
-    context.go(AppRoutes.overview);
+    context.go(AppRoutes.home);
   }
   return true;
 }

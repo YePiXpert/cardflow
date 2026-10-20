@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../app/widgets/first_run_empty_state.dart';
 
-/// P-14 发现：活动列表（发现 Tab 根页，ui-spec §6）。本阶段只有"首次空白"态。
+/// P-14 活动列表（规划 › 活动与权益，ui-spec §6；原"发现"标签去掉）。本阶段只有"首次空白"态。
 ///
 /// ui-spec 要求此处不推荐办卡，所以空白态不提供任何办卡入口。
 class PromotionsPage extends StatelessWidget {
   const PromotionsPage({super.key});
 
-  /// 页名，同时是底部导航的标签。
-  static const String title = '发现';
+  /// 页名。
+  static const String title = '活动与权益';
 
   /// ui-spec P-14 九态表"首次空白"。
   static const String firstRunMessage = '还没有活动';

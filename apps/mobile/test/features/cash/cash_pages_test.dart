@@ -14,6 +14,7 @@ import 'package:cardflow/data/repositories/recurring_item_repository.dart';
 import 'package:cardflow/features/cash/cash_account_pages.dart';
 import 'package:cardflow/features/cash/cash_entry_pages.dart';
 import 'package:cardflow/features/cash/cash_form_fields.dart';
+import 'package:cardflow/features/cash/cash_home_page.dart';
 import 'package:cardflow/features/cash/cash_page.dart';
 import 'package:cardflow_domain/cardflow_domain.dart';
 import 'package:flutter/material.dart';
@@ -50,12 +51,11 @@ Future<void> _enter(WidgetTester tester, String label, String text) async {
 }
 
 void main() {
-  testWidgets('首次空白："添加还款用现金账户"，「添加账户」进入添加页；分段标签在顶部', (tester) async {
+  testWidgets('首次空白："添加还款用现金账户"，「添加账户」进入添加页', (tester) async {
     await pumpCardFlowApp(tester);
     await goTo(tester, AppRoutes.cash);
-    expect(appBarTitle(CashPage.title), findsOneWidget);
+    expect(appBarTitle(CashHomePage.title), findsOneWidget);
     expect(find.text(CashPage.firstRunMessage), findsOneWidget);
-    expect(find.widgetWithText(ChoiceChip, '资金日历'), findsOneWidget);
     await tester.tap(find.widgetWithText(FilledButton, '添加账户'));
     await tester.pumpAndSettle();
     expect(appBarTitle(NewCashAccountPage.title), findsOneWidget);
@@ -131,7 +131,7 @@ void main() {
     expect(find.text('请填写时刻（HH:MM）'), findsOneWidget);
     await _enter(tester, '实际时点（HH:MM，中国大陆（Asia/Shanghai，UTC+08:00））', '09:30');
     await _tap(tester, find.widgetWithText(FilledButton, '保存'));
-    expect(appBarTitle(CashPage.title), findsOneWidget);
+    expect(appBarTitle(CashHomePage.title), findsOneWidget);
     final plan = await readCashPlan(tester);
     final account = plan.accounts.single;
     expect(account.row.name, '余额宝');
@@ -316,13 +316,13 @@ void main() {
     expect(appBarTitle(RecordCashSnapshotPage.title), findsOneWidget);
   });
 
-  testWidgets('不在当前空间的账户："已不存在"，可回到现金与收支', (tester) async {
+  testWidgets('不在当前空间的账户："已不存在"，可回到现金', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
     await goTo(tester, AppRoutes.cashAccount('no-such-account'));
     expect(find.text('已不存在'), findsOneWidget);
-    await tester.tap(find.text('回到现金与收支'));
+    await tester.tap(find.text('回到现金'));
     await tester.pumpAndSettle();
-    expect(appBarTitle(CashPage.title), findsOneWidget);
+    expect(appBarTitle(CashHomePage.title), findsOneWidget);
   });
 
   testWidgets('受限资金的"可用于还款"开关禁用并说明（只能设可用日期）', (tester) async {

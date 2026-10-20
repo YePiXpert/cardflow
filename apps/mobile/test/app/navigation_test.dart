@@ -1,47 +1,56 @@
 import 'package:cardflow/app/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/app/widgets/not_found_page.dart';
+import 'package:cardflow/features/calendar/cash_calendar_page.dart';
 import 'package:cardflow/features/cards/cards_page.dart';
+import 'package:cardflow/features/cards/new_card_page.dart';
+import 'package:cardflow/features/cash/cash_home_page.dart';
+import 'package:cardflow/features/cash/cash_page.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_page.dart';
+import 'package:cardflow/features/home/ledger_home_page.dart';
 import 'package:cardflow/features/onboarding/welcome_page.dart';
-import 'package:cardflow/features/overview/overview_page.dart';
 import 'package:cardflow/features/planner/planner_page.dart';
 import 'package:cardflow/features/promotions/promotions_page.dart';
+import 'package:cardflow/features/scenarios/scenario_pages.dart';
 import 'package:cardflow/features/settings/settings_page.dart';
+import 'package:cardflow/features/statements/statement_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_helpers.dart';
 
-/// 五个主导航：(页名, 根路径, 首次空白文案)，顺序与 ui-spec §1.1 一致。
+/// 四个主导航：(页名, 根路径, 首次空白文案)，顺序与底部导航一致（简报 U-1 §1）。
 const List<(String, String, String)> tabs = <(String, String, String)>[
-  (OverviewPage.title, AppRoutes.overview, OverviewPage.firstRunMessage),
-  (CardsPage.title, AppRoutes.cards, CardsPage.firstRunMessage),
-  (PlannerPage.title, AppRoutes.planner, PlannerPage.firstRunMessage),
-  (PromotionsPage.title, AppRoutes.discover, PromotionsPage.firstRunMessage),
+  (LedgerHomePage.title, AppRoutes.home, LedgerHomePage.firstRunMessage),
+  (CashHomePage.title, AppRoutes.cashHome, CashPage.firstRunMessage),
+  (ScenariosPage.title, AppRoutes.planner, ScenariosPage.firstRunMessage),
   (SettingsPage.title, AppRoutes.settings, SettingsPage.firstRunMessage),
 ];
 
+String _location(WidgetTester tester) =>
+    appRouter(tester).routerDelegate.currentConfiguration.uri.toString();
+
 void main() {
-  testWidgets('底部导航是五个主 Tab，顺序为 总览/卡包/规划/发现/我的', (tester) async {
+  testWidgets('底部导航是四个主 Tab，顺序为 卡账/现金/规划/我的（"发现"去掉）', (tester) async {
     await pumpCardFlowApp(tester);
 
     final labels = tester
         .widgetList<NavigationDestination>(find.byType(NavigationDestination))
         .map((destination) => destination.label)
         .toList();
-    expect(labels, <String>['总览', '卡包', '规划', '发现', '我的']);
+    expect(labels, <String>['卡账', '现金', '规划', '我的']);
     expect(AppRoutes.tabRoots, tabs.map((tab) => tab.$2).toList());
   });
 
-  testWidgets('启动后停在总览，显示页名与首次空白文案', (tester) async {
+  testWidgets('启动后停在卡账，显示页名与首次空白文案', (tester) async {
     await pumpCardFlowApp(tester);
 
-    expect(appBarTitle(OverviewPage.title), findsOneWidget);
-    expect(find.text(OverviewPage.firstRunMessage), findsOneWidget);
+    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
+    expect(find.text(LedgerHomePage.firstRunMessage), findsOneWidget);
+    expect(_location(tester), AppRoutes.home);
   });
 
-  testWidgets('点按底部导航可到达全部五个 Tab', (tester) async {
+  testWidgets('点按底部导航可到达全部四个 Tab', (tester) async {
     await pumpCardFlowApp(tester);
 
     for (final (title, _, message) in tabs) {
@@ -74,9 +83,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(appBarTitle(DiagnosticsPage.title), findsOneWidget);
 
-    await tester.tap(navLabel(OverviewPage.title));
+    await tester.tap(navLabel(LedgerHomePage.title));
     await tester.pumpAndSettle();
-    expect(find.text(OverviewPage.firstRunMessage), findsOneWidget);
+    expect(find.text(LedgerHomePage.firstRunMessage), findsOneWidget);
 
     await tester.tap(navLabel(SettingsPage.title));
     await tester.pumpAndSettle();
@@ -87,28 +96,78 @@ void main() {
     expect(appBarTitle(SettingsPage.title), findsOneWidget);
   });
 
-  testWidgets('规划的首次空白主操作跳到卡包', (tester) async {
+  testWidgets('原有页面都能从新结构进入：卡账右上"管理全部卡片"、规划里的消费规划与活动', (tester) async {
     await pumpCardFlowApp(tester);
-    await goTo(tester, AppRoutes.planner);
 
-    await tester.tap(find.text('去卡包添加账户'));
+    await tester.tap(find.byTooltip('管理全部卡片'));
     await tester.pumpAndSettle();
     expect(appBarTitle(CardsPage.title), findsOneWidget);
-    expect(find.text(CardsPage.firstRunMessage), findsOneWidget);
+    expect(_location(tester), AppRoutes.cards);
+
+    await goTo(tester, AppRoutes.planner);
+    await tester.tap(find.text('消费规划'));
+    await tester.pumpAndSettle();
+    expect(appBarTitle(PlannerPage.title), findsOneWidget);
+    expect(find.text(PlannerPage.firstRunMessage), findsOneWidget);
+    await tester.tap(find.text('去管理卡片'));
+    await tester.pumpAndSettle();
+    expect(appBarTitle(CardsPage.title), findsOneWidget);
+
+    await goTo(tester, AppRoutes.planner);
+    await tester.tap(find.text('活动与权益'));
+    await tester.pumpAndSettle();
+    expect(appBarTitle(PromotionsPage.title), findsOneWidget);
+    expect(find.text(PromotionsPage.firstRunMessage), findsOneWidget);
+
+    await goTo(tester, AppRoutes.home);
+    await tester.tap(find.byTooltip('添加'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('添加卡片'));
+    await tester.pumpAndSettle();
+    expect(appBarTitle(NewCardPage.title), findsOneWidget);
   });
 
-  testWidgets('未开放的操作显示为禁用并注明所属阶段', (tester) async {
+  testWidgets('0.0.1 的旧路由重定向到新位置，查询参数保留，深链仍可用', (tester) async {
     await pumpCardFlowApp(tester);
 
-    final import = tester.widget<OutlinedButton>(
-      find.widgetWithText(OutlinedButton, '导入'),
+    final cases = <(String, String, String)>[
+      ('/overview', AppRoutes.home, LedgerHomePage.title),
+      (
+        '/overview/statements',
+        AppRoutes.statements(),
+        StatementCenterPage.title,
+      ),
+      ('/cards', AppRoutes.cards, CardsPage.title),
+      ('/cards/new', AppRoutes.newCard, NewCardPage.title),
+      ('/planner/cash', AppRoutes.cashHome, CashHomePage.title),
+      (
+        '/planner/calendar?basis=confirmed',
+        '${AppRoutes.cashCalendar}?basis=confirmed',
+        CashCalendarPage.title,
+      ),
+      ('/planner/scenarios', AppRoutes.planner, ScenariosPage.title),
+      ('/discover', AppRoutes.discover, PromotionsPage.title),
+    ];
+    for (final (old, expected, title) in cases) {
+      await goTo(tester, old);
+      expect(_location(tester), expected, reason: old);
+      expect(appBarTitle(title), findsOneWidget, reason: old);
+    }
+    // 账户详情的旧深链（含子路径）与 legacyRedirect 的映射。
+    expect(
+      legacyRedirect(Uri.parse('/cards/accounts/abc/settings?section=rule')),
+      '${AppRoutes.accountSettings('abc')}?section=rule',
     );
-    expect(import.onPressed, isNull);
-    expect(find.text('导入：后续版本提供'), findsOneWidget);
-    final build = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, '建卡'),
+    expect(
+      legacyRedirect(Uri.parse('/overview/repayments/r1')),
+      AppRoutes.repayment('r1'),
     );
-    expect(build.onPressed, isNotNull);
+    expect(
+      legacyRedirect(Uri.parse('/planner/cash/accounts/x/snapshot')),
+      AppRoutes.recordCashSnapshot('x'),
+    );
+    expect(legacyRedirect(Uri.parse(AppRoutes.home)), isNull);
+    expect(legacyRedirect(Uri.parse(AppRoutes.newScenario)), isNull);
   });
 
   testWidgets('欢迎页全屏覆盖底部导航，返回后回到"我的"', (tester) async {
@@ -129,15 +188,15 @@ void main() {
     expect(find.byType(NavigationBar), findsOneWidget);
   });
 
-  testWidgets('未知路径显示"已不存在"，可回到总览', (tester) async {
+  testWidgets('未知路径显示"已不存在"，可回到卡账', (tester) async {
     await pumpCardFlowApp(tester);
     await goTo(tester, '/no-such-page');
 
     expect(appBarTitle(NotFoundPage.title), findsOneWidget);
     expect(find.text('已不存在'), findsOneWidget);
-    await tester.tap(find.text('回到总览'));
+    await tester.tap(find.text('回到卡账'));
     await tester.pumpAndSettle();
-    expect(find.text(OverviewPage.firstRunMessage), findsOneWidget);
+    expect(find.text(LedgerHomePage.firstRunMessage), findsOneWidget);
   });
 
   testWidgets('路由变化写入诊断日志，只记路由模板', (tester) async {
@@ -153,7 +212,7 @@ void main() {
     expect(
       routes,
       containsAllInOrder(<String>[
-        AppRoutes.overview,
+        AppRoutes.home,
         AppRoutes.cards,
         AppRoutes.diagnostics,
       ]),

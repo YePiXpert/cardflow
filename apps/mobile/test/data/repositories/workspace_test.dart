@@ -102,7 +102,7 @@ void main() {
       expect(b.bank.id, dAccount.bank.id);
       expect(b.id, isNot(dAccount.id));
       final pool = wallet.pools.single;
-      expect(pool.pool.name, '乙行共享额度');
+      expect(pool.pool.name, '长江共享额度');
       expect(pool.members.map((m) => m.displayName), <String>['卡 B', '卡 D']);
       expect(pool.usedTotal, 520000);
       expect(pool.rawAvailable, 1480000);

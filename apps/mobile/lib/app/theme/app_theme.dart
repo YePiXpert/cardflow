@@ -58,7 +58,6 @@ ThemeData buildCardFlowTheme(
     surfaceTint: Colors.transparent,
   );
 
-  final button = CfType.button.toTextStyle();
   var textTheme = TextTheme(
     displayLarge: CfType.numDisplay.toTextStyle(),
     displayMedium: CfType.numDisplay.toTextStyle(),
@@ -68,11 +67,11 @@ ThemeData buildCardFlowTheme(
     headlineSmall: CfType.headline.toTextStyle(),
     titleLarge: CfType.navTitle.toTextStyle(),
     titleMedium: CfType.groupTitle.toTextStyle(),
-    titleSmall: button,
+    titleSmall: CfType.button.toTextStyle(),
     bodyLarge: CfType.body.toTextStyle(),
     bodyMedium: CfType.bodySecondary.toTextStyle(),
     bodySmall: CfType.caption.toTextStyle(),
-    labelLarge: button,
+    labelLarge: CfType.button.toTextStyle(),
     labelMedium: CfType.label.toTextStyle(),
     labelSmall: CfType.caption.toTextStyle(),
   ).apply(bodyColor: c.textPrimary, displayColor: c.textPrimary);
@@ -83,6 +82,8 @@ ThemeData buildCardFlowTheme(
     );
   }
 
+  // 按钮文字取应用了字体族的 labelLarge（截图工具指定字体族时按钮文字也用它，不会成方块）。
+  final button = textTheme.labelLarge!;
   final buttonShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(CfRadius.lg),
   );

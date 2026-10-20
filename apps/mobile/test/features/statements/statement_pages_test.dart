@@ -377,7 +377,7 @@ void main() {
     expect(appBarTitle(StatementCenterPage.title), findsOneWidget);
   });
 
-  testWidgets('从 P-03「全部账单」进入只看该账户，留在卡包栈里', (tester) async {
+  testWidgets('从卡片详情「全部账单」进入只看该账户，留在卡片详情栈里', (tester) async {
     await pumpCardFlowApp(tester, seed: seedLedger);
     final data = await readLedger(tester);
     final account = data.wallet.accounts.single.id;
@@ -386,7 +386,7 @@ void main() {
     expect(appBarTitle(StatementCenterPage.title), findsOneWidget);
     expect(
       appRouter(tester).routerDelegate.currentConfiguration.uri.path,
-      '/cards/accounts/$account/statements',
+      AppRoutes.statements(accountId: account),
     );
     expect(find.text('卡 A · 2026-10-10 账单'), findsOneWidget);
   });

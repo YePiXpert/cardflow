@@ -12,10 +12,10 @@ import '../features/cards/cards_page.dart';
 import '../features/cards/new_card_page.dart';
 import '../features/cash/cash_account_pages.dart';
 import '../features/cash/cash_entry_pages.dart';
-import '../features/cash/cash_page.dart';
+import '../features/cash/cash_home_page.dart';
 import '../features/diagnostics/diagnostics_page.dart';
+import '../features/home/ledger_home_page.dart';
 import '../features/onboarding/welcome_page.dart';
-import '../features/overview/overview_page.dart';
 import '../features/planner/planner_page.dart';
 import '../features/promotions/promotions_page.dart';
 import '../features/repayments/repayment_form_page.dart';
@@ -56,9 +56,8 @@ Page<void> _page(
   child: child,
 );
 
-/// 账单与还款（P-05/P-06，I-1c）的子路由：挂在总览（`/overview`）与信用账户详情
-/// （`/cards/accounts/:accountId`）两个栈下（ui-spec §1.1：两个 Tab 的栈内都有 P-05、P-06）。页面拿到
-/// `accountId`（总览栈里为空）用来拼回到同一个栈里的链接；表单是全屏页（根导航器）。
+/// 账单与还款（P-05/P-06）的子路由：挂在卡账首页（`/home`）与卡片详情（`/home/accounts/:accountId`）两处。
+/// 页面拿到 `accountId`（首页栈里为空）用来拼回到同一个栈里的链接；表单是全屏页（根导航器）。
 List<RouteBase> _ledgerRoutes() {
   String? accountOf(GoRouterState state) => state.pathParameters['accountId'];
   return <RouteBase>[
@@ -162,10 +161,10 @@ List<RouteBase> _ledgerRoutes() {
   ];
 }
 
-/// 构建路由表：启动页、首次使用页与五个主导航（StatefulShellRoute，切换 Tab 保留栈位置）。
+/// 构建路由表：启动页、首次使用页与四个主导航（StatefulShellRoute，切换 Tab 保留栈位置）。
 ///
 /// [gate] 非空时启用启动分流（`app_gate.dart` 的 [gateRedirect]）：数据库打开中或打不开 →
-/// 启动页；没有工作空间 → P-22；它变化时路由重新判断。
+/// 启动页；没有工作空间 → P-22；它变化时路由重新判断。0.0.1 的旧路径先经 [legacyRedirect] 换成新位置。
 GoRouter createAppRouter({
   String initialLocation = AppRoutes.initial,
   ValueListenable<AppGate>? gate,
@@ -174,9 +173,9 @@ GoRouter createAppRouter({
     navigatorKey: rootNavigatorKey,
     initialLocation: initialLocation,
     refreshListenable: gate,
-    redirect: gate == null
-        ? null
-        : (context, state) => gateRedirect(gate.value, state),
+    redirect: (context, state) =>
+        legacyRedirect(state.uri) ??
+        (gate == null ? null : gateRedirect(gate.value, state)),
     errorPageBuilder: (context, state) => _page(state, const NotFoundPage()),
     routes: <RouteBase>[
       GoRoute(path: '/', redirect: (_, _) => AppRoutes.initial),
@@ -200,25 +199,22 @@ GoRouter createAppRouter({
         pageBuilder: (context, state, navigationShell) =>
             _page(state, HomeShell(navigationShell: navigationShell)),
         branches: <StatefulShellBranch>[
+          // 卡账：首页、管理全部卡片（P-02）、卡片详情（P-03）与设置（P-04）、账单与还款（P-05/P-06）。
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: AppRoutes.overview,
+                path: AppRoutes.home,
                 pageBuilder: (context, state) =>
-                    _page(state, const OverviewPage()),
-                routes: _ledgerRoutes(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: AppRoutes.cards,
-                pageBuilder: (context, state) =>
-                    _page(state, const CardsPage()),
+                    _page(state, const LedgerHomePage()),
                 routes: <RouteBase>[
+                  ..._ledgerRoutes(),
                   GoRoute(
-                    path: 'new',
+                    path: 'manage',
+                    pageBuilder: (context, state) =>
+                        _page(state, const CardsPage()),
+                  ),
+                  GoRoute(
+                    path: 'new-card',
                     parentNavigatorKey: rootNavigatorKey,
                     pageBuilder: (context, state) => _page(
                       state,
@@ -254,70 +250,28 @@ GoRouter createAppRouter({
               ),
             ],
           ),
-          // 规划 Tab：P-10 与同一 Tab 的分段 P-07/P-08/P-09 是并列的顶层路由（分段之间切换没有返回）。
+          // 现金：余额曲线与"接下来"、现金账户与收支计划（P-08）、资金日历的表格视图（P-07）。
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: AppRoutes.planner,
+                path: AppRoutes.cashHome,
                 pageBuilder: (context, state) =>
-                    _page(state, const PlannerPage()),
-              ),
-              GoRoute(
-                path: AppRoutes.cashCalendar,
-                pageBuilder: (context, state) => _page(
-                  state,
-                  CashCalendarPage(
-                    // 带不同的初始口径进入时重建页面状态。
-                    key: ValueKey<String>(state.uri.toString()),
-                    initialBasis: CashCalendarPage.parseBasis(
-                      state.uri.queryParameters['basis'],
-                    ),
-                    initialScenario: state.uri.queryParameters['scenario'],
-                  ),
-                ),
-              ),
-              GoRoute(
-                path: AppRoutes.scenarios,
-                pageBuilder: (context, state) =>
-                    _page(state, const ScenariosPage()),
+                    _page(state, const CashHomePage()),
                 routes: <RouteBase>[
                   GoRoute(
-                    path: 'new',
-                    parentNavigatorKey: rootNavigatorKey,
+                    path: 'calendar',
                     pageBuilder: (context, state) => _page(
                       state,
-                      const ScenarioEditorPage(),
-                      fullscreenDialog: true,
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'compare',
-                    pageBuilder: (context, state) => _page(
-                      state,
-                      ScenarioComparePage(
+                      CashCalendarPage(
+                        // 带不同的初始口径进入时重建页面状态。
                         key: ValueKey<String>(state.uri.toString()),
-                        a: state.uri.queryParameters['a'],
-                        b: state.uri.queryParameters['b'],
+                        initialBasis: CashCalendarPage.parseBasis(
+                          state.uri.queryParameters['basis'],
+                        ),
+                        initialScenario: state.uri.queryParameters['scenario'],
                       ),
                     ),
                   ),
-                  GoRoute(
-                    path: 'edit/:scenarioId',
-                    parentNavigatorKey: rootNavigatorKey,
-                    pageBuilder: (context, state) => _page(
-                      state,
-                      ScenarioEditorPage(
-                        scenarioId: state.pathParameters['scenarioId'],
-                      ),
-                      fullscreenDialog: true,
-                    ),
-                  ),
-                ],
-              ),
-              GoRoute(
-                path: AppRoutes.cash,
-                pageBuilder: (context, state) => _page(state, const CashPage()),
-                routes: <RouteBase>[
                   GoRoute(
                     path: 'new-account',
                     parentNavigatorKey: rootNavigatorKey,
@@ -417,12 +371,56 @@ GoRouter createAppRouter({
               ),
             ],
           ),
+          // 规划：情景与假设对比（P-09）；消费规划（P-10）与活动（P-14）后续版本提供。
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: AppRoutes.discover,
+                path: AppRoutes.planner,
                 pageBuilder: (context, state) =>
-                    _page(state, const PromotionsPage()),
+                    _page(state, const ScenariosPage()),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'plan',
+                    pageBuilder: (context, state) =>
+                        _page(state, const PlannerPage()),
+                  ),
+                  GoRoute(
+                    path: 'discover',
+                    pageBuilder: (context, state) =>
+                        _page(state, const PromotionsPage()),
+                  ),
+                  GoRoute(
+                    path: 'scenarios/new',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      const ScenarioEditorPage(),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'scenarios/compare',
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      ScenarioComparePage(
+                        key: ValueKey<String>(state.uri.toString()),
+                        a: state.uri.queryParameters['a'],
+                        b: state.uri.queryParameters['b'],
+                      ),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'scenarios/edit/:scenarioId',
+                    parentNavigatorKey: rootNavigatorKey,
+                    pageBuilder: (context, state) => _page(
+                      state,
+                      ScenarioEditorPage(
+                        scenarioId: state.pathParameters['scenarioId'],
+                      ),
+                      fullscreenDialog: true,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -462,7 +460,7 @@ GoRouter createAppRouter({
 /// 全局路由。每次位置变化记一条诊断日志（只记路由模板，如 `/cards/accounts/:accountId`，
 /// 不记参数）。启动分流跟随 [appGateProvider]。
 ///
-/// 切换工作空间（进入/退出演示、切换空间、清除演示数据后回到真实空间）之后统一回到首页（总览）：根导航器上
+/// 切换工作空间（进入/退出演示、切换空间、清除演示数据后回到真实空间）之后统一回到首页（卡账）：根导航器上
 /// 的全屏表单与当前 Tab 的页面栈一并清掉，其余 Tab 的栈在下次进入时从根页开始（`HomeShell`，审查 R-15）。
 /// 从没有工作空间（P-22）进入时由调用方决定去哪（例如「手工建卡」去新建卡片）。
 @Riverpod(keepAlive: true)
@@ -474,7 +472,7 @@ GoRouter appRouter(Ref ref) {
   ref.listen(currentWorkspaceProvider, (previous, next) {
     final from = previous?.value?.id;
     if (from != null && next.hasValue && next.value?.id != from) {
-      router.go(AppRoutes.overview);
+      router.go(AppRoutes.home);
     }
   });
   void onRouteChanged() {

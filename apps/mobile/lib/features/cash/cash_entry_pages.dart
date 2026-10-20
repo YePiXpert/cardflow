@@ -284,7 +284,7 @@ class _CashEventFormPageState extends ConsumerState<CashEventFormPage>
         title: error is NotFoundException ? '已不存在' : '读取失败',
         detail: '这笔收支不在当前空间里，或已删除。',
         onRetry: () => context.go(AppRoutes.cash),
-        retryLabel: '回到现金与收支',
+        retryLabel: '回到现金',
       );
     } else if (plan is AsyncError) {
       body = ErrorBlock(
@@ -762,7 +762,7 @@ class _RecurringFormPageState extends ConsumerState<RecurringFormPage>
         title: '读取失败',
         detail: '这个周期事项不在当前空间里，或已删除。',
         onRetry: () => context.go(AppRoutes.cash),
-        retryLabel: '回到现金与收支',
+        retryLabel: '回到现金',
       );
     } else if (!plan.hasValue || (detail != null && !detail.hasValue)) {
       body = const LoadingSkeleton();
@@ -911,7 +911,7 @@ class RecurringDetailPage extends ConsumerWidget {
           title: '已不存在',
           detail: '这个周期事项不在当前空间里（可能已切换空间）。',
           onRetry: () => context.go(AppRoutes.cash),
-          retryLabel: '回到现金与收支',
+          retryLabel: '回到现金',
         ),
         AsyncError(:final error) => ErrorBlock(
           title: '读取失败',

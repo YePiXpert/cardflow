@@ -12,10 +12,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/forbidden_ui.dart' show forEachScreen;
 import '../test_helpers.dart';
 
-/// 有数据（演示空间）时可到达的全部页面。P-03/P-04 用"卡 A"的账户（含两张卡、规则、快照）
+/// 有数据（演示空间）时可到达的全部页面（简报 U-1 的四个标签与其下各页）。P-03/P-04 用"卡 A"的账户（含两张卡、规则、快照）
 /// 与"卡 D"的账户（授信池、超限）；P-08 用"工资卡"（快照含已包含事件）、"定期存款"（受限）、
 /// 一笔收支计划与周期事项"房租"；P-05/P-06（I-1c）用卡 A 的 10-10 账单（两个版本、分期、两笔还款、
-/// 疑似重复）、两笔还款与"超市"消费的转分期表单，总览栈与卡包栈各一套。
+/// 疑似重复）、两笔还款与"超市"消费的转分期表单，卡账首页栈与卡片详情栈各一套。
 Future<List<String>> allPages(WidgetTester tester) async {
   final wallet = await readWallet(tester);
   final a = wallet.accounts.firstWhere((v) => v.displayName == '卡 A').id;
@@ -58,11 +58,10 @@ Future<List<String>> allPages(WidgetTester tester) async {
     AppRoutes.cashCalendar,
     AppRoutes.cashCalendarWith(basis: 'confirmed'),
     AppRoutes.cashCalendarWith(basis: 'stress', scenario: stress),
-    AppRoutes.scenarios,
     AppRoutes.newScenario,
     AppRoutes.editScenario(stress),
     AppRoutes.scenarioCompare(),
-    AppRoutes.cash,
+    AppRoutes.cashHome,
     AppRoutes.cashAccount(salary),
     AppRoutes.cashAccount(deposit),
     AppRoutes.recordCashSnapshot(salary),
@@ -73,7 +72,7 @@ Future<List<String>> allPages(WidgetTester tester) async {
     AppRoutes.newRecurring,
     AppRoutes.recurring(rent),
     AppRoutes.editRecurring(rent),
-    AppRoutes.overview,
+    AppRoutes.home,
     AppRoutes.cards,
     AppRoutes.newCard,
     AppRoutes.account(a),
@@ -83,6 +82,7 @@ Future<List<String>> allPages(WidgetTester tester) async {
     AppRoutes.accountSettings(a, section: 'currencies'),
     AppRoutes.accountSettings(d, section: 'pool'),
     AppRoutes.planner,
+    AppRoutes.plan,
     AppRoutes.discover,
     AppRoutes.settings,
     AppRoutes.diagnostics,
@@ -180,11 +180,11 @@ void main() {
       final handle = tester.ensureSemantics();
       await pumpCardFlowApp(tester, brightness: brightness);
       for (final page in <String>[
-        AppRoutes.overview,
+        AppRoutes.home,
         AppRoutes.cards,
-        AppRoutes.cash,
+        AppRoutes.cashHome,
         AppRoutes.cashCalendar,
-        AppRoutes.scenarios,
+        AppRoutes.planner,
         AppRoutes.statements(),
         AppRoutes.repayments(),
       ]) {
@@ -240,11 +240,11 @@ void main() {
     testWidgets('文字放大到 ${scale}x：首次空白、首次使用页与启动页，逐屏滚到底', (tester) async {
       await pumpCardFlowApp(tester, textScale: scale);
       for (final page in <String>[
-        AppRoutes.overview,
+        AppRoutes.home,
         AppRoutes.cards,
-        AppRoutes.cash,
+        AppRoutes.cashHome,
         AppRoutes.cashCalendar,
-        AppRoutes.scenarios,
+        AppRoutes.planner,
         AppRoutes.statements(),
         AppRoutes.repayments(),
       ]) {

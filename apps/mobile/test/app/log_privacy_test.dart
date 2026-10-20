@@ -99,7 +99,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('进入演示'));
     await tester.pumpAndSettle();
-    await goTo(tester, AppRoutes.overview);
+    await goTo(tester, AppRoutes.home);
     await tester.tap(find.text('退出演示'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, '退出演示'));

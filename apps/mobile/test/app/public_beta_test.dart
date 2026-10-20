@@ -272,12 +272,12 @@ void main() {
   testWidgets('真实空间的首次空白页与"我的"各页没有文字含阶段代号或规格编号', (tester) async {
     await pumpCardFlowApp(tester);
     await _expectNoStageCodeOnPages(tester, <String>[
-      AppRoutes.overview,
+      AppRoutes.home,
       AppRoutes.cards,
       AppRoutes.planner,
+      AppRoutes.plan,
       AppRoutes.cashCalendar,
-      AppRoutes.cash,
-      AppRoutes.scenarios,
+      AppRoutes.cashHome,
       AppRoutes.statements(),
       AppRoutes.repayments(),
       AppRoutes.discover,

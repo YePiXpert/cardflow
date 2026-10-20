@@ -27,8 +27,8 @@ class NotFoundPage extends StatelessWidget {
           ),
           const SizedBox(height: CfSpace.lg),
           FilledButton(
-            onPressed: () => context.go(AppRoutes.overview),
-            child: const Text('回到总览'),
+            onPressed: () => context.go(AppRoutes.home),
+            child: const Text('回到卡账'),
           ),
         ],
       ),

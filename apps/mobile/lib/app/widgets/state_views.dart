@@ -155,7 +155,7 @@ class SectionTitle extends StatelessWidget {
       // 分组标题 17 粗，比卡片内容多缩进 4（设计稿 .sec）。
       padding: const EdgeInsets.fromLTRB(
         CfSpace.md + CfSpace.xxs,
-        CfSpace.lg,
+        CfSpace.md + CfSpace.xxs,
         CfSpace.md,
         CfSpace.xs,
       ),

@@ -17,6 +17,10 @@ const Locale appLocale = Locale.fromSubtags(
 /// 声明支持的语言（与 iOS Info.plist 的 CFBundleLocalizations 对应）。
 const List<Locale> supportedAppLocales = <Locale>[appLocale, Locale('en')];
 
+/// 主题里指定的字体族：App 本身为 null（用系统字体，iOS 上是苹方，不打包字体）；只有截图工具
+/// （`test/tool/screenshots_test.dart`）替换它，让测试环境里每一种文字样式都解析到已加载的字体。
+final appFontFamilyProvider = Provider<String?>((ref) => null);
+
 /// 卡序 App 根组件：浅色/深色主题跟随系统，文字大小跟随系统缩放；演示空间时每一页顶部
 /// 常驻演示横幅（[DemoBannerFrame]）。
 class CardFlowApp extends ConsumerWidget {
@@ -25,11 +29,21 @@ class CardFlowApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final font = ref.watch(appFontFamilyProvider);
+    final fallback = font == null ? null : <String>[font];
     return MaterialApp.router(
       title: '卡序',
       debugShowCheckedModeBanner: false,
-      theme: buildCardFlowTheme(Brightness.light),
-      darkTheme: buildCardFlowTheme(Brightness.dark),
+      theme: buildCardFlowTheme(
+        Brightness.light,
+        fontFamily: font,
+        fontFamilyFallback: fallback,
+      ),
+      darkTheme: buildCardFlowTheme(
+        Brightness.dark,
+        fontFamily: font,
+        fontFamilyFallback: fallback,
+      ),
       themeMode: ThemeMode.system,
       locale: appLocale,
       supportedLocales: supportedAppLocales,

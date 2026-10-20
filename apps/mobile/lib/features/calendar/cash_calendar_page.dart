@@ -9,7 +9,6 @@ import '../../app/theme/tokens.dart';
 import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
-import '../../app/widgets/workspace_badges.dart';
 import '../../data/db/app_database.dart';
 import '../../data/repositories/cash_forecast_reader.dart';
 import '../../data/repositories/cash_models.dart';
@@ -17,7 +16,6 @@ import '../../data/repositories/providers.dart';
 import '../../data/repositories/scenario_repository.dart';
 import '../cards/card_formatting.dart';
 import '../cash/cash_formatting.dart';
-import '../planner/planner_segments.dart';
 import 'calendar_providers.dart';
 
 /// P-07 资金日历（ui-spec P-07）：控制条（7/30/90/180 天、账户、口径 已确认/基准/压力情景、情景选择）→ 摘要
@@ -85,8 +83,6 @@ class _CashCalendarPageState extends ConsumerState<CashCalendarPage> {
     final forecast = ref.watch(cashForecastProvider(query));
     final value = forecast.value;
     final controls = <Widget>[
-      const PlannerSegmentBar(current: PlannerSegment.calendar),
-      const RootPageBadges(),
       _Controls(
         window: _window,
         basis: _basis,

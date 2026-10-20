@@ -11,6 +11,7 @@ import 'package:cardflow/data/repositories/providers.dart';
 import 'package:cardflow/data/validation/text_rules.dart';
 import 'package:cardflow/features/cards/cards_page.dart';
 import 'package:cardflow/features/cards/new_card_page.dart';
+import 'package:cardflow/features/home/ledger_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -112,7 +113,7 @@ void main() {
   testWidgets('成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
     await goTo(tester, AppRoutes.cards);
-    expect(find.text('授信池 · 乙行共享额度'), findsOneWidget);
+    expect(find.text('授信池 · 长江共享额度'), findsOneWidget);
     expect(find.text('池上限'), findsOneWidget);
     for (final name in <String>['卡 A', '卡 B', '卡 D', '卡 C']) {
       await tester.scrollUntilVisible(find.text(name), 200);
@@ -134,7 +135,9 @@ void main() {
     expect(capacity.semanticsPrefix, '可用容量');
   });
 
-  testWidgets('新建卡片：生成账户与 CNY 子账户，回到卡包并提示"已添加 › 设置账期"', (tester) async {
+  testWidgets('新建卡片：生成账户与 CNY 子账户，回到卡账并提示"已添加 › 设置账期"；卡账行写银行简称与末四位', (
+    tester,
+  ) async {
     await pumpCardFlowApp(tester);
     await _openNewCard(tester);
     await _chooseBank(tester, '招商银行');
@@ -142,10 +145,10 @@ void main() {
     await tester.enterText(_field('末四位'), '4321');
     await _save(tester);
 
-    expect(appBarTitle(CardsPage.title), findsOneWidget);
+    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
     expect(find.text(NewCardPage.savedMessage), findsOneWidget);
-    expect(find.text('设置账期'), findsOneWidget);
-    expect(find.text('工资卡'), findsOneWidget);
+    expect(find.text('设置账期'), findsWidgets);
+    expect(find.text('招行 ···· 4321'), findsOneWidget);
     final wallet = await _wallet(tester);
     expect(wallet.accounts.single.currencies.single.currency, 'CNY');
     expect(wallet.accounts.single.cards.single.last4, '4321');

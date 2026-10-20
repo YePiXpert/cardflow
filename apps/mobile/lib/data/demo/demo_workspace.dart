@@ -5,11 +5,11 @@
 ///
 /// | 卡 | 银行 | 体现 |
 /// |---|---|---|
-/// | A（主卡 + 附属卡） | 演示银行甲 | 两张卡同一信用账户（F-21） |
-/// | B | 演示银行乙 | 临时额度 5,000，2026-11-15 到期（F-27） |
-/// | D | 演示银行乙（另一个独立授信，F-22） | 可用 −200，超限（F-26） |
-/// | B + D | "乙行共享额度"池，上限 20,000 | 池内可用合计不超过池上限（F-23） |
-/// | C | 演示银行丙 | 截止时点 22:00 的规则说明 |
+/// | A（主卡 + 附属卡） | 星海银行 | 两张卡同一信用账户（F-21） |
+/// | B | 长江银行 | 临时额度 5,000，2026-11-15 到期（F-27） |
+/// | D | 长江银行（另一个独立授信，F-22） | 可用 −200，超限（F-26） |
+/// | B + D | "长江共享额度"池，上限 20,000 | 池内可用合计不超过池上限（F-23） |
+/// | C | 北辰银行 | 截止时点 22:00 的规则说明 |
 ///
 /// 现金部分（I-1b，[seedDemoCash]）：现金账户 2 个（"工资卡"、受限的"定期存款"）、余额快照（工资卡的
 /// 快照当天已包含早餐、未包含水电费）、收支计划（与回归样本 engine-spec §9 的事件同一组数值）、
@@ -78,7 +78,7 @@ Future<void> seedDemoWorkspace(WorkspaceScope scope) async {
     String bank,
     String last4,
     String alias, {
-    String product = '演示白金卡',
+    String product = '白金卡',
     String? joinAccountId,
     String? primaryCardId,
     CardNetwork network = CardNetwork.unionpay,
@@ -135,9 +135,9 @@ Future<void> seedDemoWorkspace(WorkspaceScope scope) async {
   }
 
   // 卡 A：主卡与附属卡，同一信用账户（F-21）。
-  final a = await card('演示银行甲', '1001', '卡 A');
+  final a = await card('星海银行', '1001', '卡 A');
   final aSupplementary = await card(
-    '演示银行甲',
+    '星海银行',
     '1002',
     '卡 A 附属卡',
     primaryCardId: a,
@@ -150,7 +150,13 @@ Future<void> seedDemoWorkspace(WorkspaceScope scope) async {
   await snapshot(accountA, fixed: 2000000, used: 1200000, available: 800000);
 
   // 卡 B：临时额度带到期日（F-27）。
-  final b = await card('演示银行乙', '2001', '卡 B', network: CardNetwork.visa);
+  final b = await card(
+    '长江银行',
+    '2001',
+    '卡 B',
+    product: '标准白金卡',
+    network: CardNetwork.visa,
+  );
   final accountB = await accountOf(b);
   await rule(
     accountB,
@@ -169,7 +175,7 @@ Future<void> seedDemoWorkspace(WorkspaceScope scope) async {
   );
 
   // 卡 D：同一银行的另一个独立授信（F-22），超限（F-26）。
-  final d = await card('演示银行乙', '4001', '卡 D', product: '演示金卡');
+  final d = await card('长江银行', '4001', '卡 D', product: '金卡');
   final accountD = await accountOf(d);
   await rule(
     accountD,
@@ -184,14 +190,20 @@ Future<void> seedDemoWorkspace(WorkspaceScope scope) async {
   final bankB = (await accounts.require(accountB)).bankId;
   final pool = await pools.create(
     bankId: bankB,
-    name: '乙行共享额度',
+    name: '长江共享额度',
     sharedLimitMinor: 2000000,
   );
   await accounts.joinPool(accountB, pool.id);
   await accounts.joinPool(accountD, pool.id);
 
   // 卡 C。
-  final c = await card('演示银行丙', '3001', '卡 C', network: CardNetwork.mastercard);
+  final c = await card(
+    '北辰银行',
+    '3001',
+    '卡 C',
+    product: '经典卡',
+    network: CardNetwork.mastercard,
+  );
   final accountC = await accountOf(c);
   await rule(
     accountC,

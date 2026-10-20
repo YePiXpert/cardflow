@@ -225,7 +225,7 @@ class _NewCardPageState extends ConsumerState<NewCardPage>
           expiresYm: _expires.text,
         ),
       );
-      router.go(AppRoutes.cards);
+      router.go(AppRoutes.home);
       showFeedback(
         messenger,
         NewCardPage.savedMessage,
@@ -293,7 +293,8 @@ class _NewCardPageState extends ConsumerState<NewCardPage>
         leading: IconButton(
           tooltip: '取消',
           icon: const Icon(Icons.close),
-          onPressed: () => context.go(AppRoutes.cards),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go(AppRoutes.home),
         ),
       ),
       body: switch ((wallet, banks)) {

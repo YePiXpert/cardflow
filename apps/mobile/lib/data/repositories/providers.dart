@@ -312,7 +312,7 @@ Future<LedgerData> ledger(Ref ref) async {
   return LedgerReader(scope).load();
 }
 
-/// 卡账首页（简报 U-1 §2）的读模型：账单读模型变化时自动重算；[sort] 决定行的顺序。
+/// 卡账首页（简报 U-1 §2）的读模型（默认按还款日排序；其他排序用 `sortRows`）：账单读模型变化时自动重算。
 @Riverpod(retry: noDatabaseRetry)
-Future<LedgerHome> ledgerHome(Ref ref, LedgerSort sort) async =>
-    LedgerHome.of(await ref.watch(ledgerProvider.future), sort: sort);
+Future<LedgerHome> ledgerHome(Ref ref) async =>
+    LedgerHome.of(await ref.watch(ledgerProvider.future));

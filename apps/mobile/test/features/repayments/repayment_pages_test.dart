@@ -248,7 +248,7 @@ void main() {
       (AppRoutes.account(seeded.accountA), '信用账户详情（卡 A）'),
       (AppRoutes.account(seeded.accountB), '信用账户详情（卡 B）'),
       (AppRoutes.account(seeded.accountC), '信用账户详情（卡 C）'),
-      (AppRoutes.overview, '总览'),
+      (AppRoutes.home, '卡账'),
     ];
     for (final (route, page) in pages) {
       await goTo(tester, route);

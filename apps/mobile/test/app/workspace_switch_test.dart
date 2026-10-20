@@ -77,35 +77,35 @@ void main() {
     await tester.pumpAndSettle();
     await _exitDemoFromBanner(tester);
     expect(_nameField, findsNothing, reason: '表单已关闭');
-    expect(_location(tester), AppRoutes.overview);
+    expect(_location(tester), AppRoutes.home);
     expect(find.text('演示数据 · 与真实数据隔离'), findsNothing);
     final (realNames, demoNames) = await _cashNames(tester, real, demo);
     expect(realNames, isEmpty);
     expect(demoNames, <String>['工资卡', '定期存款']);
   });
 
-  testWidgets('切换空间前留在其他 Tab 的页面栈作废：在演示空间打开卡 A 的详情 → 退出演示 → 再点「卡包」从卡包根页开始'
+  testWidgets('切换空间前留在其他 Tab 的页面栈作废：在演示空间打开"工资卡"的详情 → 退出演示 → 再点「现金」从现金根页开始'
       '（不再露出演示空间的页面）', (tester) async {
     await pumpCardFlowApp(tester, seed: _bothSpaces((_, _) {}));
-    final wallet = await readWallet(tester);
-    final a = wallet.accounts.firstWhere((v) => v.displayName == '卡 A').id;
-    await tester.tap(navLabel('卡包'));
+    final cash = await readCashPlan(tester);
+    final salary = cash.accounts.firstWhere((x) => x.row.name == '工资卡').row.id;
+    await tester.tap(navLabel('现金'));
     await tester.pumpAndSettle();
-    await goTo(tester, AppRoutes.account(a));
-    expect(_location(tester), AppRoutes.account(a));
+    await goTo(tester, AppRoutes.cashAccount(salary));
+    expect(_location(tester), AppRoutes.cashAccount(salary));
     await _exitDemoFromBanner(tester);
-    expect(_location(tester), AppRoutes.overview);
-    await tester.tap(navLabel('卡包'));
+    expect(_location(tester), AppRoutes.home);
+    await tester.tap(navLabel('现金'));
     await tester.pumpAndSettle();
-    expect(_location(tester), AppRoutes.cards);
-    // 切换之后新开的栈照常保留：在卡包里进到账户设置页，切到总览再切回仍在原处。
-    await goTo(tester, AppRoutes.accountSettings('x'));
-    await tester.tap(navLabel('总览'));
+    expect(_location(tester), AppRoutes.cashHome);
+    // 切换之后新开的栈照常保留：在现金里进到资金日历的表格，切到卡账再切回仍在原处。
+    await goTo(tester, AppRoutes.cashCalendar);
+    await tester.tap(navLabel('卡账'));
     await tester.pumpAndSettle();
-    expect(_location(tester), AppRoutes.overview);
-    await tester.tap(navLabel('卡包'));
+    expect(_location(tester), AppRoutes.home);
+    await tester.tap(navLabel('现金'));
     await tester.pumpAndSettle();
-    expect(_location(tester), AppRoutes.accountSettings('x'));
+    expect(_location(tester), AppRoutes.cashCalendar);
   });
 
   testWidgets('第二道防线：表单打开时记下工作空间，之后切换了空间（表单还在屏幕上）→ 保存被拒绝并提示，不写进真实空间', (

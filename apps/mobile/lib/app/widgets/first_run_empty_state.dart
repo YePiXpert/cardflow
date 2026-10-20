@@ -30,7 +30,11 @@ class FirstRunEmptyState extends StatelessWidget {
     required this.purpose,
     this.actions = const <EmptyStateAction>[],
     this.scrollable = true,
+    this.largePrimary = false,
   });
+
+  /// 主操作用大号按钮（卡账首页"添加第一张卡"）。
+  final bool largePrimary;
 
   /// false：放在已有的滚动列表里时不再自带滚动。
   final bool scrollable;
@@ -86,6 +90,14 @@ class FirstRunEmptyState extends StatelessWidget {
             if (i > 0) const SizedBox(height: CfTouch.minGap),
             if (i == 0)
               FilledButton(
+                style: largePrimary
+                    ? FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(
+                          CfTouch.minTarget + CfSpace.xs,
+                        ),
+                        textStyle: theme.textTheme.titleMedium,
+                      )
+                    : null,
                 onPressed: actions[i].onPressed,
                 child: Text(actions[i].label, textAlign: TextAlign.center),
               )

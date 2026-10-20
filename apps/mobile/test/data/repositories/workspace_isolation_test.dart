@@ -186,7 +186,7 @@ Future<Map<String, int>> runAllQueries(
       ),
     );
   }
-  for (final bank in <String>['演示银行甲', '演示银行乙', '演示银行丙']) {
+  for (final bank in <String>['星海银行', '长江银行', '北辰银行']) {
     for (final last4 in <String>['1001', '1002', '2001', '3001', '4001']) {
       await run(
         'CardRepository.sameBankSameLast4($bank, $last4)',
@@ -601,7 +601,7 @@ void main() {
 
   test('两个空间都有数据：各自只看到自己的行；清除演示数据只删演示空间（含 v4 的全部表）', () async {
     final real = await createTestWorkspace(db);
-    await createTestCard(real, bank: '演示银行甲', last4: '1001');
+    await createTestCard(real, bank: '星海银行', last4: '1001');
     final demoRow = await ensureDemoWorkspace(db);
     final demo = WorkspaceScope(
       db: db,
@@ -622,7 +622,7 @@ void main() {
     // 同名银行、同末四位：只在本空间里提示"可能是同一账户的另一张卡"。
     expect(
       await CardRepository(real)
-          .sameBankSameLast4(bankName: '演示银行甲', last4: '1001'),
+          .sameBankSameLast4(bankName: '星海银行', last4: '1001'),
       hasLength(1),
     );
 

@@ -10,7 +10,7 @@ import '../../data/repositories/cash_forecast_reader.dart';
 import '../../data/repositories/cash_models.dart';
 import '../../data/repositories/providers.dart';
 import '../cards/card_formatting.dart';
-import '../cash/cash_formatting.dart';
+import 'cash_formatting.dart';
 
 /// P-01"现金压力"卡（ui-spec P-01）：未来 30 天的最低点、首个缺口日、口径（已确认/基准预期，切换不触发
 /// 求解）；陈旧 → "假设分析"徽标；缺快照的账户 → "数据不全：{账户}缺快照，未计入"；还没有现金账户 →

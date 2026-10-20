@@ -9,27 +9,26 @@ import '../../app/theme/tokens.dart';
 import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
-import '../../app/widgets/workspace_badges.dart';
 import '../../data/repositories/card_wallet_reader.dart';
 import '../../data/repositories/models.dart';
 import '../../data/repositories/providers.dart';
 import '../onboarding/workspace_actions.dart';
 import 'card_formatting.dart';
 
-/// P-02 卡包（ui-spec §6）：授信池 › 信用账户 › 币种子账户 › 卡片 的层级列表。
+/// P-02 管理全部卡片（原"卡包"，从卡账右上角或列表底部进入）：授信池 › 信用账户 › 币种子账户 › 卡片 的层级列表。
 ///
 /// 四态：首次空白（还没有卡片）、加载（骨架）、错误（错误码 +「重试」）、成功（层级列表；已停用折叠）。
 class CardsPage extends ConsumerWidget {
   const CardsPage({super.key});
 
-  /// 页名，同时是底部导航的标签。
-  static const String title = '卡包';
+  /// 页名（卡账 › 管理全部卡片）。
+  static const String title = '全部卡片';
 
   /// ui-spec P-02 九态表"首次空白"。
   static const String firstRunMessage = '还没有卡片，账单挂在信用账户上';
 
   /// 读取失败的标题。
-  static const String errorTitle = '卡包读取失败';
+  static const String errorTitle = '卡片读取失败';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,7 +88,6 @@ class _WalletList extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: CfSpace.lg),
       children: <Widget>[
-        const RootPageBadges(),
         for (final pool in pools) ...<Widget>[
           _PoolHeader(pool: pool),
           for (final account in pool.members.where((a) => !a.isInactive))

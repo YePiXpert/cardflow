@@ -27,26 +27,29 @@ class GroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = CardFlowColors.of(context);
-    return Container(
-      margin: margin,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
+    // 用 Material 当卡片底：里面的 ListTile/InkWell 的底色与水波纹画在它上面。
+    return Padding(
+      padding: margin,
+      child: Material(
         color: color ?? colors.surface,
-        borderRadius: BorderRadius.circular(CfRadius.card),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          for (var i = 0; i < children.length; i++) ...<Widget>[
-            if (i > 0)
-              Divider(
-                height: CfStroke.hairline,
-                indent: dividerIndent,
-                endIndent: dividerIndent,
-              ),
-            children[i],
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(CfRadius.card),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            for (var i = 0; i < children.length; i++) ...<Widget>[
+              if (i > 0)
+                Divider(
+                  height: CfStroke.hairline,
+                  indent: dividerIndent,
+                  endIndent: dividerIndent,
+                ),
+              children[i],
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

@@ -8,12 +8,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/cf_layout.dart';
 import '../../app/widgets/confirm_dialog.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
-import '../../app/widgets/workspace_badges.dart';
 import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/db/app_database.dart';
 import '../../data/ids.dart';
@@ -29,7 +29,6 @@ import '../cards/card_dialogs.dart';
 import '../cards/card_formatting.dart';
 import '../cash/cash_form_fields.dart';
 import '../cash/cash_formatting.dart';
-import '../planner/planner_segments.dart';
 
 /// 情景参数的一句话说明。
 String describeScenario(ScenarioView s) {
@@ -76,7 +75,11 @@ RunAccountResult? _worst(CashRunResult result) {
 class ScenariosPage extends ConsumerStatefulWidget {
   const ScenariosPage({super.key});
 
-  static const String title = '情景';
+  /// 页名（规划 Tab 的根页），同时是底部导航的标签。
+  static const String title = '规划';
+
+  /// 情景区块的标题。
+  static const String sectionTitle = '情景与假设对比';
 
   /// ui-spec P-09 九态"首次空白"。
   static const String firstRunMessage = '只有内置口径';
@@ -147,7 +150,7 @@ class _ScenariosPageState extends ConsumerState<ScenariosPage> {
   Widget build(BuildContext context) {
     final board = ref.watch(scenarioBoardProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text(ScenariosPage.title)),
+      appBar: largeTitleAppBar(context, title: ScenariosPage.title),
       body: switch (board) {
         AsyncData(:final value) => _list(context, value),
         AsyncError(:final error) => ErrorBlock(
@@ -168,8 +171,23 @@ class _ScenariosPageState extends ConsumerState<ScenariosPage> {
     return ListView(
       padding: const EdgeInsets.only(bottom: CfSpace.xl),
       children: <Widget>[
-        const PlannerSegmentBar(current: PlannerSegment.scenarios),
-        const RootPageBadges(),
+        // 消费规划与活动在后续版本提供：入口保留（原有页面都能从这里进入）。
+        GroupCard(
+          children: <Widget>[
+            for (final (icon, label, route) in <(IconData, String, String)>[
+              (Icons.shopping_bag_outlined, '消费规划', AppRoutes.plan),
+              (Icons.local_activity_outlined, '活动与权益', AppRoutes.discover),
+            ])
+              ListTile(
+                leading: Icon(icon),
+                title: Text(label),
+                subtitle: const Text('后续版本提供'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.go(route),
+              ),
+          ],
+        ),
+        const SectionTitle(ScenariosPage.sectionTitle),
         if (_recomputing > 0)
           Padding(
             padding: const EdgeInsets.all(CfSpace.md),

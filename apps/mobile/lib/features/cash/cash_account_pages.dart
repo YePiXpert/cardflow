@@ -32,7 +32,7 @@ import 'cash_formatting.dart';
 import 'cash_page.dart';
 import 'cash_providers.dart';
 
-/// 保存后回到上一页（全屏页从根导航器弹出；没有上一页时回到现金与收支）。
+/// 保存后回到上一页（全屏页从根导航器弹出；没有上一页时回到现金）。
 void _close(BuildContext context, [String fallback = AppRoutes.cash]) {
   if (context.canPop()) {
     context.pop();
@@ -334,7 +334,7 @@ class CashAccountDetailPage extends ConsumerWidget {
           title: '已不存在',
           detail: '这个现金账户不在当前空间里（可能已切换空间）。',
           onRetry: () => context.go(AppRoutes.cash),
-          retryLabel: '回到现金与收支',
+          retryLabel: '回到现金',
         ),
         AsyncError(:final error) => ErrorBlock(
           title: '读取失败',
@@ -839,7 +839,7 @@ class _RecordCashSnapshotPageState extends ConsumerState<RecordCashSnapshotPage>
           title: '已不存在',
           detail: '这个现金账户不在当前空间里。',
           onRetry: () => context.go(AppRoutes.cash),
-          retryLabel: '回到现金与收支',
+          retryLabel: '回到现金',
         ),
         AsyncError(:final error) => ErrorBlock(
           title: '读取失败',
