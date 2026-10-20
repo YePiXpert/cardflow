@@ -239,6 +239,9 @@ final class CardLedgerRow {
   /// 可供新增消费的容量（三层取最小）；没有额度快照时为 null。
   int? get capacity => sub.capacity;
 
+  /// 当前额度：最新快照的固定额度 + 未到期的临时额度（专项额度不算）；没有快照时为 null。
+  int? get currentLimit => _limitOf(this);
+
   /// "星海 ···· 1001"。
   String get title => last4 == null ? bankShort : '$bankShort ···· $last4';
 }
@@ -357,7 +360,7 @@ final class LedgerHome {
     final rows = <CardLedgerRow>[
       for (final account in data.wallet.accounts)
         if (!account.isInactive)
-          for (final sub in account.currencies) _row(data, account, sub),
+          for (final sub in account.currencies) ledgerRowOf(data, account, sub),
     ];
     final cards = LedgerHomeGroup(
       kind: LedgerHomeGroupKind.creditCards,
@@ -421,7 +424,9 @@ final class LedgerHome {
   }
 }
 
-CardLedgerRow _row(
+/// 一个币种子账户在卡账上的一行（卡片详情也用它：本期、出账日格、还款日格、等银行证据的还款）。已停用的
+/// 账户也能算（首页不列出它们）。
+CardLedgerRow ledgerRowOf(
   LedgerData data,
   AccountView account,
   CurrencyAccountView sub,

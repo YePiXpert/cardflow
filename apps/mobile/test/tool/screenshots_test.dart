@@ -53,8 +53,12 @@ Future<void> _loadFonts() async {
   await icons.load();
 }
 
-/// 一张截图：名称、位置（演示空间里取 id 的函数）。
-typedef Shot = (String, Future<String> Function(WidgetTester tester));
+/// 一张截图：名称、位置（演示空间里取 id 的函数）、往下再截几屏（长页面）。
+typedef Shot = (
+  String,
+  Future<String> Function(WidgetTester tester), {
+  int more,
+});
 
 Future<String> _accountA(WidgetTester tester) async {
   final wallet = await readWallet(tester);
@@ -70,18 +74,19 @@ Future<String> _statementA(WidgetTester tester) async {
 }
 
 final List<Shot> shots = <Shot>[
-  ('01-home', (_) async => AppRoutes.home),
-  ('02-card', (t) async => AppRoutes.account(await _accountA(t))),
-  ('03-cash', (_) async => AppRoutes.cashHome),
-  ('04-planner', (_) async => AppRoutes.planner),
-  ('05-settings', (_) async => AppRoutes.settings),
-  ('06-new-card', (_) async => AppRoutes.newCard),
+  ('01-home', (_) async => AppRoutes.home, more: 1),
+  ('02-card', (t) async => AppRoutes.account(await _accountA(t)), more: 2),
+  ('03-cash', (_) async => AppRoutes.cashHome, more: 2),
+  ('04-planner', (_) async => AppRoutes.planner, more: 0),
+  ('05-settings', (_) async => AppRoutes.settings, more: 1),
+  ('06-new-card', (_) async => AppRoutes.newCard, more: 0),
   (
     '07-statement',
     (t) async => AppRoutes.statement(
       await _statementA(t),
       accountId: await _accountA(t),
     ),
+    more: 1,
   ),
   (
     '08-repayment',
@@ -89,8 +94,31 @@ final List<Shot> shots = <Shot>[
       accountId: await _accountA(t),
       statementId: await _statementA(t),
     ),
+    more: 0,
   ),
 ];
+
+/// 把页面的主滚动区往下滚 80% 屏；已经到底时返回 false。
+Future<bool> _scrollDown(WidgetTester tester) async {
+  final vertical = find.byWidgetPredicate(
+    (w) => w is Scrollable && w.axisDirection == AxisDirection.down,
+  );
+  if (vertical.evaluate().isEmpty) {
+    return false;
+  }
+  final position = tester.state<ScrollableState>(vertical.first).position;
+  if (position.pixels >= position.maxScrollExtent) {
+    return false;
+  }
+  position.jumpTo(
+    (position.pixels + position.viewportDimension * 0.8).clamp(
+      0,
+      position.maxScrollExtent,
+    ),
+  );
+  await tester.pumpAndSettle();
+  return true;
+}
 
 Future<void> _capture(WidgetTester tester, GlobalKey key, String name) async {
   await tester.pumpAndSettle();
@@ -144,9 +172,15 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        for (final (name, location) in shots) {
+        for (final (name, location, :more) in shots) {
           await goTo(tester, await location(tester));
           await _capture(tester, key, '$name-$mode');
+          for (var i = 1; i <= more; i++) {
+            if (!await _scrollDown(tester)) {
+              break;
+            }
+            await _capture(tester, key, '$name-$mode-${i + 1}');
+          }
         }
       },
     );

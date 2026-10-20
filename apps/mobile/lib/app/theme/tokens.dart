@@ -189,6 +189,12 @@ abstract final class CfBankColors {
   static const Color czb = Color(0xFF8C6A1F);
   static const Color boc = Color(0xFFB5121B);
 
+  /// 卡面上的芯片（装饰）。
+  static const List<Color> chip = <Color>[Color(0xFFF6D77F), Color(0xFFC4901F)];
+
+  /// 卡面渐变的暗端：品牌色与它按这个比例混合（越大越暗）。
+  static const Color faceShade = Color(0xFF000000);
+
   /// 其余银行的调色板。
   static const List<Color> palette = <Color>[
     Color(0xFF3B5BA9),

@@ -766,7 +766,7 @@ class CardLedgerRowTile extends ConsumerWidget {
               ),
             if (pending != null) ...<Widget>[
               const SizedBox(height: CfSpace.xs),
-              _PendingStrip(row: row),
+              PendingRepaymentStrip(row: row),
             ],
           ],
         ),
@@ -1057,8 +1057,8 @@ class _RuleCell extends StatelessWidget {
 }
 
 /// 本期账单上等银行证据的还款：一步推进"银行已入账""银行确认"。
-class _PendingStrip extends ConsumerWidget {
-  const _PendingStrip({required this.row});
+class PendingRepaymentStrip extends ConsumerWidget {
+  const PendingRepaymentStrip({super.key, required this.row});
 
   final CardLedgerRow row;
 

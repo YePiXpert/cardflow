@@ -462,6 +462,7 @@ final class LiabilityBreakdown {
     required this.futureInstallmentPrincipal,
     required this.futureInstallmentFees,
     required this.pendingRefunds,
+    this.unbilledCount = 0,
   });
 
   final String currency;
@@ -480,6 +481,9 @@ final class LiabilityBreakdown {
 
   /// 待核对的退款（未计入未出账，F-34）。
   final int pendingRefunds;
+
+  /// 计入未出账的交易笔数（卡片详情"未出账 · N 笔"）。
+  final int unbilledCount;
 
   /// 本期应还（本期账单的剩余应还；贷方余额时为 0）。
   int get currentDue => latest?.remaining ?? 0;
@@ -509,6 +513,7 @@ LiabilityBreakdown liabilityOf({
 }) {
   final latestDate = latest?.statementDate;
   var unbilled = 0;
+  var unbilledCount = 0;
   var pendingRefunds = 0;
   for (final (txn, cycle) in transactions) {
     final type = TxnType.of(txn.txnType);
@@ -528,6 +533,7 @@ LiabilityBreakdown liabilityOf({
       continue;
     }
     unbilled += txn.amountMinor;
+    unbilledCount++;
   }
   var principal = 0;
   var fees = 0;
@@ -547,6 +553,7 @@ LiabilityBreakdown liabilityOf({
     futureInstallmentPrincipal: principal,
     futureInstallmentFees: fees,
     pendingRefunds: pendingRefunds,
+    unbilledCount: unbilledCount,
   );
 }
 
