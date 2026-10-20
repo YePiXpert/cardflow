@@ -1,11 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../data/repositories/providers.dart';
-import '../money/amount_visibility.dart';
 import '../theme/tokens.dart';
 
 /// 一个主导航项。
@@ -61,13 +58,6 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   /// 工作空间切换的次数，与每个 Tab 的栈是在第几次切换之后开始的。
   int _epoch = 0;
   final Map<int, int> _branchEpoch = <int, int>{};
-
-  @override
-  void initState() {
-    super.initState();
-    // 本机数据库已打开（外壳只在就绪后出现）：读回"隐藏金额"开关。
-    unawaited(ref.read(amountsHiddenProvider.notifier).restore());
-  }
 
   void _select(int index) {
     final shell = widget.navigationShell;

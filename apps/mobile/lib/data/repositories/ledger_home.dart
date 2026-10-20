@@ -378,7 +378,7 @@ final class LedgerHome {
   final List<LedgerHomeGroup> groups;
   final LedgerHomeSummary summary;
 
-  /// "今天刷哪张"的候选（免息天数多的在前，至多 [candidateLimit] 个）；第一个就是推荐的那张。
+  /// "今天刷哪张"的候选（免息天数多的在前，至多 [candidateLimit] 个）；第一个排在最前。
   final List<TodayCardCandidate> candidates;
 
   /// 待处理：等银行证据的还款与未处理的差异项合计。

@@ -6,6 +6,7 @@ import '../../data/db/database_errors.dart';
 import '../../data/db/database_failures.dart';
 import '../../data/repositories/models.dart';
 import '../../data/repositories/providers.dart';
+import '../money/amount_visibility.dart';
 import '../routes.dart';
 
 part 'app_gate.g.dart';
@@ -65,13 +66,16 @@ final class GateReady extends AppGate {
   int get hashCode => workspace.hashCode;
 }
 
-/// 当前的启动分流状态（由当前工作空间 provider 推出；它依赖本机数据库）。
+/// 当前的启动分流状态（由当前工作空间 provider 推出；它依赖本机数据库）。"隐藏金额"开关读回之前不进入主导航
+/// （页面不会先露出金额）。
 @Riverpod(keepAlive: true)
 AppGate appGate(Ref ref) {
   final workspace = ref.watch(currentWorkspaceProvider);
+  final restoring = ref.watch(amountsHiddenRestoredProvider).isLoading;
   return switch (workspace) {
     AsyncData(value: null) => const GateNoWorkspace(),
-    AsyncData(:final value?) => GateReady(value),
+    AsyncData(:final value?) =>
+      restoring ? const GateLoading() : GateReady(value),
     AsyncError(:final error) => GateDatabaseError(
       databaseOpenExceptionFrom(error),
     ),
@@ -83,7 +87,7 @@ AppGate appGate(Ref ref) {
 /// - 诊断页任何时候都可以到达（数据库打不开时它是唯一的反馈渠道）；
 /// - 打开中或打不开 → 启动页（[AppRoutes.startup]，带上原目标 `from`）；
 /// - 没有工作空间 → P-22 首次使用页（[AppRoutes.firstRun]）；
-/// - 就绪时离开启动页，回到原目标或总览。
+/// - 就绪时离开启动页，回到原目标或卡账。
 String? gateRedirect(AppGate gate, GoRouterState state) {
   final path = state.uri.path;
   if (path == AppRoutes.diagnostics) {

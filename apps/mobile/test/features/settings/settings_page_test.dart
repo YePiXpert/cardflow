@@ -1,8 +1,12 @@
 // 我的（简报 U-1 §1、§9 R-09/R-10）：纯本地说明（从页顶标签挪到这里）、空间切换、隐藏金额（开关会记住，金额一律
 // 4 个点）、关于/诊断/欢迎、重置本地数据（确认页写明两个空间的数据量、须输入"删除"）、公测说明。
+import 'dart:async';
+
 import 'package:cardflow/app/money/amount_visibility.dart';
 import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/app/startup/reset_local_data_page.dart';
+import 'package:cardflow/app/startup/startup_page.dart';
+import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_providers.dart';
 import 'package:cardflow/data/repositories/workspace_repository.dart';
 import 'package:cardflow/features/home/ledger_home_page.dart';
@@ -24,6 +28,18 @@ class _FakeRecovery extends DatabaseRecovery {
 
   @override
   Future<void> reset() async => resets++;
+}
+
+/// 演示空间的内存库，库里记着"隐藏金额"已打开（上次运行时打开的）。
+Future<AppDatabase> _demoDatabaseWithAmountsHidden(WidgetTester tester) async {
+  final db = await createWidgetTestDatabase(
+    tester,
+    workspace: TestWorkspace.demo,
+  );
+  await tester.runAsync(
+    () => WorkspaceRepository(db).setSetting(amountsHiddenSettingKey, '1'),
+  );
+  return db;
 }
 
 Future<void> _scrollTo(WidgetTester tester, Finder finder) async {
@@ -79,6 +95,43 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(appContainer(tester).read(amountsHiddenProvider), isTrue);
+  });
+
+  testWidgets('冷启动：库里记着隐藏金额时，开关读回之前停在启动页，进入卡账时金额已经隐藏（不会先露出）', (tester) async {
+    final db = await _demoDatabaseWithAmountsHidden(tester);
+    final restored = Completer<void>();
+    await pumpCardFlowApp(
+      tester,
+      useMemoryDatabase: false,
+      overrides: <Override>[
+        ...testDatabaseOverrides(db),
+        amountsHiddenRestoredProvider.overrideWith((ref) => restored.future),
+      ],
+    );
+    expect(find.byType(StartupPage), findsOneWidget);
+    expect(find.byType(LedgerHomePage), findsNothing);
+    // 读回（真正的读回方法），读回完成后才进入主导航。
+    await tester.runAsync(
+      () => appContainer(tester).read(amountsHiddenProvider.notifier).restore(),
+    );
+    restored.complete();
+    await tester.pumpAndSettle();
+    expect(find.byType(LedgerHomePage), findsOneWidget);
+    expect(find.text('¥2,393.33'), findsNothing);
+    expect(find.text('••••'), findsWidgets);
+  });
+
+  testWidgets('冷启动：启动分流自己读回开关（库里记着隐藏 → 卡账一打开就是 4 个点）', (tester) async {
+    final db = await _demoDatabaseWithAmountsHidden(tester);
+    await pumpCardFlowApp(
+      tester,
+      useMemoryDatabase: false,
+      overrides: testDatabaseOverrides(db),
+    );
+    expect(find.byType(LedgerHomePage), findsOneWidget);
+    expect(appContainer(tester).read(amountsHiddenProvider), isTrue);
+    expect(find.text('¥2,393.33'), findsNothing);
+    expect(find.text('••••'), findsWidgets);
   });
 
   testWidgets('演示空间：当前是演示空间，可「退出演示」与「清除演示数据」', (tester) async {

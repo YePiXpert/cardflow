@@ -8,17 +8,20 @@ part of 'app_gate.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// 当前的启动分流状态（由当前工作空间 provider 推出；它依赖本机数据库）。
+/// 当前的启动分流状态（由当前工作空间 provider 推出；它依赖本机数据库）。"隐藏金额"开关读回之前不进入主导航
+/// （页面不会先露出金额）。
 
 @ProviderFor(appGate)
 final appGateProvider = AppGateProvider._();
 
-/// 当前的启动分流状态（由当前工作空间 provider 推出；它依赖本机数据库）。
+/// 当前的启动分流状态（由当前工作空间 provider 推出；它依赖本机数据库）。"隐藏金额"开关读回之前不进入主导航
+/// （页面不会先露出金额）。
 
 final class AppGateProvider
     extends $FunctionalProvider<AppGate, AppGate, AppGate>
     with $Provider<AppGate> {
-  /// 当前的启动分流状态（由当前工作空间 provider 推出；它依赖本机数据库）。
+  /// 当前的启动分流状态（由当前工作空间 provider 推出；它依赖本机数据库）。"隐藏金额"开关读回之前不进入主导航
+  /// （页面不会先露出金额）。
   AppGateProvider._()
     : super(
         from: null,
@@ -52,4 +55,4 @@ final class AppGateProvider
   }
 }
 
-String _$appGateHash() => r'17abf4db7135e3963b0dc6d6faceeb858cc3293d';
+String _$appGateHash() => r'5547cdb09ad16213b3e538fcbff7a10c74def272';
