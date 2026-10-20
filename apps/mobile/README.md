@@ -3,7 +3,8 @@
 本目录是卡序的 Flutter 工程（I-0a 骨架；I-0b 加密本地库；I-0c 领域包；I-1a 本地库 v2、真实/演示工作空间、
 建卡/信用账户/账期规则/额度快照；I-1b 本地库 v3、现金账户与快照、收支计划与周期事项、情景、资金日历；I-1c 本地库 v4、
 交易与账单版本、分期、还款登记与核对、差异项；公测版 0.0.1：关于页与公测说明；F-1：账单接续与有效状态、撤销入口、分期成本移出
-界面线程、切换空间的保护）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见
+界面线程、切换空间的保护；U-1（公测版 0.0.2）：卡账首页与 4 个标签、卡片详情重做与"记本期账单""还清本期"、现金页的余额
+曲线与"未计入"、"我的"里的隐藏金额与重置本地数据、新的视觉 token）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见
 `docs/80-delivery/ios-first-plan.md`。
 
 ## 目录
@@ -11,17 +12,18 @@
 | 路径 | 内容 |
 |---|---|
 | `lib/main.dart` | 入口：建立 Provider 容器、安装错误钩子、启动 App |
-| `lib/app/` | App 外壳：`app.dart`（MaterialApp、语言、演示横幅）、`router.dart`/`routes.dart`（go_router：启动分流、五个主导航、卡包栈）、`startup/`（启动分流 `app_gate.dart`、启动页与"重置本地数据"确认页）、`diagnostics/`（内存环形诊断日志）、`shell/`（底部 Tab）、`theme/`（`tokens.dart` 设计 token 唯一来源，`app_theme.dart` 浅色/深色主题）、`money/`（金额格式与 `minorDigits` 表、全局金额隐藏开关）、`widgets/`（`MoneyText`、首次空白态、状态视图、空间标识、演示横幅、确认框、轻提示） |
-| `lib/features/<模块>/` | 功能模块：`overview` 总览（P-01，含现金压力卡、近期到期与待办）、`cards` 卡包（P-02 卡包与新建卡片、P-03 详情（含账单部分）、P-04 设置）、`statements` 账单中心（P-05：列表、详情、录入正式账单、人工修正、记一笔、转分期）、`repayments` 还款与核对（P-06：列表、详情与时间线、登记还款）、`planner` 规划（P-10 与规划 Tab 的分段条）、`cash` 现金与收支（P-08：账户、快照、收支计划、周期事项、调拨）、`calendar` 资金日历（P-07）、`scenarios` 情景与对比（P-09）、`promotions` 发现、`settings` 我的（含「关于」与公测说明）、`onboarding` 欢迎页（P-22）与空间切换、`diagnostics` 诊断页 |
+| `lib/app/` | App 外壳：`app.dart`（MaterialApp、语言、演示横幅；`appFontFamilyProvider` 只供截图工具指定字体）、`router.dart`/`routes.dart`（go_router：启动分流、4 个主导航（卡账、现金、规划、我的）、0.0.1 旧路径重定向 `legacyRedirect`）、`startup/`（启动分流 `app_gate.dart`、启动页与"重置本地数据"确认页）、`diagnostics/`（内存环形诊断日志）、`shell/`（底部导航）、`theme/`（`tokens.dart` 设计 token 唯一来源：颜色、字号 `CfType`、间距、圆角、银行品牌色；`app_theme.dart` 浅色/深色主题）、`money/`（金额格式（含整数省略".00"的紧凑写法）与 `minorDigits` 表、全局金额隐藏开关）、`widgets/`（`MoneyText`、银行徽标 `BankBadge`、分组卡片与大标题顶栏 `cf_layout.dart`、首次空白态、状态视图、演示横幅、确认框、轻提示） |
+| `lib/features/<模块>/` | 功能模块（U-1 起，见"卡账首页与 4 个标签"）：`home` 卡账（新首页：汇总卡、待处理、今天刷哪张、每张卡的待还与出账/还款日格；"记本期账单""还清本期"弹层与一步推进银行证据）、`cards` 全部卡片（P-02 层级列表与新建卡片）、卡片详情（P-03：卡面、本期进度、金额区、账单历史、分期摘要，`card_detail_sections.dart`）与 P-04 设置、`statements` 账单中心（P-05：列表、详情、录入正式账单、人工修正、记一笔、转分期）、`repayments` 还款与核对（P-06：列表、详情与时间线、登记还款）、`cash` 现金页（余额曲线、"未计入"、接下来）与现金账户和收支（P-08：账户、快照、收支计划、周期事项、调拨）、`calendar` 资金日历的逐日表格（P-07）、`scenarios` 规划页（情景与假设对比，P-09）、`planner` 消费规划（P-10）、`promotions` 活动与权益、`settings` 我的（纯本地说明、空间、隐藏金额、「关于」与公测说明、重置本地数据入口）、`onboarding` 欢迎页（P-22）与空间切换、`diagnostics` 诊断页 |
 | `lib/data/db/` | 加密本地库（drift + SQLite3MultipleCiphers，见下文"加密本地库"）：表定义、迁移、打开、重置 |
-| `lib/data/repositories/` | 仓库（按当前工作空间过滤）、读模型 `CardWalletReader`/`CashPlanReader`/`CashForecastReader`/`LedgerReader`、数据层 provider（当前工作空间、时钟、各仓库），见下文"工作空间与演示模式""仓库与 provider""现金与资金日历""账单、分期与还款" |
+| `lib/data/repositories/` | 仓库（按当前工作空间过滤）、读模型 `CardWalletReader`/`CashPlanReader`/`CashForecastReader`/`LedgerReader` 与卡账首页的 `LedgerHome`（`ledger_home.dart`）、数据层 provider（当前工作空间、时钟、各仓库），见下文"工作空间与演示模式""仓库与 provider""现金与资金日历""账单、分期与还款""卡账首页与 4 个标签" |
 | `lib/data/mapping/` | 数据层 → 领域对象映射：`domain_mapping.dart`（规则版本 → `BillingRule`、预测账期与 3 期预览、快照与授信池 → `CardOption`/`ModelInputs` → `capacityLayers`）；`cash_mapping.dart`（现金账户/快照/事件/情景 → `CashAccount`/`Snapshot`/`CashEvent`/`Scenario`，交叉校验、输入哈希、情景计算结果 JSON）；`ledger_mapping.dart`（交易账期归属、账单余额、负债四分法、分期各期与成本、还款入账日与额度释放） |
 | `lib/data/time/` | 业务时区（只支持固定偏移时区）、入账日推导（截止时点）、时钟（演示空间固定"今天"） |
 | `lib/data/validation/` | G2/G5 与末四位校验（仓库与界面共用一套文案） |
 | `lib/data/demo/` | 演示空间的合成数据 |
+| `lib/data/banks/` | 常见银行的简称与徽标字（`bank_names.dart`，16 家；其余去掉"银行"二字） |
 | `lib/data/ids.dart` | UUID v4（`Random.secure()`，不引入 uuid 包） |
 | `packages/cardflow_domain/` | 纯 Dart 领域包（I-0c）：金额、日期、账期、现金时间线、独立验证器、有限搜索、规则协议 v1 与 fixture 运行器；App 以 path 依赖引入，见下文"领域层" |
-| `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置；`test/data/db/`、`test/data/repositories/` 在真实 sqlite3mc 上测试加密本地库与仓库；`test/support/sensitive_text.dart` 查日志与报告里的敏感内容；`test/support/forbidden_ui.dart` 整页检查"还款成功"与绿色；`test/app/public_beta_test.dart` 阶段代号防回归与公测说明 |
+| `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置；`test/data/db/`、`test/data/repositories/` 在真实 sqlite3mc 上测试加密本地库与仓库；`test/support/sensitive_text.dart` 查日志与报告里的敏感内容；`test/support/forbidden_ui.dart` 整页检查"还款成功"与绿色；`test/app/public_beta_test.dart` 阶段代号防回归与公测说明；`test/app/amount_hiding_test.dart` 打开隐藏金额后逐页检查没有数字金额；`test/app/sheets_accessibility_test.dart` 新弹层与菜单的可访问性；`test/tool/screenshots_test.dart` 截图工具（只在 `CARDFLOW_SCREENSHOTS=1` 时运行） |
 | `ios/` | iOS 工程：`Flutter/CardFlow.xcconfig`（Bundle ID 与签名参数的唯一来源）、`Runner/PrivacyInfo.xcprivacy`（隐私清单） |
 | `web/` | 只用于 CI 的 Web 编译烟雾测试，不发布 |
 
@@ -190,14 +192,14 @@ COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 �
   构造，查询一律带 `workspace_id`；跨空间的 id 一律"已不存在"。隔离测试 `workspace_isolation_test.dart`：一个空间写满
   全部业务表，以另一个空间为当前空间运行每个仓库的全部查询（含用对方的 id 去查，I-1c 时 237 条），结果全部为空；反向亦然。
 - **启动分流**（`lib/app/startup/app_gate.dart`，BL-04）：数据库打开中/打不开 → 启动页；没有工作空间 → P-22
-  （`/welcome`，任何路由都先到这里）；就绪后进入五个主导航。诊断页不受分流约束。
-- **P-22**：「手工建卡」进入（必要时新建）真实空间并打开新建卡片；「体验演示」进入（首次生成）演示空间并转到总览；
+  （`/welcome`，任何路由都先到这里）；就绪后进入 4 个主导航（U-1 起还要等"隐藏金额"开关读回，见"卡账首页与 4 个标签"）。诊断页不受分流约束。
+- **P-22**：「手工建卡」进入（必要时新建）真实空间并打开新建卡片；「体验演示」进入（首次生成）演示空间并转到卡账；
   「从账单文件开始」「从备份恢复」「连接服务器」显示但禁用并注明"后续版本提供"（连接服务器为"后续提供（自托管同步）"；
-  公测版起界面不写内部阶段代号）；最底部是公测说明（见"公测版 0.0.1"）。真实↔演示切换须确认；
+  公测版起界面不写内部阶段代号）；最底部是公测说明（见"公测版"）。真实↔演示切换须确认；
   「退出演示」回到真实空间（没有则回到 P-22）；「清除演示数据」确认框写明影响数量，删除演示空间全部行。
 - **演示数据**（`lib/data/demo/demo_workspace.dart`，经仓库写入、一个事务）：卡 A/B/C 的账期与可用额与回归样本一致
   （engine-spec §9），另加与 B 同行的卡 D：A 主卡 + 附属卡同一信用账户（F-21）；B 与 D 是同一银行的两个独立授信
-  （F-22）且共享"乙行共享额度"池（F-23）；D 可用 −200（F-26）；B 有临时额度 5,000、2026-11-15 到期（F-27）；
+  （F-22）且共享"长江共享额度"池（F-23）；U-1 起银行名是虚构的星海银行（A）、长江银行（B、D）、北辰银行（C），徽标各不相同；D 可用 −200（F-26）；B 有临时额度 5,000、2026-11-15 到期（F-27）；
   C 的规则带截止时点 22:00。现金部分（I-1b，`seedDemoCash`）：工资卡（储备 2,000）与受限的定期存款（不计入可用现金）、
   工资卡 10-16 的快照（当天早餐已包含、水电费未包含）、与回归样本同一组数值的收支、房租周期事项（每月 27 日，12-27 单期覆盖为
   1,200）、11-01 工资卡 → 定期存款 2,500 的调拨、"收入推迟 3 天"压力情景，并计算"基准预期"与它各一个版本；固定"今天"下
@@ -206,9 +208,9 @@ COUNT 的毫秒数，进入复制的报告；ADR-001 PoC-1 的退出条件"10 �
 - **时钟**：`clockProvider` —— 演示空间固定"今天" = 2026-10-16（北京时间 12:00，`demoClock`），陈旧判定不触发；真实空间
   用系统时间。页面与仓库都不直接调用 `DateTime.now()`。
 - **演示横幅**：`DemoBannerFrame`（`MaterialApp.builder`）在演示空间时每页顶部常驻紫色横幅（烧瓶 + "演示数据 ·
-  与真实数据隔离" +「退出演示」），没有关闭按钮。
+  与真实数据隔离" +「退出演示」），没有关闭按钮；U-1 起压成一行，文字最多放大到 2 倍。
 - **切换空间不写进另一个空间**（审查 R-15）：当前工作空间从一个变成另一个（进入/退出演示、切换空间、清除演示数据后回到真实
-  空间）时，`appRouterProvider` 统一回到首页（总览）——根导航器上的全屏表单与当前 Tab 的页面栈一并清掉；`HomeShell` 让切换之前
+  空间）时，`appRouterProvider` 统一回到首页（卡账）——根导航器上的全屏表单与当前 Tab 的页面栈一并清掉；`HomeShell` 让切换之前
   留在其他 Tab 的页面栈作废（下次点进那个 Tab 从根页开始），切换之后新开的栈照常保留。全屏表单混入 `WorkspaceBoundForm`
   （`lib/app/widgets/workspace_bound_form.dart`）：打开时记下工作空间 id，保存时经 `boundRepository` 取仓库，当前空间不同就抛
   `WorkspaceChangedException`（"已切换空间：这张表单是在另一个空间里打开的，没有保存"），作为第二道防线；新加的全屏表单也要混入
@@ -259,11 +261,14 @@ provider（`providers.dart`，都不自动重试）：`workspaceRepositoryProvid
 未开放的操作用 `EmptyStateAction.stage` 注明"后续版本提供"，不写内部阶段代号）、加载（`LoadingSkeleton`，静态）、错误（`ErrorBlock`，错误码 +「重试」=
 `ref.invalidate`）、成功；对象不存在显示"已不存在"。区块标题 `SectionTitle`，提示 `NoticeCard`，徽标 `StatusBadge`，
 "标签：值" `LabeledValue`（金额值用 `MoneyText`）；轻提示 `showFeedback`（替换正在显示的提示）；二次确认 `confirmAction`。
-路由常量在 `routes.dart`（卡包栈：`/cards` → `/cards/accounts/:accountId`（P-03）→ `…/settings?section=rule|limits|currencies|pool`（P-04）；
-新建卡片 `/cards/new` 全屏；规划 Tab 的 P-10 `/planner` 与分段 P-07 `/planner/calendar?basis=&scenario=`、P-08 `/planner/cash`、
-P-09 `/planner/scenarios` 是并列的顶层路由（分段之间切换没有返回）；P-08 的表单（`new-account`、`new-event?type=`、`new-transfer`、
-`new-recurring`、`events/:id`、`accounts/:id/snapshot`、`recurring/:id/edit`）与 P-09 的编辑器（`new`、`edit/:id`）全屏，
-账户详情 `accounts/:id`、周期详情 `recurring/:id`、对比 `compare?a=&b=` 在 Tab 栈内）；新页面必须加进 `test/app/accessibility_test.dart` 的页面清单（触控尺寸、标签、对比度、2/3 倍字号）。
+路由常量在 `routes.dart`（U-1 起的 4 个主导航）：卡账栈 `/home` → 全部卡片 `/home/manage`、信用账户详情 `/home/accounts/:accountId`
+（P-03）→ `…/settings?section=rule|limits|currencies|pool`（P-04）；新建卡片 `/home/new-card` 全屏；现金栈 `/cash`（现金页，P-08 的
+账户与收支在它下半部分）、资金日历的逐日表格 `/cash/calendar?basis=&scenario=`，P-08 的表单（`new-account`、`new-event?type=`、
+`new-transfer`、`new-recurring`、`events/:id`、`accounts/:id/snapshot`、`recurring/:id/edit`）全屏，账户详情 `accounts/:id`、周期详情
+`recurring/:id` 在栈内；规划栈 `/planner`（情景与假设对比，P-09）、消费规划 `/planner/plan`、活动与权益 `/planner/discover`，情景
+编辑器 `/planner/scenarios/new`、`/planner/scenarios/edit/:id` 全屏，对比 `/planner/scenarios/compare?a=&b=` 在栈内；我的 `/settings`、
+关于 `/settings/about`、诊断 `/settings/diagnostics`、欢迎与开始方式 `/settings/welcome`、重置本地数据 `/settings/reset`。0.0.1 的
+旧路径由 `legacyRedirect` 换成新位置；新页面必须加进 `test/app/accessibility_test.dart` 的页面清单（触控尺寸、标签、对比度、2/3 倍字号）。
 
 ## 现金与资金日历（I-1b，R-CASH-01~10、UF-1 步骤 4–5、UF-5）
 
@@ -271,7 +276,7 @@ P-09 `/planner/scenarios` 是并列的顶层路由（分段之间切换没有返
 时刻存成该时区偏移的 RFC 3339（按自身偏移取的日期就是业务日期），与手机时区无关。
 
 **可用现金口径**（`CashAvailability`）：受限资金，或 `usable_for_repayment = 0` 且没有 `available_from` 的账户不计入可用现金
-（资金日历、总览、情景计算都不算它，界面写明原因）；有 `available_from` 的计入，领域 `CashAccount.usableForRepayment` 按"今天
+（资金日历、现金页、情景计算都不算它，界面写明原因）；有 `available_from` 的计入，领域 `CashAccount.usableForRepayment` 按"今天
 是否已到可用日期"取值，并在假设里写明"{日期} 起才可用于还款"；已停用的账户不进入任何计算。受限资金不能直接标为可用于还款
 （只能设可用日期）；理财、受限默认不可当日还款。
 
@@ -454,11 +459,11 @@ P-09 `/planner/scenarios` 是并列的顶层路由（分段之间切换没有返
 不计入未出账，也不进现金（不当收入，F-34）。
 
 **页面与演示数据**：P-05 账单中心（`lib/features/statements/`：列表与筛选、详情、录入正式账单、人工修正、记一笔、转分期）与
-P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线、登记还款）挂在总览栈与信用账户详情栈下（`/overview/…`、
-`/cards/accounts/:accountId/…`；路由常量 `AppRoutes.statements`/`statement`/`newStatement`/`correctStatement`/`newTransaction`/
-`newInstallment`/`repayments`/`repayment`/`newRepayment`，表单全屏）。P-03 的账单部分在 `account_ledger_section.dart`（本期、负债
-四分法、最近 3 期与「全部账单」、「去还款：查看操作说明」「登记还款」、还款释放说明），P-01 的在 `ledger_overview.dart`（待办条、
-快捷新增、近期到期 14 天、负债四分法）。徽标与筛选一律用有效状态（`effectiveStatusBadge`，已并入的写"已并入 MM-DD 账单"）。
+P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线、登记还款）挂在卡账栈与信用账户详情栈下（`/home/…`、
+`/home/accounts/:accountId/…`；路由常量 `AppRoutes.statements`/`statement`/`newStatement`/`correctStatement`/`newTransaction`/
+`newInstallment`/`repayments`/`repayment`/`newRepayment`，表单全屏）。U-1 起 P-03 的账单部分在 `card_detail_sections.dart`（本期进度、
+金额区、账单历史与「全部账单」、分期摘要；负债明细、「去还款：查看操作说明」在详情页），原 P-01 的待办、近期到期与负债并入卡账首页
+（待处理、还款日格、汇总卡与负债明细，见"卡账首页与 4 个标签"）。徽标与筛选一律用有效状态（`effectiveStatusBadge`，已并入的写"已并入 MM-DD 账单"）。
 读 provider：`ledgerProvider`（`LedgerReader.load`）、`installmentCostProvider`。
 
 **撤销入口**（审查 R-16、Q-3；`ledger_actions.dart`，都调用已有的仓库方法）：交易行（账单详情的"本期交易"，以及账单中心列表下面
@@ -469,9 +474,124 @@ P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线�
 的交易（家电城 10,000 转 12 期、每期 0.6%；超市消费；超市退货 → 退款待核对；附属卡入账日未知的机票）、10-10 账单 v1 与 v2（修正
 最低还款额）、10-15 自动扣款 1,000（现金已扣）与同日手工登记的 1,000（已登记）→ 疑似重复差异项。
 
-## 公测版 0.0.1
+## 卡账首页与 4 个标签（U-1，公测版 0.0.2）
 
-- 版本：`pubspec.yaml` 的版本名 0.0.1（按用户要求；版本号不再写"beta n"）；构建号由 CI 的运行序号给出（`--build-number`），不在 pubspec 里改。
+按简报 U-1 与设计稿 `docs/50-ui/mockups/0.0.2/` 重做界面：打开就能看到每张卡欠多少、哪天出账、哪天还款，其余信息往详情页收。
+本地库结构（v4）与触发器、领域包、协议包都没有改，没有加依赖；新加的只有读模型 `LedgerHome`（纯函数）与 `app_settings` 里的
+一个键。偏离见"U-1 的偏离与约定"。
+
+**导航**（`router.dart`、`shell/home_shell.dart`）：底部 4 个标签，各自保留页面栈（StatefulShellRoute）。
+
+| 标签 | 根路径 | 根页面 | 0.0.1 的位置 |
+|---|---|---|---|
+| 卡账 | `/home` | `LedgerHomePage` | 总览 + 卡包 |
+| 现金 | `/cash` | `CashHomePage`（余额曲线、接下来、现金账户与收支） | 规划 › 资金日历 / 现金与收支 |
+| 规划 | `/planner` | `ScenariosPage`（情景与假设对比；消费规划、活动与权益的入口） | 规划 › 情景对比 / 消费规划；发现 |
+| 我的 | `/settings` | `SettingsPage` | 我的 |
+
+原有功能都能从新结构进入（`test/app/navigation_test.dart` 逐项核对）：全部卡片（授信池 › 账户 › 币种 › 卡片的层级列表）在卡账
+顶栏与"更多"；账单中心在卡账"更多"、负债明细与卡片详情的「全部账单」；还款与核对在卡账"更多"与"待处理"；资金日历的逐日
+表格是现金页的「表格」（带着口径）；现金
+账户、收支计划、周期事项、调拨在现金页下半部分与右上「添加」；消费规划、活动与权益在规划页；关于、诊断、欢迎与开始方式、重置
+本地数据在我的。0.0.1 的旧路径由 `legacyRedirect`（`routes.dart`，对照表在注释里）重定向到新位置，查询参数保留，深链仍可用。
+
+**视觉**（`theme/tokens.dart`、`theme/app_theme.dart`）：深浅两套页底、表面、次级表面、分隔线、三级文字、强调色与汇总卡渐变
+取自设计稿；语义色（注意、危险、银行确认、演示等）沿用 ui-spec §3.1，深色模式的底色是前景 14% 叠在表面色上（预先算成不透明色，
+便于核对对比度）；字号 `CfType`（大标题 32、导航与分组标题 17、正文 15、说明 12；金额一律等宽数字：汇总 38、详情 30、行内 24）；
+圆角：分组卡片 20、小块 16、按钮与输入框 12；页面左右边距 16。主题把 ColorScheme 的各容器层级分开映射（不再都是同一种表面色）；
+主按钮用强调色，次要按钮用强调色浅底；底部导航用页底色加一条顶部分隔线。所有文字对其底色 ≥ 4.5:1（`test/app/theme_test.dart`
+用 WCAG 公式逐项核对）。共用组件：`GroupCard`（分组卡片）、`largeTitleAppBar`（大标题顶栏）、`CircleIconButton`、`BankBadge`
+（34pt 圆角方块 + 白色简称首字；工、建、农、中、交、招、浦发、民生、兴业、光大、中信、平安、广发、华夏、邮储、浙商 16 家固定
+品牌色，其余按简称哈希取调色板；不用商标图形，`test/app/bank_badge_test.dart` 核对白字 ≥ 4.5:1）、`MoneyText(compact: true)`。
+
+**卡账读模型**（`lib/data/repositories/ledger_home.dart`；`ledgerHomeProvider`；纯函数 `LedgerHome.of(LedgerData)`，单测
+`test/data/repositories/ledger_home_test.dart`）。口径一律取 F-1 读模型的有效状态与本期剩余应还（PRD §6.2 裁决段、简报 §10），
+**不读 `statement.status`**：
+
+- 行（`CardLedgerRow`，卡片详情也用 `ledgerRowOf`）= 每个未停用信用账户的每个币种子账户：标题"银行简称 ···· 主卡末四位"，右侧
+  产品名；账户冻结或未停用的卡全部冻结时标"已冻结"。
+- 待还 = `currentStatementOf(subId).remaining`；没有已出账单时写"—"，下面写"未出账 ¥x"。账单 = 本期当前版本的新增账单（`basis`）。
+- 状态标签至多一个（`CardRowStatus`）：已还清（银行确认色）、已逾期（危险色）、已标记还款（还欠着、最近一笔还款是"用户已标记"或
+  "待核对"）、已还一部分（注意色），以及中性的已入账待确认、已转分期、无需还款；还欠着、没有这些情况的不加标签。
+- 出账日格：今天入账所属的账单日（`forecastCycles(版本, 今天)` 的保守账期，含当天）——"N 天后出账"或"今天出账"。还款日格：
+  还欠着时为本期到期日——"N 天后还款"、"今天还款"（注意色）、"已逾期 N 天"（危险色）；已结清或没有已出账单时为下一期的预测
+  到期日（次要文字色，日期行写"下期 MM-DD"）；账单日已过、账单还没录入时为那一期的预测到期日（日期行写"MM-DD 预计"）。没有
+  账期规则或规则给不出账期时，两个日期格合成「设置账期」（或"账期规则有误"）入口。
+- 排序（`LedgerSort`）：按还款日（默认：还欠着的按到期日升序在前，其余按下一期到期日在后，没有规则的最后）、按出账日、按待还
+  金额（人民币在前，同币种大的在前）；同一位置按银行简称、末四位、币种。
+- 汇总（`LedgerHomeSummary`）：本期待还按币种分列（人民币大字，不同币种不相加）与还欠着的卡（信用账户）数；最近一笔到期；3 天内
+  到期（`upcoming(days: 3)`，含已逾期）；人民币总额度（授信池只算一次）与可用（`capacityLayers` 三层取最小，池只算一次，冻结的
+  不算）——有账户缺额度快照时写"部分卡缺额度"，不以 0 代替；有账单出了还没录入时写"N 张卡有账单出了还没录入"。点开是负债明细
+  （按币种：本期应还、未出账、未来分期本金、总负债）。
+- 待处理 = 等银行证据的还款 + 未处理的差异项（`awaitingEvidence` + `openItems`），点开去还款与核对。
+- 今天刷哪张（`TodayCardCandidate`）：未冻结、有有效规则、可用容量 > 0 的人民币子账户；免息天数 = 保守账期的到期日 − 今天（入账
+  延迟不确定时按最早到期）；多的在前，并列时可用容量大的在前、再按名称；弹层列前 5 个与口径说明。
+- 未计入（`UncountedDue`，简报 §9 Q-1）：本期还欠着的部分，减去已登记、还没银行入账、在现金时间线上有扣款的还款（疑似重复的两笔
+  只计一笔）；有这样的卡时，现金页与资金日历表格写一行"未计入：信用卡本期应还 ¥x（N 张卡，登记还款后计入）"，点开列出这些卡，
+  可直接「还清本期」。信用卡应还要不要自动作为计划流出，后续再定（BL-33）。
+- 分组（`LedgerHomeGroup`）：现在只有"信用卡"一组；贷款（L-1）加进同一结构，汇总也按分组合计。
+
+**卡账首页**（`lib/features/home/ledger_home_page.dart`）：大标题"卡账"，顶栏「管理全部卡片」与「添加」（添加卡片、记一笔、录入
+账单、登记还款）；汇总卡、待处理、今天刷哪张、按所选排序的卡片列表（点一行进卡片详情；行里有等银行证据的还款时显示一步推进的
+按钮）、"更多"（管理全部卡片、账单中心、还款与核对）。真实空间还没有卡时是大号「添加第一张卡」与「体验演示」。字号放大到 1.6 倍
+以上时行改为纵向：金额在上，两个日期格在下，金额不截断。
+
+**卡片详情**（`lib/features/cards/account_detail_page.dart`、`card_detail_sections.dart`）：币种切换（多币种时）、卡面（银行色、
+简称、末四位、产品名、额度条）、本期进度（出账日 → 今天 → 还款日，"还剩 N 天还款"；「记本期账单」与账期规则入口）、金额区（待还、
+最低还款与「还清本期」，或等银行证据的还款与一步推进；本期账单、未出账 · N 笔）、三个操作（登记还款、记一笔、更新额度）、账单
+历史（最近几期与「全部账单」）、分期摘要、负债明细（展开）、卡片（主卡、附属卡、已停用的）、额度与账期规则。"⋯"菜单收着其余
+操作：记本期账单、录入正式账单（完整）、人工修正本期账单、去还款：查看操作说明、换卡/补卡、冻结/解冻、销卡、账期设置、账户设置
+（额度、币种、授信池）。
+
+- **记本期账单**（`lib/features/home/quick_statement_sheet.dart`）：底部弹层，账单日（默认今天及以前最近的预测账单日）、新增账单
+  金额（必填）、最低还款（可选）、到期日（默认预测值，可改）；用 `recordIssued` 生成 v1 手工账单，其余要素按"来源未含此项"保存；
+  「完整录入」打开原表单。
+- **还清本期**（`quick_pay_sheet.dart`）：预填剩余应还，分配到本期账单，方式手工、发起时间现在、预计扣款日今天，扣款账户是唯一
+  可用于还款的现金账户（多个时选择，没有时提示先添加）；多还先确认；生成"已登记（待银行确认）"的还款；「完整登记」打开原表单。
+  之后卡账行与详情上可以一步推进（`repayment_quick_actions.dart`，都经仓库的同样校验与差异项检查）："银行已入账"（已登记、处理中、
+  现金已扣 → `confirmDebit` + `markCreditPosted`，时点记为现在）与"银行确认"（银行已入账、用户已标记、待核对 → `confirmByBank`）。
+  状态机与文案规则不变，不出现"还款成功"。
+
+**现金**（`lib/features/cash/cash_home_page.dart`、`balance_chart.dart`、`uncounted_dues.dart`）：7/30/90/180 天分段（默认 30）、
+口径菜单（已确认、基准预期（默认）、压力情景）、「表格」（带着口径打开资金日历的逐日表格）；账户标签（默认最差的那个：人民币里
+窗口内最低点最低的账户）；余额曲线（`CustomPaint`：所选账户从快照日（或今天，取较早的）到窗口末日逐日的最低余额（先支出后收入），
+0 线、储备虚线，低于储备的一段用危险色并标 ▲ 与日期，标出起止日期；读屏摘要如"30 天内最低 ¥300，11-01，工资卡；缺口 1 处"）；未计入；
+接下来（窗口内的收支与缺口点，最多 8 条，其余在表格里）；下面是原 P-08 的现金账户、收支计划、周期事项与调拨。逐账户计算，账户
+之间从不相加；没有缺口用中性色并写"没有缺口"，不用绿色。
+
+**规划**（`lib/features/scenarios/scenario_pages.dart`）：情景与假设对比（长说明收进标题旁的 ⓘ），以及消费规划、活动与权益两个
+入口（都是首次空白，后续版本提供）。
+
+**我的**（`lib/features/settings/settings_page.dart`）：纯本地说明（从各页顶部的标签挪到这里）、空间（当前空间、退出演示或体验
+演示、清除演示数据）、隐私（隐藏金额）、关于与帮助（关于卡序、诊断信息、欢迎与开始方式）、数据（重置本地数据）、公测说明。
+
+- **隐藏金额**（ui-spec §3.6，审查 R-09；`lib/app/money/amount_visibility.dart`）：`MoneyText` 一律显示固定 4 个"•"、读屏读"金额
+  已隐藏"；不经 `MoneyText` 的句子里的金额用 `amountInText`。开关记在 `app_settings`（键 `amounts_hidden`，两个空间共用，不改表
+  结构）。`amountsHiddenRestoredProvider` 在启动时与本机数据库重新打开（重置本地数据、重试打开）之后读回，库里没有记过时为不隐藏；
+  启动分流等它读回才进入主导航，冷启动不会先露出金额。`test/app/amount_hiding_test.dart` 打开隐藏后逐页滚到底，检查没有数字金额。
+- **重置本地数据**（审查 R-10、Q-2、BL-26）：我的 › 数据 › 重置本地数据（`/settings/reset`，与启动页打不开库时的是同一个确认页）：
+  写明真实与演示两个空间的数据量与"不可恢复"，须输入"删除"才可执行；设备认证留到 I-4（BL-20）。
+
+**可访问性**：`test/app/accessibility_test.dart` 的页面清单换成新结构（47 页：触控尺寸、标签、对比度，2/3 倍字号不溢出）；
+`test/app/sheets_accessibility_test.dart` 检查新的弹层与菜单（今天刷哪张、负债明细、添加与排序菜单、卡片"⋯"菜单、现金的口径与
+添加菜单、记本期账单、未计入与还清本期），以及 2 倍字号时卡账行改为纵向。菜单弹层都可滚动，3 倍字号不溢出。
+
+**截图工具**（`test/tool/screenshots_test.dart`）：只在环境变量 `CARDFLOW_SCREENSHOTS=1` 时运行（CI 跳过）：
+
+```bash
+cd apps/mobile
+CARDFLOW_SCREENSHOTS=1 flutter test test/tool/screenshots_test.dart
+```
+
+渲染演示空间（固定"今天" 2026-10-16）的卡账、卡片详情、现金、规划、我的、新建卡片、账单详情、登记还款，以及账单中心、还款与
+核对、全部卡片、资金日历表格、欢迎页、关于：iPhone 393×852、3 倍、iOS 平台、上下留出状态栏与 Home 指示条（59/34），深色与浅色，长页面往下再截几屏，
+输出到 `build/screenshots/`（`<序号>-<页面>-<dark|light>[-<屏>].png`）。测试环境没有系统字体：加载文泉驿微米黑
+（`/usr/share/fonts/truetype/wqy/wqy-microhei.ttc`）与 Flutter SDK 自带的 MaterialIcons，并经 `appFontFamilyProvider` 让主题的
+每一种文字样式（含按钮）都用这个字体族，截图里没有方块字。App 本身不打包字体，真机用系统字体。U-1 的截图在 `evidence/u1/screens/`。
+
+## 公测版（0.0.1 起；U-1 起为 0.0.2）
+
+- 版本：`pubspec.yaml` 的版本名（0.0.1；U-1 起 0.0.2，`0.0.2+1`；按用户要求，版本号不再写"beta n"）；构建号由 CI 的运行序号给出（`--build-number`），不在 pubspec 里改。
   ios-unsigned 的"Verify IPA"断言 `CFBundleShortVersionString` = pubspec 版本名（推 `ios-v*` 标签构建时还要 = 标签去掉 `ios-v`）、
   `CFBundleVersion` = 运行序号（F-1，审查 R-11）。App 图标是卡序自己的
   图标（`ios/Runner/Assets.xcassets/AppIcon.appiconset`，15 个尺寸，RGB 无透明通道）；ios-unsigned 的"Verify IPA"检查构建出的
@@ -479,9 +599,10 @@ P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线�
 - 界面文字不出现内部阶段代号：未开放的功能写"后续版本提供"一类说法。防回归测试 `test/app/public_beta_test.dart`：扫描 `lib/`
   全部字符串字面量（注释除外，扫描器带正反例自检）是否匹配 `I-\d`，并逐页打开演示空间的全部页面、真实空间的首次空白页与 P-22，
   每页滚到底检查渲染出来的文字。
-- 公测说明（`lib/features/settings/public_beta.dart` 的 `PublicBeta.note`，P-22 首次使用页最底部与「关于」共用同一段）："公测版
-  0.0.1：数据只保存在这台 iPhone 的加密数据库里，不上传任何服务器。删除 App 或「重置本地数据」会永久删除全部数据；目前还没有备份
-  与导出，后续版本提供。"说明里的版本号只来自 `PublicBeta.version` 一处；测试逐字核对原文，并读取 `pubspec.yaml` 断言
+- 公测说明（`lib/features/settings/public_beta.dart` 的 `PublicBeta.note`，P-22 首次使用页最底部、「关于」与"我的"共用同一段；U-1 起
+  按简报 §9 R-10、Q-2、BL-26 的原文）："公测版 0.0.2：数据只保存在这台 iPhone 上，加密存储，卡序不会上传到任何服务器。删除 App 或在
+  "我的"里「重置本地数据」会删除全部数据；iPhone 自身的备份里可能留有加密副本，但换到别的手机无法打开。卡序目前还没有自己的备份与
+  导出，后续版本提供。"说明里的版本号只来自 `PublicBeta.version` 一处；测试逐字核对原文，并读取 `pubspec.yaml` 断言
   `PublicBeta.version` 与版本名相同——改 pubspec 的版本名而忘了改它，CI 的 dart job 会失败。「关于」页的"版本"一行另从
   package_info_plus 读取（与诊断页同一来源）。
 - 「关于」（我的 › 关于卡序，`/settings/about`，`about_page.dart`）：名称"卡序 CardFlow"、"公测版"标识、版本与构建号（与诊断页
@@ -588,8 +709,9 @@ P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线�
   结清时是"已转分期"（之后再有还款也一样，多出的显示为贷方余额）。到期日当天仍是"待还"，过了才是"已逾期"（与 0.0.1 相同）。
 - **已并入下一期的旧账单**：剩余应还显示为 0、不计入任何合计，详情页说明"已并入 MM-DD 账单"；只禁止新的还款分配，人工修正仍
   可以（只影响这期的记录，不影响负债）。账单日前就已还清的旧账单同样显示"已并入"。
-- **人工修正看有效状态**：有效状态"已还清"的账单不能再修正（裁决举的例子）。若新增账单录小了、又按录的金额还清，这期会显示
-  "已还清"且不能修正——请在下一期账单里体现差额；冲正后又可以修正。这一点可能需要再裁决（见 F-1 汇报的疑问）。
+- **人工修正看有效状态**：F-1 时有效状态"已还清"的账单不能再修正。U-1 按简报 §10 的裁决放宽：任何有效状态的账单都可以人工修正
+  （新版本、理由必填、原值可查），修正后有效状态重新推导——录小了的账单按录的金额还清后修正为更大的金额，会重新变为"待还"并进入
+  近期到期（`review_probes_test.dart` 有这一例）。
 - **读模型只读**：删去了打开账单时写"已逾期"与把到期的"用户已标记"写成"待核对"的维护（`markOverdueMarkedPaid` 已删），两者都由
   读模型推导；0.0.1 已写进库的账单"已逾期"作为动作记录保留、不用于显示，已写成"待核对"的还款照常显示为待核对（两种动作一样）。
   冲正后存储状态"已结清"不回退，因结清而记为
@@ -616,6 +738,48 @@ P-06 还款与核对（`lib/features/repayments/`：列表、详情与时间线�
   去掉只能换掉 flutter-action（例如自己下载 SDK），不在本任务范围。ios-unsigned 的改动在本任务里没有运行（不触发 iOS 构建），
   断言语句在本机按同样的输入模拟过（`evidence/f1/ci-r11-local.txt`），下次推 `ios-v*` 标签时首次在 macOS 上运行。
 - **删除币种子账户**：说明写出是哪几类记录（交易、账单、还款、分期），不写条数；已删除/作废的记录也算（它们仍引用这个子账户）。
+
+## U-1 的偏离与约定（公测版 0.0.2）
+
+按简报 U-1 与设计稿实现；本地库结构（v4）、触发器、领域包、协议包都没有改，没有加依赖。与设计稿或 ui-spec 不同的地方，以及规格
+没写到、按保守做法定下的：
+
+- **第三级文字**：设计稿的 #6B7480（深色）/#8A929C（浅色）对表面不足 4.5:1，调成 #808996/#676F7A。
+- **深色主按钮的文字**：白字对强调色 #5B9BFF 不足 4.5:1，用深蓝 #0B1D3A。
+- **语义色**：前景沿用 ui-spec §3.1（深色危险 #FF8F85、银行确认 #9DBEFF，设计稿为 #FF7B72、#7AA7FF；浅色注意 #7A4D00，设计稿为
+  #8A5A00）；深色底色按设计稿的做法（前景 14% 叠在表面色上）预先算成不透明色。
+- **汇总卡**：浅色渐变的起点由 #2F6FD6 调为 #2560C0；说明文字用不透明的 #E1EAFA（深色 #C3D0EA），不用设计稿的半透明白——都为了
+  对渐变最亮的一端 ≥ 4.5:1。
+- **圆角**：设计稿的分组列表 18、汇总卡 22 统一为 20（简报 18–22），提示条与卡片里的小块 16；银行徽标 34pt（简报原值，不在 4pt
+  网格上）、圆角 12（设计稿 10，取 token 里的 12）。
+- **底部导航**：设计稿是半透明毛玻璃；这里用不透明的页底色加顶部分隔线（半透明时文字的对比度随下面的内容变化，保证不了 4.5:1）。
+- **演示横幅**：压成一行，文字最多放大到 2 倍（3 倍时横幅过高，挤得表单页放不下内容）；仍然常驻、没有关闭按钮。页顶原来的"演示/纯本地"
+  标签去掉：演示由横幅表示，纯本地说明挪到"我的"。
+- **紧凑金额**：卡账、卡片详情、现金页与"未计入"里的整数金额省略".00"；账单详情、负债明细与表单仍写两位小数。
+- **计数口径**："本期待还 · N 张卡"按信用账户计（同一账户的多个币种、附属卡算一张）；"3 天内到期"按账单计（含已逾期）。
+- **总额度与可用只算人民币**：授信池的总额度取"池上限"与"成员额度之和"中较小的；冻结的不算可用；有账户缺额度快照时两项都写
+  "部分卡缺额度"。
+- **状态标签**：设计稿只有"已还清/即将到期/已逾期"三种；这里按 F-1 的有效状态映射（见上一节），"今天还款"不用标签，改为还款日格
+  的注意色；已逾期优先于已标记还款（标记了还款、却过了到期日仍未见银行入账的，显示已逾期）。每行至多一个。
+- **还款日格**：设计稿只有"N 天后还款"；已结清时写下一期的预测到期日（"下期 MM-DD"，次要文字色）；账单出了还没录入时写那一期
+  的预测到期日（"MM-DD 预计"）并在汇总卡提示，免得把"还没录入"显示成"没有要还的"。
+- **出账日格**取"今天入账所属的账单日"（保守账期），入账延迟不确定时按最早的一期。
+- **排序并列**时按银行简称的字符编码（不是拼音），再按末四位、币种。
+- **贷款分组**（设计稿首页的"贷款"与 `loan-dark.png`）不在本任务，由 L-1 实现；读模型与首页已按分组组织（现在只有信用卡一组）。
+- **余额曲线**从快照日（或今天，取较早的）画到窗口末日；横轴只标起止日期，以及第一个缺口日（带 ▲；没有缺口时为最低点）的日期，
+  与起止日期重叠时只标它。默认显示最差的账户，用账户标签切换；不画多账户叠加（账户之间从不相加）。
+- **接下来**最多 8 条（其余在表格视图）；收入用强调色，不用绿色。
+- **未计入**放在现金页曲线之后与资金日历表格的汇总之后；卡账汇总卡上不放，免得与"本期待还"重复。
+- **还清本期**要先有一个可用于还款的现金账户（扣款要进现金时间线）；没有时提示去添加，或用「完整登记」。
+- **一步推进"银行已入账"**把扣款与入账时点都记为现在（与完整表单里分两步记录的结果相同）；要记实际时点，请在还款详情里逐步操作。
+- **记本期账单**：账单日可选今天之前 120 天内，默认今天及以前最近的预测账单日；到期日默认预测值，可改。
+- **账单详情**：来源一行只写一次，金额收进分组卡片；账单列表行的确认层级用文字（如"你已确认 · 2 个版本 · 差异 1"），不再另加徽标。
+- **人工修正**（简报 §10 裁决）：任何有效状态的账单都可以修正；F-1 里"已还清不能修正"的限制已去掉（见"F-1 的偏离与约定"）。
+- **重置本地数据**的确认页沿用启动页的那一页（`ResetLocalDataPage(fromSettings: true)`，返回回到我的）；设备认证留到 I-4（BL-20）。
+- **隐藏金额**存在 `app_settings` 的键 `amounts_hidden`（不改表结构），两个空间共用；清除演示数据不影响它，重置本地数据后回到不隐藏。
+- **规划页**：消费规划、活动与权益仍是首次空白（后续版本提供），从规划页的两个入口进入；原"发现"标签去掉。
+- **卡片详情的次序**：设计稿之外的内容（负债明细、卡片列表、额度与账期规则）放在账单历史与分期摘要之后；长说明收进"ⓘ"或展开项。
+- **演示数据**：银行改为虚构的星海银行、长江银行、北辰银行（原来的"演示银行甲/乙/丙"在徽标上都只能显示"演"），金额与日期不变。
 
 ## 领域层（I-0c）：`packages/cardflow_domain`
 
