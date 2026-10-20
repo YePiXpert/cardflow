@@ -9,6 +9,7 @@
 // - R-06：M1 部分还款后人工修正为已还的金额 → "已还清"，不在近期到期；"已还清"的不能再修正、冲正后又可以。
 // - R-07：M2 删除退款交易、M4 直接作废疑似重复中的一笔 → 引用它们的差异项由系统标为已处理并写明原因。
 // - R-08：M3 删除已有交易的非主币种子账户 → 给出说明（ConflictException），不抛未包装的异常。
+// - Q-3：入账日未知、可能账期跨过本期账单日 → "可能已出账"（负债按未出账计）；补入账日后归入确定的账期。
 // - F-33（裁决调整）：还款只分配到本期，分到已并入下一期的旧账单被拒；本期已还清也可以再分配（多还）。
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/repositories/credit_account_repository.dart';
@@ -396,6 +397,51 @@ void main() {
         () => accounts.removeCurrencyAccount(usd.id),
       );
       expect(refused.message, '该子账户已有账单记录，不能删除（删除会丢失这些记录）');
+    });
+  });
+
+  group('Q-3 入账日未知的交易', () {
+    test('可能账期跨过本期账单日（10-10 或 11-10）→ "可能已出账"，负债按未出账计；补入账日（10-11）后归入 11-10、'
+        '列在"不在已录账单里的交易"；补成 10-10 则归入本期账单', () async {
+      final other = await createTestCard(scope, bank: '中国银行', last4: '2001');
+      await declareTestRule(scope, other.creditAccountId, postingDelayMax: 3);
+      final otherSub = (await primaryCurrencyAccount(
+        scope,
+        other.creditAccountId,
+      )).id;
+      final statement = await recordTestStatement(
+        scope,
+        otherSub,
+        newBalance: 0,
+        minDue: 0,
+      );
+      Future<CardTransactionRow> ticket() => addTestTransaction(
+        scope,
+        otherSub,
+        amount: 120000,
+        txnAt: '2026-10-09T20:00:00+08:00',
+        unposted: true,
+      );
+      final a = await ticket();
+      final b = await ticket();
+      var data = await LedgerReader(scope).load();
+      expect(data.mayBeBilled(data.transaction(a.id)!), isTrue);
+      expect(data.liabilities[otherSub]!.unbilled, 240000, reason: '偏大、保守');
+      expect(
+        data.transactionsOf(statement.id).map((e) => e.$1.id),
+        containsAll(<String>[a.id, b.id]),
+      );
+      expect(data.looseTransactions(), isEmpty);
+
+      await TransactionRepository(scope).markPosted(a.id, d(2026, 10, 11));
+      await TransactionRepository(scope).markPosted(b.id, d(2026, 10, 10));
+      data = await LedgerReader(scope).load();
+      expect(data.mayBeBilled(data.transaction(a.id)!), isFalse);
+      expect(data.looseTransactions().map((e) => e.$1.id), <String>[a.id]);
+      expect(data.transactionsOf(statement.id).map((e) => e.$1.id), <String>[
+        b.id,
+      ]);
+      expect(data.liabilities[otherSub]!.unbilled, 120000);
     });
   });
 

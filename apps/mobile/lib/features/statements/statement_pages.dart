@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cardflow_domain/cardflow_domain.dart' show LocalDate;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,10 +17,12 @@ import '../../data/repositories/ledger_reader.dart';
 import '../../data/repositories/providers.dart';
 import '../../data/repositories/reconciliation_repository.dart';
 import '../cards/card_formatting.dart';
+import 'ledger_actions.dart';
 import 'ledger_formatting.dart';
 
-/// P-05 账单中心（列表，ui-spec P-05）：筛选（账户/状态/币种/月）；每行：剩余应还、到期、状态、确认层级、
-/// 版本数、差异数；「录入正式账单」「记一笔」。从 P-03「全部账单」进入时只看该账户（[accountId]）。
+/// P-05 账单中心（列表，ui-spec P-05）：筛选（账户/有效状态/币种/月）；每行：剩余应还、到期、有效状态、确认层级、
+/// 版本数、差异数；「录入正式账单」「记一笔」；列表下面是"不在已录账单里的交易"（未出账的、所在账期还没录入
+/// 账单的），每笔可「删除」「补入账日」「转分期」（审查 R-16）。从 P-03「全部账单」进入时只看该账户（[accountId]）。
 ///
 /// 四态：首次空白（"还没有正式账单"「录入正式账单」，导入在 I-3）、加载、错误（「重新加载」）、成功。
 class StatementCenterPage extends ConsumerStatefulWidget {
@@ -31,6 +35,9 @@ class StatementCenterPage extends ConsumerStatefulWidget {
 
   /// ui-spec P-05 九态"首次空白"。
   static const String firstRunMessage = '还没有正式账单';
+
+  /// 不在已录账单里的交易（未出账的、所在账期还没录入账单的）一节的标题。
+  static const String looseTitle = '不在已录账单里的交易';
 
   @override
   ConsumerState<StatementCenterPage> createState() =>
@@ -88,7 +95,8 @@ class _StatementCenterPageState extends ConsumerState<StatementCenterPage> {
                 fixedAccount)
           s,
     ];
-    if (all.isEmpty) {
+    final loose = data.looseTransactions(creditAccountId: fixedAccount);
+    if (all.isEmpty && loose.isEmpty) {
       return FirstRunEmptyState(
         icon: Icons.receipt_long_outlined,
         message: StatementCenterPage.firstRunMessage,
@@ -166,13 +174,37 @@ class _StatementCenterPageState extends ConsumerState<StatementCenterPage> {
           labelOf: (m) => m,
           onSelected: (v) => setState(() => _month = v),
         ),
-        if (shown.isEmpty)
+        if (all.isEmpty)
+          const Padding(
+            padding: EdgeInsets.all(CfSpace.md),
+            child: Text(StatementCenterPage.firstRunMessage),
+          )
+        else if (shown.isEmpty)
           const Padding(
             padding: EdgeInsets.all(CfSpace.md),
             child: Text('没有符合筛选条件的账单。'),
           ),
         for (final s in shown)
           _StatementTile(data: data, statement: s, accountId: fixedAccount),
+        if (loose.isNotEmpty) ...<Widget>[
+          SectionTitle('${StatementCenterPage.looseTitle}（${loose.length}）'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
+            child: Text(
+              '未出账的交易，以及所在账期还没有录入正式账单的交易；录错的可以在这里删除或补入账日。',
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: CardFlowColors.of(context).textSecondary),
+            ),
+          ),
+          for (final (txn, cycle) in loose)
+            TransactionTile(
+              data: data,
+              txn: txn,
+              cycle: cycle,
+              today: data.todayByCurrencyAccount[txn.currencyAccountId]!,
+              accountId: fixedAccount,
+            ),
+        ],
       ],
     );
   }
@@ -641,7 +673,7 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
             child: Text('没有落在这期账单里的交易记录。', style: secondary),
           ),
         for (final (txn, cycle) in transactions)
-          _TransactionTile(
+          TransactionTile(
             data: data,
             txn: txn,
             cycle: cycle,
@@ -714,9 +746,12 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
   }
 }
 
-/// 一笔交易：类型、金额、商户、账期归属（可能账期）、退款待核对；消费可「转分期」。
-class _TransactionTile extends StatelessWidget {
-  const _TransactionTile({
+/// 一笔交易：类型、金额、商户、账期归属（可能账期）、退款待核对；消费可「转分期」；「补入账日」（入账日未知时）
+/// 与「删除」（已转分期的先提示作废分期，审查 R-16）。入账日未知、可能账期跨过本期账单日的标"可能已出账，
+/// 请补入账日"（Q-3：负债按未出账计，偏大）。
+class TransactionTile extends ConsumerWidget {
+  const TransactionTile({
+    super.key,
     required this.data,
     required this.txn,
     required this.cycle,
@@ -730,15 +765,15 @@ class _TransactionTile extends StatelessWidget {
   final LocalDate today;
   final String? accountId;
 
+  /// 可能已出账的提示（Q-3）。
+  static const String mayBeBilledText = '可能已出账，请补入账日（入账日未知时按未出账计，负债可能偏大）';
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final type = TxnType.of(txn.txnType);
     final item = data.itemOfTransaction(txn.id);
-    final converted = data.plans.any(
-      (p) =>
-          p.transactionId == txn.id &&
-          p.status != InstallmentPlanStatus.cancelled.code,
-    );
+    final plan = livePlanOf(data.plans, txn.id);
+    final converted = plan != null;
     final canConvert = type == TxnType.purchase && !converted;
     return ListTile(
       title: Wrap(
@@ -762,21 +797,45 @@ class _TransactionTile extends StatelessWidget {
             '${timestampText(txn.txnAt)} · ${txn.postedOn == null ? '入账日未知' : '入账 ${txn.postedOn}'}',
           ),
           Text(cycleText(cycle, today)),
+          if (data.mayBeBilled(txn))
+            Padding(
+              padding: const EdgeInsets.only(top: CfSpace.xxs),
+              child: StatusBadge(
+                label: mayBeBilledText,
+                icon: Icons.event_note_outlined,
+                tone: NoticeTone.attention,
+              ),
+            ),
           if (converted) const Text('已转分期（本金按各期出账）'),
           if (item != null &&
               item.status == ReconciliationStatus.open.code &&
               type == TxnType.refund)
             const Text('退款待核对：应还不变、不计入收入'),
-          if (canConvert)
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: TextButton(
-                onPressed: () => context.go(
-                  AppRoutes.newInstallment(txn.id, accountId: accountId),
+          Wrap(
+            spacing: CfSpace.xs,
+            children: <Widget>[
+              if (canConvert)
+                TextButton(
+                  onPressed: () => context.go(
+                    AppRoutes.newInstallment(txn.id, accountId: accountId),
+                  ),
+                  child: const Text('转分期'),
                 ),
-                child: const Text('转分期'),
+              if (txn.postedOn == null)
+                TextButton(
+                  onPressed: () => unawaited(
+                    fillPostedOn(context, ref, txn: txn, today: today),
+                  ),
+                  child: const Text('补入账日'),
+                ),
+              TextButton(
+                onPressed: () => unawaited(
+                  deleteTransaction(context, ref, txn: txn, plan: plan),
+                ),
+                child: const Text('删除'),
               ),
-            ),
+            ],
+          ),
         ],
       ),
     );
@@ -784,8 +843,9 @@ class _TransactionTile extends StatelessWidget {
 }
 
 /// 一个分期计划：本金、期数、每期费率、收费方式与尾差；每期本金/费用表（[highlight] 账单日的那一期标"本期"）；
-/// 成本：名义年化（每期费率 × 12，不是实际成本）与实际年化（复利，按各期现金流 IRR）并列（F-37）。
-class InstallmentPlanCard extends StatelessWidget {
+/// 成本：名义年化（每期费率 × 12，不是实际成本）与实际年化（复利，按各期现金流 IRR）并列（F-37）；各期都还没
+/// 出账的进行中计划可「作废（录错了）」（审查 R-16）。
+class InstallmentPlanCard extends ConsumerWidget {
   const InstallmentPlanCard({
     super.key,
     required this.data,
@@ -797,8 +857,11 @@ class InstallmentPlanCard extends StatelessWidget {
   final InstallmentPlanRow plan;
   final LocalDate? highlight;
 
+  /// 作废入口的文案（录错了的分期）。
+  static const String cancelLabel = '作废（录错了）';
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final txn = data.transaction(plan.transactionId);
     final currency = data.currencyAccounts[plan.currencyAccountId]!.currency;
@@ -893,6 +956,22 @@ class InstallmentPlanCard extends StatelessWidget {
                     ),
                 ],
               ),
+              if (canCancelPlan(plan, periods))
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton(
+                    onPressed: () =>
+                        unawaited(cancelPlan(context, ref, plan: plan)),
+                    child: const Text(InstallmentPlanCard.cancelLabel),
+                  ),
+                )
+              else if (status == InstallmentPlanStatus.active)
+                Text(
+                  '已有出账的期次，不能作废（提前结清在后续版本提供）',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: CardFlowColors.of(context).textSecondary,
+                  ),
+                ),
             ],
           ),
         ),
