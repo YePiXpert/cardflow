@@ -129,6 +129,36 @@ CycleForecast forecastCycles(
   }
 }
 
+/// 今天及以前最近的预测账单日与它的到期日（卡账首页"记本期账单"的默认账单日；有账单出了而没录入时的提示）。
+///
+/// 先求今天入账所属的账单日 S（领域包 `statementDateForPosting`，含当天归属规则）：S 就是今天时取今天，否则取
+/// S 的上一个月的账单日（月末截断）。到期日用该账单日生效的版本（`selectRule` + `dueDateForStatement`）。没有版本
+/// 或规则给不出账期时为 null。
+Cycle? recentStatementCycle(
+  List<BillingRuleVersionRow> versions,
+  LocalDate today,
+) {
+  if (versions.isEmpty) {
+    return null;
+  }
+  try {
+    final rules = versions.map(billingRuleFromRow).toList();
+    final current = selectRule(rules, today);
+    final next = statementDateForPosting(current, today);
+    final LocalDate recent;
+    if (next == today) {
+      recent = today;
+    } else {
+      final (year, month) = addMonths(next, -1);
+      recent = clampDay(year, month, current.statementDay);
+    }
+    final rule = selectRule(rules, recent);
+    return Cycle(recent, dueDateForStatement(rule, recent), rule.ruleId);
+  } on BillingRuleError {
+    return null;
+  }
+}
+
 /// P-04 的"3 期预览"：从入账日 [from] 起的连续 [count] 个账期（账单日与到期日）。第一个是 [from]
 /// 当天入账所属的账期，之后每个从上一个账单日的次日开始（次日总是落在下一期，无论当天归属开关）。
 /// 规则给不出账期时抛领域包的 [BillingRuleError]。

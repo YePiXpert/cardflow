@@ -216,7 +216,7 @@ void main() {
     );
 
     test('F-33（2026-10-19 裁决调整）：同一币种子账户的还款只分配到本期；分到已并入下一期的旧账单、超过还款额、'
-        '跨账户的都被拒；本期已还清后可以再分配（多还）；有效状态"已还清"的账单不能再修正', () async {
+        '跨账户的都被拒；本期已还清后可以再分配（多还）；有效状态"已还清"的账单也可以人工修正（简报 U-1 §10 裁决）', () async {
       final earlier = await recordTestStatement(
         scope,
         sub,
@@ -278,16 +278,16 @@ void main() {
         (await repo.allocationsOf(extra.id)).single.statementId,
         statement.id,
       );
-      // 有效状态"已还清"的账单不能再修正。
-      await expectRepositoryError<ConflictException>(
-        () => statements.correct(
-          statement.id,
-          figures: const StatementFigures(newBalanceMinor: 1),
-          reason: '试图修正',
-        ),
+      // 有效状态"已还清"的账单也可以修正（新版本），之后按新金额重新推导：仍已还清，多还的成为贷方余额。
+      await statements.correct(
+        statement.id,
+        figures: const StatementFigures(newBalanceMinor: 90000),
+        reason: '银行调整',
       );
       data = await LedgerReader(scope).load();
-      expect(data.versions[statement.id], hasLength(1));
+      expect(data.versions[statement.id], hasLength(2));
+      expect(data.statusOf(statement.id), EffectiveStatementStatus.paid);
+      expect(data.balances[statement.id]!.creditBalance, 10000);
     });
 
     test('部分还款经银行确认 → 部分结清；「银行已入账」只核销负债、不结清', () async {

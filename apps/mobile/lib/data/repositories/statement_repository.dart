@@ -9,7 +9,6 @@ import '../time/clock.dart';
 import '../validation/text_rules.dart';
 import 'credit_pool_repository.dart' show maxAmountMinor;
 import 'ledger_models.dart';
-import 'ledger_reader.dart';
 import 'repository_errors.dart';
 import 'workspace_scope.dart';
 
@@ -208,9 +207,9 @@ final class StatementRepository {
   }
 
   /// 人工修正：生成新版本（来源"人工修正"，理由必填，原值保留可查，R-STMT-07）；可同时更正到期日。
-  /// 存储状态：已出账的变为"已修正"，其余不变（动作记录）。有效状态为"已还清"（银行确认的还款足额）的
-  /// 账单不能再修正（看有效状态，不看存储状态：冲正后剩余应还 > 0 的又可以修正）；修正后有效状态由读模型
-  /// 重新推导。
+  /// 存储状态：已出账的变为"已修正"，其余不变（动作记录）。任何有效状态的账单都可以修正（简报 U-1 §10 的
+  /// 2026-10-20 裁决放宽了 F-1 的"已还清不能修正"：录小了的账单按录的金额还清后，修正为更大的金额会重新
+  /// 变为"待还"）；修正后有效状态由读模型重新推导。
   Future<StatementVersionRow> correct(
     String statementId, {
     required StatementFigures figures,
@@ -232,12 +231,6 @@ final class StatementRepository {
       return await _db.transaction(() async {
         final statement = await require(statementId);
         final status = StatementStatus.of(statement.status);
-        final standing = (await LedgerReader(
-          _scope,
-        ).load()).statusOf(statementId);
-        if (standing == EffectiveStatementStatus.paid) {
-          throw const ConflictException('已还清的账单不能再修正；银行另有调整时请录入下一期账单');
-        }
         final due = dueDate ?? LocalDate.parse(statement.dueDate);
         if (due <= LocalDate.parse(statement.statementDate)) {
           throw const ValidationException('dueDate', '到期还款日须晚于账单日');

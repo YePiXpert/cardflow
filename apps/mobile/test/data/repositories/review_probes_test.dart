@@ -265,15 +265,16 @@ void main() {
       expect(data.balances[s.id]!.remaining, 0);
       expect(data.upcoming(), isEmpty);
 
-      // "已还清"（有效状态）不能再修正；冲正后剩余应还 > 0，又可以修正（看有效状态，不看存储状态）。
-      final again = await expectRepositoryError<ConflictException>(
-        () => StatementRepository(scope).correct(
-          s.id,
-          figures: const StatementFigures(newBalanceMinor: 70000),
-          reason: '再改一次',
-        ),
+      // 简报 U-1 §10 裁决：任何有效状态的账单都可以修正（新版本、理由必填、原值可查），之后重新推导。改小到
+      // 700：已还的 800 多出 100，仍"已还清"并有贷方余额。冲正后剩余应还 > 0。
+      await StatementRepository(scope).correct(
+        s.id,
+        figures: const StatementFigures(newBalanceMinor: 70000),
+        reason: '再改一次',
       );
-      expect(again.message, contains('已还清的账单不能再修正'));
+      data = await LedgerReader(scope).load();
+      expect(data.statusOf(s.id), EffectiveStatementStatus.paid);
+      expect(data.balances[s.id]!.creditBalance, 10000);
       await RepaymentRepository(scope).reverse(r.id);
       await StatementRepository(scope).correct(
         s.id,
@@ -281,8 +282,43 @@ void main() {
         reason: '冲正后按银行账单重录',
       );
       data = await LedgerReader(scope).load();
-      expect(data.versions[s.id], hasLength(3));
+      expect(data.versions[s.id], hasLength(4));
       expect(data.statusOf(s.id), EffectiveStatementStatus.due);
+    });
+
+    test('简报 U-1 §10 裁决：录小了的账单按录的金额还清（银行确认）后，修正为更大的金额 → 重新变为"待还"并进近期到期；'
+        '原值可查', () async {
+      final s = await recordTestStatement(
+        scope,
+        sub,
+        newBalance: 80000,
+        minDue: 8000,
+      );
+      final r = await registerTestRepayment(
+        scope,
+        currencyAccountId: sub,
+        cashAccountId: cash,
+        amount: 80000,
+        statementId: s.id,
+        expectedDebitOn: d(2026, 10, 15),
+      );
+      await confirm(r.id, '2026-10-15', confirmedOn: '2026-10-16');
+      var data = await LedgerReader(scope).load();
+      expect(data.statusOf(s.id), EffectiveStatementStatus.paid);
+      expect(data.upcoming(), isEmpty);
+
+      await StatementRepository(scope).correct(
+        s.id,
+        figures: const StatementFigures(newBalanceMinor: 100000),
+        reason: '少录了一笔 200 的消费，按纸质账单更正',
+      );
+      data = await LedgerReader(scope).load();
+      expect(data.statusOf(s.id), EffectiveStatementStatus.partiallyPaid);
+      expect(data.balances[s.id]!.remaining, 20000);
+      expect(data.upcoming().single.statement.id, s.id);
+      final versions = data.versions[s.id]!;
+      expect(versions.map((v) => v.newBalanceMinor), <int>[80000, 100000]);
+      expect(versions.last.reason, '少录了一笔 200 的消费，按纸质账单更正');
     });
   });
 

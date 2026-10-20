@@ -431,9 +431,8 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
     final sourceText =
         '来源：${source.label} · v${selected.versionNo}'
         '${selected.reason == null ? '' : '（理由：${selected.reason}）'}';
-    // 还款只分配到本期（更早的已并入下一期）；有效状态"已还清"的不能再修正（PRD §6.2 裁决段）。
+    // 还款只分配到本期（更早的已并入下一期）；任何有效状态的账单都可以人工修正（简报 U-1 §10 裁决）。
     final canRegister = balance.isCurrent;
-    final canCorrect = balance.status != EffectiveStatementStatus.paid;
     final transactions = data.transactionsOf(s.id);
     final plans = data.plansOf(s.currencyAccountId);
     final repayments = data.repaymentsOn(s.id);
@@ -492,16 +491,12 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
                   ),
                   child: const Text('登记还款'),
                 ),
-              if (canCorrect)
-                OutlinedButton(
-                  onPressed: () => context.go(
-                    AppRoutes.correctStatement(
-                      s.id,
-                      accountId: widget.accountId,
-                    ),
-                  ),
-                  child: const Text('人工修正'),
+              OutlinedButton(
+                onPressed: () => context.go(
+                  AppRoutes.correctStatement(s.id, accountId: widget.accountId),
                 ),
+                child: const Text('人工修正'),
+              ),
               OutlinedButton(
                 onPressed: () => context.go(
                   AppRoutes.newTransaction(
@@ -514,11 +509,6 @@ class _StatementDetailPageState extends ConsumerState<StatementDetailPage> {
             ],
           ),
         ),
-        if (!canCorrect)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
-            child: Text('已还清的账单不能再修正；银行另有调整时请录入下一期账单。', style: secondary),
-          ),
         SectionTitle('账单要素（v${selected.versionNo}）'),
         if (versions.length > 1)
           Padding(

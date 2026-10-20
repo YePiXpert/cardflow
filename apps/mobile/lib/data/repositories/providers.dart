@@ -28,6 +28,7 @@ import 'cash_plan_reader.dart';
 import 'credit_account_repository.dart';
 import 'credit_pool_repository.dart';
 import 'installment_repository.dart';
+import 'ledger_home.dart';
 import 'ledger_reader.dart';
 import 'limit_snapshot_repository.dart';
 import 'models.dart';
@@ -310,3 +311,8 @@ Future<LedgerData> ledger(Ref ref) async {
   final scope = await ref.watch(workspaceScopeProvider.future);
   return LedgerReader(scope).load();
 }
+
+/// 卡账首页（简报 U-1 §2）的读模型：账单读模型变化时自动重算；[sort] 决定行的顺序。
+@Riverpod(retry: noDatabaseRetry)
+Future<LedgerHome> ledgerHome(Ref ref, LedgerSort sort) async =>
+    LedgerHome.of(await ref.watch(ledgerProvider.future), sort: sort);

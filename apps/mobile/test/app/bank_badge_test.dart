@@ -40,7 +40,7 @@ void main() {
       expect(knownBankOf(name), isNotNull, reason: name);
       colors.add(bankColor(name));
     }
-    expect(knownBanks, hasLength(16));
+    expect(knownBankNames, hasLength(16));
     // 常见银行内置名单里的 16 家都认得出来。
     for (final name in builtinBankNames.take(16)) {
       expect(knownBankOf(name), isNotNull, reason: name);
@@ -71,7 +71,7 @@ void main() {
 
   test('白字对每一种徽标颜色不低于 4.5:1；调色板不用绿色（稳妥色）', () {
     for (final color in <Color>[
-      for (final bank in knownBanks) bank.color,
+      for (final bank in knownBankNames) bankColor(bank.keys.first),
       ...CfBankColors.palette,
     ]) {
       expect(
