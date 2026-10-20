@@ -113,8 +113,11 @@ void main() {
         ),
         isTrue,
       );
-      expect(entry.toReportText(), isNot(contains('1234')));
-      expect(entry.toReportText(), isNot(contains('张三')));
+      // 行首的时间戳精确到微秒，可能碰巧含有"1234"：只看时间戳之后的部分。
+      final text = entry.toReportText();
+      final body = text.substring(text.indexOf(' ') + 1);
+      expect(body, isNot(contains('1234')));
+      expect(body, isNot(contains('张三')));
     });
 
     test('frames 只接受代码位置，其他文字被丢弃', () {
