@@ -1,0 +1,96 @@
+# git-log.txt：U-1 的提交（715a8c2 之后，均已推送到 origin/main），及署名扫描与不得改动目录的核对
+# 生成时间：2026-10-20T04:22:56Z；本地 HEAD：cded413（本文件随后的证据提交不在列表中）
+# 过滤：无；以下为 git 原文。扫描用的正则把模型/厂商名里的一个字母写成字符类，避免证据里出现这些名字本身。
+# 说明：脚本开了 pipefail，grep 没有匹配时管道的退出码是 1（计数为 0 即没有署名字样）。
+
+$ cd /projects/cardflow && git log --date=iso-strict --format='%h %ad %an <%ae>%n    %s%n    trailers:[%(trailers:only,separator=; )]' 715a8c2..HEAD
+cded413 2026-10-20T05:14:14+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    README（U-1 第 10 步）：卡账首页与 4 个标签、U-1 的偏离与约定、公测版 0.0.2
+    trailers:[]
+36df86b 2026-10-20T05:05:34+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    诊断日志测试去掉对时间戳的偶然依赖（U-1 第 9 步的 CI 修正）
+    trailers:[]
+9d59ba7 2026-10-20T05:00:47+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    隐藏金额随本机数据库重新打开而重读（U-1 第 9 步续）：重置本地数据之后回到不隐藏
+    trailers:[]
+7070e38 2026-10-20T04:50:32+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    隐藏金额在冷启动时先读回（U-1 第 9 步续）：启动分流等开关读回才进入主导航
+    trailers:[]
+928b591 2026-10-20T04:38:16+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    版本号 0.0.2（U-1 第 9 步）：pubspec 0.0.2+1、PublicBeta.version 0.0.2
+    trailers:[]
+e4ad3a4 2026-10-20T04:31:06+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    弹层与菜单的可访问性（U-1 第 8 步续）：放大字号可滚动、卡片详情次序、情景说明收进 ⓘ
+    trailers:[]
+8e8c619 2026-10-20T04:21:26+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    其余页面套用新样式（U-1 第 8 步）：账单详情、账单中心、全部卡片、情景、资金日历表格、禁用按钮
+    trailers:[]
+e28be85 2026-10-20T04:15:41+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    我的与公测说明（U-1 第 7 步）：隐藏金额、重置本地数据入口、纯本地说明、空间切换（§9 R-09/R-10/Q-2/BL-26）
+    trailers:[]
+f47f026 2026-10-20T04:10:55+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端测试格式（U-1 第 6 步的修正）：现金页测试按 dart format 重排，CI 的格式检查恢复通过
+    trailers:[]
+c63a294 2026-10-20T04:05:27+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    现金页重做（U-1 第 6 步）：7/30/90/180 天分段、余额曲线、未计入的信用卡应还、接下来
+    trailers:[]
+6b9c10b 2026-10-20T03:52:06+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    卡片详情重做与快捷操作（U-1 第 5 步）：卡面、本期进度、金额区、记本期账单、还清本期
+    trailers:[]
+a8267aa 2026-10-20T03:36:59+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    卡账首页与四个标签的导航（U-1 第 4 步）：卡账/现金/规划/我的，旧路由重定向
+    trailers:[]
+c4e6713 2026-10-20T03:20:10+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    卡账首页读模型（U-1 第 3 步）：LedgerHome 与 F-1 交接口径；放宽已还清不能修正（§10 裁决）
+    trailers:[]
+fd6ca00 2026-10-20T03:11:55+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端基础组件（U-1 第 2 步）：银行徽标、整元金额、胶囊状态标签、分组卡片与大标题顶栏
+    trailers:[]
+0b24705 2026-10-20T03:06:54+01:00 YePiXpert <YePiXpert@users.noreply.github.com>
+    移动端主题（U-1 第 1 步）：按简报 §5 换颜色 token 与字号阶梯
+    trailers:[]
+[exit=0]
+
+$ cd /projects/cardflow && git rev-parse HEAD origin/main
+cded413d22e4219c53b57e44009423201fae6ce9
+cded413d22e4219c53b57e44009423201fae6ce9
+[exit=0]
+
+$ cd /projects/cardflow && git log 715a8c2..HEAD --format='%an <%ae> | %cn <%ce>' | sort | uniq -c
+     15 YePiXpert <YePiXpert@users.noreply.github.com> | YePiXpert <YePiXpert@users.noreply.github.com>
+[exit=0]
+
+$ cd /projects/cardflow && git log 715a8c2..HEAD --format='%B' | grep -ciE 'cl[a]ude|anthr[o]pic|co-auth[o]red-by|generat[e]d with'
+0
+[exit=1]
+
+$ cd /projects/cardflow && grep -rniE 'cl[a]ude|anthr[o]pic|generat[e]d with' --exclude=git-log.txt apps/mobile/lib apps/mobile/test apps/mobile/README.md README.md evidence/u1 | wc -l
+0
+[exit=1]
+
+$ cd /projects/cardflow && git diff --stat 715a8c2 HEAD -- apps/mobile/lib/data/db apps/mobile/packages packages services docs .github && echo '（本地库结构与触发器、领域包、协议包、服务端、docs、.github 均未改动）'
+（本地库结构与触发器、领域包、协议包、服务端、docs、.github 均未改动）
+[exit=0]
+
+$ cd /projects/cardflow && git diff --stat 715a8c2 HEAD -- apps/mobile/pubspec.yaml apps/mobile/pubspec.lock && git diff 715a8c2 HEAD -- apps/mobile/pubspec.yaml
+ apps/mobile/pubspec.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/apps/mobile/pubspec.yaml b/apps/mobile/pubspec.yaml
+index 2fa927a..9f290da 100644
+--- a/apps/mobile/pubspec.yaml
++++ b/apps/mobile/pubspec.yaml
+@@ -3,7 +3,7 @@ description: "卡序 CardFlow：多信用卡管理 App（iOS 优先，纯本地
+ publish_to: 'none'
+ 
+ # CFBundleShortVersionString = 版本名；CFBundleVersion = 构建号（CI 用 --build-number 覆盖）。
+-version: 0.0.1+1
++version: 0.0.2+1
+ 
+ environment:
+   sdk: ^3.13.5
+[exit=0]
+
+$ cd /projects/cardflow && git status --short
+?? evidence/u1/
+[exit=0]
+

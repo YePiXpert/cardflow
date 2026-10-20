@@ -1,0 +1,108 @@
+# ci-dart-run.txt：CI（.github/workflows/mobile.yml）在 U-1 期间的 push 运行，与最后一次代码提交的运行详情（各 job 与步骤的结论）
+# 生成时间：2026-10-20T04:22:47Z；源码提交：cded413（= origin/main：cded413）
+# 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/u1/scripts/filt.sh；其余为工具原文，未删节。
+
+# 范围：U-1 第 1 步 0b24705 起（#66–#80，共 15 次 push 运行）。两次失败都已在下一个提交修正：
+#   #71（c63a294）：一个测试文件改动后没有重新 dart format，格式检查失败 → f47f026 重排后通过；
+#   #78（9d59ba7）：诊断日志测试断言报告行里不含"1234"，而行首时间戳精确到微秒、那次碰巧含有"1234" → 36df86b 改为只检查时间戳之后的部分。
+# 只改 evidence/ 的提交（本次证据提交）不触发本工作流。步骤结论由 gh run view --json 取得（不含日志正文与 runner 镜像信息）。
+
+$ cd /projects/cardflow && gh run list --workflow mobile.yml --event push --limit 20 --json databaseId,number,headSha,displayTitle,status,conclusion,createdAt --jq '.[] | select(.createdAt >= "2026-10-20T02:06:00Z") | "\(.databaseId) #\(.number) \(.headSha[0:7]) \(.status) \(.conclusion) \(.createdAt)\n    \(.displayTitle)"'
+39368506819 #80 cded413 completed success 2026-10-20T04:14:18Z
+    README（U-1 第 10 步）：卡账首页与 4 个标签、U-1 的偏离与约定、公测版 0.0.2
+39367719798 #79 36df86b completed success 2026-10-20T04:05:37Z
+    诊断日志测试去掉对时间戳的偶然依赖（U-1 第 9 步的 CI 修正）
+39367295607 #78 9d59ba7 completed failure 2026-10-20T04:00:50Z
+    隐藏金额随本机数据库重新打开而重读（U-1 第 9 步续）：重置本地数据之后回到不隐藏
+39366398975 #77 7070e38 completed success 2026-10-20T03:50:35Z
+    隐藏金额在冷启动时先读回（U-1 第 9 步续）：启动分流等开关读回才进入主导航
+39365343699 #76 928b591 completed success 2026-10-20T03:38:19Z
+    版本号 0.0.2（U-1 第 9 步）：pubspec 0.0.2+1、PublicBeta.version 0.0.2
+39364714093 #75 e4ad3a4 completed success 2026-10-20T03:31:10Z
+    弹层与菜单的可访问性（U-1 第 8 步续）：放大字号可滚动、卡片详情次序、情景说明收进 ⓘ
+39363858699 #74 8e8c619 completed success 2026-10-20T03:21:29Z
+    其余页面套用新样式（U-1 第 8 步）：账单详情、账单中心、全部卡片、情景、资金日历表格、禁用按钮
+39363355307 #73 e28be85 completed success 2026-10-20T03:15:43Z
+    我的与公测说明（U-1 第 7 步）：隐藏金额、重置本地数据入口、纯本地说明、空间切换（§9 R-09/R-10/Q-2/BL-26）
+39362934507 #72 f47f026 completed success 2026-10-20T03:10:58Z
+    移动端测试格式（U-1 第 6 步的修正）：现金页测试按 dart format 重排，CI 的格式检查恢复通过
+39362449351 #71 c63a294 completed failure 2026-10-20T03:05:30Z
+    现金页重做（U-1 第 6 步）：7/30/90/180 天分段、余额曲线、未计入的信用卡应还、接下来
+39361234384 #70 6b9c10b completed success 2026-10-20T02:52:08Z
+    卡片详情重做与快捷操作（U-1 第 5 步）：卡面、本期进度、金额区、记本期账单、还清本期
+39359884943 #69 a8267aa completed success 2026-10-20T02:37:03Z
+    卡账首页与四个标签的导航（U-1 第 4 步）：卡账/现金/规划/我的，旧路由重定向
+39358350737 #68 c4e6713 completed success 2026-10-20T02:20:13Z
+    卡账首页读模型（U-1 第 3 步）：LedgerHome 与 F-1 交接口径；放宽已还清不能修正（§10 裁决）
+39357612902 #67 fd6ca00 completed success 2026-10-20T02:11:58Z
+    移动端基础组件（U-1 第 2 步）：银行徽标、整元金额、胶囊状态标签、分组卡片与大标题顶栏
+39357156671 #66 0b24705 completed success 2026-10-20T02:06:59Z
+    移动端主题（U-1 第 1 步）：按简报 §5 换颜色 token 与字号阶梯
+[exit=0]
+
+$ cd /projects/cardflow && gh run view 39368506819 --json databaseId,number,headSha,event,headBranch,status,conclusion --jq '"\(.databaseId) #\(.number) \(.event) \(.headBranch) \(.headSha[0:7]) \(.status) \(.conclusion)"'
+39368506819 #80 push main cded413 completed success
+[exit=0]
+
+$ cd /projects/cardflow && gh run view 39368506819 --json jobs --jq '.jobs[] | "== \(.name)：\(.conclusion)", (.steps[] | "   \(.number). \(.name)：\(.conclusion)")'
+== protocol-parity (Python engine vs Dart domain)：success
+   1. Set up job：success
+   2. Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
+   3. Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884：success
+   4. Flutter SDK cache path and key (flutter-action dry run)：success
+   5. Cache Flutter SDK：success
+   6. Cache pub dependencies：success
+   7. Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2：success
+   8. uv sync --locked (services/api)：success
+   9. dart pub get (cardflow_domain)：success
+   10. Golden fixtures -- Python runner --dump：success
+   11. Golden fixtures -- Dart runner --dump：success
+   12. Golden fixtures -- outputs byte-identical：success
+   13. Random fixtures (300, seed 20261018) -- generate：success
+   14. Random fixtures -- both runners --dump, outputs byte-identical：success
+   15. Dart outputs conform to PlanOutcome.schema.json $defs (Python jsonschema)：success
+   16. Upload parity outputs：skipped
+   27. Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2：success
+   28. Post Cache pub dependencies：success
+   29. Post Cache Flutter SDK：success
+   30. Post Flutter SDK cache path and key (flutter-action dry run)：success
+   31. Post Run astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884：success
+   32. Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
+   33. Complete job：success
+== dart (format · analyze · test · web build)：success
+   1. Set up job：success
+   2. Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
+   3. Flutter SDK cache path and key (flutter-action dry run)：success
+   4. Cache Flutter SDK：success
+   5. Cache pub dependencies：success
+   6. Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2：success
+   7. flutter --version：success
+   8. flutter pub get：success
+   9. dart pub get (cardflow_domain)：success
+   10. dart format：success
+   11. dart format (cardflow_domain)：success
+   12. flutter analyze：success
+   13. dart analyze (cardflow_domain)：success
+   14. flutter test：success
+   15. dart test (cardflow_domain, incl. the no-double scan)：success
+   16. flutter build web (compile smoke test)：success
+   28. Post Run subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2：success
+   29. Post Cache pub dependencies：success
+   30. Post Cache Flutter SDK：success
+   31. Post Flutter SDK cache path and key (flutter-action dry run)：success
+   32. Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1：success
+   33. Complete job：success
+== ios-unsigned (IPA without codesign)：skipped
+[exit=0]
+
+# dart job 的测试汇总行（grep；行首是日志时间戳）。
+$ cd /projects/cardflow && gh api repos/YePiXpert/cardflow/actions/jobs/118450739765/logs | grep -E 'tests passed|All tests passed|Some tests failed|No issues found|Formatted [0-9]+ files|Built build/web'
+2026-10-20T04:14:55.6035001Z Formatted 255 files (0 changed) in 1.42 seconds.
+2026-10-20T04:14:55.7682662Z Formatted 46 files (0 changed) in 0.13 seconds.
+2026-10-20T04:15:10.7555291Z No issues found! (ran in 14.3s)
+2026-10-20T04:15:11.6623631Z No issues found!
+2026-10-20T04:17:17.6212328Z 🎉 616 tests passed, 2 skipped.
+2026-10-20T04:17:24.4659517Z 00:02 +279: All tests passed!
+2026-10-20T04:18:15.5663084Z ✓ Built build/web
+[exit=0]
+

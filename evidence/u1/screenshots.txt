@@ -1,0 +1,62 @@
+# screenshots.txt：截图工具的运行输出与截图清单（演示空间，固定"今天" 2026-10-16；深色与浅色）
+# 生成时间：2026-10-20T04:22:27Z；源码提交：cded413（= origin/main：cded413）
+# 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/u1/scripts/filt.sh；其余为工具原文，未删节。
+
+# 截图从 apps/mobile/build/screenshots/ 复制到 evidence/u1/screens/（PNG，1179×2556，即 393×852 的 3 倍）。
+
+$ cd /projects/cardflow/apps/mobile && rm -rf build/screenshots && CARDFLOW_SCREENSHOTS=1 flutter test test/tool/screenshots_test.dart --reporter expanded
+00:00 +0: loading /projects/cardflow/apps/mobile/test/tool/screenshots_test.dart
+00:00 +0: 演示空间各页截图（dark） (variant: TargetPlatform.iOS)
+00:04 +1: 演示空间各页截图（light） (variant: TargetPlatform.iOS)
+00:07 +2: All tests passed!
+[exit=0]
+
+$ rm -f /projects/cardflow/evidence/u1/screens/*.png && cp /projects/cardflow/apps/mobile/build/screenshots/*.png /projects/cardflow/evidence/u1/screens/ && ls /projects/cardflow/evidence/u1/screens | wc -l
+42
+[exit=0]
+
+$ python3 -I /projects/cardflow/evidence/u1/scripts/png_size.py /projects/cardflow/evidence/u1/screens
+01-home-dark-2.png  1179x2556  228376 bytes
+01-home-dark.png  1179x2556  475874 bytes
+01-home-light-2.png  1179x2556  229017 bytes
+01-home-light.png  1179x2556  460326 bytes
+02-card-dark-2.png  1179x2556  200332 bytes
+02-card-dark-3.png  1179x2556  209166 bytes
+02-card-dark.png  1179x2556  498433 bytes
+02-card-light-2.png  1179x2556  199904 bytes
+02-card-light-3.png  1179x2556  210130 bytes
+02-card-light.png  1179x2556  497482 bytes
+03-cash-dark-2.png  1179x2556  205074 bytes
+03-cash-dark-3.png  1179x2556  253623 bytes
+03-cash-dark.png  1179x2556  189552 bytes
+03-cash-light-2.png  1179x2556  205855 bytes
+03-cash-light-3.png  1179x2556  254256 bytes
+03-cash-light.png  1179x2556  190313 bytes
+04-planner-dark.png  1179x2556  242813 bytes
+04-planner-light.png  1179x2556  245460 bytes
+05-settings-dark-2.png  1179x2556  317365 bytes
+05-settings-dark.png  1179x2556  284811 bytes
+05-settings-light-2.png  1179x2556  325399 bytes
+05-settings-light.png  1179x2556  286825 bytes
+06-new-card-dark.png  1179x2556  179249 bytes
+06-new-card-light.png  1179x2556  176687 bytes
+07-statement-dark-2.png  1179x2556  381481 bytes
+07-statement-dark.png  1179x2556  305119 bytes
+07-statement-light-2.png  1179x2556  383739 bytes
+07-statement-light.png  1179x2556  306328 bytes
+08-repayment-dark.png  1179x2556  224539 bytes
+08-repayment-light.png  1179x2556  222455 bytes
+09-statements-dark.png  1179x2556  295323 bytes
+09-statements-light.png  1179x2556  294635 bytes
+10-repayments-dark.png  1179x2556  333325 bytes
+10-repayments-light.png  1179x2556  337013 bytes
+11-manage-cards-dark.png  1179x2556  199450 bytes
+11-manage-cards-light.png  1179x2556  202000 bytes
+12-calendar-dark.png  1179x2556  257966 bytes
+12-calendar-light.png  1179x2556  257657 bytes
+13-welcome-dark.png  1179x2556  228903 bytes
+13-welcome-light.png  1179x2556  229485 bytes
+14-about-dark.png  1179x2556  279670 bytes
+14-about-light.png  1179x2556  288533 bytes
+[exit=0]
+

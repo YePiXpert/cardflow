@@ -1,0 +1,14 @@
+# analyze.txt：静态分析（App 与领域包，--fatal-infos）
+# 生成时间：2026-10-20T04:20:44Z；源码提交：cded413（= origin/main：cded413）
+# 过滤：工具打印的宿主运行环境提示（固定 4 行），grep -Ev，脚本见 evidence/u1/scripts/filt.sh；其余为工具原文，未删节。
+
+$ cd /projects/cardflow/apps/mobile && flutter analyze --fatal-infos
+Analyzing mobile...                                             
+No issues found! (ran in 1.8s)
+[exit=0]
+
+$ cd /projects/cardflow/apps/mobile/packages/cardflow_domain && dart analyze --fatal-infos
+Analyzing cardflow_domain...
+No issues found!
+[exit=0]
+
