@@ -335,6 +335,39 @@ void main() {
     );
   });
 
+  testWidgets('账单接续：9 月账单在 10 月出账后显示"已并入 10-10 账单"（列表与详情），详情说明并入且没有「登记还款」；'
+      '10 月是本期、"待还"', (tester) async {
+    late String sep;
+    await pumpCardFlowApp(
+      tester,
+      seed: (scope) async {
+        final card = await createTestCard(scope, alias: '卡 A');
+        await declareTestRule(scope, card.creditAccountId);
+        final sub = (await primaryCurrencyAccount(
+          scope,
+          card.creditAccountId,
+        )).id;
+        sep = (await recordTestStatement(
+          scope,
+          sub,
+          statementDate: LocalDate(2026, 9, 10),
+          dueDate: LocalDate(2026, 9, 28),
+          newBalance: 100000,
+        )).id;
+        await recordTestStatement(scope, sub, newBalance: 150000);
+      },
+    );
+    await goTo(tester, AppRoutes.statements());
+    expect(find.text('已并入 10-10 账单'), findsOneWidget);
+    expect(find.text('待还'), findsWidgets);
+    expect(find.widgetWithText(ChoiceChip, '已并入下一期'), findsOneWidget);
+    await goTo(tester, AppRoutes.statement(sep));
+    expect(find.text('已并入 10-10 账单'), findsOneWidget);
+    await _scrollTo(tester, find.textContaining('这期没还的部分已计入下一期的新增账单'));
+    expect(find.widgetWithText(FilledButton, '登记还款'), findsNothing);
+    await expectNoForbiddenRepaymentUi(tester, page: '已并入的账单详情');
+  });
+
   testWidgets('不在当前空间的账单："已不存在"，可回到账单中心', (tester) async {
     await pumpCardFlowApp(tester, seed: seedLedger);
     await goTo(tester, AppRoutes.statement('no-such-statement'));
