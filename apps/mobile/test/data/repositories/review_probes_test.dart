@@ -286,8 +286,8 @@ void main() {
       expect(data.statusOf(s.id), EffectiveStatementStatus.due);
     });
 
-    test('简报 U-1 §10 裁决：录小了的账单按录的金额还清（银行确认）后，修正为更大的金额 → 重新变为"待还"并进近期到期；'
-        '原值可查', () async {
+    test('简报 U-1 §10 裁决：录小了的账单按录的金额还清（银行确认）后，修正为更大的金额 → 重新还欠着（已还一部分，'
+        '剩余应还 = 差额）并进近期到期；原值可查', () async {
       final s = await recordTestStatement(
         scope,
         sub,
