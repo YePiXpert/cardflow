@@ -271,7 +271,10 @@ final class CapacityModel {
       var missing = 0;
       for (final memberId in pool.memberAccountIds) {
         final snapshot = byAccount[memberId]?.snapshot;
-        if (snapshot == null) {
+        // 简化表单只采集可用额度，未采集总额度和已用额（兼容字段为 0）。
+        // 不能把这两个 0 当成池内已用为零；共享额度须补全详细记录。
+        if (snapshot == null ||
+            (snapshot.fixedMinor == 0 && snapshot.usedMinor == 0)) {
           missing++;
         } else {
           used += snapshot.usedMinor;

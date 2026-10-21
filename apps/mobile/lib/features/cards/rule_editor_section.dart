@@ -58,6 +58,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
   late bool _correction;
   late LocalDate _effectiveFrom;
   bool _saving = false;
+  bool _details = false;
   String? _saveError;
 
   BillingRuleVersionRow? get _current {
@@ -186,6 +187,82 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
         ? '生效日须晚于当前版本的生效日（$currentFrom）'
         : null;
     final versions = widget.account.ruleVersions.reversed.toList();
+    if (!_details) {
+      Widget day(String label, int? value, ValueChanged<int?> change) =>
+          DropdownButtonFormField<int>(
+            isExpanded: true,
+            initialValue: value,
+            decoration: InputDecoration(labelText: label),
+            items: [
+              for (var d = 1; d <= 31; d++)
+                DropdownMenuItem(value: d, child: Text('$d 日')),
+            ],
+            onChanged: change,
+          );
+      void inferOffset() {
+        if (_statementDay != null && _dueDay != null) {
+          _monthOffset = _dueDay! <= _statementDay! ? 1 : 0;
+        }
+      }
+
+      return ListView(
+        padding: const EdgeInsets.all(CfSpace.md),
+        children: [
+          day(
+            '每月账单日',
+            _statementDay,
+            (v) => setState(() {
+              _statementDay = v;
+              inferOffset();
+            }),
+          ),
+          const SizedBox(height: CfSpace.md),
+          if (_dueKind == DueKind.fixedDay)
+            day(
+              '还款日',
+              _dueDay,
+              (v) => setState(() {
+                _dueDay = v;
+                inferOffset();
+              }),
+            )
+          else
+            DropdownButtonFormField<int>(
+              isExpanded: true,
+              initialValue: _dueDays,
+              decoration: const InputDecoration(labelText: '账单后天数'),
+              items: [
+                for (var d = 1; d <= 60; d++)
+                  DropdownMenuItem(value: d, child: Text('$d 天')),
+              ],
+              onChanged: (v) => setState(() => _dueDays = v),
+            ),
+          const SizedBox(height: CfSpace.sm),
+          if (_dueKind == DueKind.fixedDay && _dueDay != null)
+            Text(
+              '${_monthOffset == 0
+                  ? '当月'
+                  : _monthOffset == 1
+                  ? '次月'
+                  : '再下月'} $_dueDay 日还款',
+            ),
+          Text(_inclusive ? '账单日当天计入本期' : '账单日当天计入下一期'),
+          if (preview.isNotEmpty) Text('今天消费预计还款：${preview.first.dueDate}'),
+          if (problem != null) Text(problem),
+          if (_saveError != null) Text(_saveError!),
+          const SizedBox(height: CfSpace.md),
+          FilledButton(
+            onPressed: _saving || problem != null ? null : _save,
+            child: const Text('保存'),
+          ),
+          TextButton(
+            onPressed: () => setState(() => _details = true),
+            child: const Text('更多账期设置'),
+          ),
+        ],
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.only(bottom: CfSpace.xl),
       children: <Widget>[

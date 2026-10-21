@@ -14,7 +14,7 @@ import 'rule_editor_section.dart';
 /// P-04 的分段。
 enum AccountSettingsSection {
   rule('rule', '账期规则'),
-  limits('limits', '额度快照'),
+  limits('limits', '可用额度'),
   currencies('currencies', '币种子账户'),
   pool('pool', '授信池');
 
@@ -55,6 +55,15 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
   late AccountSettingsSection _section = widget.initialSection;
 
   @override
+  void didUpdateWidget(covariant AccountSettingsPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.accountId != widget.accountId ||
+        oldWidget.initialSection != widget.initialSection) {
+      _section = widget.initialSection;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final accountId = widget.accountId;
     final wallet = ref.watch(walletProvider);
@@ -89,7 +98,10 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                 spacing: CfSpace.xs,
                 runSpacing: CfSpace.xs,
                 children: <Widget>[
-                  for (final section in AccountSettingsSection.values)
+                  for (final section in [
+                    AccountSettingsSection.rule,
+                    AccountSettingsSection.limits,
+                  ])
                     ChoiceChip(
                       label: Text(section.label),
                       selected: _section == section,
@@ -97,6 +109,23 @@ class _AccountSettingsPageState extends ConsumerState<AccountSettingsPage> {
                     ),
                 ],
               ),
+            ),
+            ExpansionTile(
+              title: const Text('更多设置'),
+              children: [
+                Wrap(
+                  children: [
+                    for (final section in [
+                      AccountSettingsSection.currencies,
+                      AccountSettingsSection.pool,
+                    ])
+                      TextButton(
+                        onPressed: () => setState(() => _section = section),
+                        child: Text(section.label),
+                      ),
+                  ],
+                ),
+              ],
             ),
             const Divider(),
             Expanded(

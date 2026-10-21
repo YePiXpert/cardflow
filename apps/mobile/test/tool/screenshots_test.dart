@@ -72,6 +72,17 @@ final List<Shot> shots = <Shot>[
   ('05-new-card', (_) async => AppRoutes.newCard, more: 0),
   ('06-welcome', (_) async => AppRoutes.welcome, more: 0),
   ('07-about', (_) async => AppRoutes.about, more: 0),
+  (
+    '11-update-limit',
+    (t) async =>
+        AppRoutes.accountSettings(await _accountA(t), section: 'limits'),
+    more: 0,
+  ),
+  (
+    '12-edit-cycle',
+    (t) async => AppRoutes.accountSettings(await _accountA(t)),
+    more: 0,
+  ),
 ];
 
 /// 把页面的主滚动区往下滚 80% 屏；已经到底时返回 false。

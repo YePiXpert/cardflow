@@ -3,6 +3,7 @@
 // 报告，用掩码形态与原样形态同时检查（test/support/sensitive_text.dart）。
 import 'package:cardflow/app/diagnostics/diagnostic_log.dart';
 import 'package:cardflow/app/routes.dart';
+import 'package:cardflow/data/validation/text_rules.dart';
 import 'package:cardflow/features/cards/account_detail_page.dart';
 import 'package:cardflow/features/cards/limit_snapshot_section.dart';
 import 'package:cardflow/features/cards/new_card_page.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/sensitive_text.dart';
+import '../support/simple_card_form.dart';
 import '../test_helpers.dart';
 
 const String _alias = '我的工资卡';
@@ -40,26 +42,21 @@ void main() {
   testWidgets('建卡、快照、换卡、切换空间之后：日志与诊断报告不含金额、卡号数字、别名', (tester) async {
     await pumpCardFlowApp(tester);
 
-    // 1. 建卡：先把完整卡号粘贴进产品名（被拦下），再改正后保存。
+    // 1. 建卡：先把完整卡号粘贴进卡名（被拦下），再改正后保存。
     await goTo(tester, AppRoutes.newCard);
-    await tester.tap(
-      find.widgetWithText(DropdownButtonFormField<String>, '银行'),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('招商银行').last);
-    await tester.pumpAndSettle();
-    final product = find.widgetWithText(TextField, '产品名（可选）');
+    await fillSimpleCard(tester, name: _alias);
+    final product = find.widgetWithText(TextField, '卡名');
+    await _scrollIn(tester, NewCardPage, product);
     await tester.enterText(product, '卡号 $_fullNumber');
     await tester.pump();
-    await tester.enterText(find.widgetWithText(TextField, '别名（可选）'), _alias);
-    await tester.enterText(find.widgetWithText(TextField, '末四位'), '4321');
+    expect(find.text(fullCardNumberMessage), findsOneWidget);
     final save = _inPage(NewCardPage, find.widgetWithText(FilledButton, '保存'));
     await _scrollIn(tester, NewCardPage, save);
     await tester.tap(save);
     await tester.pumpAndSettle();
     expect(appBarTitle(NewCardPage.title), findsOneWidget, reason: '完整卡号被拦下');
     await _scrollIn(tester, NewCardPage, product);
-    await tester.enterText(product, _product);
+    await tester.enterText(product, _alias);
     await _scrollIn(tester, NewCardPage, save);
     await tester.tap(save);
     await tester.pumpAndSettle();
@@ -68,6 +65,8 @@ void main() {
     // 2. 记录一次额度快照（金额 12,345.67）。
     final accountId = (await readWallet(tester)).accounts.single.id;
     await goTo(tester, AppRoutes.accountSettings(accountId, section: 'limits'));
+    await tester.tap(find.text('详细记录'));
+    await tester.pumpAndSettle();
     await tester.enterText(find.widgetWithText(TextField, '固定额度'), '12,345.67');
     final used = find.widgetWithText(TextField, '已用');
     await _scrollIn(tester, LimitSnapshotSection, used);

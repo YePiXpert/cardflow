@@ -18,7 +18,19 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../data/repositories/repository_test_support.dart';
-import '../../test_helpers.dart';
+import '../../test_helpers.dart' hide goTo;
+import '../../test_helpers.dart' as helpers show goTo;
+
+Future<void> goTo(WidgetTester tester, String route) async {
+  await helpers.goTo(tester, route);
+  for (final label in ['详细记录', '更多账期设置']) {
+    if (find.text(label).evaluate().isNotEmpty) {
+      await tester.ensureVisible(find.text(label));
+      await tester.tap(find.text(label));
+      await tester.pumpAndSettle();
+    }
+  }
+}
 
 /// 种子：一张没有规则、没有快照的卡（真实空间）。
 Future<void> _bareCard(WorkspaceScope scope) async {

@@ -18,6 +18,7 @@ import '../../data/time/business_tz.dart';
 import '../../data/time/clock.dart';
 import '../../data/validation/text_rules.dart';
 import 'amount_input.dart';
+import 'available_limit_form.dart';
 import 'card_dialogs.dart';
 import 'card_formatting.dart';
 
@@ -61,6 +62,7 @@ class _LimitSnapshotSectionState extends ConsumerState<LimitSnapshotSection> {
   final Map<String, String> _errors = <String, String>{};
   String? _saveError;
   bool _saving = false;
+  bool _details = false;
 
   @override
   void initState() {
@@ -196,6 +198,12 @@ class _LimitSnapshotSectionState extends ConsumerState<LimitSnapshotSection> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_details && widget.account.pool == null) {
+      return AvailableLimitForm(
+        account: widget.account,
+        onDetails: () => setState(() => _details = true),
+      );
+    }
     final theme = Theme.of(context);
     final colors = CardFlowColors.of(context);
     final secondary = theme.textTheme.bodyMedium?.copyWith(

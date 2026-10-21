@@ -96,7 +96,7 @@ class AccountDetailPage extends ConsumerWidget {
             ),
             OutlinedButton(
               onPressed: () => context.go(AppRoutes.accountSettings(a.id)),
-              child: const Text('账期与账户设置'),
+              child: const Text('修改账期'),
             ),
           ],
         ),
@@ -213,14 +213,6 @@ class _LimitSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        LabeledValue(
-          label: '固定额度',
-          value: MoneyText(
-            minor: snapshot.fixedMinor,
-            currency: c,
-            semanticsPrefix: '固定额度',
-          ),
-        ),
         if (snapshot.tempMinor > 0)
           LabeledValue(
             label: expires == null ? '临时额度' : '临时额度（${formatDate(expires)} 到期）',
@@ -239,14 +231,6 @@ class _LimitSection extends StatelessWidget {
               semanticsPrefix: '专项额度',
             ),
           ),
-        LabeledValue(
-          label: '已用',
-          value: MoneyText(
-            minor: snapshot.usedMinor,
-            currency: c,
-            semanticsPrefix: '已用',
-          ),
-        ),
         LabeledValue(
           label: '银行可用（原值）',
           value: MoneyText(

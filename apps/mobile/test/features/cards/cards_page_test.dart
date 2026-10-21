@@ -6,16 +6,18 @@ import 'dart:async';
 import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/app/widgets/money_text.dart';
 import 'package:cardflow/app/widgets/state_views.dart';
+import 'package:cardflow/data/repositories/card_recommendation.dart';
 import 'package:cardflow/data/repositories/card_wallet_reader.dart';
 import 'package:cardflow/data/repositories/providers.dart';
 import 'package:cardflow/data/validation/text_rules.dart';
 import 'package:cardflow/features/cards/cards_page.dart';
 import 'package:cardflow/features/cards/new_card_page.dart';
+import 'package:cardflow_domain/cardflow_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../data/repositories/repository_test_support.dart';
+import '../../support/simple_card_form.dart';
 import '../../test_helpers.dart';
 
 Finder _field(String label) => find.widgetWithText(TextField, label);
@@ -25,13 +27,6 @@ Future<void> _openNewCard(WidgetTester tester) async {
   await tester.tap(find.byTooltip('添加卡片'));
   await tester.pumpAndSettle();
   expect(appBarTitle(NewCardPage.title), findsOneWidget);
-}
-
-Future<void> _chooseBank(WidgetTester tester, String bank) async {
-  await tester.tap(find.widgetWithText(DropdownButtonFormField<String>, '银行'));
-  await tester.pumpAndSettle();
-  await tester.tap(find.text(bank).last);
-  await tester.pumpAndSettle();
 }
 
 /// 新建卡片页里的滚动区域（后面还压着卡包页，不能用默认的"唯一 Scrollable"）。
@@ -130,77 +125,66 @@ void main() {
     expect(capacity.semanticsPrefix, '可用容量');
   });
 
-  testWidgets('新建卡片：生成账户与 CNY 子账户，回到卡账并提示"已添加 › 设置账期"；卡账行写银行简称与末四位', (
-    tester,
-  ) async {
+  testWidgets('一次建卡后可直接按金额和账期推荐', (tester) async {
     await pumpCardFlowApp(tester);
     await _openNewCard(tester);
-    await _chooseBank(tester, '招商银行');
-    await tester.enterText(_field('别名（可选）'), '工资卡');
-    await tester.enterText(_field('末四位'), '4321');
+    expect(find.text('持卡人'), findsNothing);
+    expect(find.text('固定额度'), findsNothing);
+    await fillSimpleCard(tester);
     await _save(tester);
-
     expect(appBarTitle('这笔消费，用哪张卡'), findsOneWidget);
-    expect(find.text(NewCardPage.savedMessage), findsOneWidget);
-    expect(find.text('设置账期'), findsWidgets);
     final wallet = await _wallet(tester);
-    expect(wallet.accounts.single.currencies.single.currency, 'CNY');
+    expect(wallet.accounts.single.currencies.single.capacity, 500000);
     expect(wallet.accounts.single.cards.single.last4, '4321');
+    final result = recommendCards(
+      wallet: wallet,
+      amount: 500001,
+      currency: 'CNY',
+      on: LocalDate(2026, 10, 18),
+    );
+    expect(result.eligible, isEmpty);
+    expect(result.excluded.single.reason, '可用额度不足');
+    expect(
+      recommendCards(
+        wallet: wallet,
+        amount: 500000,
+        currency: 'CNY',
+        on: LocalDate(2026, 10, 18),
+      ).eligible,
+      hasLength(1),
+    );
   });
 
-  testWidgets('G2：粘贴完整卡号当场提示，保存被拦下且不落库；系统自动填充关闭', (tester) async {
+  testWidgets('完整卡号不落库，末四位仍校验，关闭自动填充', (tester) async {
     await pumpCardFlowApp(tester);
     await _openNewCard(tester);
-    await _chooseBank(tester, '招商银行');
-    await tester.enterText(_field('别名（可选）'), '卡号 6222020200112233445');
+    await tester.enterText(_field('卡名'), '6222020200112233445');
     await tester.pump();
     expect(find.text(fullCardNumberMessage), findsOneWidget);
-    await tester.enterText(_field('末四位'), '６２２２０２０２００１１２２３３４４５');
-    await tester.pump();
-    expect(find.text(fullCardNumberMessage), findsNWidgets(2));
     await _save(tester);
-    expect(appBarTitle(NewCardPage.title), findsOneWidget);
     expect((await _wallet(tester)).accounts, isEmpty);
-    for (final label in <String>['别名（可选）', '末四位', '持卡人', '产品名（可选）']) {
-      final field = tester.widget<TextField>(_field(label));
-      expect(field.autofillHints, isNull, reason: label);
-    }
-  });
-
-  testWidgets('末四位须恰好 4 位数字；附卡须指定主卡', (tester) async {
-    await pumpCardFlowApp(tester);
-    await _openNewCard(tester);
-    await _chooseBank(tester, '招商银行');
+    await _scrollTo(tester, _field('卡名'), delta: -200);
+    await tester.enterText(_field('卡名'), '生活卡');
     await tester.enterText(_field('末四位'), '123');
     await _save(tester);
     expect(find.text(last4Message), findsOneWidget);
-
-    await _scrollTo(tester, find.text('附属卡'), delta: -200);
-    await tester.tap(find.text('附属卡'));
-    await tester.pumpAndSettle();
-    expect(find.textContaining('还没有主卡'), findsOneWidget);
-    await tester.enterText(_field('末四位'), '1234');
-    await _save(tester);
-    expect(appBarTitle(NewCardPage.title), findsOneWidget);
-    expect((await _wallet(tester)).accounts, isEmpty);
+    for (final label in ['卡名', '末四位', '当前可用额度']) {
+      await _scrollTo(tester, _field(label), delta: -200);
+      expect(tester.widget<TextField>(_field(label)).autofillHints, isNull);
+    }
   });
 
-  testWidgets('同银行同末四位：提示"可能是同一信用账户的另一张卡"，加入既有账户后只有一个账户', (tester) async {
-    await pumpCardFlowApp(
-      tester,
-      seed: (scope) async {
-        await createTestCard(scope, bank: '招商银行', last4: '1234', alias: '主卡');
-      },
-    );
+  testWidgets('额度为空或账期未选不创建卡片', (tester) async {
+    await pumpCardFlowApp(tester);
     await _openNewCard(tester);
-    await _chooseBank(tester, '招商银行');
-    await tester.enterText(_field('末四位'), '1234');
+    await tester.enterText(_field('卡名'), '生活卡');
+    await tester.enterText(_field('末四位'), '4321');
     await _save(tester);
-    expect(find.text(NewCardPage.sameAccountTitle), findsOneWidget);
-    await tester.tap(find.text('加入既有账户'));
-    await tester.pumpAndSettle();
-    final wallet = await _wallet(tester);
-    expect(wallet.accounts, hasLength(1));
-    expect(wallet.accounts.single.cards, hasLength(2));
+    expect((await _wallet(tester)).accounts, isEmpty);
+    await _scrollTo(tester, _field('当前可用额度'), delta: -200);
+    await tester.enterText(_field('当前可用额度'), '5000');
+    await _save(tester);
+    expect(find.text('请选择账单日和还款日'), findsOneWidget);
+    expect((await _wallet(tester)).accounts, isEmpty);
   });
 }

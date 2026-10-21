@@ -25,6 +25,8 @@
 
 **下载公测版**：[0.0.3 发布页](https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.3)（构建 84，附未签名 IPA 与 SHA-256 文件）。用安装旧版时的同一签名身份和 Bundle ID 直接覆盖安装，四个嵌套 framework 也需重签；不要先删除旧 App。步骤见下文"用自己的证书签名并安装"与发布页的手机验收清单。
 
+**最新功能简化（2026-10-21，源码）**：添加卡片同页填写卡名、末四位、可用额度和账期；普通卡更新额度只填一个数，复杂资料收进更多设置。消费金额与额度筛选保留。验证与预览见 [`evidence/simple-card-flow/`](evidence/simple-card-flow/)。尚未交付包含这些改动的新 IPA。
+
 **最新界面改动（2026-10-21）**：根据视觉反馈，已去掉薄荷渐变、插画与首页大卡片，改为中性灰白、细线分组和克制的绿色操作。最新预览见 [`evidence/fresh-ui/refined/`](evidence/fresh-ui/refined/)。预览及验证见 [`evidence/fresh-ui/`](evidence/fresh-ui/)。这是 0.0.3 发布后的源码改动，尚未构建或交付新版 iOS 包；下方 0.0.3 下载仍是原发布界面。
 
 **当前交付状态（2026-10-21）**：0.0.3 消费选卡实现完成，旧记账、还款、现金等界面已删除，数据库 v4、领域包和协议保持不变。候选 `292135f61a17db19d46ce8034fab2527ee929825` 的 [CI #84](https://github.com/YePiXpert/cardflow/actions/runs/39608237211) 通过格式、静态分析、505 项 App 测试（2 个截图生成器默认跳过）、279 项领域测试、协议一致性、Web 编译和 macOS iOS 构建；深浅色截图另行生成并检查。未签名 IPA 的 17 项检查通过，发布附件回下载校验一致。**真机业务仍待用户验收**。证据见 [`evidence/selection-0.0.3/`](evidence/selection-0.0.3/)。

@@ -70,18 +70,26 @@ final class LimitSnapshotRepository {
   String get _ws => _scope.workspaceId;
 
   /// 本工作空间的全部快照。
-  Future<List<LimitSnapshotRow>> all() => (_db.select(
-    _db.limitSnapshots,
-  )..where((s) => s.workspaceId.equals(_ws))).get();
+  Future<List<LimitSnapshotRow>> all() =>
+      (_db.select(_db.limitSnapshots)
+            ..where((s) => s.workspaceId.equals(_ws))
+            ..orderBy([
+              (s) => OrderingTerm.asc(const CustomExpression<int>('rowid')),
+            ]))
+          .get();
 
   /// 某币种子账户的快照历史，最新在前（按实际余额时点的绝对时刻，再按记录时点）。
   Future<List<LimitSnapshotRow>> history(String currencyAccountId) async {
     final rows =
-        await (_db.select(_db.limitSnapshots)..where(
-              (s) =>
-                  s.workspaceId.equals(_ws) &
-                  s.currencyAccountId.equals(currencyAccountId),
-            ))
+        await (_db.select(_db.limitSnapshots)
+              ..where(
+                (s) =>
+                    s.workspaceId.equals(_ws) &
+                    s.currencyAccountId.equals(currencyAccountId),
+              )
+              ..orderBy([
+                (s) => OrderingTerm.asc(const CustomExpression<int>('rowid')),
+              ]))
             .get();
     return sortNewestFirst(rows);
   }
@@ -196,9 +204,11 @@ final class LimitSnapshotRepository {
 }
 
 /// 快照按"最新在前"排序：实际余额时点的绝对时刻（不同偏移写入的文本不能直接按字符串比较），
-/// 相同时按记录时点，再按 id（确定的顺序）。
+/// 相同时按记录时点，再按输入的插入顺序（最后写入优先）。
 List<LimitSnapshotRow> sortNewestFirst(Iterable<LimitSnapshotRow> rows) {
   final list = rows.toList();
+  // 输入按插入顺序排列：同一时刻连续更新以最后写入为准，不按随机 UUID 排序。
+  final insertionOrder = {for (var i = 0; i < list.length; i++) list[i].id: i};
   int micros(String text) => Timestamp.parse(text).utcMicros;
   list.sort((a, b) {
     final byBalance = micros(b.balanceAsOf).compareTo(micros(a.balanceAsOf));
@@ -206,7 +216,9 @@ List<LimitSnapshotRow> sortNewestFirst(Iterable<LimitSnapshotRow> rows) {
       return byBalance;
     }
     final byRecorded = micros(b.recordedAt).compareTo(micros(a.recordedAt));
-    return byRecorded != 0 ? byRecorded : b.id.compareTo(a.id);
+    return byRecorded != 0
+        ? byRecorded
+        : insertionOrder[b.id]!.compareTo(insertionOrder[a.id]!);
   });
   return list;
 }
