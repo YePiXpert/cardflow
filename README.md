@@ -5,7 +5,7 @@
 - `docs/` — 完整规划文档集（入口：`docs/README.md`；追踪矩阵：`docs/requirements-traceability.md`）
 - `poc/engine_reference/` — 参考引擎 PoC（账期、现金时间线、CP-SAT 分配、独立验证器；40 项测试，证据见 `EVIDENCE.md`）
 
-本仓库不含真实金融数据；所有样本为合成数据。当前交接入口：[`docs/80-delivery/handoff.md`](docs/80-delivery/handoff.md)。0.0.2 已交付；当前 0.0.3 收敛为单笔单卡推荐，本机验证通过，iOS 发包进行中。
+本仓库不含真实金融数据；所有样本为合成数据。当前交接入口：[`docs/80-delivery/handoff.md`](docs/80-delivery/handoff.md)。0.0.3 消费选卡已交付未签名 IPA，真机业务待验收。
 
 ## 目录结构
 
@@ -14,7 +14,7 @@
 | `docs/` | 规划文档（唯一事实来源） | 已完成 |
 | `poc/engine_reference/` | 参考引擎 PoC（golden-fixture 预言机，非生产代码） | 已验证 |
 | `services/api/` | 服务端：FastAPI 模块化单体 + worker + CLI；Python 3.13，uv 管理，包 `cardflow`（平铺布局，模块划分见 architecture §4） | M0 骨架（T-002） |
-| `apps/mobile/` | Flutter iOS：用卡、卡片、我的；消费金额和日期比较、额度及账期设置、演示空间、隐藏金额、诊断。沿用 v4 加密数据库与领域包。 | 0.0.3 实现完成、本机验证通过，iOS 构建与 IPA 待交付 |
+| `apps/mobile/` | Flutter iOS：用卡、卡片、我的；消费金额和日期比较、额度及账期设置、演示空间、隐藏金额、诊断。沿用 v4 加密数据库与领域包。 | 0.0.3 实现及自动验证完成，IPA 已交付，真机待验收 |
 | `apps/admin/` | Web 后台 React SPA（占位，T-031） | 未实现 |
 | `packages/rules-protocol/` | 规则协议 v1 JSON Schema、golden fixture、Python 运行器；Dart 端在 `apps/mobile/packages/cardflow_domain`，CI `protocol-parity` 双端逐字节一致 | v1 已冻结（1.1.0） |
 | `deploy/` | Compose 文件：`compose.dev.yaml` = 开发库（项目名 `cardflow-dev`，仅 127.0.0.1:18432）；`compose.yaml` = 自托管部署（项目名 `cardflow`，仅 127.0.0.1:18080，见下文"部署"）；`.env.example`；`secrets/`（只有 README 入库） | 开发库可用；部署可用（T-012） |
@@ -23,9 +23,9 @@
 
 ## 移动端
 
-**下载公测版**：[0.0.2 发布页](https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.2)（构建 82，附未签名 IPA 与 SHA-256 文件）。用安装旧版时的同一签名身份和 Bundle ID 直接覆盖安装，四个嵌套 framework 也需重签；不要先删除旧 App。步骤见下文"用自己的证书签名并安装"与发布页的手机验收清单。
+**下载公测版**：[0.0.3 发布页](https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.3)（构建 84，附未签名 IPA 与 SHA-256 文件）。用安装旧版时的同一签名身份和 Bundle ID 直接覆盖安装，四个嵌套 framework 也需重签；不要先删除旧 App。步骤见下文"用自己的证书签名并安装"与发布页的手机验收清单。
 
-**当前开发状态（2026-10-21）**：0.0.3 已实现消费选卡，删除现金、记账、还款、情景和活动占位界面及专用状态。数据库 v4、冻结迁移、领域包和协议不变。本机格式、静态分析、505 项 App 测试、279 项领域测试与 Web 编译通过，深浅色截图已检查。候选 CI、iOS 构建与安装包检查尚待完成，不能沿用 0.0.2 的成功结论。真机业务仍待用户验收。
+**当前交付状态（2026-10-21）**：0.0.3 消费选卡实现完成，旧记账、还款、现金等界面已删除，数据库 v4、领域包和协议保持不变。候选 `292135f61a17db19d46ce8034fab2527ee929825` 的 [CI #84](https://github.com/YePiXpert/cardflow/actions/runs/39608237211) 通过格式、静态分析、505 项 App 测试（2 个截图生成器默认跳过）、279 项领域测试、协议一致性、Web 编译和 macOS iOS 构建；深浅色截图另行生成并检查。未签名 IPA 的 17 项检查通过，发布附件回下载校验一致。**真机业务仍待用户验收**。证据见 [`evidence/selection-0.0.3/`](evidence/selection-0.0.3/)。
 
 0.0.2 历史交付证据保留于 [`evidence/u1/release-0.0.2/`](evidence/u1/release-0.0.2/)。
 

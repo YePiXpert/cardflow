@@ -1,0 +1,9 @@
+# gh run view 39608237211 --log：仅摘取检查结论，原行保留。
+protocol-parity (Python engine vs Dart domain)	Golden fixtures -- outputs byte-identical	2026-10-21T13:28:43.9834080Z golden fixtures: 3 cycles/verify outputs byte-identical (expected 3)
+protocol-parity (Python engine vs Dart domain)	Random fixtures -- both runners --dump, outputs byte-identical	2026-10-21T13:28:50.0931562Z random fixtures: 1200 cycles/verify outputs byte-identical (expected 1200)
+dart (format · analyze · test · web build)	flutter analyze	2026-10-21T13:29:08.2317694Z No issues found! (ran in 21.4s)
+dart (format · analyze · test · web build)	dart analyze (cardflow_domain)	2026-10-21T13:29:09.6488534Z No issues found!
+dart (format · analyze · test · web build)	dart test (cardflow_domain, incl. the no-double scan)	2026-10-21T13:31:01.1552741Z 00:03 +279: All tests passed!
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-21T13:35:07.3300130Z CFBundleShortVersionString 0.0.3 matches pubspec.yaml 0.0.3, tag ios-v0.0.3; CFBundleVersion 84 matches run number 84
+ios-unsigned (IPA without codesign)	Verify IPA	2026-10-21T13:35:07.4814500Z IPA cardflow-unsigned-292135f.ipa size=10161679 sha256=d9c8c58fb68be972c6f4ca9ead89ba024aa5fd0ecebc633e42c9342099a25cbd
+dart (format · analyze · test · web build)	flutter test	2026-10-21T13:30:51.1551636Z 🎉 505 tests passed, 2 skipped.

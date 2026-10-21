@@ -1,0 +1,6 @@
+Release: https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.3
+file: cardflow-0.0.3-unsigned.ipa
+size_bytes: 10161679
+sha256: d9c8c58fb68be972c6f4ca9ead89ba024aa5fd0ecebc633e42c9342099a25cbd
+release checksum matches: PASS
+release download byte-identical to inspected artifact: PASS
