@@ -10,7 +10,6 @@ import 'dart:ui' as ui;
 
 import 'package:cardflow/app/app.dart';
 import 'package:cardflow/app/routes.dart';
-import 'package:cardflow/data/repositories/ledger_reader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -65,44 +64,14 @@ Future<String> _accountA(WidgetTester tester) async {
   return wallet.accounts.firstWhere((a) => a.bank.name == '星海银行').id;
 }
 
-Future<String> _statementA(WidgetTester tester) async {
-  final ledger = await withCurrentScope(
-    tester,
-    (scope) => LedgerReader(scope).load(),
-  );
-  return ledger.statements.single.id;
-}
-
 final List<Shot> shots = <Shot>[
-  ('01-home', (_) async => AppRoutes.home, more: 1),
+  ('01-home', (_) async => AppRoutes.home, more: 0),
   ('02-card', (t) async => AppRoutes.account(await _accountA(t)), more: 2),
-  ('03-cash', (_) async => AppRoutes.cashHome, more: 2),
-  ('04-planner', (_) async => AppRoutes.planner, more: 0),
-  ('05-settings', (_) async => AppRoutes.settings, more: 1),
-  ('06-new-card', (_) async => AppRoutes.newCard, more: 0),
-  (
-    '07-statement',
-    (t) async => AppRoutes.statement(
-      await _statementA(t),
-      accountId: await _accountA(t),
-    ),
-    more: 1,
-  ),
-  (
-    '08-repayment',
-    (t) async => AppRoutes.newRepayment(
-      accountId: await _accountA(t),
-      statementId: await _statementA(t),
-    ),
-    more: 0,
-  ),
-  // 其余页面（套用新样式后的样子）。
-  ('09-statements', (_) async => AppRoutes.statements(), more: 0),
-  ('10-repayments', (_) async => AppRoutes.repayments(), more: 0),
-  ('11-manage-cards', (_) async => AppRoutes.cards, more: 0),
-  ('12-calendar', (_) async => AppRoutes.cashCalendar, more: 0),
-  ('13-welcome', (_) async => AppRoutes.welcome, more: 0),
-  ('14-about', (_) async => AppRoutes.about, more: 0),
+  ('03-cards', (_) async => AppRoutes.cards, more: 1),
+  ('04-settings', (_) async => AppRoutes.settings, more: 1),
+  ('05-new-card', (_) async => AppRoutes.newCard, more: 0),
+  ('06-welcome', (_) async => AppRoutes.welcome, more: 0),
+  ('07-about', (_) async => AppRoutes.about, more: 0),
 ];
 
 /// 把页面的主滚动区往下滚 80% 屏；已经到底时返回 false。
@@ -171,7 +140,6 @@ void main() {
               overrides: [
                 ...fakeDatabaseOverrides(),
                 ...testDatabaseOverrides(db),
-                inlineInstallmentCosts,
                 appFontFamilyProvider.overrideWithValue(screenshotFont),
               ],
               child: const CardFlowApp(),
@@ -189,6 +157,19 @@ void main() {
             await _capture(tester, key, '$name-$mode-${i + 1}');
           }
         }
+        await goTo(tester, AppRoutes.home);
+        await tester.enterText(find.widgetWithText(TextField, '消费金额'), '1000');
+        await tester.ensureVisible(find.text('比较用卡'));
+        await tester.tap(find.text('比较用卡'));
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(
+          find.text('推荐使用'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await _capture(tester, key, '08-result-$mode');
+        await _scrollDown(tester);
+        await _capture(tester, key, '08-result-$mode-2');
       },
     );
   }

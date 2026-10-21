@@ -6,7 +6,6 @@ import 'package:cardflow/app/routes.dart';
 import 'package:cardflow/app/widgets/demo_banner.dart';
 import 'package:cardflow/data/repositories/models.dart';
 import 'package:cardflow/data/repositories/providers.dart';
-import 'package:cardflow/features/home/ledger_home_page.dart';
 import 'package:cardflow/features/onboarding/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -37,7 +36,7 @@ Finder _option(String label) => find.ancestor(
 );
 
 void main() {
-  testWidgets('五种开始方式：手工建卡、体验演示可用；其余禁用并注明后续提供（不写内部阶段代号）', (tester) async {
+  testWidgets('开始方式只保留手工建卡与体验演示', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.none);
     for (final item in WelcomePage.boundaries) {
       expect(find.text(item), findsOneWidget);
@@ -61,7 +60,7 @@ void main() {
       WelcomePage.startOptions
           .where((o) => o.stage != null)
           .map((o) => o.stage),
-      <String>['后续版本提供', '后续版本提供', '后续提供（自托管同步）'],
+      <String>[],
     );
   });
 
@@ -103,7 +102,7 @@ void main() {
     await tester.tap(_option('体验演示'));
     await tester.pumpAndSettle();
 
-    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
+    expect(appBarTitle('这笔消费，用哪张卡'), findsOneWidget);
     expect(find.text(demoBannerText), findsOneWidget);
     expect(find.byIcon(Icons.close), findsNothing);
     final workspace = appContainer(tester).read(currentWorkspaceProvider).value;
@@ -156,7 +155,7 @@ void main() {
     await tester.tap(find.text('进入演示'));
     await tester.pumpAndSettle();
     expect(find.text(demoBannerText), findsOneWidget);
-    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
+    expect(appBarTitle('这笔消费，用哪张卡'), findsOneWidget);
   });
 
   testWidgets('清除演示数据：确认框写明影响数量；清除后回到真实空间', (tester) async {

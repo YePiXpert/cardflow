@@ -11,7 +11,6 @@ import 'package:cardflow/data/repositories/providers.dart';
 import 'package:cardflow/data/validation/text_rules.dart';
 import 'package:cardflow/features/cards/cards_page.dart';
 import 'package:cardflow/features/cards/new_card_page.dart';
-import 'package:cardflow/features/home/ledger_home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -65,11 +64,7 @@ void main() {
     await pumpCardFlowApp(tester);
     await goTo(tester, AppRoutes.cards);
     expect(find.text(CardsPage.firstRunMessage), findsOneWidget);
-    final file = tester.widget<OutlinedButton>(
-      find.widgetWithText(OutlinedButton, '从账单文件开始'),
-    );
-    expect(file.onPressed, isNull);
-    expect(find.text('从账单文件开始：后续版本提供'), findsOneWidget);
+    expect(find.text('从账单文件开始'), findsNothing);
     expect(
       tester
           .widget<FilledButton>(find.widgetWithText(FilledButton, '手工建卡'))
@@ -145,10 +140,9 @@ void main() {
     await tester.enterText(_field('末四位'), '4321');
     await _save(tester);
 
-    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
+    expect(appBarTitle('这笔消费，用哪张卡'), findsOneWidget);
     expect(find.text(NewCardPage.savedMessage), findsOneWidget);
     expect(find.text('设置账期'), findsWidgets);
-    expect(find.text('招行 ···· 4321'), findsOneWidget);
     final wallet = await _wallet(tester);
     expect(wallet.accounts.single.currencies.single.currency, 'CNY');
     expect(wallet.accounts.single.cards.single.last4, '4321');

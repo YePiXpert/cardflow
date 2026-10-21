@@ -9,7 +9,7 @@ import 'package:cardflow/app/startup/startup_page.dart';
 import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_providers.dart';
 import 'package:cardflow/data/repositories/workspace_repository.dart';
-import 'package:cardflow/features/home/ledger_home_page.dart';
+import 'package:cardflow/features/selection/selection_page.dart';
 import 'package:cardflow/features/settings/public_beta.dart';
 import 'package:cardflow/features/settings/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -74,14 +74,16 @@ void main() {
 
   testWidgets('隐藏金额：打开后卡账的金额一律 4 个点；开关记在本机，重新读回', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
-    expect(find.text('¥2,393.33'), findsWidgets);
+    await goTo(tester, AppRoutes.cards);
+    expect(find.textContaining('¥'), findsWidgets);
     await goTo(tester, AppRoutes.settings);
     await tester.tap(find.widgetWithText(SwitchListTile, '隐藏金额'));
     await tester.pumpAndSettle();
     expect(appContainer(tester).read(amountsHiddenProvider), isTrue);
     await goTo(tester, AppRoutes.home);
-    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
+    expect(appBarTitle('这笔消费，用哪张卡'), findsOneWidget);
     expect(find.text('¥2,393.33'), findsNothing);
+    await goTo(tester, AppRoutes.cards);
     expect(find.text('••••'), findsWidgets);
     final stored = await withCurrentScope(
       tester,
@@ -110,15 +112,16 @@ void main() {
       ],
     );
     expect(find.byType(StartupPage), findsOneWidget);
-    expect(find.byType(LedgerHomePage), findsNothing);
+    expect(find.byType(SelectionPage), findsNothing);
     // 读回（真正的读回方法），读回完成后才进入主导航。
     await tester.runAsync(
       () => appContainer(tester).read(amountsHiddenProvider.notifier).restore(),
     );
     restored.complete();
     await tester.pumpAndSettle();
-    expect(find.byType(LedgerHomePage), findsOneWidget);
+    expect(find.byType(SelectionPage), findsOneWidget);
     expect(find.text('¥2,393.33'), findsNothing);
+    await goTo(tester, AppRoutes.cards);
     expect(find.text('••••'), findsWidgets);
   });
 
@@ -129,9 +132,10 @@ void main() {
       useMemoryDatabase: false,
       overrides: testDatabaseOverrides(db),
     );
-    expect(find.byType(LedgerHomePage), findsOneWidget);
+    expect(find.byType(SelectionPage), findsOneWidget);
     expect(appContainer(tester).read(amountsHiddenProvider), isTrue);
     expect(find.text('¥2,393.33'), findsNothing);
+    await goTo(tester, AppRoutes.cards);
     expect(find.text('••••'), findsWidgets);
   });
 

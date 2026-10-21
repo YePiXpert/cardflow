@@ -1,0 +1,5 @@
+# 工具原文；仅过滤 Flutter/Dart 宿主运行环境提示，保留测试与构建输出。
+00:00 +0: loading /projects/cardflow/apps/mobile/test/tool/screenshots_test.dart
+00:00 +0: 演示空间各页截图（dark） (variant: TargetPlatform.iOS)
+00:03 +1: 演示空间各页截图（light） (variant: TargetPlatform.iOS)
+00:05 +2: All tests passed!

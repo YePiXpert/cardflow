@@ -9,7 +9,7 @@ abstract final class PublicBeta {
   static const String appName = '卡序 CardFlow';
 
   /// 公测版本号：与 `pubspec.yaml` 的版本名一致（测试核对；构建号由 CI 的运行序号给出）。
-  static const String version = '0.0.2';
+  static const String version = '0.0.3';
 
   /// "公测版"标识。
   static const String badge = '公测版';

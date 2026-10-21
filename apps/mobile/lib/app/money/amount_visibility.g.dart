@@ -50,7 +50,7 @@ final class AmountsHiddenProvider
   }
 }
 
-String _$amountsHiddenHash() => r'a25eaf6545f56544a4cb2e1d7f693f372e5a0c87';
+String _$amountsHiddenHash() => r'dd9ac44f54a95079abb8e7b3951dd17ee84d1c5c';
 
 /// 全局"金额隐藏"开关（ui-spec §3.6，R-SYS-03；简报 U-1 §9 R-09）：开启后 [MoneyText] 一律显示固定 4 个"•"，
 /// 读屏读"金额已隐藏"。"我的"页有开关；状态存在 `app_settings`（键 [amountsHiddenSettingKey]，两个空间共用），

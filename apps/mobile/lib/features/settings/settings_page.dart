@@ -26,11 +26,10 @@ class SettingsPage extends ConsumerWidget {
   static const String title = '我的';
 
   /// ui-spec P-19 九态表"首次空白"（纯本地）。
-  static const String firstRunMessage = '未连接服务器（可选）';
+  static const String firstRunMessage = '仅在本机使用';
 
   /// 纯本地的说明。
-  static const String localOnlyNote =
-      '数据只保存在这台 iPhone 上，加密存储，卡序不会上传到任何服务器。自托管同步在后续版本提供。';
+  static const String localOnlyNote = '数据只保存在这台 iPhone 上，加密存储，卡序不会上传到任何服务器。';
 
   /// 隐藏金额开关的说明。
   static const String hideAmountsNote = '金额一律显示为 ••••（读屏读"金额已隐藏"）；开关会记住。';

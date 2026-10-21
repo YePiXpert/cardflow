@@ -50,7 +50,7 @@ void main() {
 
     expect(appBarTitle(DiagnosticsPage.title), findsOneWidget);
     expect(find.text('卡序'), findsOneWidget);
-    expect(find.text('0.0.2（构建 7）'), findsOneWidget);
+    expect(find.text('0.0.3（构建 7）'), findsOneWidget);
     expect(find.text('li.yep.cardflow'), findsOneWidget);
     expect(find.text('debug'), findsOneWidget);
     expect(find.text('本机构建'), findsOneWidget);
@@ -80,7 +80,7 @@ void main() {
     expect(copied, hasLength(1));
     final report = copied.single;
     expect(report, contains('卡序 CardFlow 诊断信息'));
-    expect(report, contains('应用：卡序 0.0.2（构建 7）'));
+    expect(report, contains('应用：卡序 0.0.3（构建 7）'));
     expect(report, contains('Bundle ID：li.yep.cardflow'));
     expect(report, contains('构建类型：debug'));
     expect(

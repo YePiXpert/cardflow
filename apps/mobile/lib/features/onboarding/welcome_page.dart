@@ -32,19 +32,17 @@ class WelcomePage extends ConsumerStatefulWidget {
 
   /// ui-spec P-22 布局"欢迎"区的四条边界。
   static const List<String> boundaries = <String>[
+    '消费前比较用哪张卡',
     '无需注册',
     '不发起支付',
     '结果可解释',
     '不实时同步银行',
   ];
 
-  /// 五种开始方式；本期只开放手工建卡与体验演示。
+  /// 开始方式：手工建卡与体验演示。
   static const List<StartOption> startOptions = <StartOption>[
     StartOption('手工建卡'),
-    StartOption('从账单文件开始', stage: '后续版本提供'),
-    StartOption('从备份恢复', stage: '后续版本提供'),
     StartOption('体验演示'),
-    StartOption('连接服务器', stage: '后续提供（自托管同步）'),
   ];
 
   /// 演示数据生成中的文案（加载态）。

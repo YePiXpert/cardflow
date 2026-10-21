@@ -1,0 +1,3 @@
+# 工具原文；仅过滤 Flutter/Dart 宿主运行环境提示，保留测试与构建输出。
+Analyzing mobile...                                             
+No issues found! (ran in 1.6s)

@@ -1,14 +1,11 @@
 import 'dart:async';
 
-import 'package:cardflow_domain/cardflow_domain.dart' show fromMinorText;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
-import '../../app/widgets/cf_layout.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
@@ -16,413 +13,67 @@ import '../../data/db/app_database.dart';
 import '../../data/mapping/domain_mapping.dart';
 import '../../data/repositories/card_repository.dart';
 import '../../data/repositories/card_wallet_reader.dart';
-import '../../data/repositories/ledger_home.dart';
-import '../../data/repositories/ledger_reader.dart';
 import '../../data/repositories/models.dart';
 import '../../data/repositories/providers.dart';
 import '../../data/repositories/repository_errors.dart';
 import '../../data/time/business_tz.dart';
-import '../home/quick_statement_sheet.dart';
-import '../statements/ledger_formatting.dart';
-import 'card_detail_sections.dart';
 import 'card_dialogs.dart';
 import 'card_formatting.dart';
 
-/// 卡片详情（P-03，简报 U-1 §3；设计稿 `card-dark.png`）：卡面（银行色、额度条）、本期进度、待还与最低还款、本期
-/// 账单与未出账、三个主按钮（登记还款、记一笔、更新额度），下面依次是账单历史、分期摘要、可折叠的负债明细（原
-/// 负债四分法）、卡片列表、额度详情、账期规则与授信池。"⋯"菜单放记本期账单、录入正式账单、人工修正、去还款的
-/// 操作说明、换卡/补卡、冻结、销卡、账期设置。快捷"记本期账单""还清本期"是底部弹层。
-///
-/// 四态：加载（骨架）、错误（「重试」）、已不存在、成功；"首次空白"即还没有已出账单（本期进度写下期的预测账期）。
-class AccountDetailPage extends ConsumerStatefulWidget {
+/// 卡片资料与额度、账期；不依赖账单或现金数据。
+class AccountDetailPage extends ConsumerWidget {
   const AccountDetailPage({super.key, required this.accountId});
-
   final String accountId;
-
-  /// 首次空白（还没有任何账单）的说明。
-  static const String noStatementsNote = '还没有已出账单';
-
-  /// 规则非法时的文案。
-  static const String invalidRuleText = '规则非法，无法计算账期';
-
-  /// 没有已核验官方链接时「去还款」显示的操作说明（ui-spec §4.1）。
-  static const String instructions =
-      '没有已核验的官方还款链接：请通过发卡行官方 App、官网或客服办理。卡序不会代你付款，也不会跳转。'
-      '办完后回来「登记还款」，并在银行入账后补充证据。';
-
   @override
-  ConsumerState<AccountDetailPage> createState() => _AccountDetailPageState();
-}
-
-class _AccountDetailPageState extends ConsumerState<AccountDetailPage> {
-  String? _currency;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final wallet = ref.watch(walletProvider);
-    final ledger = ref.watch(ledgerProvider);
-    final workspace = ref.watch(currentWorkspaceProvider).value;
-    final account = wallet.value?.account(widget.accountId);
-    final data = ledger.value;
-    final sub = account?.currencies.firstWhere(
-      (c) => c.currency == _currency,
-      orElse: () => account.primaryCurrency,
-    );
-    final row = account == null || sub == null || data == null
-        ? null
-        : ledgerRowOf(data, account, sub);
     return Scaffold(
-      appBar: AppBar(
-        title: Text(row?.title ?? account?.displayName ?? '卡片'),
-        actions: <Widget>[
-          if (row != null)
-            CircleIconButton(
-              icon: Icons.more_horiz,
-              tooltip: '更多操作',
-              onPressed: () => unawaited(_showMenu(context, row)),
-            ),
-          const SizedBox(width: CfSpace.xs),
-        ],
-      ),
-      body: switch ((wallet, ledger)) {
-        (AsyncData(), _) when account == null => ErrorBlock(
-          title: '已不存在',
-          detail: '这个信用账户不在当前空间里（可能已切换空间）。',
-          onRetry: () => context.go(AppRoutes.home),
-          retryLabel: '回到卡账',
-        ),
-        (AsyncData(:final value), AsyncData(value: final ledgerData))
-            when row != null =>
-          _CardDetail(
-            row: row,
-            data: ledgerData,
-            pool: value.poolOf(account!.id),
-            demo: workspace?.isDemo ?? false,
-            onCurrency: (c) => setState(() => _currency = c),
-          ),
-        (AsyncError(:final error), _) ||
-        (_, AsyncError(:final error)) => ErrorBlock(
-          title: '读取失败',
+      appBar: AppBar(title: const Text('卡片详情')),
+      body: switch (wallet) {
+        AsyncData(:final value) => _details(context, value),
+        AsyncError(:final error) => ErrorBlock(
+          title: '卡片读取失败',
           code: '${error.runtimeType}',
-          detail: '本机数据没有改动。',
-          onRetry: () => ref
-            ..invalidate(walletProvider)
-            ..invalidate(ledgerProvider),
+          onRetry: () => ref.invalidate(walletProvider),
         ),
-        _ => const LoadingSkeleton(rows: 4),
+        _ => const LoadingSkeleton(),
       },
     );
   }
 
-  /// "⋯"菜单。
-  Future<void> _showMenu(BuildContext context, CardLedgerRow row) async {
-    final account = row.account;
-    final current = row.current;
-    final main = account.activeCards.isEmpty
-        ? null
-        : account.activeCards.firstWhere(
-            (c) => c.kind == HolderKind.primary,
-            orElse: () => account.activeCards.first,
-          );
-    final items = <(IconData, String, Future<void> Function())>[
-      (
-        Icons.edit_note,
-        QuickStatementSheet.title,
-        () => showQuickStatementSheet(context, account: account, sub: row.sub),
-      ),
-      (
-        Icons.receipt_long_outlined,
-        '录入正式账单（完整）',
-        () async => context.go(
-          AppRoutes.newStatement(
-            accountId: account.id,
-            currencyAccountId: row.currencyAccountId,
-          ),
-        ),
-      ),
-      if (current != null)
-        (
-          Icons.edit_outlined,
-          '人工修正本期账单',
-          () async => context.go(
-            AppRoutes.correctStatement(
-              current.statement.id,
-              accountId: account.id,
-            ),
-          ),
-        ),
-      (Icons.help_outline, '去还款：查看操作说明', () => _showInstructions(context, row)),
-      if (main != null && main.cardStatus.canBecome(CardStatus.replaced))
-        (
-          Icons.autorenew,
-          '换卡/补卡（${cardTail(main)}）',
-          () => replaceCardFlow(context, ref, main, account),
-        ),
-      if (main != null && main.cardStatus == CardStatus.active)
-        (
-          Icons.ac_unit,
-          '冻结（${cardTail(main)}）',
-          () => runCardAction(context, ref, (r) => r.freeze(main.id), '已冻结'),
-        ),
-      if (main != null && main.cardStatus == CardStatus.frozen)
-        (
-          Icons.lock_open,
-          '解冻（${cardTail(main)}）',
-          () => runCardAction(context, ref, (r) => r.unfreeze(main.id), '已解冻'),
-        ),
-      if (main != null && main.cardStatus.canBecome(CardStatus.closed))
-        (
-          Icons.block,
-          '销卡（${cardTail(main)}）',
-          () => closeCardFlow(context, ref, main, account),
-        ),
-      (
-        Icons.event_repeat,
-        '账期设置',
-        () async =>
-            context.go(AppRoutes.accountSettings(account.id, section: 'rule')),
-      ),
-      (
-        Icons.tune,
-        '账户设置（额度、币种、授信池）',
-        () async => context.go(AppRoutes.accountSettings(account.id)),
-      ),
-    ];
-    final chosen = await showModalBottomSheet<int>(
-      context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      builder: (sheetContext) => SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              for (var i = 0; i < items.length; i++)
-                ListTile(
-                  leading: Icon(items[i].$1),
-                  title: Text(items[i].$2),
-                  onTap: () => Navigator.of(sheetContext).pop(i),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-    if (chosen != null && context.mounted) {
-      await items[chosen].$3();
-    }
-  }
-
-  Future<void> _showInstructions(
-    BuildContext context,
-    CardLedgerRow row,
-  ) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final card = row.account.activeCards.isEmpty
-        ? null
-        : row.account.activeCards.first;
-    final remaining = row.remaining;
-    Future<void> copy(String text, String what) async {
-      await Clipboard.setData(ClipboardData(text: text));
-      showFeedback(messenger, '已复制$what');
-    }
-
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('查看操作说明'),
-        content: const SingleChildScrollView(
-          child: Text(AccountDetailPage.instructions),
-        ),
-        actions: <Widget>[
-          if (remaining != null && remaining > 0)
-            TextButton(
-              onPressed: () =>
-                  unawaited(copy(fromMinorText(remaining, row.currency), '金额')),
-              child: const Text('复制金额'),
-            ),
-          if (card != null)
-            TextButton(
-              onPressed: () => unawaited(copy(card.last4, '末四位')),
-              child: const Text('复制末四位'),
-            ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('知道了'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CardDetail extends StatelessWidget {
-  const _CardDetail({
-    required this.row,
-    required this.data,
-    required this.pool,
-    required this.demo,
-    required this.onCurrency,
-  });
-
-  final CardLedgerRow row;
-  final LedgerData data;
-  final PoolView? pool;
-  final bool demo;
-  final ValueChanged<String> onCurrency;
-
-  @override
-  Widget build(BuildContext context) {
-    final account = row.account;
-    final sub = row.sub;
-    final liability = data.liabilities[sub.row.id];
-    final unreleased = LedgerReader.unreleasedRepayments(data, sub.row.id);
-    const side = EdgeInsets.symmetric(horizontal: CfSpace.md);
+  Widget _details(BuildContext context, WalletView wallet) {
+    final matches = wallet.accounts.where((a) => a.id == accountId);
+    if (matches.isEmpty) return const Center(child: Text('卡片已不存在'));
+    final a = matches.first;
     return ListView(
-      padding: const EdgeInsets.only(top: CfSpace.xxs, bottom: CfSpace.xl),
+      padding: const EdgeInsets.all(CfSpace.md),
       children: <Widget>[
-        if (account.currencies.length > 1)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CfSpace.md,
-              0,
-              CfSpace.md,
-              CfSpace.sm,
-            ),
-            child: Wrap(
-              spacing: CfSpace.xs,
-              runSpacing: CfSpace.xs,
-              children: <Widget>[
-                for (final c in account.currencies)
-                  ChoiceChip(
-                    label: Text(currencyLabel(c.currency)),
-                    selected: c.currency == sub.currency,
-                    onSelected: (_) => onCurrency(c.currency),
-                  ),
-              ],
-            ),
-          ),
-        Padding(
-          padding: side,
-          child: CardFace(row: row),
-        ),
-        const SizedBox(height: CfSpace.sm),
-        Padding(
-          padding: side,
-          child: CycleCard(row: row),
-        ),
-        const SizedBox(height: CfSpace.sm),
-        Padding(
-          padding: side,
-          child: AmountGrid(row: row, liability: liability),
-        ),
-        const SizedBox(height: CfSpace.sm),
-        Padding(
-          padding: side,
-          child: DetailActions(row: row),
-        ),
-        StatementHistory(row: row, data: data),
-        InstallmentSummary(row: row, data: data),
-        if (unreleased > 0) ...<Widget>[
-          LedgerAmountRow(
-            label: '已银行入账、尚未计入额度的还款',
-            minor: unreleased,
-            currency: sub.currency,
-          ),
-          const NoticeCard(
-            icon: Icons.schedule,
-            tone: NoticeTone.unknown,
-            text: '额度释放时滞未知：银行入账后暂不计入可用容量，以新的额度快照为准。',
-          ),
-        ],
-        if (liability != null)
-          Padding(
-            padding: const EdgeInsets.only(top: CfSpace.sm),
-            child: GroupCard(
-              children: <Widget>[
-                ExpansionTile(
-                  title: const Text('负债明细'),
-                  subtitle: const Text('负债四分法：本期应还、未出账、未来分期本金'),
-                  children: <Widget>[LiabilitySection.of(liability)],
-                ),
-              ],
-            ),
-          ),
-        const SectionTitle('卡片'),
-        GroupCard(
+        Text(a.displayName, style: Theme.of(context).textTheme.headlineSmall),
+        Wrap(
+          spacing: CfSpace.sm,
           children: <Widget>[
-            for (final card in account.activeCards)
-              _CardRowTile(card: card, account: account),
-          ],
-        ),
-        if (account.inactiveCards.isNotEmpty)
-          ExpansionTile(
-            title: Text('已停用的卡（${account.inactiveCards.length}）'),
-            children: <Widget>[
-              for (final card in account.inactiveCards)
-                _CardRowTile(card: card, account: account),
-            ],
-          ),
-        const SectionTitle('额度与账期规则'),
-        GroupCard(
-          dividerIndent: 0,
-          children: <Widget>[
-            ExpansionTile(
-              title: const Text('额度详情'),
-              subtitle: Text(
-                sub.latestSnapshot == null
-                    ? '还没有额度快照'
-                    : '快照 ${ageText(sub.snapshotAgeDays ?? 0)}',
+            FilledButton(
+              onPressed: () => context.go(
+                AppRoutes.accountSettings(a.id, section: 'limits'),
               ),
-              children: <Widget>[_LimitSection(sub: sub)],
+              child: const Text('更新额度'),
             ),
-            ExpansionTile(
-              title: Text(demo ? '账期规则（仅示例）' : '账期规则'),
-              subtitle: Text(_ruleSummary(row)),
-              children: <Widget>[
-                _RuleExplanation(account: account, sub: sub),
-                Padding(
-                  padding: const EdgeInsets.all(CfSpace.md),
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: OutlinedButton(
-                      onPressed: () => context.go(
-                        AppRoutes.accountSettings(account.id, section: 'rule'),
-                      ),
-                      child: const Text('修改账期规则'),
-                    ),
-                  ),
-                ),
-              ],
+            OutlinedButton(
+              onPressed: () => context.go(AppRoutes.accountSettings(a.id)),
+              child: const Text('账期与账户设置'),
             ),
           ],
         ),
-        if (pool != null)
-          NoticeCard(
-            icon: Icons.account_tree_outlined,
-            tone: NoticeTone.unknown,
-            text: '授信池「${pool!.pool.name}」：与同池账户共享额度，池内账户可用合计不超过池可用。',
-          ),
-        const NoticeCard(
-          icon: Icons.schedule,
-          tone: NoticeTone.unknown,
-          text: '本账户的活动、权益、积分与年费在后续版本提供。',
-        ),
+        for (final sub in a.currencies) ...<Widget>[
+          SectionTitle(sub.currency),
+          _LimitSection(sub: sub),
+          _RuleExplanation(account: a, sub: sub),
+        ],
+        const SectionTitle('卡片管理'),
+        for (final card in a.cards) _CardRowTile(card: card, account: a),
       ],
     );
   }
-
-  static String _ruleSummary(CardLedgerRow row) => switch (row.forecast) {
-    ForecastNoRule() => '未设置',
-    ForecastInvalid() => AccountDetailPage.invalidRuleText,
-    ForecastPredicted() => () {
-      final versions = row.sub.ruleVersions;
-      final rule = versions.isEmpty ? null : versions.last;
-      return rule == null
-          ? '已设置'
-          : '${describeStatementDay(rule.statementDay)}出账 · ${describeDue(dueOf(rule))}到期';
-    }(),
-  };
 }
 
 /// 换卡/补卡：新末四位 + 生效日，旧卡 replaced、新卡 active。

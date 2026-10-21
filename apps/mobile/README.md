@@ -1,21 +1,21 @@
 # apps/mobile — 卡序 iOS App（Flutter）
 
-本目录是卡序的 Flutter 工程（I-0a 骨架；I-0b 加密本地库；I-0c 领域包；I-1a 本地库 v2、真实/演示工作空间、
-建卡/信用账户/账期规则/额度快照；I-1b 本地库 v3、现金账户与快照、收支计划与周期事项、情景、资金日历；I-1c 本地库 v4、
-交易与账单版本、分期、还款登记与核对、差异项；公测版 0.0.1：关于页与公测说明；F-1：账单接续与有效状态、撤销入口、分期成本移出
-界面线程、切换空间的保护；U-1（公测版 0.0.2）：卡账首页与 4 个标签、卡片详情重做与"记本期账单""还清本期"、现金页的余额
-曲线与"未计入"、"我的"里的隐藏金额与重置本地数据、新的视觉 token）。构建、触发 iOS 构建、下载与签名安装见根 README 的"移动端"一节；计划见
-`docs/80-delivery/ios-first-plan.md`。
+当前版本 **0.0.3：消费选卡**。三个入口为「用卡」「卡片」「我的」。输入金额、币种和消费日期，比较额度足够的现有卡，优先预计还款日更晚者；同日按可用额度、银行、末四位及稳定 ID 排序。现金充足是产品假设，不要求录入现金账户、账单或还款，不写交易或预留。
+
+- 实现完成：金额精确到币种最小单位；按消费日计算临时额度、共享额度和账期；入账延迟跨账期展示范围并按较早还款日比较；缺资料、冻结、停用与额度不足给出原因；工作空间切换清空输入与结果。
+- 已删除：旧记账、还款、现金、日历、情景及活动占位界面、路由、专用 provider、首页读模型和对应 UI 测试。旧业务链接回用卡；卡片旧链接重定向后仍可使用。
+- 保留：Flutter 与依赖、v4 数据库和冻结迁移、底层仓库、领域包、协议、后端。当前没有真实数据，不增加迁移或导出任务。
+- 自动验证、安装包交付与真机业务验收分别记录在根 README 和 handoff；以下旧阶段章节是历史技术记录，不能作为当前功能清单。
 
 ## 目录
 
 | 路径 | 内容 |
 |---|---|
 | `lib/main.dart` | 入口：建立 Provider 容器、安装错误钩子、启动 App |
-| `lib/app/` | App 外壳：`app.dart`（MaterialApp、语言、演示横幅；`appFontFamilyProvider` 只供截图工具指定字体）、`router.dart`/`routes.dart`（go_router：启动分流、4 个主导航（卡账、现金、规划、我的）、0.0.1 旧路径重定向 `legacyRedirect`）、`startup/`（启动分流 `app_gate.dart`、启动页与"重置本地数据"确认页）、`diagnostics/`（内存环形诊断日志）、`shell/`（底部导航）、`theme/`（`tokens.dart` 设计 token 唯一来源：颜色、字号 `CfType`、间距、圆角、银行品牌色；`app_theme.dart` 浅色/深色主题）、`money/`（金额格式（含整数省略".00"的紧凑写法）与 `minorDigits` 表、全局金额隐藏开关）、`widgets/`（`MoneyText`、银行徽标 `BankBadge`、分组卡片与大标题顶栏 `cf_layout.dart`、首次空白态、状态视图、演示横幅、确认框、轻提示） |
-| `lib/features/<模块>/` | 功能模块（U-1 起，见"卡账首页与 4 个标签"）：`home` 卡账（新首页：汇总卡、待处理、今天刷哪张、每张卡的待还与出账/还款日格；"记本期账单""还清本期"弹层与一步推进银行证据）、`cards` 全部卡片（P-02 层级列表与新建卡片）、卡片详情（P-03：卡面、本期进度、金额区、账单历史、分期摘要，`card_detail_sections.dart`）与 P-04 设置、`statements` 账单中心（P-05：列表、详情、录入正式账单、人工修正、记一笔、转分期）、`repayments` 还款与核对（P-06：列表、详情与时间线、登记还款）、`cash` 现金页（余额曲线、"未计入"、接下来）与现金账户和收支（P-08：账户、快照、收支计划、周期事项、调拨）、`calendar` 资金日历的逐日表格（P-07）、`scenarios` 规划页（情景与假设对比，P-09）、`planner` 消费规划（P-10）、`promotions` 活动与权益、`settings` 我的（纯本地说明、空间、隐藏金额、「关于」与公测说明、重置本地数据入口）、`onboarding` 欢迎页（P-22）与空间切换、`diagnostics` 诊断页 |
+| `lib/app/` | App 外壳：`app.dart`（MaterialApp、语言、演示横幅；`appFontFamilyProvider` 只供截图工具指定字体）、`router.dart`/`routes.dart`（go_router：启动分流、3 个主导航（用卡、卡片、我的）、0.0.1 旧路径重定向 `legacyRedirect`）、`startup/`（启动分流 `app_gate.dart`、启动页与"重置本地数据"确认页）、`diagnostics/`（内存环形诊断日志）、`shell/`（底部导航）、`theme/`（`tokens.dart` 设计 token 唯一来源：颜色、字号 `CfType`、间距、圆角、银行品牌色；`app_theme.dart` 浅色/深色主题）、`money/`（金额格式（含整数省略".00"的紧凑写法）与 `minorDigits` 表、全局金额隐藏开关）、`widgets/`（`MoneyText`、银行徽标 `BankBadge`、分组卡片与大标题顶栏 `cf_layout.dart`、首次空白态、状态视图、演示横幅、确认框、轻提示） |
+| `lib/features/<模块>/` | `selection` 消费选卡；`cards` 卡片、额度与账期设置；`settings` 我的；`onboarding` 欢迎与空间切换；`diagnostics` 诊断 |
 | `lib/data/db/` | 加密本地库（drift + SQLite3MultipleCiphers，见下文"加密本地库"）：表定义、迁移、打开、重置 |
-| `lib/data/repositories/` | 仓库（按当前工作空间过滤）、读模型 `CardWalletReader`/`CashPlanReader`/`CashForecastReader`/`LedgerReader` 与卡账首页的 `LedgerHome`（`ledger_home.dart`）、数据层 provider（当前工作空间、时钟、各仓库），见下文"工作空间与演示模式""仓库与 provider""现金与资金日历""账单、分期与还款""卡账首页与 4 个标签" |
+| `lib/data/repositories/` | 仓库（按当前工作空间过滤）、读模型 `CardWalletReader`/`CashPlanReader`/`CashForecastReader`/`LedgerReader` 与只读推荐 `recommendCards`（`card_recommendation.dart`）、数据层 provider（当前工作空间、时钟、各仓库），见下文"工作空间与演示模式""仓库与 provider""现金与资金日历""账单、分期与还款""卡账首页与 4 个标签" |
 | `lib/data/mapping/` | 数据层 → 领域对象映射：`domain_mapping.dart`（规则版本 → `BillingRule`、预测账期与 3 期预览、快照与授信池 → `CardOption`/`ModelInputs` → `capacityLayers`）；`cash_mapping.dart`（现金账户/快照/事件/情景 → `CashAccount`/`Snapshot`/`CashEvent`/`Scenario`，交叉校验、输入哈希、情景计算结果 JSON）；`ledger_mapping.dart`（交易账期归属、账单余额、负债四分法、分期各期与成本、还款入账日与额度释放） |
 | `lib/data/time/` | 业务时区（只支持固定偏移时区）、入账日推导（截止时点）、时钟（演示空间固定"今天"） |
 | `lib/data/validation/` | G2/G5 与末四位校验（仓库与界面共用一套文案） |
@@ -23,7 +23,7 @@
 | `lib/data/banks/` | 常见银行的简称与徽标字（`bank_names.dart`，16 家；其余去掉"银行"二字） |
 | `lib/data/ids.dart` | UUID v4（`Random.secure()`，不引入 uuid 包） |
 | `packages/cardflow_domain/` | 纯 Dart 领域包（I-0c）：金额、日期、账期、现金时间线、独立验证器、有限搜索、规则协议 v1 与 fixture 运行器；App 以 path 依赖引入，见下文"领域层" |
-| `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置；`test/data/db/`、`test/data/repositories/` 在真实 sqlite3mc 上测试加密本地库与仓库；`test/support/sensitive_text.dart` 查日志与报告里的敏感内容；`test/support/forbidden_ui.dart` 整页检查"还款成功"与绿色；`test/app/public_beta_test.dart` 阶段代号防回归与公测说明；`test/app/amount_hiding_test.dart` 打开隐藏金额后逐页检查没有数字金额；`test/app/sheets_accessibility_test.dart` 新弹层与菜单的可访问性；`test/tool/screenshots_test.dart` 截图工具（只在 `CARDFLOW_SCREENSHOTS=1` 时运行） |
+| `test/` | 单元与 widget 测试；`test/ios/ios_config_test.dart` 在 Linux 上检查 iOS 工程配置；`test/data/db/`、`test/data/repositories/` 在真实 sqlite3mc 上测试加密本地库与仓库；`test/support/sensitive_text.dart` 查日志与报告里的敏感内容；`test/support/forbidden_ui.dart` 整页检查"还款成功"与绿色；`test/app/public_beta_test.dart` 阶段代号防回归与公测说明；`test/app/amount_hiding_test.dart` 打开隐藏金额后逐页检查没有数字金额；`test/features/selection/` 推荐交互、金额与放大字体；`test/tool/screenshots_test.dart` 截图工具（只在 `CARDFLOW_SCREENSHOTS=1` 时运行） |
 | `ios/` | iOS 工程：`Flutter/CardFlow.xcconfig`（Bundle ID 与签名参数的唯一来源）、`Runner/PrivacyInfo.xcprivacy`（隐私清单） |
 | `web/` | 只用于 CI 的 Web 编译烟雾测试，不发布 |
 

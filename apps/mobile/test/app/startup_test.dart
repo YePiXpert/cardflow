@@ -10,7 +10,6 @@ import 'package:cardflow/data/db/app_database.dart';
 import 'package:cardflow/data/db/database_errors.dart';
 import 'package:cardflow/data/db/database_providers.dart';
 import 'package:cardflow/features/diagnostics/diagnostics_page.dart';
-import 'package:cardflow/features/home/ledger_home_page.dart';
 import 'package:cardflow/features/onboarding/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -75,9 +74,9 @@ void main() {
 
   testWidgets('有工作空间：启动停在卡账，启动页与首次使用页都不停留', (tester) async {
     await pumpCardFlowApp(tester);
-    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
+    expect(appBarTitle('这笔消费，用哪张卡'), findsOneWidget);
     await goTo(tester, AppRoutes.startup);
-    expect(appBarTitle(LedgerHomePage.title), findsOneWidget);
+    expect(appBarTitle('这笔消费，用哪张卡'), findsOneWidget);
   });
 
   testWidgets('打开中：启动页显示"正在打开本机加密数据…"（加载态，无动画）', (tester) async {

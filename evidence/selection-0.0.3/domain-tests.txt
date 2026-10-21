@@ -1,0 +1,283 @@
+# 工具原文；仅过滤 Flutter/Dart 宿主运行环境提示，保留测试与构建输出。
+00:00 +0: loading test/no_double_test.dart
+00:00 +0: test/no_double_test.dart: the scanner flags floating point in code double type
+00:00 +1: test/no_double_test.dart: the scanner flags floating point in code num type
+00:00 +2: test/no_double_test.dart: the scanner flags floating point in code toDouble
+00:00 +3: test/no_double_test.dart: the scanner flags floating point in code roundToDouble
+00:00 +4: test/no_double_test.dart: the scanner flags floating point in code decimal literal
+00:00 +5: test/no_double_test.dart: the scanner flags floating point in code exponent literal
+00:00 +6: test/no_double_test.dart: the scanner flags floating point in code leading-dot literal
+00:00 +7: test/no_double_test.dart: the scanner flags floating point in code division
+00:00 +8: test/no_double_test.dart: the scanner flags floating point in code division-assignment
+00:00 +9: test/no_double_test.dart: the scanner flags floating point in code division in an interpolation
+00:00 +10: test/no_double_test.dart: the scanner flags floating point in code double in an interpolation
+00:00 +11: test/no_double_test.dart: the scanner flags floating point in code decimal after a raw string
+00:00 +12: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic line comment
+00:00 +13: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic doc comment
+00:00 +14: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic nested block comment
+00:00 +15: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic string
+00:00 +16: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic raw string regex
+00:00 +17: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic triple-quoted string
+00:00 +18: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic integer division
+00:00 +19: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic interpolated identifiers
+00:00 +20: test/no_double_test.dart: the scanner allows comments, strings and integer arithmetic interpolated integer division
+00:00 +21: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +22: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +23: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +24: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +25: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +26: test/checks_test.dart: R3E-03: snapshot reflection is judged before the scenario a reflected inflow is not counted again (included-then-delayed)
+00:00 +27: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +28: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +29: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +30: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +31: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +32: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +33: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +34: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +35: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +36: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +37: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +38: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +39: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +40: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +41: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +42: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +43: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +44: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +45: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +46: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +47: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +48: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +49: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +50: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +51: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +52: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +53: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +54: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +55: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +56: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+00:00 +57: test/no_double_test.dart: lib/, bin/ and tool/ contain no double, num, toDouble, decimal literal or `/` division
+no-double scan: 29 files, 7774 lines in lib/, bin/, tool/; 0 violation(s)
+00:00 +58: test/checks_test.dart: data issues F-18 has none; a purchase 14 days after the snapshot is STALE_SNAPSHOT
+00:00 +59: test/time_test.dart: LocalDate epoch days agree with DateTime.utc for every day of 1900..2100 and the range ends
+00:00 +60: test/time_test.dart: LocalDate epoch days agree with DateTime.utc for every day of 1900..2100 and the range ends
+00:00 +61: test/time_test.dart: LocalDate leaving 0001..9999 is a DateRangeError, like Python OverflowError
+00:00 +62: test/time_test.dart: LocalDate strict ISO parsing and real calendar days
+00:00 +63: test/time_test.dart: LocalDate leap years, month lengths, clamping and month addition
+00:00 +64: test/time_test.dart: LocalDate ordering and differences
+00:00 +65: test/time_test.dart: Timestamp the date is taken in the timestamp's own offset (R3E-14)
+00:00 +66: test/time_test.dart: Timestamp ordering is by absolute instant; equal instants compare equal
+00:00 +67: test/time_test.dart: Timestamp isoformat is Python datetime.isoformat()
+00:00 +68: test/time_test.dart: Timestamp rejects what RFC 3339 / protocol v1 rejects
+00:00 +69: test/cash_test.dart: test_cash.py a same-day event not in the snapshot is applied
+00:00 +70: test/cash_test.dart: test_cash.py a same-day event marked as included is skipped
+00:00 +71: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +72: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +73: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +74: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +75: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +76: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +77: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +78: test/money_test.dart: minorDigits equals MINOR_DIGITS of the server engine money.py
+00:00 +79: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +80: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +81: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +82: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +83: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +84: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +85: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +86: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +87: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +88: test/search_test.dart: F-18 (brief acceptance) K <= 3 finds A 800000 + C 200000, labelled not proven
+00:00 +89: test/protocol_adapter_test.dart: the unmodified F-18 document is valid
+00:00 +90: test/protocol_adapter_test.dart: the unmodified F-18 document is valid
+00:00 +91: test/protocol_adapter_test.dart: the unmodified F-18 document is valid
+00:00 +92: test/search_test.dart: F-18 (brief acceptance) K = 1 finds nothing locally: "本地未找到（非证明无解）"
+00:00 +93: test/search_test.dart: F-18 (brief acceptance) K = 1 finds nothing locally: "本地未找到（非证明无解）"
+00:00 +94: test/search_test.dart: F-18 (brief acceptance) K = 1 finds nothing locally: "本地未找到（非证明无解）"
+00:00 +95: test/search_test.dart: F-18 (brief acceptance) K = 1 finds nothing locally: "本地未找到（非证明无解）"
+00:00 +96: test/protocol_adapter_test.dart: rejected by schema AND adapter (test_rejections.py BOTH; pointer prefix) float-amount
+00:00 +97: test/protocol_adapter_test.dart: rejected by schema AND adapter (test_rejections.py BOTH; pointer prefix) float-amount
+00:00 +98: test/money_test.dart: Rational arithmetic is exact
+00:00 +99: test/search_test.dart: F-18 (brief acceptance) the decision scenario follows the brief: stress as decision is not found, confirmed is a shortfall
+00:00 +100: test/search_test.dart: F-18 (brief acceptance) the decision scenario follows the brief: stress as decision is not found, confirmed is a shortfall
+00:00 +101: test/search_test.dart: F-18 (brief acceptance) the decision scenario follows the brief: stress as decision is not found, confirmed is a shortfall
+00:00 +102: test/search_test.dart: F-18 (brief acceptance) the decision scenario follows the brief: stress as decision is not found, confirmed is a shortfall
+00:00 +103: test/search_test.dart: F-18 (brief acceptance) the decision scenario follows the brief: stress as decision is not found, confirmed is a shortfall
+00:00 +104: test/search_test.dart: F-18 (brief acceptance) the decision scenario follows the brief: stress as decision is not found, confirmed is a shortfall
+00:00 +105: test/protocol_adapter_test.dart: rejected by schema AND adapter (test_rejections.py BOTH; pointer prefix) bool-amount
+00:00 +106: test/search_test.dart: F-18 (brief acceptance) data problems stop the search (NEEDS_DATA)
+00:00 +107: test/search_test.dart: F-18 (brief acceptance) data problems stop the search (NEEDS_DATA)
+00:00 +108: test/search_test.dart: F-18 (brief acceptance) data problems stop the search (NEEDS_DATA)
+00:00 +109: test/search_test.dart: F-18 (brief acceptance) data problems stop the search (NEEDS_DATA)
+00:00 +110: test/search_test.dart: F-18 (brief acceptance) data problems stop the search (NEEDS_DATA)
+00:00 +111: test/search_test.dart: F-18 (brief acceptance) data problems stop the search (NEEDS_DATA)
+00:00 +112: test/search_test.dart: F-18 (brief acceptance) data problems stop the search (NEEDS_DATA)
+00:00 +113: test/protocol_adapter_test.dart: rejected by schema AND adapter (test_rejections.py BOTH; pointer prefix) missing-includes
+00:00 +114: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +115: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +116: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +117: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +118: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +119: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +120: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +121: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +122: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +123: test/search_test.dart: F-18 (brief acceptance) the JSON form carries the not-proven label and protocol-shaped lines
+00:00 +124: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +125: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +126: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +127: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +128: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +129: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +130: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +131: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +132: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +133: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +134: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +135: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +136: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +137: test/verifier_test.dart: test_regression_sample.py (cycles / verify) cycles match the acceptance sample
+00:00 +138: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +139: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +140: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +141: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +142: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +143: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +144: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +145: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +146: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +147: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +148: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +149: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +150: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +151: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +152: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +153: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +154: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +155: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +156: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +157: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +158: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +159: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +160: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +161: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +162: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +163: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +164: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +165: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +166: test/search_test.dart: time budget a large instance stops near a 100 ms budget (real clock)
+00:00 +167: test/protocol_adapter_test.dart: review wave 3 (test_review_wave3_protocol.py) R3E-11: database NUMERICs enter the protocol in canonical text with equal hashes
+00:00 +168: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +169: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +170: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +171: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +172: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +173: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +174: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +175: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +176: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +177: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +178: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +179: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +180: test/installment_test.dart: irrMonthly 与 annualize F-37：月费率 1.5%、12 期——名义 18%（月费率 × 12）、复利年化与现金流 IRR 并列；IRR 不等于名义值
+00:00 +181: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +182: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +183: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +184: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +185: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +186: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +187: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +188: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +189: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +190: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +191: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +192: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +193: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +194: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +195: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +196: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +197: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +198: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +199: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +200: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +201: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +202: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +203: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +204: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +205: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +206: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +207: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +208: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +209: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +210: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +211: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +212: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +213: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +214: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +215: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +216: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +217: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +218: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +219: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +220: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +221: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +222: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +223: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +224: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +225: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +226: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +227: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +228: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +229: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +230: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +231: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +232: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:00 +233: test/search_test.dart: matches an independent brute-force reference on 200 random small documents
+00:01 +234: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +235: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +236: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +237: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +238: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +239: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +240: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +241: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +242: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +243: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +244: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +245: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +246: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +247: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +248: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +249: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +250: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +251: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +252: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +253: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +254: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +255: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +256: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +257: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +258: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +259: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +260: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +261: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +262: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +263: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +264: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +265: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +266: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +267: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +268: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +269: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +270: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +271: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +272: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +273: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +274: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +275: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +276: test/installment_test.dart: Python 对照（money.py 的实际输出，见文件头） random_2：本金 227575824、32 期、每期费率 0.0139、尾差 first
+00:01 +277: test/cash_properties_test.dart: verifier invariants on random documents and allocations (300 documents x 3)
+00:01 +278: test/cash_properties_test.dart: verifier invariants on random documents and allocations (300 documents x 3)
+00:01 +279: All tests passed!

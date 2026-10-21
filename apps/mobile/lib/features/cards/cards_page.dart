@@ -26,7 +26,7 @@ class CardsPage extends ConsumerWidget {
   static const String title = '全部卡片';
 
   /// ui-spec P-02 九态表"首次空白"。
-  static const String firstRunMessage = '还没有卡片，账单挂在信用账户上';
+  static const String firstRunMessage = '添加卡片，比较消费时用哪张卡';
 
   /// 读取失败的标题。
   static const String errorTitle = '卡片读取失败';
@@ -49,13 +49,12 @@ class CardsPage extends ConsumerWidget {
         AsyncData(:final value) when value.isEmpty => FirstRunEmptyState(
           icon: Icons.credit_card_outlined,
           message: firstRunMessage,
-          purpose: '按 授信池 › 信用账户 › 币种子账户 › 卡片 浏览与新建。',
+          purpose: '填写可用额度和账期规则，即可开始选卡。',
           actions: <EmptyStateAction>[
             EmptyStateAction(
               label: '手工建卡',
               onPressed: () => context.go(AppRoutes.newCard),
             ),
-            const EmptyStateAction(label: '从账单文件开始', stage: '后续版本提供'),
             EmptyStateAction(
               label: '体验演示',
               onPressed: () => unawaited(enterDemoWorkspace(context, ref)),

@@ -22,7 +22,6 @@ import 'package:cardflow/data/repositories/statement_repository.dart';
 import 'package:cardflow/data/repositories/transaction_repository.dart';
 import 'package:cardflow/data/repositories/workspace_scope.dart';
 import 'package:cardflow/data/time/clock.dart';
-import 'package:cardflow/features/statements/ledger_formatting.dart';
 import 'package:cardflow_domain/cardflow_domain.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -95,7 +94,6 @@ void main() {
         var data = await LedgerReader(scope).load();
         expect(data.statusOf(sep.id), EffectiveStatementStatus.merged);
         expect(data.balances[sep.id]!.mergedInto, d(2026, 10, 10));
-        expect(effectiveStatusText(data.balances[sep.id]!), '已并入 10-10 账单');
         expect(data.balances[sep.id]!.remaining, 0);
         expect(data.liabilities[sub]!.total, 150000, reason: '登记了、还没入账');
         expect(data.upcoming().map((b) => b.statement.id), <String>[oct.id]);

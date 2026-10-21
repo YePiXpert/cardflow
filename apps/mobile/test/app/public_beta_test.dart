@@ -1,4 +1,4 @@
-// 公测版的界面约束（简报 I1-c2 §2 起；版本号按用户要求为 0.0.x，U-1 起为 0.0.2）。
+// 公测版的界面约束（简报 I1-c2 §2 起；版本号按用户要求为 0.0.x，U-1 起为 0.0.3）。
 //
 // 公测说明与「关于」：P-22 首次使用页底部（最后一节）与"我的 › 关于卡序"显示同一段公测说明（原文逐字断言；
 // 说明里的版本号只来自 PublicBeta.version，测试读取 pubspec.yaml 断言它与版本名相同）；「关于」显示名称"卡序 CardFlow"、
@@ -274,13 +274,6 @@ void main() {
     await _expectNoStageCodeOnPages(tester, <String>[
       AppRoutes.home,
       AppRoutes.cards,
-      AppRoutes.planner,
-      AppRoutes.plan,
-      AppRoutes.cashCalendar,
-      AppRoutes.cashHome,
-      AppRoutes.statements(),
-      AppRoutes.repayments(),
-      AppRoutes.discover,
       AppRoutes.settings,
       AppRoutes.diagnostics,
       AppRoutes.welcome,
@@ -305,7 +298,7 @@ void main() {
       '说明原文（简报 U-1 §9）；说明里的版本号就是 PublicBeta.version，且与 pubspec.yaml 的版本名相同',
       () {
         expect(PublicBeta.note, briefNote);
-        expect(PublicBeta.version, '0.0.2');
+        expect(PublicBeta.version, '0.0.3');
         expect(PublicBeta.note, startsWith('公测版 ${PublicBeta.version}：'));
         final pubspec = File('pubspec.yaml').readAsStringSync();
         final version = RegExp(
