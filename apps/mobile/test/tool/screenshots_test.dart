@@ -167,9 +167,37 @@ void main() {
           200,
           scrollable: find.byType(Scrollable).first,
         );
+        final scroll = tester
+            .state<ScrollableState>(find.byType(Scrollable).first)
+            .position;
+        scroll.jumpTo((scroll.pixels - 32).clamp(0, scroll.maxScrollExtent));
         await _capture(tester, key, '08-result-$mode');
         await _scrollDown(tester);
         await _capture(tester, key, '08-result-$mode-2');
+        final emptyDb = await createWidgetTestDatabase(
+          tester,
+          workspace: TestWorkspace.real,
+        );
+        await tester.pumpWidget(
+          RepaintBoundary(
+            key: key,
+            child: ProviderScope(
+              key: UniqueKey(),
+              overrides: [
+                ...fakeDatabaseOverrides(),
+                ...testDatabaseOverrides(emptyDb),
+                appFontFamilyProvider.overrideWithValue(screenshotFont),
+              ],
+              child: const CardFlowApp(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await goTo(tester, AppRoutes.home);
+        expect(find.text('从第一张卡开始'), findsOneWidget);
+        await _capture(tester, key, '09-first-use-$mode');
+        await goTo(tester, AppRoutes.cards);
+        await _capture(tester, key, '10-empty-cards-$mode');
       },
     );
   }

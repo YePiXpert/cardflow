@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/bank_badge.dart';
+import '../../app/widgets/calm_panel.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
@@ -48,7 +50,41 @@ class AccountDetailPage extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(CfSpace.md),
       children: <Widget>[
-        Text(a.displayName, style: Theme.of(context).textTheme.headlineSmall),
+        CalmPanel(
+          featured: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  BankBadge(bankName: a.bank.name),
+                  const SizedBox(width: CfSpace.sm),
+                  Expanded(
+                    child: Text(
+                      a.displayName,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: CfSpace.sm),
+              Text(
+                '${a.bank.name} · ${a.activeCards.map((c) => '···· ${c.last4}').join(' / ')}',
+              ),
+              const SizedBox(height: CfSpace.lg),
+              const Text('可用额度'),
+              const SizedBox(height: CfSpace.xs),
+              MoneyText(
+                minor: a.primaryCurrency.capacity,
+                currency: a.primaryCurrency.currency,
+                textAlign: TextAlign.start,
+                semanticsPrefix: '可用额度',
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: CfSpace.md),
         Wrap(
           spacing: CfSpace.sm,
           children: <Widget>[
@@ -66,8 +102,22 @@ class AccountDetailPage extends ConsumerWidget {
         ),
         for (final sub in a.currencies) ...<Widget>[
           SectionTitle(sub.currency),
-          _LimitSection(sub: sub),
-          _RuleExplanation(account: a, sub: sub),
+          CalmPanel(
+            child: Column(
+              children: [
+                ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  title: const Text('额度明细'),
+                  children: [_LimitSection(sub: sub)],
+                ),
+                ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  title: const Text('账期规则'),
+                  children: [_RuleExplanation(account: a, sub: sub)],
+                ),
+              ],
+            ),
+          ),
         ],
         const SectionTitle('卡片管理'),
         for (final card in a.cards) _CardRowTile(card: card, account: a),

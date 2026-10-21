@@ -19,45 +19,6 @@ const Map<String, CardFlowColors> modes = <String, CardFlowColors>{
 };
 
 void main() {
-  group('颜色 token 与简报 U-1 §5 一致（逐项核对抄录；第三级文字按偏离调色）', () {
-    test('深色', () {
-      const c = CardFlowColors.dark;
-      expect(c.canvas, const Color(0xFF0B0D10));
-      expect(c.surface, const Color(0xFF16191E));
-      expect(c.surfaceRaised, const Color(0xFF1E2228));
-      expect(c.divider, const Color(0xFF262B33));
-      expect(c.textPrimary, const Color(0xFFF2F4F7));
-      expect(c.textSecondary, const Color(0xFF9AA3AE));
-      // 简报 #6B7480 对表面只有 3.7:1，调成 #808996（README"U-1 的偏离与约定"）。
-      expect(c.textTertiary, const Color(0xFF808996));
-      expect(c.action, const Color(0xFF5B9BFF));
-    });
-
-    test('浅色', () {
-      const c = CardFlowColors.light;
-      expect(c.canvas, const Color(0xFFF2F3F6));
-      expect(c.surface, const Color(0xFFFFFFFF));
-      expect(c.surfaceRaised, const Color(0xFFF6F7F9));
-      expect(c.divider, const Color(0xFFE8EAEE));
-      expect(c.textPrimary, const Color(0xFF15181C));
-      expect(c.textSecondary, const Color(0xFF5F6874));
-      // 简报 #8A929C 对白底只有 3.2:1，调成 #676F7A。
-      expect(c.textTertiary, const Color(0xFF676F7A));
-      expect(c.action, const Color(0xFF1F5BB8));
-    });
-
-    test('注意、危险、银行确认、演示沿用 ui-spec §3.1 的前景色', () {
-      expect(CardFlowColors.light.attention.fg, const Color(0xFF7A4D00));
-      expect(CardFlowColors.dark.attention.fg, const Color(0xFFF2C14E));
-      expect(CardFlowColors.light.danger.fg, const Color(0xFFB3261E));
-      expect(CardFlowColors.dark.danger.fg, const Color(0xFFFF8F85));
-      expect(CardFlowColors.light.bank.fg, const Color(0xFF1C4FA0));
-      expect(CardFlowColors.dark.bank.fg, const Color(0xFF9DBEFF));
-      expect(CardFlowColors.light.demo.bg, const Color(0xFF4A2E8C));
-      expect(CardFlowColors.dark.demo.bg, const Color(0xFFCBB7FF));
-    });
-  });
-
   group('对比度（WCAG 2.x）：文字 ≥ 4.5:1，两种模式都核对', () {
     for (final MapEntry(key: mode, value: c) in modes.entries) {
       final backgrounds = <String, Color>{

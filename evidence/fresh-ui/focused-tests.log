@@ -1,0 +1,39 @@
+# 已过滤 Flutter 工具宿主提示，其余原文保留。
+00:00 +0: loading /projects/cardflow/apps/mobile/test/app/accessibility_test.dart
+00:00 +0: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +1: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +2: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +3: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +4: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +5: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +6: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +7: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +8: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +9: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +10: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +11: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +12: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +13: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +14: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +15: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +16: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +17: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +18: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +19: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 自检：逐屏检查能发现只有滚到下面才出现的布局溢出，干净的页面不误报
+00:00 +20: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:02 +21: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:02 +22: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+检查了演示空间的 14 个页面
+00:03 +23: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:03 +24: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 首次空白与首次使用页（Brightness.light）满足同样的要求
+00:03 +25: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: P-22 首次使用页（没有工作空间）满足同样的要求
+00:03 +26: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 启动页（打不开：wrong_key）满足同样的要求
+00:04 +27: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局（用卡、卡片、设置与欢迎页），逐屏滚到底
+00:05 +28: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：首次空白、首次使用页与启动页，逐屏滚到底
+00:05 +29: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：P-22 首次使用页
+00:05 +30: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：启动页（打开中）
+00:05 +31: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x 时所有页面正常布局（用卡、卡片、设置与欢迎页），逐屏滚到底
+00:06 +32: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：首次空白、首次使用页与启动页，逐屏滚到底
+00:06 +33: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：P-22 首次使用页
+00:06 +34: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：启动页（打开中）
+00:06 +35: All tests passed!

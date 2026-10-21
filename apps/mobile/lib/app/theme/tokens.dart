@@ -115,6 +115,10 @@ class CfTypeSpec {
 /// 字号阶梯（简报 U-1 §5：大标题 32/粗、分组标题 17/粗、正文 15、说明 12；金额 38/30/24）。随系统动态字体
 /// 缩放，不做钳制（ui-spec §3.3）。
 abstract final class CfType {
+  /// 消费输入和推荐天数，随系统字号缩放。
+  static const purchaseAmount = CfTypeSpec(44, 54, FontWeight.w500);
+  static const recommendationDays = CfTypeSpec(56, 64, FontWeight.w500);
+
   /// 各 Tab 根页的大标题（"卡账""现金"…）。
   static const largeTitle = CfTypeSpec(32, 38, FontWeight.w700);
 
@@ -320,17 +324,17 @@ class CardFlowColors extends ThemeExtension<CardFlowColors> {
   final Color heroTextSecondary;
 
   static const CardFlowColors light = CardFlowColors(
-    canvas: Color(0xFFF2F3F6),
+    canvas: Color(0xFFF6F7F2),
     surface: Color(0xFFFFFFFF),
-    surfaceRaised: Color(0xFFF6F7F9),
-    surfaceLow: Color(0xFFF6F7F9),
-    divider: Color(0xFFE8EAEE),
-    textPrimary: Color(0xFF15181C),
-    textSecondary: Color(0xFF5F6874),
-    textTertiary: Color(0xFF676F7A),
-    action: Color(0xFF1F5BB8),
+    surfaceRaised: Color(0xFFF0F3EC),
+    surfaceLow: Color(0xFFF0F3EC),
+    divider: Color(0xFFE3E8DF),
+    textPrimary: Color(0xFF243B32),
+    textSecondary: Color(0xFF5C6D63),
+    textTertiary: Color(0xFF647167),
+    action: Color(0xFF326B53),
     onAction: Color(0xFFFFFFFF),
-    actionTint: Color(0xFFE8F0FD),
+    actionTint: Color(0xFFE6F0E5),
     borderInput: Color(0xFF7C828A),
     robust: CfTone(fg: Color(0xFF146C36), bg: Color(0xFFE5F3EA)),
     attention: CfTone(fg: Color(0xFF7A4D00), bg: Color(0xFFFFF2D1)),
@@ -338,24 +342,24 @@ class CardFlowColors extends ThemeExtension<CardFlowColors> {
     unknown: CfTone(fg: Color(0xFF4B5059), bg: Color(0xFFECEEF1)),
     defect: CfTone(fg: Color(0xFF7B2D8F), bg: Color(0xFFF4E8F7)),
     bank: CfTone(fg: Color(0xFF1C4FA0), bg: Color(0xFFE6EEFA)),
-    demo: CfTone(fg: Color(0xFFFFFFFF), bg: Color(0xFF4A2E8C)),
-    hero: <Color>[Color(0xFF2560C0), Color(0xFF2156B0), Color(0xFF1B4691)],
-    heroText: Color(0xFFFFFFFF),
-    heroTextSecondary: Color(0xFFE1EAFA),
+    demo: CfTone(fg: Color(0xFF625075), bg: Color(0xFFF0EBF5)),
+    hero: <Color>[Color(0xFFEAF3DE), Color(0xFFDDEEDC), Color(0xFFD8EBE3)],
+    heroText: Color(0xFF243B32),
+    heroTextSecondary: Color(0xFF48644F),
   );
 
   static const CardFlowColors dark = CardFlowColors(
-    canvas: Color(0xFF0B0D10),
-    surface: Color(0xFF16191E),
-    surfaceRaised: Color(0xFF1E2228),
-    surfaceLow: Color(0xFF101317),
-    divider: Color(0xFF262B33),
-    textPrimary: Color(0xFFF2F4F7),
-    textSecondary: Color(0xFF9AA3AE),
-    textTertiary: Color(0xFF808996),
-    action: Color(0xFF5B9BFF),
-    onAction: Color(0xFF0B1D3A),
-    actionTint: Color(0xFF212E42),
+    canvas: Color(0xFF111A16),
+    surface: Color(0xFF1B2721),
+    surfaceRaised: Color(0xFF25332B),
+    surfaceLow: Color(0xFF152019),
+    divider: Color(0xFF344239),
+    textPrimary: Color(0xFFEDF3ED),
+    textSecondary: Color(0xFFACBBAE),
+    textTertiary: Color(0xFF99AA9C),
+    action: Color(0xFFA5D5B4),
+    onAction: Color(0xFF142B20),
+    actionTint: Color(0xFF293E30),
     borderInput: Color(0xFF7D848D),
     robust: CfTone(fg: Color(0xFF6FD394), bg: Color(0xFF12301E)),
     attention: CfTone(fg: Color(0xFFF2C14E), bg: Color(0xFF353125)),
@@ -363,10 +367,10 @@ class CardFlowColors extends ThemeExtension<CardFlowColors> {
     unknown: CfTone(fg: Color(0xFFC2C7CF), bg: Color(0xFF2E3137)),
     defect: CfTone(fg: Color(0xFFE2A8F0), bg: Color(0xFF332D3B)),
     bank: CfTone(fg: Color(0xFF9DBEFF), bg: Color(0xFF29303E)),
-    demo: CfTone(fg: Color(0xFF1D1238), bg: Color(0xFFCBB7FF)),
-    hero: <Color>[Color(0xFF21407A), Color(0xFF172C55), Color(0xFF121F3D)],
-    heroText: Color(0xFFFFFFFF),
-    heroTextSecondary: Color(0xFFC3D0EA),
+    demo: CfTone(fg: Color(0xFFDDD0EF), bg: Color(0xFF302939)),
+    hero: <Color>[Color(0xFF293E30), Color(0xFF263D30), Color(0xFF234038)],
+    heroText: Color(0xFFEDF3ED),
+    heroTextSecondary: Color(0xFFC1D6C7),
   );
 
   /// 当前主题的语义色；主题里没有登记时按亮度回退到内置的两套。

@@ -109,65 +109,27 @@ class _WalletList extends StatelessWidget {
   }
 }
 
-/// 授信池的标题行：池上限、池内已用、池可用、池内账户可用合计（F-23）。
+/// 共享池概要；额度已计入各卡，完整资料在账户设置中维护。
 class _PoolHeader extends StatelessWidget {
   const _PoolHeader({required this.pool});
-
   final PoolView pool;
-
   @override
-  Widget build(BuildContext context) {
-    final currency = pool.pool.currency;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        SectionTitle('授信池 · ${pool.pool.name}'),
-        LabeledValue(
-          label: '池上限',
-          value: MoneyText(
-            minor: pool.pool.sharedLimitMinor,
-            currency: currency,
-            semanticsPrefix: '池上限',
-          ),
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      SectionTitle('授信池 · ${pool.pool.name}'),
+      LabeledValue(
+        label: '池上限',
+        value: MoneyText(
+          minor: pool.pool.sharedLimitMinor,
+          currency: pool.pool.currency,
+          semanticsPrefix: '池上限',
         ),
-        if (pool.missingSnapshots > 0)
-          NoticeCard(
-            icon: Icons.checklist,
-            text: '池可用：数据不全（${pool.missingSnapshots} 个账户缺额度快照），不以 0 代替。',
-          )
-        else ...<Widget>[
-          LabeledValue(
-            label: '池内已用',
-            value: MoneyText(
-              minor: pool.usedTotal,
-              currency: currency,
-              semanticsPrefix: '池内已用',
-            ),
-          ),
-          LabeledValue(
-            label: '池内账户可用合计（不超过池可用）',
-            value: MoneyText(
-              minor: pool.combinedCapacity,
-              currency: currency,
-              semanticsPrefix: '池内账户可用合计',
-            ),
-          ),
-          if ((pool.rawAvailable ?? 0) < 0)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: CfSpace.md),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: StatusBadge(
-                  label: '池已超限',
-                  icon: Icons.warning_amber_outlined,
-                  tone: NoticeTone.danger,
-                ),
-              ),
-            ),
-        ],
-      ],
-    );
-  }
+      ),
+      if (pool.missingSnapshots > 0)
+        const NoticeCard(icon: Icons.info_outline, text: '成员额度资料不全，请更新后再比较。'),
+    ],
+  );
 }
 
 /// 一个信用账户：名称、银行与产品、规则来源、可用容量（超限时标注）、快照时点、子账户、卡片。
@@ -211,15 +173,22 @@ class AccountTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: CfSpace.xxs),
+                const SizedBox(height: CfSpace.sm),
                 Text(
-                  <String>[
-                    account.bank.name,
-                    ?account.account.productName,
-                    source == null ? '账期规则未设置' : source.label,
-                  ].join(' · '),
+                  '${account.bank.name} · ${account.activeCards.map((c) => '···· ${c.last4}').join(' / ')}',
                   style: secondary,
                 ),
+                const SizedBox(height: CfSpace.lg),
+                Text('可用额度', style: secondary),
+                const SizedBox(height: CfSpace.xxs),
+                MoneyText(
+                  minor: primary.capacity,
+                  currency: primary.currency,
+                  semanticsPrefix: '可用容量',
+                  textAlign: TextAlign.start,
+                  style: theme.textTheme.headlineSmall,
+                ),
+                const SizedBox(height: CfSpace.sm),
                 // 一行至多一个状态标签（简报 U-1 §5）：超限 > 缺账期规则 > 额度快照陈旧。
                 if (primary.overLimit)
                   const _AccountStatus(
@@ -240,20 +209,6 @@ class AccountTile extends StatelessWidget {
                     tone: NoticeTone.attention,
                   ),
                 const SizedBox(height: CfSpace.xs),
-                Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: CfSpace.sm,
-                  children: <Widget>[
-                    Text('可用容量', style: secondary),
-                    MoneyText(
-                      minor: primary.capacity,
-                      currency: primary.currency,
-                      semanticsPrefix: '可用容量',
-                      style: theme.textTheme.titleMedium,
-                    ),
-                  ],
-                ),
                 Text(
                   primary.latestSnapshot == null
                       ? '额度未记录'
@@ -267,17 +222,6 @@ class AccountTile extends StatelessWidget {
                     style: secondary,
                   ),
                 ],
-                const Divider(height: CfSpace.lg),
-                for (final card in account.activeCards)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: CfSpace.xxs),
-                    child: Text(
-                      card.alias == null
-                          ? cardSummary(card)
-                          : '${cardSummary(card)} · ${card.alias}',
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                  ),
                 if (account.inactiveCards.isNotEmpty)
                   Text(
                     '已停用的卡 ${account.inactiveCards.length} 张（详情页查看）',

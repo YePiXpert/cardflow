@@ -176,6 +176,24 @@ void main() {
       for (final page in <String>[AppRoutes.home, AppRoutes.cards]) {
         await goTo(tester, page);
         _expectUnclamped(tester, scale, page);
+        if (page.startsWith('/cards/accounts/') &&
+            !page.contains('/settings')) {
+          for (final label in ['额度明细', '账期规则']) {
+            await tester.scrollUntilVisible(
+              find.text(label),
+              200,
+              scrollable: find.byType(Scrollable).first,
+            );
+            await tester.ensureVisible(find.text(label).first);
+            await tester.tap(find.text(label).first);
+            await tester.pumpAndSettle();
+          }
+          final scroll = tester
+              .state<ScrollableState>(find.byType(Scrollable).first)
+              .position;
+          scroll.jumpTo(0);
+          await tester.pumpAndSettle();
+        }
         await _expectEachScreenLaidOut(tester, page);
       }
     });
