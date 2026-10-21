@@ -51,10 +51,10 @@ fi
 if [ "$part" = all ] || [ "$part" = ci ]; then
 {
   $H ci-dart-run.txt "CI（.github/workflows/mobile.yml）在 U-1 期间的 push 运行，与最后一次代码提交的运行详情（各 job 与步骤的结论）"
-  echo "# 范围：U-1 第 1 步 0b24705 起（#66–#80，共 15 次 push 运行）。两次失败都已在下一个提交修正："
+  echo "# 范围：U-1 第 1 步 0b24705 起（#66–#81，共 16 次 push 运行）。两次失败都已在下一个提交修正："
   echo "#   #71（c63a294）：一个测试文件改动后没有重新 dart format，格式检查失败 → f47f026 重排后通过；"
   echo "#   #78（9d59ba7）：诊断日志测试断言报告行里不含\"1234\"，而行首时间戳精确到微秒、那次碰巧含有\"1234\" → 36df86b 改为只检查时间戳之后的部分。"
-  echo "# 只改 evidence/ 的提交（本次证据提交）不触发本工作流。步骤结论由 gh run view --json 取得（不含日志正文与 runner 镜像信息）。"
+  echo "# 只改 evidence/ 的提交（先前的证据提交 e08ca76 与本次证据提交）不触发本工作流。步骤结论由 gh run view --json 取得（不含日志正文与 runner 镜像信息）。"
   echo
   run "cd $R && gh run list --workflow mobile.yml --event push --limit 20 --json databaseId,number,headSha,displayTitle,status,conclusion,createdAt --jq '.[] | select(.createdAt >= \"2026-10-20T02:06:00Z\") | \"\\(.databaseId) #\\(.number) \\(.headSha[0:7]) \\(.status) \\(.conclusion) \\(.createdAt)\\n    \\(.displayTitle)\"'"
   last="$(cd $R && gh run list --workflow mobile.yml --event push --limit 1 --json databaseId --jq '.[0].databaseId')"
@@ -69,7 +69,7 @@ fi
 if [ "$part" = all ] || [ "$part" = git ]; then
 {
   echo "# git-log.txt：U-1 的提交（$BASE 之后，均已推送到 origin/main），及署名扫描与不得改动目录的核对"
-  echo "# 生成时间：$(date -u +%Y-%m-%dT%H:%M:%SZ)；本地 HEAD：$(git -C $R rev-parse --short HEAD)（本文件随后的证据提交不在列表中）"
+  echo "# 生成时间：$(date -u +%Y-%m-%dT%H:%M:%SZ)；本地 HEAD：$(git -C $R rev-parse --short HEAD)（本文件随后的证据提交不在列表中；e08ca76 是先前的一次证据提交，本次证据重新生成后替换它的文件）"
   echo "# 过滤：无；以下为 git 原文。扫描用的正则把模型/厂商名里的一个字母写成字符类，避免证据里出现这些名字本身。"
   echo "# 说明：脚本开了 pipefail，grep 没有匹配时管道的退出码是 1（计数为 0 即没有署名字样）。"
   echo
