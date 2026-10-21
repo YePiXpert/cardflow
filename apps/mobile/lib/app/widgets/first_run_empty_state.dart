@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
-import 'calm_panel.dart';
 
 /// 首次空白态里的一个操作。`onPressed` 为 null 表示该功能尚未开放，[stage] 注明何时提供。
 @immutable
@@ -65,16 +64,9 @@ class FirstRunEmptyState extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           const SizedBox(height: CfSpace.xl),
-          if (icon == Icons.credit_card_outlined)
-            const Center(child: PocketIllustration())
-          else
-            ExcludeSemantics(
-              child: Icon(
-                icon,
-                size: CfIconSize.emptyState,
-                color: colors.textSecondary,
-              ),
-            ),
+          ExcludeSemantics(
+            child: Icon(icon, size: 32, color: colors.textSecondary),
+          ),
           const SizedBox(height: CfSpace.md),
           Text(
             message,

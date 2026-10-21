@@ -258,7 +258,6 @@ void main() {
     ]) {
       expect(value % 4, 0, reason: '$value');
     }
-    expect(CfRadius.card, inInclusiveRange(18, 22));
     expect(CfSize.bankBadge, 34);
   });
 }

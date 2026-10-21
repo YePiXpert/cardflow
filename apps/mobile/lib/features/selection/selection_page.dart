@@ -100,7 +100,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
               const Text(
                 '按已录入的额度与账期估算，实际日期以银行为准。“距预计还款”不代表银行承诺的免息期。比较不会记账或占用额度。',
               ),
-              const SizedBox(height: CfSpace.lg),
+              const SizedBox(height: CfSpace.md),
               FilledButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text('知道了'),
@@ -156,12 +156,11 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
         CfSpace.lg,
       ),
       children: [
-        CalmPanel(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CfSpace.xs),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('这笔准备花多少？', style: t.headlineSmall),
-              const SizedBox(height: CfSpace.lg),
               TextField(
                 controller: _amount,
                 autofillHints: null,
@@ -206,7 +205,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                 spacing: CfSpace.xs,
                 runSpacing: CfSpace.xs,
                 children: [
-                  OutlinedButton.icon(
+                  TextButton.icon(
                     onPressed: () => _chooseDate(date, today),
                     icon: const Icon(Icons.calendar_today_outlined, size: 16),
                     label: Text(
@@ -235,7 +234,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                         horizontal: CfSpace.md,
                       ),
                       decoration: BoxDecoration(
-                        color: c.surfaceRaised,
+                        color: Colors.transparent,
                         borderRadius: BorderRadius.circular(CfRadius.lg),
                       ),
                       child: Row(
@@ -253,7 +252,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                   ),
                 ],
               ),
-              const SizedBox(height: CfSpace.lg),
+              const SizedBox(height: CfSpace.md),
               FilledButton(
                 onPressed: _compare,
                 style: FilledButton.styleFrom(
@@ -262,67 +261,41 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                     horizontal: CfSpace.md,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('比较用卡'),
-                    SizedBox(width: CfSpace.sm),
-                    Icon(Icons.arrow_forward_rounded, size: 18),
-                  ],
-                ),
+                child: const Text('比较用卡'),
               ),
             ],
           ),
         ),
-        const SizedBox(height: CfSpace.lg),
+        const SizedBox(height: CfSpace.md),
         if (result == null) ...[
+          const Divider(),
           if (wallet.isEmpty)
-            CalmPanel(
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: CfSpace.lg),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const PocketIllustration(),
-                  const SizedBox(height: CfSpace.sm),
                   Text('从第一张卡开始', style: t.titleMedium),
                   const SizedBox(height: CfSpace.xs),
                   Text(
                     '还没有卡片。先添加一张卡，填写可用额度和账期规则。',
-                    textAlign: TextAlign.center,
                     style: t.bodyMedium?.copyWith(color: c.textSecondary),
                   ),
-                  const SizedBox(height: CfSpace.md),
-                  OutlinedButton.icon(
+                  const SizedBox(height: CfSpace.sm),
+                  TextButton.icon(
                     onPressed: () => context.go(AppRoutes.newCard),
-                    icon: const Icon(Icons.add_rounded),
+                    icon: const Icon(Icons.add, size: 18),
                     label: const Text('添加卡片'),
                   ),
                 ],
               ),
             )
           else
-            CalmPanel(
-              child: Row(
-                children: [
-                  const PocketIllustration(),
-                  const SizedBox(width: CfSpace.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('卡片已就位', style: t.titleMedium),
-                        const SizedBox(height: CfSpace.xs),
-                        Text(
-                          '填写金额，看看这次用哪张。',
-                          style: t.bodyMedium?.copyWith(color: c.textSecondary),
-                        ),
-                        TextButton(
-                          onPressed: () => context.go(AppRoutes.cards),
-                          child: Text('查看 ${wallet.accounts.length} 个账户'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text('已添加 ${wallet.accounts.length} 个账户'),
+              trailing: const Icon(Icons.chevron_right, size: 20),
+              onTap: () => context.go(AppRoutes.cards),
             ),
         ] else ...[
           Wrap(
@@ -354,7 +327,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
           if (result.eligible.isNotEmpty)
             _recommended(result.eligible.first, date),
           if (result.eligible.length > 1) ...[
-            const SizedBox(height: CfSpace.lg),
+            const SizedBox(height: CfSpace.md),
             Text('其他可用卡', style: t.titleMedium),
             const SizedBox(height: CfSpace.sm),
             CalmPanel(
@@ -369,7 +342,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
             ),
           ],
           if (result.excluded.isNotEmpty) ...[
-            const SizedBox(height: CfSpace.lg),
+            const SizedBox(height: CfSpace.md),
             Text('本次未参与推荐', style: t.titleMedium),
             const SizedBox(height: CfSpace.sm),
             CalmPanel(
@@ -384,7 +357,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
             ),
           ],
         ],
-        const SizedBox(height: CfSpace.lg),
+        const SizedBox(height: CfSpace.md),
         Text(
           '按额度与账期比较 · 预计日期以银行为准',
           textAlign: TextAlign.center,
@@ -411,26 +384,13 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.auto_awesome_outlined,
-                  color: c.heroTextSecondary,
-                  size: 18,
-                ),
-                const SizedBox(width: CfSpace.xs),
-                Text(
-                  '推荐使用',
-                  style: t.labelLarge?.copyWith(color: c.heroTextSecondary),
-                ),
-              ],
-            ),
+            Text('推荐使用', style: t.labelLarge?.copyWith(color: c.action)),
             const SizedBox(height: CfSpace.md),
             Text(
               row.title,
               style: t.headlineSmall?.copyWith(color: c.heroText),
             ),
-            const SizedBox(height: CfSpace.lg),
+            const SizedBox(height: CfSpace.md),
             Text(
               '距预计还款',
               style: t.bodyMedium?.copyWith(color: c.heroTextSecondary),
@@ -459,7 +419,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
               '额度足够，预计还款日最晚',
               style: t.bodyMedium?.copyWith(color: c.heroTextSecondary),
             ),
-            const SizedBox(height: CfSpace.lg),
+            const SizedBox(height: CfSpace.md),
             Divider(color: c.heroTextSecondary.withValues(alpha: .2)),
             const SizedBox(height: CfSpace.md),
             _fact(
