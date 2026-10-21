@@ -1,0 +1,151 @@
+# U-1 0.0.2 候选专项验收；源码 962b197db25f637ce0aae89ba2b22df026037d7f
+# 过滤：仅 Flutter 宿主运行身份提示四行；脚本 evidence/u1/scripts/filt.sh；其余工具原文保留。
+00:00 +0: loading /projects/cardflow/apps/mobile/test/data/repositories/ledger_home_test.dart
+00:00 +0: /projects/cardflow/apps/mobile/test/data/repositories/ledger_home_test.dart: 行：名称、待还与账单、出账日与还款日 名称 = 银行简称 + 主卡末四位，右侧产品名；待还 = 本期剩余应还，账单 = 新增账单；出账日 = 今天入账的账单日，还款日 = 未结清账单的到期日
+00:00 +1: /projects/cardflow/apps/mobile/test/data/repositories/review_probes_test.dart: R-02 账单接续与本期剩余应还 P3 迟付：9 月 1,000 没还，10 月新增账单 1,500（含 9 月）；9 月那笔 10-12 入账 → 10 月剩余应还 500、"已还一部分"、总负债 500；9 月"已并入 10-10 账单"，不计入负债、不进近期到期
+00:00 +2: /projects/cardflow/apps/mobile/test/data/repositories/review_probes_test.dart: R-02 账单接续与本期剩余应还 P3 迟付：9 月 1,000 没还，10 月新增账单 1,500（含 9 月）；9 月那笔 10-12 入账 → 10 月剩余应还 500、"已还一部分"、总负债 500；9 月"已并入 10-10 账单"，不计入负债、不进近期到期
+00:00 +3: /projects/cardflow/apps/mobile/test/data/repositories/review_probes_test.dart: R-02 账单接续与本期剩余应还 P3 迟付：9 月 1,000 没还，10 月新增账单 1,500（含 9 月）；9 月那笔 10-12 入账 → 10 月剩余应还 500、"已还一部分"、总负债 500；9 月"已并入 10-10 账单"，不计入负债、不进近期到期
+00:00 +4: /projects/cardflow/apps/mobile/test/data/repositories/review_probes_test.dart: R-02 账单接续与本期剩余应还 P3 迟付：9 月 1,000 没还，10 月新增账单 1,500（含 9 月）；9 月那笔 10-12 入账 → 10 月剩余应还 500、"已还一部分"、总负债 500；9 月"已并入 10-10 账单"，不计入负债、不进近期到期
+00:00 +5: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +6: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +7: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +7: /projects/cardflow/apps/mobile/test/data/repositories/ledger_home_test.dart: 行：名称、待还与账单、出账日与还款日 闰年：账单日 30 在 2028 年 2 月是 02-29，2027 年 2 月是 02-28
+WARNING (drift): It looks like you've created the database class AppDatabase multiple times. When these two databases use the same QueryExecutor, race conditions will occur and might corrupt the database. 
+Try to follow the advice at https://drift.simonbinder.eu/faq/#using-the-database or, if you know what you're doing, set driftRuntimeOptions.dontWarnAboutMultipleDatabases = true
+Here is the stacktrace from when the database was opened a second time:
+#0      GeneratedDatabase._handleInstantiated (package:drift/src/runtime/api/db_base.dart:96:30)
+#1      GeneratedDatabase._whenConstructed (package:drift/src/runtime/api/db_base.dart:73:12)
+#2      new GeneratedDatabase (package:drift/src/runtime/api/db_base.dart:64:5)
+#3      new _$AppDatabase (package:cardflow/data/db/app_database.g.dart:18722:36)
+#4      new AppDatabase._ (package:cardflow/data/db/app_database.dart)
+#5      openAppDatabase (package:cardflow/data/db/app_database.dart:205:28)
+<asynchronous suspension>
+#6      openRealTestDatabase (file:///projects/cardflow/apps/mobile/test/data/repositories/repository_test_support.dart:65:18)
+<asynchronous suspension>
+#7      main.<anonymous closure>.<anonymous closure> (file:///projects/cardflow/apps/mobile/test/data/repositories/ledger_home_test.dart:199:19)
+<asynchronous suspension>
+#8      Declarer.test.<anonymous closure>.<anonymous closure> (package:test_api/src/backend/declarer.dart:253:15)
+<asynchronous suspension>
+#9      Declarer.test.<anonymous closure> (package:test_api/src/backend/declarer.dart:250:11)
+<asynchronous suspension>
+#10     Invoker._waitForOutstandingCallbacks.<anonymous closure> (package:test_api/src/backend/invoker.dart:318:9)
+<asynchronous suspension>
+This warning will only appear on debug builds.
+00:00 +8: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +9: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +10: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +11: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +12: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +13: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +14: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +15: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +16: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +17: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +18: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +19: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +20: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +21: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +22: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +23: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +24: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:00 +25: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +26: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +27: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +28: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +29: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +30: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +31: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +32: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +33: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +34: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +35: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +36: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +37: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 首次空白：还没有卡 → "还没有信用卡"、大号「添加第一张卡」进新建卡片、另有「体验演示」
+00:01 +38: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 错误：显示错误码与「重试」
+00:01 +39: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 错误：显示错误码与「重试」
+00:01 +40: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:01 +41: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:02 +42: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:02 +43: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:02 +44: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:02 +45: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:02 +46: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:02 +47: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:02 +48: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 余额曲线（默认 30 天、基准预期、最差的账户）：最低 ¥300（低于储备）、11-01 · 工资卡、缺口 1 处；读屏摘要
+00:02 +49: /projects/cardflow/apps/mobile/test/features/home/ledger_home_page_test.dart: 演示空间 待处理：一行"3 项待处理 ›"进还款与核对
+00:02 +50: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 "⋯"菜单：记本期账单、录入正式账单、人工修正、操作说明、换卡/补卡、冻结、销卡、账期设置
+00:03 +51: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 点按底部导航可到达全部四个 Tab
+00:03 +52: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 分段 7 天：最低点换成窗口内的，没有缺口用中性色并写"没有缺口"
+00:03 +53: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 分段 7 天：最低点换成窗口内的，没有缺口用中性色并写"没有缺口"
+00:03 +54: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 分段 7 天：最低点换成窗口内的，没有缺口用中性色并写"没有缺口"
+00:03 +55: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:03 +56: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 深链接可直达每个 Tab 根页与诊断页
+00:03 +57: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 没有规则：本期进度写"账期规则未设置"，「设置账期」到 P-04；卡面写"额度未记录"
+00:03 +58: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 口径菜单：改为"已确认"；「表格」带着口径打开资金日历的表格视图
+00:03 +59: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 口径菜单：改为"已确认"；「表格」带着口径打开资金日历的表格视图
+00:03 +60: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 口径菜单：改为"已确认"；「表格」带着口径打开资金日历的表格视图
+00:04 +61: /projects/cardflow/apps/mobile/test/features/cash/cash_home_page_test.dart: 口径菜单：改为"已确认"；「表格」带着口径打开资金日历的表格视图
+00:04 +62: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +63: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +64: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +65: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +66: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +67: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +68: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +69: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +70: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +71: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +72: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +73: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +74: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +75: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +76: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +77: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +78: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +79: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +80: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +81: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +82: /projects/cardflow/apps/mobile/test/features/cards/account_pages_test.dart: P-03 信用账户详情 换卡/补卡、冻结/解冻、销卡（历史不变，已停用的卡折叠）
+00:04 +83: /projects/cardflow/apps/mobile/test/app/navigation_test.dart: 原有页面都能从新结构进入：卡账右上"管理全部卡片"、规划里的消费规划与活动
+00:04 +84: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:04 +85: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:04 +86: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +87: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +88: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +89: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +90: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +91: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +92: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +93: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +94: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:05 +95: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:06 +96: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:06 +97: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:06 +98: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:07 +99: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:07 +100: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:07 +101: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:08 +102: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:08 +103: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:08 +104: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:08 +105: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:09 +106: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:09 +107: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:09 +108: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+00:09 +109: /projects/cardflow/apps/mobile/test/app/amount_hiding_test.dart: 打开隐藏金额后，演示空间的每一页（逐屏滚到底）没有数字金额
+检查了演示空间的 47 个页面
+00:10 +110: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.dark）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:11 +111: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 首次空白与首次使用页（Brightness.dark）满足同样的要求
+00:11 +112: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 全部页面（Brightness.light）满足触控尺寸、标签与文字对比度要求（演示数据）
+00:14 +113: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 首次空白与首次使用页（Brightness.light）满足同样的要求
+00:14 +114: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: P-22 首次使用页（没有工作空间）满足同样的要求
+00:14 +115: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 启动页（打不开：wrong_key）满足同样的要求
+00:14 +116: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22），逐屏滚到底
+00:17 +117: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：首次空白、首次使用页与启动页，逐屏滚到底
+00:17 +118: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：P-22 首次使用页
+00:17 +119: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 2.0x：启动页（打开中）
+00:17 +120: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x 时所有页面正常布局（含 P-01~P-09、新建卡片、P-22），逐屏滚到底
+00:20 +121: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：首次空白、首次使用页与启动页，逐屏滚到底
+00:20 +122: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：P-22 首次使用页
+00:20 +123: /projects/cardflow/apps/mobile/test/app/accessibility_test.dart: 文字放大到 3.0x：启动页（打开中）
+00:21 +124: All tests passed!

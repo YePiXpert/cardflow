@@ -1,0 +1,10 @@
+# 候选 962b197；标签构建 #82（39538400992），dart job 119020280643。
+# 来源：gh api repos/YePiXpert/cardflow/actions/jobs/119020280643/logs。
+# 仅按明确结论关键词选取原始行，未改写；完整结果与步骤见 ci-release.txt。
+2026-10-21T03:25:36.6685557Z No issues found! (ran in 16.3s)
+2026-10-21T03:25:37.7153878Z No issues found!
+2026-10-21T03:26:30.6385124Z ⏭️ /home/runner/work/cardflow/cardflow/apps/mobile/test/tool/screenshots_test.dart: 演示空间各页截图（dark） (variant: TargetPlatform.iOS) (skipped)
+2026-10-21T03:26:30.6386597Z ⏭️ /home/runner/work/cardflow/cardflow/apps/mobile/test/tool/screenshots_test.dart: 演示空间各页截图（light） (variant: TargetPlatform.iOS) (skipped)
+2026-10-21T03:28:05.3912376Z 🎉 616 tests passed, 2 skipped.
+2026-10-21T03:28:13.9078016Z 00:02 +279: All tests passed!
+2026-10-21T03:29:12.2968472Z ✓ Built build/web

@@ -1,0 +1,6 @@
+# 0.0.2 发布与回下载校验；过滤：无。
+{"assets":[{"apiUrl":"https://api.github.com/repos/YePiXpert/cardflow/releases/assets/661243706","contentType":"application/octet-stream","createdAt":"2026-10-21T03:33:08Z","downloadCount":0,"id":"RA_kwDOVOAIVc4nacc6","label":"","name":"cardflow-0.0.2-unsigned.ipa","size":10622591,"state":"uploaded","updatedAt":"2026-10-21T03:33:09Z","url":"https://github.com/YePiXpert/cardflow/releases/download/ios-v0.0.2/cardflow-0.0.2-unsigned.ipa"},{"apiUrl":"https://api.github.com/repos/YePiXpert/cardflow/releases/assets/661243707","contentType":"application/octet-stream","createdAt":"2026-10-21T03:33:08Z","downloadCount":0,"id":"RA_kwDOVOAIVc4nacc7","label":"","name":"cardflow-0.0.2-unsigned.ipa.sha256","size":94,"state":"uploaded","updatedAt":"2026-10-21T03:33:08Z","url":"https://github.com/YePiXpert/cardflow/releases/download/ios-v0.0.2/cardflow-0.0.2-unsigned.ipa.sha256"}],"isDraft":false,"isPrerelease":true,"name":"卡序 0.0.2（公测版）","publishedAt":"2026-10-21T03:33:09Z","tagName":"ios-v0.0.2","targetCommitish":"main","url":"https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.2"}
+79371d8a165a2645ca756ccf3eb9ceb62a5acd18	refs/tags/ios-v0.0.2
+962b197db25f637ce0aae89ba2b22df026037d7f	refs/tags/ios-v0.0.2^{}
+cardflow-0.0.2-unsigned.ipa: OK
+a2ec03725010fa07a0843bb8b694243b333caeb3526617d5aec13d1e2674805b  cardflow-0.0.2-unsigned.ipa

@@ -1,11 +1,11 @@
 # 卡序 CardFlow
 
-多信用卡管理 App（iOS/Android + 自托管后端 + Web 后台）的规划工作区。规划轮产出于 2026-10-16。
+多信用卡与现金流管理 App。当前只做 iOS、纯本地使用；自托管后端冻结，Web 后台尚未实现。
 
 - `docs/` — 完整规划文档集（入口：`docs/README.md`；追踪矩阵：`docs/requirements-traceability.md`）
 - `poc/engine_reference/` — 参考引擎 PoC（账期、现金时间线、CP-SAT 分配、独立验证器；40 项测试，证据见 `EVIDENCE.md`）
 
-本仓库不含真实金融数据；所有样本为合成数据。下一步：按 `docs/80-delivery/phase-1-tasks.md` 启动 M0。
+本仓库不含真实金融数据；所有样本为合成数据。当前交接入口：[`docs/80-delivery/handoff.md`](docs/80-delivery/handoff.md)。0.0.2 已交付，等待真机业务验收。
 
 ## 目录结构
 
@@ -14,7 +14,7 @@
 | `docs/` | 规划文档（唯一事实来源） | 已完成 |
 | `poc/engine_reference/` | 参考引擎 PoC（golden-fixture 预言机，非生产代码） | 已验证 |
 | `services/api/` | 服务端：FastAPI 模块化单体 + worker + CLI；Python 3.13，uv 管理，包 `cardflow`（平铺布局，模块划分见 architecture §4） | M0 骨架（T-002） |
-| `apps/mobile/` | Flutter 移动端（iOS 优先；骨架、主题、金额组件、诊断页、加密本地库（v4：工作空间、信用账户、卡片、账期规则版本、额度快照、现金账户与快照、现金事件、周期事项、情景与计算版本、交易、账单与追加只读的账单版本、分期计划与各期、还款与分配、差异项）；真实/演示工作空间；4 个标签：卡账（每张卡的待还、出账日与还款日，今天刷哪张，记本期账单、还清本期）、现金（余额曲线、资金日历、现金账户与收支）、规划（情景对比）、我的（隐藏金额、重置本地数据、「关于」与公测说明）；全部卡片、卡片详情与设置、账单中心（录入与修正账单、记一笔、转分期）、还款登记与核对；`packages/cardflow_domain` 纯 Dart 领域包（含分期拆分与成本）；CI 出未签名 IPA） | I-1 已交付（公测版 0.0.1）；U-1 界面重做已完成（公测版 0.0.2，待发版） |
+| `apps/mobile/` | Flutter 移动端（iOS 优先；骨架、主题、金额组件、诊断页、加密本地库（v4：工作空间、信用账户、卡片、账期规则版本、额度快照、现金账户与快照、现金事件、周期事项、情景与计算版本、交易、账单与追加只读的账单版本、分期计划与各期、还款与分配、差异项）；真实/演示工作空间；4 个标签：卡账（每张卡的待还、出账日与还款日，今天刷哪张，记本期账单、还清本期）、现金（余额曲线、资金日历、现金账户与收支）、规划（情景对比）、我的（隐藏金额、重置本地数据、「关于」与公测说明）；全部卡片、卡片详情与设置、账单中心（录入与修正账单、记一笔、转分期）、还款登记与核对；`packages/cardflow_domain` 纯 Dart 领域包（含分期拆分与成本）；CI 出未签名 IPA） | U-1 实现完成、自动验证通过；0.0.2 未签名 IPA 已交付，真机业务待验收 |
 | `apps/admin/` | Web 后台 React SPA（占位，T-031） | 未实现 |
 | `packages/rules-protocol/` | 规则协议 v1 JSON Schema、golden fixture、Python 运行器；Dart 端在 `apps/mobile/packages/cardflow_domain`，CI `protocol-parity` 双端逐字节一致 | v1 已冻结（1.1.0） |
 | `deploy/` | Compose 文件：`compose.dev.yaml` = 开发库（项目名 `cardflow-dev`，仅 127.0.0.1:18432）；`compose.yaml` = 自托管部署（项目名 `cardflow`，仅 127.0.0.1:18080，见下文"部署"）；`.env.example`；`secrets/`（只有 README 入库） | 开发库可用；部署可用（T-012） |
@@ -23,7 +23,9 @@
 
 ## 移动端
 
-**下载公测版**：[Releases](https://github.com/YePiXpert/cardflow/releases)（当前为 0.0.1 公测版，附未签名 IPA 与 sha256）。需要用自己的证书签名后安装，步骤见下文"用自己的证书签名并安装"与发版说明；数据只在本机，删除 App 会永久删除数据。
+**下载公测版**：[0.0.2 发布页](https://github.com/YePiXpert/cardflow/releases/tag/ios-v0.0.2)（构建 82，附未签名 IPA 与 SHA-256 文件）。用安装旧版时的同一签名身份和 Bundle ID 直接覆盖安装，四个嵌套 framework 也需重签；不要先删除旧 App。步骤见下文"用自己的证书签名并安装"与发布页的手机验收清单。
+
+**当前交付状态（2026-10-21）**：U-1 实现完成；候选 `962b197` 的 [CI #82](https://github.com/YePiXpert/cardflow/actions/runs/39538400992) 已通过格式、静态分析、616 项 App 测试、279 项领域测试、协议一致性、Web 编译及 macOS iOS 构建。本机 124 项专项验收通过，IPA 17 项检查通过，发布附件回下载 SHA-256 一致。**0.0.2 真机覆盖安装与业务流程仍待用户验收**；0.0.1 的既有诊断回传不代替本版验收。证据见 [`evidence/u1/release-0.0.2/`](evidence/u1/release-0.0.2/)。
 
 iOS 优先（`docs/80-delivery/ios-first-plan.md`）。工程在 `apps/mobile/`（Flutter 3.47.7，Bundle ID `li.yep.cardflow`），结构与约定见 `apps/mobile/README.md`。本机（Linux）只做静态分析、测试和 Web 编译检查；iOS 包由 GitHub Actions 的 macOS runner 构建，产出**未签名** IPA，由用户用自己的证书签名后安装。仓库和 CI 不保存任何证书、描述文件或团队 ID。
 
