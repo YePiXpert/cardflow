@@ -10,10 +10,12 @@ import '../../app/widgets/bank_badge.dart';
 import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/state_views.dart';
+import '../../data/mapping/domain_mapping.dart';
 import '../../data/repositories/card_wallet_reader.dart';
 import '../../data/repositories/models.dart';
 import '../../data/repositories/providers.dart';
 import '../onboarding/workspace_actions.dart';
+import 'available_limit_form.dart';
 import 'card_formatting.dart';
 
 /// P-02 管理全部卡片（原"卡包"，从卡账右上角或列表底部进入）：授信池 › 信用账户 › 币种子账户 › 卡片 的层级列表。
@@ -144,6 +146,8 @@ class AccountTile extends StatelessWidget {
     final colors = CardFlowColors.of(context);
     final primary = account.primaryCurrency;
     final source = account.ruleSource;
+    final rule = account.currentRule;
+    final forecast = primary.forecast;
     final secondary = theme.textTheme.bodyMedium?.copyWith(
       color: colors.textSecondary,
     );
@@ -188,6 +192,20 @@ class AccountTile extends StatelessWidget {
                   textAlign: TextAlign.start,
                   style: theme.textTheme.headlineSmall,
                 ),
+                if (forecast is ForecastPredicted) ...<Widget>[
+                  const SizedBox(height: CfSpace.xs),
+                  Text(
+                    '今天刷距预计还款 ${forecast.conservative.dueDate.differenceInDays(account.today)} 天（${forecast.conservative.dueDate}）',
+                    style: secondary,
+                  ),
+                ],
+                if (rule != null) ...<Widget>[
+                  const SizedBox(height: CfSpace.xxs),
+                  Text(
+                    '${describeStatementDay(rule.statementDay)}出账 · ${describeDue(dueOf(rule))}还款',
+                    style: secondary,
+                  ),
+                ],
                 const SizedBox(height: CfSpace.sm),
                 // 一行至多一个状态标签（简报 U-1 §5）：超限 > 缺账期规则 > 额度快照陈旧。
                 if (primary.overLimit)
@@ -229,6 +247,17 @@ class AccountTile extends StatelessWidget {
                   ),
                 if (account.cards.any((c) => c.cardStatus == CardStatus.frozen))
                   Text('有卡片已冻结', style: secondary),
+                if (!account.isInactive) ...<Widget>[
+                  const SizedBox(height: CfSpace.xs),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TextButton(
+                      onPressed: () =>
+                          unawaited(showQuickLimitDialog(context, account)),
+                      child: const Text('快速改额度'),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

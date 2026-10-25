@@ -187,4 +187,27 @@ void main() {
     expect(find.text('请选择账单日和还款日'), findsOneWidget);
     expect((await _wallet(tester)).accounts, isEmpty);
   });
+
+  testWidgets('卡片列表显示今日刷卡距还款天数、出账还款规则，并支持快速改额度', (tester) async {
+    await pumpCardFlowApp(tester);
+    await _openNewCard(tester);
+    await fillSimpleCard(tester);
+    await _save(tester);
+    await goTo(tester, AppRoutes.cards);
+    expect(find.textContaining('今天刷距预计还款'), findsOneWidget);
+    expect(find.textContaining('每月 10 日出账'), findsOneWidget);
+
+    final quickBtn = find.widgetWithText(TextButton, '快速改额度');
+    await tester.ensureVisible(quickBtn);
+    await tester.tap(quickBtn);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, '当前可用额度'), '12000');
+    await tester.tap(find.widgetWithText(FilledButton, '保存额度'));
+    await tester.pumpAndSettle();
+    expect(find.text('已更新可用额度'), findsOneWidget);
+    expect(
+      (await _wallet(tester)).accounts.single.currencies.single.capacity,
+      1200000,
+    );
+  });
 }

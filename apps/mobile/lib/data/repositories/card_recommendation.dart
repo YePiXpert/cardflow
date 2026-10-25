@@ -7,6 +7,26 @@ import '../db/app_database.dart';
 import '../mapping/domain_mapping.dart';
 import 'card_wallet_reader.dart';
 
+final class NextCycleHint {
+  const NextCycleHint({
+    required this.waitDays,
+    required this.swipeOn,
+    required this.nextDueDate,
+    required this.extraDays,
+  });
+
+  final int waitDays;
+  final LocalDate swipeOn;
+  final LocalDate nextDueDate;
+  final int extraDays;
+}
+
+final class CardSplitItem {
+  const CardSplitItem({required this.card, required this.amount});
+  final CardRecommendation card;
+  final int amount;
+}
+
 final class CardRecommendation {
   const CardRecommendation({
     required this.account,
@@ -17,6 +37,7 @@ final class CardRecommendation {
     required this.reason,
     required this.stale,
     required this.snapshotDate,
+    this.nextCycleHint,
   });
 
   final AccountView account;
@@ -27,6 +48,7 @@ final class CardRecommendation {
   final String? reason;
   final bool stale;
   final String? snapshotDate;
+  final NextCycleHint? nextCycleHint;
   bool get eligible => reason == null;
   LocalDate get dueDate => forecast!.conservative.dueDate;
   String get title => '${account.bank.name} ···· ${card.last4}';
@@ -34,9 +56,42 @@ final class CardRecommendation {
 
 /// 结果只属于本次输入，不改变余额、额度、账单或预留。
 final class RecommendationResult {
-  const RecommendationResult(this.eligible, this.excluded);
+  const RecommendationResult(
+    this.eligible,
+    this.excluded, {
+    this.splitPlan = const <CardSplitItem>[],
+    this.totalCapacity = 0,
+  });
   final List<CardRecommendation> eligible;
   final List<CardRecommendation> excluded;
+  final List<CardSplitItem> splitPlan;
+  final int totalCapacity;
+}
+
+NextCycleHint? _computeNextCycleHint(
+  CurrencyAccountView? sub,
+  ForecastPredicted? forecast,
+  LocalDate on,
+) {
+  if (sub == null || forecast == null) return null;
+  final currentDue = forecast.conservative.dueDate;
+  for (var wait = 1; wait <= 3; wait++) {
+    final nextDate = on.addDays(wait);
+    final nextForecast = forecastCycles(sub.ruleVersions, nextDate);
+    if (nextForecast is ForecastPredicted) {
+      final nextDue = nextForecast.conservative.dueDate;
+      final extra = nextDue.differenceInDays(currentDue);
+      if (extra > 0) {
+        return NextCycleHint(
+          waitDays: wait,
+          swipeOn: nextDate,
+          nextDueDate: nextDue,
+          extraDays: extra,
+        );
+      }
+    }
+  }
+  return null;
 }
 
 RecommendationResult recommendCards({
@@ -81,6 +136,8 @@ RecommendationResult recommendCards({
   for (final a in wallet.accounts) {
     final sub = subs[a.id];
     final forecast = sub == null ? null : forecastCycles(sub.ruleVersions, on);
+    final predicted = forecast is ForecastPredicted ? forecast : null;
+    final hint = _computeNextCycleHint(sub, predicted, on);
     final capacity = model.accountCapacity(a.id);
     final missingPool =
         a.pool?.currency == currency &&
@@ -112,10 +169,11 @@ RecommendationResult recommendCards({
         card: card,
         currency: currency,
         capacity: missingPool ? null : capacity,
-        forecast: forecast is ForecastPredicted ? forecast : null,
+        forecast: predicted,
         reason: reason,
         stale: sub?.stale ?? false,
         snapshotDate: sub?.latestSnapshot?.balanceAsOf,
+        nextCycleHint: hint,
       );
       (row.eligible ? eligible : excluded).add(row);
     }
@@ -126,14 +184,72 @@ RecommendationResult recommendCards({
     return order == 0 ? a.card.id.compareTo(b.card.id) : order;
   }
 
-  eligible.sort((a, b) {
+  int byPriority(CardRecommendation a, CardRecommendation b) {
     var order = b.dueDate.compareTo(a.dueDate);
     if (order == 0) order = b.capacity!.compareTo(a.capacity!);
     return order == 0 ? identity(a, b) : order;
-  });
+  }
+
+  eligible.sort(byPriority);
   excluded.sort(identity);
+
+  final usable = <CardRecommendation>[
+    ...eligible,
+    for (final row in excluded)
+      if (row.reason == '可用额度不足' &&
+          row.forecast != null &&
+          (row.capacity ?? 0) > 0)
+        row,
+  ]..sort(byPriority);
+
+  final poolLimit = <String, int>{
+    for (final p in wallet.pools)
+      if (p.pool.currency == currency && model.poolCapacity(p.pool.id) != null)
+        p.pool.id: model.poolCapacity(p.pool.id)!,
+  };
+  final poolForTotal = Map<String, int>.of(poolLimit);
+  final poolForSplit = Map<String, int>.of(poolLimit);
+  var totalCapacity = 0;
+  var remaining = amount;
+  final split = <CardSplitItem>[];
+  final seenAccounts = <String>{};
+  for (final row in usable) {
+    if (!seenAccounts.add(row.account.id)) continue;
+    final own = model.accountOwnCapacity(row.account.id) ?? 0;
+    final poolId = row.account.pool?.currency == currency
+        ? row.account.pool!.id
+        : null;
+    final availTotal = poolId != null && poolForTotal.containsKey(poolId)
+        ? (own < poolForTotal[poolId]! ? own : poolForTotal[poolId]!)
+        : own;
+    if (availTotal > 0) {
+      totalCapacity += availTotal;
+      if (poolId != null && poolForTotal.containsKey(poolId)) {
+        poolForTotal[poolId] = poolForTotal[poolId]! - availTotal;
+      }
+    }
+    if (eligible.isEmpty && remaining > 0) {
+      final availSplit = poolId != null && poolForSplit.containsKey(poolId)
+          ? (own < poolForSplit[poolId]! ? own : poolForSplit[poolId]!)
+          : own;
+      if (availSplit > 0) {
+        final take = remaining < availSplit ? remaining : availSplit;
+        split.add(CardSplitItem(card: row, amount: take));
+        remaining -= take;
+        if (poolId != null && poolForSplit.containsKey(poolId)) {
+          poolForSplit[poolId] = poolForSplit[poolId]! - take;
+        }
+      }
+    }
+  }
+  final splitPlan = eligible.isEmpty && remaining == 0 && split.length > 1
+      ? List<CardSplitItem>.unmodifiable(split)
+      : const <CardSplitItem>[];
+
   return RecommendationResult(
     List.unmodifiable(eligible),
     List.unmodifiable(excluded),
+    splitPlan: splitPlan,
+    totalCapacity: totalCapacity,
   );
 }

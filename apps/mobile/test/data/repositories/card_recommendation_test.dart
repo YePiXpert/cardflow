@@ -191,4 +191,62 @@ void main() {
       LocalDate(2027, 1, 20),
     );
   });
+  test('单卡额度不足时按还款日从晚到早生成多卡组合方案，同账户与共享池不超扣', () async {
+    final a = await card('1111', statementDay: 10, available: 800000);
+    await createTestCard(
+      scope,
+      last4: '1112',
+      joinAccountId: a.creditAccountId,
+    );
+    final b = await card('2222', statementDay: 5, available: 600000);
+    final c = await card('3333', statementDay: 20, available: 500000);
+    final accounts = CreditAccountRepository(scope);
+    final rowB = (await accounts.byId(b.creditAccountId))!;
+    final pool = await CreditPoolRepository(scope)
+        .create(bankId: rowB.bankId, name: '共享池', sharedLimitMinor: 700000);
+    await accounts.joinPool(b.creditAccountId, pool.id);
+    await accounts.joinPool(c.creditAccountId, pool.id);
+    await recordTestSnapshot(
+      scope,
+      (await primaryCurrencyAccount(scope, b.creditAccountId)).id,
+      fixed: 600000,
+      used: 0,
+      available: 600000,
+    );
+    await recordTestSnapshot(
+      scope,
+      (await primaryCurrencyAccount(scope, c.creditAccountId)).id,
+      fixed: 500000,
+      used: 0,
+      available: 500000,
+    );
+
+    // 2026-10-18：1111(10日出账→11-28到期, 8000)、2222(5日出账→11-28到期, 6000)、3333(20日出账→10-28到期, 5000，与2222共享7000池上限)
+    // 合计可刷 = 8000 + min(6000+5000, 7000) = 15000 (1500000)
+    final r = await compare(amount: 1450000, on: LocalDate(2026, 10, 18));
+    expect(r.eligible, isEmpty);
+    expect(r.totalCapacity, 1500000);
+    expect(r.splitPlan.map((s) => (s.card.card.last4, s.amount)).toList(), [
+      ('1111', 800000),
+      ('2222', 600000),
+      ('3333', 50000),
+    ]);
+
+    final over = await compare(amount: 1600000, on: LocalDate(2026, 10, 18));
+    expect(over.splitPlan, isEmpty);
+    expect(over.totalCapacity, 1500000);
+  });
+  test('临近账单日（含当天及前3天内）给出延后刷卡跨账期提示', () async {
+    await card('1111', statementDay: 20, available: 500000);
+    // 10-16 距 20 日还有 4 天，不提示
+    final far = (await compare(on: LocalDate(2026, 10, 16))).eligible.single;
+    expect(far.nextCycleHint, isNull);
+    // 10-19 距 20 日还有 1 天，再等 2 天（10-21）刷可跨入下一账期
+    final near = (await compare(on: LocalDate(2026, 10, 19))).eligible.single;
+    expect(near.nextCycleHint, isNotNull);
+    expect(near.nextCycleHint!.waitDays, 2);
+    expect(near.nextCycleHint!.swipeOn, LocalDate(2026, 10, 21));
+    expect(near.nextCycleHint!.nextDueDate, LocalDate(2026, 11, 28));
+    expect(near.nextCycleHint!.extraDays, 31);
+  });
 }

@@ -16,6 +16,7 @@ import '../../data/repositories/providers.dart';
 import '../../data/time/business_tz.dart';
 import '../../data/time/clock.dart';
 import '../cards/amount_input.dart';
+import '../cards/available_limit_form.dart';
 import '../cards/card_dialogs.dart';
 
 class SelectionPage extends ConsumerWidget {
@@ -140,6 +141,14 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
       _currency = 'CNY';
       _submitted = null;
     }
+    final overview = wallet.isEmpty
+        ? null
+        : recommendCards(
+            wallet: wallet,
+            amount: 1,
+            currency: _currency,
+            on: date,
+          );
     final result = _submitted == null
         ? null
         : recommendCards(
@@ -290,13 +299,43 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                 ],
               ),
             )
-          else
+          else ...[
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text('已添加 ${wallet.accounts.length} 个账户'),
               trailing: const Icon(Icons.chevron_right, size: 20),
               onTap: () => context.go(AppRoutes.cards),
             ),
+            if (overview != null && overview.eligible.isNotEmpty) ...[
+              const SizedBox(height: CfSpace.sm),
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                spacing: CfSpace.md,
+                runSpacing: CfSpace.xs,
+                children: [
+                  Text('当日选卡排行', style: t.titleMedium),
+                  if (overview.totalCapacity > 0)
+                    MoneyText(
+                      minor: overview.totalCapacity,
+                      currency: _currency,
+                      semanticsPrefix: '可用总额度',
+                      style: t.bodyMedium?.copyWith(color: c.textSecondary),
+                    ),
+                ],
+              ),
+              const SizedBox(height: CfSpace.sm),
+              CalmPanel(
+                child: Column(
+                  children: [
+                    for (var i = 0; i < overview.eligible.length; i++) ...[
+                      if (i > 0) const Divider(height: CfSpace.lg),
+                      _alternative(overview.eligible[i], date),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
         ] else ...[
           Wrap(
             alignment: WrapAlignment.spaceBetween,
@@ -313,7 +352,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
             ],
           ),
           const SizedBox(height: CfSpace.sm),
-          if (result.eligible.isEmpty)
+          if (result.eligible.isEmpty) ...[
             CalmPanel(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,9 +360,45 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                   Icon(Icons.search_off_rounded, color: c.textSecondary),
                   const SizedBox(height: CfSpace.sm),
                   const Text('暂无可推荐的卡，请查看下方原因。'),
+                  if (result.splitPlan.isEmpty &&
+                      result.totalCapacity > 0 &&
+                      result.totalCapacity < _submitted!) ...[
+                    const SizedBox(height: CfSpace.sm),
+                    _fact(
+                      '全部可用卡合计最多可刷',
+                      MoneyText(
+                        minor: result.totalCapacity,
+                        currency: _currency,
+                        semanticsPrefix: '合计可刷额度',
+                        style: t.bodyMedium,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
+            if (result.splitPlan.isNotEmpty) ...[
+              const SizedBox(height: CfSpace.md),
+              Text('组合用卡方案', style: t.titleMedium),
+              const SizedBox(height: CfSpace.sm),
+              CalmPanel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      '单张卡可用额度不足，按还款日从晚到早分 ${result.splitPlan.length} 张卡刷齐：',
+                      style: t.bodyMedium?.copyWith(color: c.textSecondary),
+                    ),
+                    const SizedBox(height: CfSpace.md),
+                    for (var i = 0; i < result.splitPlan.length; i++) ...[
+                      if (i > 0) const Divider(height: CfSpace.lg),
+                      _splitItemTile(result.splitPlan[i], date),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
           if (result.eligible.isNotEmpty)
             _recommended(result.eligible.first, date),
           if (result.eligible.length > 1) ...[
@@ -372,6 +447,65 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
     final first = due ? cycles.first.dueDate : cycles.first.statementDate;
     final last = due ? cycles.last.dueDate : cycles.last.statementDate;
     return '$first${first == last ? '' : ' 至 $last'}';
+  }
+
+  String _hintText(NextCycleHint hint) =>
+      '再等 ${hint.waitDays} 天（${hint.swipeOn.month}月${hint.swipeOn.day}日）刷，'
+      '预计还款延至 ${hint.nextDueDate}（多 ${hint.extraDays} 天）';
+
+  Widget _splitItemTile(CardSplitItem item, LocalDate date) {
+    final c = CardFlowColors.of(context);
+    final t = Theme.of(context).textTheme;
+    final row = item.card;
+    return InkWell(
+      borderRadius: BorderRadius.circular(CfRadius.lg),
+      onTap: () => context.go(AppRoutes.account(row.account.id)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: CfSpace.xs),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                BankBadge(bankName: row.account.bank.name),
+                const SizedBox(width: CfSpace.sm),
+                Expanded(child: Text(row.title, style: t.titleSmall)),
+                Icon(Icons.chevron_right_rounded, color: c.textTertiary),
+              ],
+            ),
+            const SizedBox(height: CfSpace.sm),
+            _fact(
+              '本卡刷',
+              MoneyText(
+                minor: item.amount,
+                currency: row.currency,
+                semanticsPrefix: '组合刷卡金额',
+                textAlign: TextAlign.start,
+                style: t.titleMedium,
+              ),
+            ),
+            const SizedBox(height: CfSpace.xxs),
+            _fact(
+              '距预计还款 ${row.dueDate.differenceInDays(date)} 天（${_range(row, true)}）',
+              MoneyText(
+                minor: row.capacity,
+                currency: row.currency,
+                semanticsPrefix: '可用额度',
+                textAlign: TextAlign.start,
+                style: t.bodySmall?.copyWith(color: c.textSecondary),
+              ),
+            ),
+            if (row.nextCycleHint != null) ...[
+              const SizedBox(height: CfSpace.xxs),
+              Text(
+                _hintText(row.nextCycleHint!),
+                style: t.bodySmall?.copyWith(color: c.attention.fg),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _recommended(CardRecommendation row, LocalDate date) {
@@ -436,6 +570,13 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
             _fact('预计账单日', Text(_range(row, false))),
             const SizedBox(height: CfSpace.sm),
             _fact('预计还款日', Text(_range(row, true))),
+            if (row.nextCycleHint != null) ...[
+              const SizedBox(height: CfSpace.sm),
+              Text(
+                _hintText(row.nextCycleHint!),
+                style: t.bodySmall?.copyWith(color: c.heroText),
+              ),
+            ],
             if (row.forecast!.cycles.length > 1) ...[
               const SizedBox(height: CfSpace.sm),
               const Text('入账可能跨账期，按较早还款日比较。'),
@@ -452,10 +593,26 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
               const Text('额度超过 7 天未更新，请确认银行当前可用额度。'),
             ],
             const SizedBox(height: CfSpace.sm),
-            TextButton(
-              onPressed: () => context.go(AppRoutes.account(row.account.id)),
-              style: TextButton.styleFrom(foregroundColor: c.heroText),
-              child: const Text('查看卡片与更新资料'),
+            Wrap(
+              spacing: CfSpace.xs,
+              runSpacing: CfSpace.xs,
+              children: [
+                TextButton(
+                  onPressed: () => showQuickLimitDialog(
+                    context,
+                    row.account,
+                    initialCurrency: row.currency,
+                  ),
+                  style: TextButton.styleFrom(foregroundColor: c.heroText),
+                  child: const Text('快速改额度'),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      context.go(AppRoutes.account(row.account.id)),
+                  style: TextButton.styleFrom(foregroundColor: c.heroText),
+                  child: const Text('查看卡片与更新资料'),
+                ),
+              ],
             ),
           ],
         ),
@@ -504,11 +661,22 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                 '预计还款 ${_range(row, true)}',
                 style: t.bodySmall?.copyWith(color: c.textSecondary),
               ),
-            ] else
+              if (row.nextCycleHint != null)
+                Text(
+                  _hintText(row.nextCycleHint!),
+                  style: t.bodySmall?.copyWith(color: c.attention.fg),
+                ),
+            ] else ...[
               Text(
                 row.reason!,
                 style: t.bodyMedium?.copyWith(color: c.textSecondary),
               ),
+              if (row.nextCycleHint != null)
+                Text(
+                  _hintText(row.nextCycleHint!),
+                  style: t.bodySmall?.copyWith(color: c.attention.fg),
+                ),
+            ],
             if (row.stale)
               Text(
                 '额度待更新',
