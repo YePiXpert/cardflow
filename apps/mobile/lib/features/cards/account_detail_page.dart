@@ -93,12 +93,10 @@ class AccountDetailPage extends ConsumerWidget {
           first: FilledButton(
             onPressed: () =>
                 context.go(AppRoutes.accountSettings(a.id, section: 'limits')),
-            style: FilledButton.styleFrom(shape: const StadiumBorder()),
             child: const Text('更新额度'),
           ),
           second: OutlinedButton(
             onPressed: () => context.go(AppRoutes.accountSettings(a.id)),
-            style: OutlinedButton.styleFrom(shape: const StadiumBorder()),
             child: const Text('修改账期'),
           ),
         ),
@@ -268,7 +266,7 @@ class _LimitSection extends StatelessWidget {
     if (snapshot == null) {
       return const NoticeCard(
         icon: Icons.checklist,
-        text: '还没有额度快照：可用容量未知（不以 0 代替）。点「更新额度」记录。',
+        text: '暂未记录可用额度，请点上方「更新额度」补充。',
       );
     }
     final c = sub.currency;
@@ -287,7 +285,7 @@ class _LimitSection extends StatelessWidget {
           ),
         if (snapshot.specialMinor > 0)
           LabeledValue(
-            label: '专项额度（${snapshot.specialPurpose ?? ''}，不用于普通消费）',
+            label: '专项额度（${snapshot.specialPurpose ?? ''}）',
             value: MoneyText(
               minor: snapshot.specialMinor,
               currency: c,
@@ -295,7 +293,7 @@ class _LimitSection extends StatelessWidget {
             ),
           ),
         LabeledValue(
-          label: '银行可用（原值）',
+          label: '银行显示可用',
           value: MoneyText(
             minor: snapshot.availableRawMinor,
             currency: c,
@@ -305,9 +303,7 @@ class _LimitSection extends StatelessWidget {
         ),
         LabeledValue(
           label: '预授权',
-          value: Text(
-            snapshot.includesHolds ? '已含在银行可用里，不再扣减' : '未含在银行可用里，按已知金额扣减',
-          ),
+          value: Text(snapshot.includesHolds ? '已从银行可用中扣除' : '未包含，另行扣减'),
         ),
         if (!snapshot.includesHolds && snapshot.holdsMinor > 0)
           LabeledValue(
@@ -319,7 +315,7 @@ class _LimitSection extends StatelessWidget {
             ),
           ),
         LabeledValue(
-          label: '可用容量',
+          label: '可刷额度',
           value: MoneyText(
             minor: sub.capacity,
             currency: c,
@@ -330,10 +326,10 @@ class _LimitSection extends StatelessWidget {
           const NoticeCard(
             icon: Icons.warning_amber_outlined,
             tone: NoticeTone.danger,
-            text: '超限：银行可用额为负（原值保留），可供新增消费的容量为 0。',
+            text: '当前账户已超限，可刷额度为 0。',
           ),
         LabeledValue(
-          label: '快照时点',
+          label: '更新时间',
           value: Text(
             '${snapshot.balanceAsOf.substring(0, 16).replaceFirst('T', ' ')} · ${ageText(sub.snapshotAgeDays ?? 0)}',
           ),
@@ -341,7 +337,7 @@ class _LimitSection extends StatelessWidget {
         if (sub.stale)
           const NoticeCard(
             icon: Icons.schedule,
-            text: '额度快照已超过 7 天，可用容量只是假设分析。',
+            text: '额度已超过 7 天未更新，建议核对银行最新额度。',
           ),
       ],
     );

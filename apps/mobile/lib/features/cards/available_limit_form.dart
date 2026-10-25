@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/calm_panel.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/repositories/card_wallet_reader.dart';
@@ -262,43 +263,60 @@ class _AvailableLimitFormState extends ConsumerState<AvailableLimitForm>
   Widget build(BuildContext context) => ListView(
     padding: const EdgeInsets.all(CfSpace.md),
     children: [
-      if (widget.account.currencies.length > 1)
-        DropdownButtonFormField<String>(
-          isExpanded: true,
-          initialValue: _currencyId,
-          decoration: const InputDecoration(labelText: '币种'),
-          items: [
-            for (final sub in widget.account.currencies)
-              DropdownMenuItem(value: sub.row.id, child: Text(sub.currency)),
+      CalmPanel(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.account.currencies.length > 1) ...[
+              DropdownButtonFormField<String>(
+                isExpanded: true,
+                initialValue: _currencyId,
+                decoration: const InputDecoration(labelText: '币种'),
+                items: [
+                  for (final sub in widget.account.currencies)
+                    DropdownMenuItem(
+                      value: sub.row.id,
+                      child: Text(sub.currency),
+                    ),
+                ],
+                onChanged: (v) => setState(() {
+                  _currencyId = v!;
+                  _amount.clear();
+                  _error = null;
+                }),
+              ),
+              const SizedBox(height: CfSpace.md),
+            ],
+            TextField(
+              controller: _amount,
+              autofillHints: null,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
+              decoration: InputDecoration(
+                labelText: '当前可用额度',
+                errorText: _error,
+                helperText: '填写银行 App 当前显示的可用额度',
+                helperMaxLines: 2,
+              ),
+            ),
+            const SizedBox(height: CfSpace.md),
+            FilledButton(
+              onPressed: _saving ? null : _save,
+              child: Text(_saving ? '正在保存…' : '更新额度'),
+            ),
           ],
-          onChanged: (v) => setState(() {
-            _currencyId = v!;
-            _amount.clear();
-            _error = null;
-          }),
         ),
-      TextField(
-        controller: _amount,
-        autofillHints: null,
-        keyboardType: const TextInputType.numberWithOptions(
-          decimal: true,
-          signed: true,
-        ),
-        decoration: InputDecoration(
-          labelText: '当前可用额度',
-          errorText: _error,
-          helperText: '填写银行 App 当前显示的可用额度',
-          helperMaxLines: 2,
-        ),
-      ),
-      const SizedBox(height: CfSpace.md),
-      FilledButton(
-        onPressed: _saving ? null : _save,
-        child: Text(_saving ? '正在保存…' : '更新额度'),
       ),
       const SizedBox(height: CfSpace.sm),
-      const Text('更新时间自动记录。临时额度变化后，请重新更新可用额度。'),
-      TextButton(onPressed: widget.onDetails, child: const Text('详细记录')),
+      Align(
+        alignment: AlignmentDirectional.centerEnd,
+        child: TextButton(
+          onPressed: widget.onDetails,
+          child: const Text('详细记录'),
+        ),
+      ),
     ],
   );
 }

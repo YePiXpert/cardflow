@@ -72,10 +72,10 @@ void main() {
     await _scrollIn(tester, LimitSnapshotSection, used);
     await tester.enterText(used, '0');
     await tester.enterText(
-      find.widgetWithText(TextField, '银行可用（银行显示的数，可为负）'),
+      find.widgetWithText(TextField, '银行当前可用额度'),
       '12,345.67',
     );
-    final record = find.widgetWithText(FilledButton, '记录新快照');
+    final record = find.widgetWithText(FilledButton, '保存额度记录');
     await _scrollIn(tester, LimitSnapshotSection, record);
     await tester.tap(record);
     await tester.pumpAndSettle();

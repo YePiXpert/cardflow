@@ -21,8 +21,7 @@ final resetImpactProvider = FutureProvider.autoDispose<String>((ref) async {
   int n(Map<String, int>? rows, String table) => rows?[table] ?? 0;
   final demoTotal = demoRows?.values.fold<int>(0, (a, b) => a + b) ?? 0;
   return '将删除这台 iPhone 上的全部卡序数据：真实空间里 ${n(realRows, 'credit_accounts')} 个信用账户、'
-      '${n(realRows, 'cards')} 张卡片、${n(realRows, 'statements')} 期账单、${n(realRows, 'repayments')} 笔还款、'
-      '${n(realRows, 'cash_accounts')} 个现金账户、${n(realRows, 'cash_events')} 笔收支；'
+      '${n(realRows, 'cards')} 张卡片；'
       '${demo == null ? '' : '演示空间的 $demoTotal 条示例数据；'}以及钥匙串里的数据库密钥。'
       '${ResetLocalDataPage.irreversible}';
 });
@@ -101,12 +100,6 @@ class _ResetLocalDataPageState extends ConsumerState<ResetLocalDataPage> {
             tone: NoticeTone.danger,
             text: impact,
           ),
-          if (widget.fromSettings)
-            const NoticeCard(
-              icon: Icons.info_outline,
-              tone: NoticeTone.unknown,
-              text: '重置前的设备认证（面容/密码）在后续版本提供；现在只需输入确认词。',
-            ),
           const SizedBox(height: CfSpace.md),
           Text(
             '请输入"${ResetLocalDataPage.confirmWord}"以确认',

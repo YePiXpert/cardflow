@@ -265,10 +265,10 @@ class _LimitSnapshotSectionState extends ConsumerState<LimitSnapshotSection> {
         _amount(_special, '专项额度（可选，不用于普通消费）', 'special'),
         _text(_purpose, '专项额度用途（有专项额度时必填）', 'specialPurpose'),
         _amount(_used, '已用', 'used'),
-        _amount(_available, '银行可用（银行显示的数，可为负）', 'available'),
+        _amount(_available, '银行当前可用额度', 'available'),
         SwitchListTile(
           title: const Text('银行可用已扣除预授权'),
-          subtitle: const Text('打开：不再重复扣减；关闭：按下面的预授权金额扣减一次'),
+          subtitle: const Text('若银行可用额度尚未扣除预授权，请关闭此项并填写预授权金额'),
           value: _includesHolds,
           onChanged: (value) => setState(() => _includesHolds = value),
         ),
@@ -294,7 +294,7 @@ class _LimitSnapshotSectionState extends ConsumerState<LimitSnapshotSection> {
         ),
         _padded(
           DateField(
-            label: '实际余额时点：日期（不晚于今天）',
+            label: '额度查询日期',
             value: _asOfDate,
             first: LocalDate(2000, 1, 1),
             last: today,
@@ -303,7 +303,7 @@ class _LimitSnapshotSectionState extends ConsumerState<LimitSnapshotSection> {
         ),
         _text(
           _time,
-          '实际余额时点：时刻（HH:MM，${describeZone(widget.account.account.businessTz)}）',
+          '额度查询时间（HH:MM）',
           'time',
           keyboardType: TextInputType.datetime,
         ),
@@ -316,7 +316,7 @@ class _LimitSnapshotSectionState extends ConsumerState<LimitSnapshotSection> {
         _padded(
           FilledButton(
             onPressed: _saving ? null : () => unawaited(_save()),
-            child: Text(_saving ? '正在保存…' : '记录新快照'),
+            child: Text(_saving ? '正在保存…' : '保存额度记录'),
           ),
         ),
         const SectionTitle('历史'),

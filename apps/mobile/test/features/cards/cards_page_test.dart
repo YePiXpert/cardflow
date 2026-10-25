@@ -100,11 +100,11 @@ void main() {
     expect(find.text(CardsPage.firstRunMessage), findsNothing);
   });
 
-  testWidgets('成功（演示数据）：授信池 › 账户 › 卡片；超限账户标"超限"、容量 0', (tester) async {
+  testWidgets('成功（演示数据）：共享额度 › 账户 › 卡片；超限账户标"超限"、容量 0', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
     await goTo(tester, AppRoutes.cards);
-    expect(find.text('授信池 · 长江共享额度'), findsOneWidget);
-    expect(find.text('池上限'), findsOneWidget);
+    expect(find.text('共享额度 · 长江共享额度'), findsOneWidget);
+    expect(find.text('共享上限'), findsOneWidget);
     for (final name in <String>['卡 A', '卡 B', '卡 D', '卡 C']) {
       await tester.scrollUntilVisible(find.text(name), 200);
       expect(find.text(name), findsOneWidget, reason: name);

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/calm_panel.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
 import '../../data/db/app_database.dart';
@@ -208,56 +209,82 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
       return ListView(
         padding: const EdgeInsets.all(CfSpace.md),
         children: [
-          day(
-            '每月账单日',
-            _statementDay,
-            (v) => setState(() {
-              _statementDay = v;
-              inferOffset();
-            }),
-          ),
-          const SizedBox(height: CfSpace.md),
-          if (_dueKind == DueKind.fixedDay)
-            day(
-              '还款日',
-              _dueDay,
-              (v) => setState(() {
-                _dueDay = v;
-                inferOffset();
-              }),
-            )
-          else
-            DropdownButtonFormField<int>(
-              isExpanded: true,
-              initialValue: _dueDays,
-              decoration: const InputDecoration(labelText: '账单后天数'),
-              items: [
-                for (var d = 1; d <= 60; d++)
-                  DropdownMenuItem(value: d, child: Text('$d 天')),
+          CalmPanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                day(
+                  '每月账单日',
+                  _statementDay,
+                  (v) => setState(() {
+                    _statementDay = v;
+                    inferOffset();
+                  }),
+                ),
+                const SizedBox(height: CfSpace.md),
+                if (_dueKind == DueKind.fixedDay)
+                  day(
+                    '还款日',
+                    _dueDay,
+                    (v) => setState(() {
+                      _dueDay = v;
+                      inferOffset();
+                    }),
+                  )
+                else
+                  DropdownButtonFormField<int>(
+                    isExpanded: true,
+                    initialValue: _dueDays,
+                    decoration: const InputDecoration(labelText: '账单后天数'),
+                    items: [
+                      for (var d = 1; d <= 60; d++)
+                        DropdownMenuItem(value: d, child: Text('$d 天')),
+                    ],
+                    onChanged: (v) => setState(() => _dueDays = v),
+                  ),
+                const SizedBox(height: CfSpace.sm),
+                if (_dueKind == DueKind.fixedDay && _dueDay != null)
+                  Text(
+                    '${_monthOffset == 0
+                        ? '当月'
+                        : _monthOffset == 1
+                        ? '次月'
+                        : '再下月'} $_dueDay 日还款 · ${_inclusive ? '账单日当天计入本期' : '账单日当天计入下一期'}',
+                    style: secondary,
+                  ),
+                if (preview.isNotEmpty) ...[
+                  const SizedBox(height: CfSpace.xxs),
+                  Text(
+                    '今天消费预计还款：${preview.first.dueDate}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.action,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+                if (problem != null) ...[
+                  const SizedBox(height: CfSpace.xs),
+                  Text(problem, style: secondary),
+                ],
+                if (_saveError != null) ...[
+                  const SizedBox(height: CfSpace.xs),
+                  Text(_saveError!, style: TextStyle(color: colors.danger.fg)),
+                ],
+                const SizedBox(height: CfSpace.md),
+                FilledButton(
+                  onPressed: _saving || problem != null ? null : _save,
+                  child: const Text('保存'),
+                ),
               ],
-              onChanged: (v) => setState(() => _dueDays = v),
             ),
-          const SizedBox(height: CfSpace.sm),
-          if (_dueKind == DueKind.fixedDay && _dueDay != null)
-            Text(
-              '${_monthOffset == 0
-                  ? '当月'
-                  : _monthOffset == 1
-                  ? '次月'
-                  : '再下月'} $_dueDay 日还款',
-            ),
-          Text(_inclusive ? '账单日当天计入本期' : '账单日当天计入下一期'),
-          if (preview.isNotEmpty) Text('今天消费预计还款：${preview.first.dueDate}'),
-          if (problem != null) Text(problem),
-          if (_saveError != null) Text(_saveError!),
-          const SizedBox(height: CfSpace.md),
-          FilledButton(
-            onPressed: _saving || problem != null ? null : _save,
-            child: const Text('保存'),
           ),
-          TextButton(
-            onPressed: () => setState(() => _details = true),
-            child: const Text('更多账期设置'),
+          const SizedBox(height: CfSpace.sm),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: TextButton(
+              onPressed: () => setState(() => _details = true),
+              child: const Text('更多账期设置'),
+            ),
           ),
         ],
       );
@@ -280,12 +307,11 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: <Widget>[
               const StatusBadge(
-                label: '用户声明',
+                label: '手动设置',
                 icon: Icons.person_outline,
                 tone: NoticeTone.unknown,
               ),
-              const OutlinedButton(onPressed: null, child: Text('采用官方模板')),
-              Text('官方模板需要连接服务器，后续提供。', style: secondary),
+              Text('按银行账单填写', style: secondary),
             ],
           ),
         ),
@@ -392,14 +418,14 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
           ),
           const SwitchListTile(
             title: Text('按工作日计算'),
-            subtitle: Text('需要已核验的工作日日历，本阶段不可用。'),
+            subtitle: Text('默认按自然日计算'),
             value: false,
             onChanged: null,
           ),
         ],
         const SwitchListTile(
           title: Text('到期日遇节假日顺延'),
-          subtitle: Text('需要已核验的工作日日历，本阶段不可用；不顺延。'),
+          subtitle: Text('默认按固定还款日计算，不顺延'),
           value: false,
           onChanged: null,
         ),
@@ -409,7 +435,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
             isExpanded: true,
             initialValue: _zoneId,
             decoration: const InputDecoration(
-              labelText: '业务时区（账期按它计算，与手机时区无关）',
+              labelText: '账单时区',
               border: OutlineInputBorder(),
             ),
             items: <DropdownMenuItem<String>>[
@@ -544,7 +570,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
           NoticeCard(
             icon: Icons.error_outline,
             tone: NoticeTone.danger,
-            text: '$problem（不能保存）',
+            text: problem,
           )
         else
           for (var i = 0; i < preview.length; i++)
@@ -565,7 +591,7 @@ class _RuleEditorSectionState extends ConsumerState<RuleEditorSection> {
             onPressed: _saving || problem != null || effectiveProblem != null
                 ? null
                 : () => unawaited(_save()),
-            child: Text(_saving ? '正在保存…' : '保存为用户声明'),
+            child: Text(_saving ? '正在保存…' : '保存规则'),
           ),
         ),
         const SectionTitle('规则版本历史'),

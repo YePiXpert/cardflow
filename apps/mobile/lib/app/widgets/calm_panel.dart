@@ -20,9 +20,10 @@ class CalmPanel extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.surface,
-        border: dark || featured
-            ? Border.all(color: c.divider, width: CfStroke.hairline)
-            : null,
+        border: Border.all(
+          color: featured ? c.action.withValues(alpha: 0.45) : c.divider,
+          width: featured ? CfStroke.hairline * 1.5 : CfStroke.hairline,
+        ),
         borderRadius: BorderRadius.circular(CfRadius.card),
         boxShadow: dark ? null : CfShadow.soft,
       ),

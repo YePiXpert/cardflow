@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/calm_panel.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/ids.dart';
@@ -124,25 +125,33 @@ class _NewCardPageState extends ConsumerState<NewCardPage>
     body: ListView(
       padding: const EdgeInsets.all(CfSpace.md),
       children: [
-        _field(_name, '卡名', helper: '例如：招行生活卡'),
-        const SizedBox(height: CfSpace.md),
-        _field(_tail, '末四位', number: true, helper: '只填卡号最后 4 位'),
-        const SizedBox(height: CfSpace.md),
-        _field(
-          _available,
-          '当前可用额度',
-          number: true,
-          helper: '人民币，填写银行 App 当前显示的可用额度',
-        ),
-        const SizedBox(height: CfSpace.md),
-        _day('账单日', _statement, (v) => setState(() => _statement = v)),
-        const SizedBox(height: CfSpace.md),
-        _day('还款日', _due, (v) => setState(() => _due = v)),
-        const SizedBox(height: CfSpace.sm),
-        if (_statement != null && _due != null)
-          Text(
-            '每月 $_statement 日出账，${_due! <= _statement! ? '次月' : '当月'} $_due 日还款。账单日当天计入本期。',
+        CalmPanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _field(_name, '卡名', helper: '例如：招行生活卡'),
+              const SizedBox(height: CfSpace.md),
+              _field(_tail, '末四位', number: true, helper: '只填卡号最后 4 位'),
+              const SizedBox(height: CfSpace.md),
+              _field(
+                _available,
+                '当前可用额度',
+                number: true,
+                helper: '填写银行 App 当前显示的可用额度',
+              ),
+              const SizedBox(height: CfSpace.md),
+              _day('账单日', _statement, (v) => setState(() => _statement = v)),
+              const SizedBox(height: CfSpace.md),
+              _day('还款日', _due, (v) => setState(() => _due = v)),
+              if (_statement != null && _due != null) ...[
+                const SizedBox(height: CfSpace.sm),
+                Text(
+                  '每月 $_statement 日出账，${_due! <= _statement! ? '次月' : '当月'} $_due 日还款。',
+                ),
+              ],
+            ],
           ),
+        ),
         if (_error != null) ...[
           const SizedBox(height: CfSpace.md),
           Text(

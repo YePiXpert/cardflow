@@ -57,7 +57,7 @@ class DemoBannerFrame extends ConsumerWidget {
     final confirmed = await confirmAction(
       dialogContext,
       title: '退出演示？',
-      message: '将回到真实数据（没有真实数据时回到欢迎页）。演示数据保留，可在"我的"里「清除演示数据」。',
+      message: '退出后将回到你的卡片列表；演示数据保留，可随时在“我的”页面清除。',
       confirmLabel: '退出演示',
     );
     if (confirmed) {

@@ -155,7 +155,7 @@ final class RuleSubject {
 
 /// 规则来源（P-02/P-03 的来源徽标）。
 enum RuleSource {
-  userDeclared('user_declared', '用户声明'),
+  userDeclared('user_declared', '手动设置'),
   officialTemplate('official_template', '官方模板');
 
   const RuleSource(this.code, this.label);
@@ -170,7 +170,7 @@ enum RuleSource {
 enum ReviewStatus {
   draft('draft', '草稿'),
   inReview('in_review', '审核中'),
-  userDeclared('user_declared', '用户声明'),
+  userDeclared('user_declared', '已生效'),
   expired('expired', '已失效');
 
   const ReviewStatus(this.code, this.label);
@@ -201,7 +201,7 @@ enum SnapshotSource {
 /// 确认层级（ui-spec §4.3）。
 enum ConfirmationLevel {
   systemEstimated('system_estimated', '系统估计'),
-  userConfirmed('user_confirmed', '你已确认'),
+  userConfirmed('user_confirmed', '手动记录'),
   bankConfirmed('bank_confirmed', '银行确认');
 
   const ConfirmationLevel(this.code, this.label);

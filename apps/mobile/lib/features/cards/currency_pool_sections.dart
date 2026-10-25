@@ -57,11 +57,11 @@ class _CurrencyAccountsSectionState
     return ListView(
       padding: const EdgeInsets.only(bottom: CfSpace.xl),
       children: <Widget>[
-        const SectionTitle('币种子账户'),
+        const SectionTitle('已启用币种'),
         for (final sub in widget.account.currencies)
           ListTile(
             title: Text(currencyLabel(sub.currency)),
-            subtitle: Text(sub.row.isPrimary ? '主子账户（不可删除）' : '外币子账户'),
+            subtitle: Text(sub.row.isPrimary ? '默认币种' : '外币子账户'),
             trailing: sub.row.isPrimary
                 ? null
                 : IconButton(
@@ -71,7 +71,7 @@ class _CurrencyAccountsSectionState
                       final confirmed = await confirmAction(
                         context,
                         title: '删除${currencyLabel(sub.currency)}子账户？',
-                        message: '影响：删除这 1 个子账户。已有额度快照、账期规则、交易、账单、还款或分期的子账户不能删除（不会丢数据）。',
+                        message: '删除后将移除该外币币种；已有额度记录或账期规则的子账户无法删除。',
                         confirmLabel: '删除',
                         destructive: true,
                       );
@@ -92,7 +92,7 @@ class _CurrencyAccountsSectionState
                     },
                   ),
           ),
-        const SectionTitle('增加子账户'),
+        const SectionTitle('增加外币币种'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
           child: Column(
@@ -102,7 +102,7 @@ class _CurrencyAccountsSectionState
                 isExpanded: true,
                 initialValue: _toAdd,
                 decoration: const InputDecoration(
-                  labelText: '币种（只支持这 13 种）',
+                  labelText: '选择外币币种',
                   border: OutlineInputBorder(),
                 ),
                 items: <DropdownMenuItem<String>>[
@@ -237,11 +237,7 @@ class _PoolSectionState extends ConsumerState<PoolSection> {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(CfSpace.md),
-          child: Text(
-            '授信池表示多个信用账户共享的额度上限（例如"名下所有卡共享额度"）。池内账户可用合计不超过池可用；'
-            '本期只支持单层池。',
-            style: secondary,
-          ),
+          child: Text('同一家银行的多张卡片共享总额度时，可加入共享授信池统一计算可用上限。', style: secondary),
         ),
         if (pool != null) ...<Widget>[
           SectionTitle('当前授信池 · ${pool.pool.name}'),
@@ -256,7 +252,7 @@ class _PoolSectionState extends ConsumerState<PoolSection> {
           if (pool.missingSnapshots > 0)
             NoticeCard(
               icon: Icons.checklist,
-              text: '池可用：数据不全（${pool.missingSnapshots} 个账户缺额度快照），不以 0 代替。',
+              text: '还有 ${pool.missingSnapshots} 张卡片未记录额度，请补充后再计算共享可用额度。',
             )
           else ...<Widget>[
             LabeledValue(
@@ -268,7 +264,7 @@ class _PoolSectionState extends ConsumerState<PoolSection> {
               ),
             ),
             LabeledValue(
-              label: '池可用（池上限 − 已用，原值）',
+              label: '共享池剩余可用',
               value: MoneyText(
                 minor: pool.rawAvailable,
                 currency: pool.pool.currency,

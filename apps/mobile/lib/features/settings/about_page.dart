@@ -86,7 +86,7 @@ class AboutPage extends ConsumerWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
-            child: Text('App 内不打开浏览器：可长按选中，或复制后在浏览器里打开。', style: secondary),
+            child: Text('可复制地址后在浏览器中查看项目源码。', style: secondary),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(

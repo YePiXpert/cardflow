@@ -15,8 +15,8 @@ import 'rule_editor_section.dart';
 enum AccountSettingsSection {
   rule('rule', '账期规则'),
   limits('limits', '可用额度'),
-  currencies('currencies', '币种子账户'),
-  pool('pool', '授信池');
+  currencies('currencies', '多币种'),
+  pool('pool', '共享额度');
 
   const AccountSettingsSection(this.code, this.label);
 

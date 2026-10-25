@@ -176,9 +176,9 @@ void main() {
         page: _section,
       );
       await _pickDropdown(tester, '到期日', '25 日');
-      await _scrollTo(tester, find.text('到期日须晚于账单日（不能保存）'), page: _section);
-      expect(find.text('到期日须晚于账单日（不能保存）'), findsOneWidget);
-      final save = find.widgetWithText(FilledButton, '保存为用户声明');
+      await _scrollTo(tester, find.text('到期日须晚于账单日'), page: _section);
+      expect(find.text('到期日须晚于账单日'), findsOneWidget);
+      final save = find.widgetWithText(FilledButton, '保存规则');
       await _scrollTo(tester, save, page: _section);
       expect(tester.widget<FilledButton>(save).onPressed, isNull);
       await _scrollTo(
@@ -206,7 +206,7 @@ void main() {
         page: _section,
       );
       expect(find.text('第 1 期'), findsNothing);
-      final save = find.widgetWithText(FilledButton, '保存为用户声明');
+      final save = find.widgetWithText(FilledButton, '保存规则');
       await _scrollTo(tester, save, page: _section);
       expect(tester.widget<FilledButton>(save).onPressed, isNull);
       // 只选了账单日：仍不能保存。
@@ -241,7 +241,7 @@ void main() {
         page: _section,
       );
       await _pickDropdown(tester, '到期日', '28 日');
-      final save = find.widgetWithText(FilledButton, '保存为用户声明');
+      final save = find.widgetWithText(FilledButton, '保存规则');
       await _scrollTo(tester, save, page: _section);
       await tester.tap(save);
       await tester.pumpAndSettle();
@@ -261,7 +261,7 @@ void main() {
       await tester.tap(save);
       await tester.pumpAndSettle();
       await _scrollTo(tester, find.textContaining('第 2 版'), page: _section);
-      expect(find.textContaining('第 2 版 · 用户声明'), findsOneWidget);
+      expect(find.textContaining('第 2 版 · 已生效'), findsOneWidget);
       expect(find.textContaining('2026-10-18 起'), findsOneWidget);
       await _scrollTo(
         tester,
@@ -284,10 +284,10 @@ void main() {
       );
       await tester.enterText(find.widgetWithText(TextField, '已用'), '10,300');
       await tester.enterText(
-        find.widgetWithText(TextField, '银行可用（银行显示的数，可为负）'),
+        find.widgetWithText(TextField, '银行当前可用额度'),
         '-300',
       );
-      final record = find.widgetWithText(FilledButton, '记录新快照');
+      final record = find.widgetWithText(FilledButton, '保存额度记录');
       await _scrollTo(tester, record, page: _section);
       await tester.tap(record);
       await tester.pumpAndSettle();
@@ -308,18 +308,18 @@ void main() {
       expect(find.text(LimitSnapshotSection.savedMessage), findsOneWidget);
       await _scrollTo(
         tester,
-        find.textContaining('银行 App · 你已确认'),
+        find.textContaining('银行 App · 手动记录'),
         page: _section,
       );
-      expect(find.textContaining('银行 App · 你已确认'), findsOneWidget);
+      expect(find.textContaining('银行 App · 手动记录'), findsOneWidget);
     });
 
-    testWidgets('币种子账户：增加美元、删除美元（须确认）；主子账户不可删', (tester) async {
+    testWidgets('币种子账户：增加美元、删除美元（须确认）；默认币种不可删', (tester) async {
       await pumpCardFlowApp(tester, seed: _bareCard);
       await openSettings(tester, section: 'currencies');
-      expect(find.text('主子账户（不可删除）'), findsOneWidget);
+      expect(find.text('默认币种'), findsOneWidget);
       await tester.tap(
-        find.widgetWithText(DropdownButtonFormField<String>, '币种（只支持这 13 种）'),
+        find.widgetWithText(DropdownButtonFormField<String>, '选择外币币种'),
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('美元（USD）').last);

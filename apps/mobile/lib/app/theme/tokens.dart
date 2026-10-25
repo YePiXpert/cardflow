@@ -41,11 +41,11 @@ abstract final class CfRadius {
   /// 卡片内的小块（详情页的金额格、分段控件）。
   static const double tile = 16;
 
-  /// 分组卡片、列表卡（简报 U-1 §5：圆角 18–22，取 20）。
-  static const double card = 20;
+  /// 分组卡片、列表卡。
+  static const double card = 16;
 
-  /// 顶部看板与银行卡面（比分组卡片更圆，突出层级）。
-  static const double hero = 24;
+  /// 顶部看板与银行卡面。
+  static const double hero = 20;
 
   /// 胶囊（徽章、日期与币种选择）。
   static const double pill = 100;
@@ -87,13 +87,12 @@ abstract final class CfSize {
 abstract final class CfShadow {
   /// 浅色模式下分组卡片的柔和投影。
   static const List<BoxShadow> soft = <BoxShadow>[
-    BoxShadow(color: Color(0x0F101828), blurRadius: 24, offset: Offset(0, 8)),
-    BoxShadow(color: Color(0x08101828), blurRadius: 4, offset: Offset(0, 1)),
+    BoxShadow(color: Color(0x0A0F172A), blurRadius: 12, offset: Offset(0, 2)),
   ];
 
   /// 卡面与看板的投影（深浅色通用）。
   static const List<BoxShadow> lifted = <BoxShadow>[
-    BoxShadow(color: Color(0x33000000), blurRadius: 28, offset: Offset(0, 12)),
+    BoxShadow(color: Color(0x1E0F172A), blurRadius: 16, offset: Offset(0, 4)),
   ];
 }
 
@@ -373,9 +372,9 @@ class CardFlowColors extends ThemeExtension<CardFlowColors> {
     defect: CfTone(fg: Color(0xFF7B2D8F), bg: Color(0xFFF4E8F7)),
     bank: CfTone(fg: Color(0xFF1C4FA0), bg: Color(0xFFE6EEFA)),
     demo: CfTone(fg: Color(0xFF4A2E8C), bg: Color(0xFFEFEAFB)),
-    hero: <Color>[Color(0xFF2A5BD7), Color(0xFF1E4DB7), Color(0xFF163C93)],
+    hero: <Color>[Color(0xFF1E293B), Color(0xFF172033), Color(0xFF0F172A)],
     heroText: Color(0xFFFFFFFF),
-    heroTextSecondary: Color(0xFFE4ECFF),
+    heroTextSecondary: Color(0xFFCBD5E1),
   );
 
   static const CardFlowColors dark = CardFlowColors(
@@ -398,9 +397,9 @@ class CardFlowColors extends ThemeExtension<CardFlowColors> {
     defect: CfTone(fg: Color(0xFFE2A8F0), bg: Color(0xFF332D3B)),
     bank: CfTone(fg: Color(0xFF9DBEFF), bg: Color(0xFF29303E)),
     demo: CfTone(fg: Color(0xFFDDD0EF), bg: Color(0xFF2A2340)),
-    hero: <Color>[Color(0xFF22386B), Color(0xFF1A2B55), Color(0xFF101C3A)],
-    heroText: Color(0xFFF5F8FF),
-    heroTextSecondary: Color(0xFFBFCDEA),
+    hero: <Color>[Color(0xFF1E293B), Color(0xFF172033), Color(0xFF111827)],
+    heroText: Color(0xFFF8FAFC),
+    heroTextSecondary: Color(0xFFCBD5E1),
   );
 
   /// 当前主题的语义色；主题里没有登记时按亮度回退到内置的两套。

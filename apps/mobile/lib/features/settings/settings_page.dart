@@ -32,7 +32,7 @@ class SettingsPage extends ConsumerWidget {
   static const String localOnlyNote = '数据只保存在这台 iPhone 上，加密存储，卡序不会上传到任何服务器。';
 
   /// 隐藏金额开关的说明。
-  static const String hideAmountsNote = '金额一律显示为 ••••（读屏读"金额已隐藏"）；开关会记住。';
+  static const String hideAmountsNote = '开启后所有金额显示为 ••••，保护屏幕隐私';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -97,20 +97,20 @@ class SettingsPage extends ConsumerWidget {
                 title: Text(
                   workspace == null ? '没有当前空间' : '当前：${workspace.kind.label}空间',
                 ),
-                subtitle: Text(demo ? '合成的示例数据，与真实数据隔离、互不可见' : '你自己的数据'),
+                subtitle: Text(demo ? '当前使用预置示例卡片，与真实数据独立' : '本机加密保存的真实卡片数据'),
               ),
               if (demo)
                 ListTile(
                   leading: const Icon(Icons.logout),
                   title: const Text('退出演示'),
-                  subtitle: const Text('回到真实数据（没有时回到欢迎页）'),
+                  subtitle: const Text('切换回真实卡片列表'),
                   onTap: () => unawaited(_exitDemo(context, ref)),
                 )
               else
                 ListTile(
                   leading: const Icon(Icons.science_outlined),
                   title: const Text('体验演示'),
-                  subtitle: const Text('切换到演示空间（与真实数据隔离）'),
+                  subtitle: const Text('查看预置的多卡比较与拆分示例'),
                   onTap: () => unawaited(enterDemoWorkspace(context, ref)),
                 ),
               if (demoRows != null)
@@ -156,7 +156,7 @@ class SettingsPage extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.waving_hand_outlined),
                 title: const Text('欢迎与开始方式'),
-                subtitle: const Text('卡序的使用边界与开始方式'),
+                subtitle: const Text('查看功能介绍与演示模式'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => context.go(AppRoutes.welcome),
               ),
@@ -191,7 +191,7 @@ class SettingsPage extends ConsumerWidget {
     final confirmed = await confirmAction(
       context,
       title: '退出演示？',
-      message: '将回到真实数据（没有真实数据时回到欢迎页）。演示数据保留，可在这里「清除演示数据」。',
+      message: '退出后将回到你的卡片列表；演示数据保留，可随时在这里「清除演示数据」。',
       confirmLabel: '退出演示',
     );
     if (confirmed) {
