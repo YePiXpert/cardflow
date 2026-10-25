@@ -6,10 +6,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
-import '../../app/widgets/bank_badge.dart';
 import '../../app/widgets/calm_panel.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/money_text.dart';
+import '../../app/widgets/premium.dart';
 import '../../app/widgets/state_views.dart';
 import '../../data/db/app_database.dart';
 import '../../data/mapping/domain_mapping.dart';
@@ -47,71 +47,122 @@ class AccountDetailPage extends ConsumerWidget {
     final matches = wallet.accounts.where((a) => a.id == accountId);
     if (matches.isEmpty) return const Center(child: Text('卡片已不存在'));
     final a = matches.first;
+    final t = Theme.of(context).textTheme;
+    final c = CardFlowColors.of(context);
+    final primary = a.primaryCurrency;
+    final forecast = primary.forecast;
+    final predicted = forecast is ForecastPredicted
+        ? forecast.conservative
+        : null;
     return ListView(
-      padding: const EdgeInsets.all(CfSpace.md),
+      padding: const EdgeInsets.fromLTRB(
+        CfSpace.md,
+        CfSpace.xs,
+        CfSpace.md,
+        CfSpace.xl,
+      ),
       children: <Widget>[
-        CalmPanel(
-          featured: true,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        BankCardFace(
+          bankName: a.bank.name,
+          subtitle: a.displayName,
+          last4s: <String>[for (final card in a.activeCards) card.last4],
+          badge: a.pool == null ? null : '共享额度',
+          badgeIcon: Icons.hub_rounded,
+          fraction: capacityFraction(primary),
+          footer: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  BankBadge(bankName: a.bank.name),
-                  const SizedBox(width: CfSpace.sm),
-                  Expanded(
-                    child: Text(
-                      a.displayName,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: CfSpace.sm),
               Text(
-                '${a.bank.name} · ${a.activeCards.map((c) => '···· ${c.last4}').join(' / ')}',
+                '可用额度',
+                style: t.bodySmall?.copyWith(color: CfBankColors.mark),
               ),
-              const SizedBox(height: CfSpace.lg),
-              const Text('可用额度'),
-              const SizedBox(height: CfSpace.xs),
               MoneyText(
-                minor: a.primaryCurrency.capacity,
-                currency: a.primaryCurrency.currency,
+                minor: primary.capacity,
+                currency: primary.currency,
                 textAlign: TextAlign.start,
                 semanticsPrefix: '可用额度',
-                style: Theme.of(context).textTheme.headlineLarge,
+                style: CfType.amountDetail.toTextStyle().copyWith(
+                  color: CfBankColors.mark,
+                ),
               ),
             ],
           ),
         ),
         const SizedBox(height: CfSpace.md),
-        Wrap(
-          spacing: CfSpace.sm,
-          children: <Widget>[
-            FilledButton(
-              onPressed: () => context.go(
-                AppRoutes.accountSettings(a.id, section: 'limits'),
-              ),
-              child: const Text('更新额度'),
-            ),
-            OutlinedButton(
-              onPressed: () => context.go(AppRoutes.accountSettings(a.id)),
-              child: const Text('修改账期'),
-            ),
-          ],
+        ActionPair(
+          first: FilledButton(
+            onPressed: () =>
+                context.go(AppRoutes.accountSettings(a.id, section: 'limits')),
+            style: FilledButton.styleFrom(shape: const StadiumBorder()),
+            child: const Text('更新额度'),
+          ),
+          second: OutlinedButton(
+            onPressed: () => context.go(AppRoutes.accountSettings(a.id)),
+            style: OutlinedButton.styleFrom(shape: const StadiumBorder()),
+            child: const Text('修改账期'),
+          ),
         ),
-        for (final sub in a.currencies) ...<Widget>[
-          SectionTitle(sub.currency),
+        if (predicted != null) ...<Widget>[
+          const SectionHeader(title: '今天刷这张卡'),
           CalmPanel(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                MetricRow(
+                  metrics: <Metric>[
+                    Metric(
+                      label: '距预计还款',
+                      value: Text(
+                        '${predicted.dueDate.differenceInDays(a.today)} 天',
+                      ),
+                      caption: '${predicted.dueDate}',
+                      emphasized: true,
+                    ),
+                    Metric(
+                      label: '距出账',
+                      value: Text(
+                        predicted.statementDate.differenceInDays(a.today) <= 0
+                            ? '今天'
+                            : '${predicted.statementDate.differenceInDays(a.today)} 天',
+                      ),
+                      caption: '${predicted.statementDate}',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: CfSpace.md),
+                SwipeTimeline(
+                  swipeOn: a.today,
+                  statementDate: predicted.statementDate,
+                  dueDate: predicted.dueDate,
+                ),
+                const SizedBox(height: CfSpace.sm),
+                Text(
+                  '按已录入的账期估算，实际日期以银行为准。',
+                  style: t.bodySmall?.copyWith(color: c.textSecondary),
+                ),
+              ],
+            ),
+          ),
+        ],
+        for (final sub in a.currencies) ...<Widget>[
+          SectionHeader(title: currencyLabel(sub.currency)),
+          CalmPanel(
+            padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
             child: Column(
               children: [
                 ExpansionTile(
                   tilePadding: EdgeInsets.zero,
+                  leading: Icon(
+                    Icons.account_balance_wallet_outlined,
+                    color: c.action,
+                  ),
                   title: const Text('额度明细'),
                   children: [_LimitSection(sub: sub)],
                 ),
+                const Divider(),
                 ExpansionTile(
                   tilePadding: EdgeInsets.zero,
+                  leading: Icon(Icons.event_repeat_rounded, color: c.action),
                   title: const Text('账期规则'),
                   children: [_RuleExplanation(account: a, sub: sub)],
                 ),
@@ -119,8 +170,20 @@ class AccountDetailPage extends ConsumerWidget {
             ),
           ),
         ],
-        const SectionTitle('卡片管理'),
-        for (final card in a.cards) _CardRowTile(card: card, account: a),
+        const SectionHeader(title: '卡片管理'),
+        CalmPanel(
+          padding: const EdgeInsets.symmetric(vertical: CfSpace.xs),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < a.cards.length; i++) ...[
+                if (i > 0)
+                  const Divider(indent: CfSpace.md, endIndent: CfSpace.md),
+                _CardRowTile(card: a.cards[i], account: a),
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }

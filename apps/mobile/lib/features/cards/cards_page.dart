@@ -6,9 +6,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
-import '../../app/widgets/bank_badge.dart';
+import '../../app/widgets/calm_panel.dart';
 import '../../app/widgets/first_run_empty_state.dart';
 import '../../app/widgets/money_text.dart';
+import '../../app/widgets/premium.dart';
 import '../../app/widgets/state_views.dart';
 import '../../data/mapping/domain_mapping.dart';
 import '../../data/repositories/card_wallet_reader.dart';
@@ -116,25 +117,76 @@ class _PoolHeader extends StatelessWidget {
   const _PoolHeader({required this.pool});
   final PoolView pool;
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      SectionTitle('授信池 · ${pool.pool.name}'),
-      LabeledValue(
-        label: '池上限',
-        value: MoneyText(
-          minor: pool.pool.sharedLimitMinor,
-          currency: pool.pool.currency,
-          semanticsPrefix: '池上限',
+  Widget build(BuildContext context) {
+    final c = CardFlowColors.of(context);
+    final t = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CfSpace.md,
+        CfSpace.md,
+        CfSpace.md,
+        CfSpace.xs,
+      ),
+      child: CalmPanel(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: CfSize.bankBadge,
+                  height: CfSize.bankBadge,
+                  decoration: BoxDecoration(
+                    color: c.actionTint,
+                    borderRadius: BorderRadius.circular(CfRadius.lg),
+                  ),
+                  child: Icon(
+                    Icons.hub_rounded,
+                    color: c.action,
+                    size: CfIconSize.md,
+                  ),
+                ),
+                const SizedBox(width: CfSpace.sm),
+                Expanded(
+                  child: Text('授信池 · ${pool.pool.name}', style: t.titleMedium),
+                ),
+              ],
+            ),
+            const SizedBox(height: CfSpace.sm),
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: CfSpace.md,
+              runSpacing: CfSpace.xxs,
+              children: [
+                Text(
+                  '池上限',
+                  style: t.bodyMedium?.copyWith(color: c.textSecondary),
+                ),
+                MoneyText(
+                  minor: pool.pool.sharedLimitMinor,
+                  currency: pool.pool.currency,
+                  compact: true,
+                  semanticsPrefix: '池上限',
+                  style: t.titleMedium,
+                ),
+              ],
+            ),
+            if (pool.missingSnapshots > 0) ...[
+              const SizedBox(height: CfSpace.sm),
+              const HintStrip(
+                icon: Icons.info_outline_rounded,
+                text: '成员额度资料不全，请更新后再比较。',
+              ),
+            ],
+          ],
         ),
       ),
-      if (pool.missingSnapshots > 0)
-        const NoticeCard(icon: Icons.info_outline, text: '成员额度资料不全，请更新后再比较。'),
-    ],
-  );
+    );
+  }
 }
 
-/// 一个信用账户：名称、银行与产品、规则来源、可用容量（超限时标注）、快照时点、子账户、卡片。
+/// 一个信用账户：银行卡面（名称、末四位、额度条）、可用容量（超限时标注）、距出账/距还款、账期规则、快照时点。
 class AccountTile extends StatelessWidget {
   const AccountTile({super.key, required this.account});
 
@@ -148,124 +200,174 @@ class AccountTile extends StatelessWidget {
     final source = account.ruleSource;
     final rule = account.currentRule;
     final forecast = primary.forecast;
-    final secondary = theme.textTheme.bodyMedium?.copyWith(
+    final secondary = theme.textTheme.bodySmall?.copyWith(
       color: colors.textSecondary,
     );
+    final predicted = forecast is ForecastPredicted
+        ? forecast.conservative
+        : null;
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: CfSpace.md,
         vertical: CfSpace.xs,
       ),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
+      child: CalmPanel(
+        padding: const EdgeInsets.all(CfSpace.xs),
         child: InkWell(
+          borderRadius: BorderRadius.circular(CfRadius.hero),
           onTap: () => context.go(AppRoutes.account(account.id)),
-          child: Padding(
-            padding: const EdgeInsets.all(CfSpace.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              BankCardFace(
+                compact: true,
+                bankName: account.bank.name,
+                subtitle: account.displayName,
+                last4s: <String>[for (final c in account.activeCards) c.last4],
+                badge: account.pool == null ? null : '共享额度',
+                badgeIcon: Icons.hub_rounded,
+                fraction: capacityFraction(primary),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  CfSpace.sm,
+                  CfSpace.md,
+                  CfSpace.sm,
+                  CfSpace.xxs,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    BankBadge(bankName: account.bank.name),
-                    const SizedBox(width: CfSpace.sm),
-                    Expanded(
-                      child: Text(
-                        account.displayName,
-                        style: theme.textTheme.titleMedium,
+                    MetricRow(
+                      metrics: <Metric>[
+                        Metric(
+                          label: '可用额度',
+                          value: MoneyText(
+                            minor: primary.capacity,
+                            currency: primary.currency,
+                            compact: true,
+                            semanticsPrefix: '可用容量',
+                            textAlign: TextAlign.start,
+                          ),
+                        ),
+                        if (predicted != null)
+                          Metric(
+                            label: '今天刷距预计还款',
+                            value: Text(
+                              '${predicted.dueDate.differenceInDays(account.today)} 天',
+                            ),
+                            caption:
+                                '${monthDay(predicted.dueDate)} 还款 · ${_statementIn(predicted.statementDate.differenceInDays(account.today))}',
+                            emphasized: true,
+                          ),
+                      ],
+                    ),
+                    if (rule != null) ...<Widget>[
+                      const SizedBox(height: CfSpace.sm),
+                      Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.event_repeat_rounded,
+                            size: CfIconSize.sm,
+                            color: colors.textSecondary,
+                          ),
+                          const SizedBox(width: CfSpace.xs),
+                          Expanded(
+                            child: Text(
+                              '${describeStatementDay(rule.statementDay)}出账 · ${describeDue(dueOf(rule))}还款',
+                              style: secondary,
+                            ),
+                          ),
+                        ],
                       ),
+                    ],
+                    // 一行至多一个状态标签（简报 U-1 §5）：超限 > 缺账期规则 > 额度快照陈旧。
+                    if (primary.overLimit)
+                      const _AccountStatus(
+                        label: '超限',
+                        icon: Icons.warning_amber_outlined,
+                        tone: NoticeTone.danger,
+                      )
+                    else if (source == null)
+                      const _AccountStatus(
+                        label: '账期规则未设置',
+                        icon: Icons.checklist,
+                        tone: NoticeTone.attention,
+                      )
+                    else if (primary.stale)
+                      _AccountStatus(
+                        label: '额度 ${ageText(primary.snapshotAgeDays!)}',
+                        icon: Icons.schedule,
+                        tone: NoticeTone.attention,
+                      ),
+                    if (account.currencies.length > 1) ...<Widget>[
+                      const SizedBox(height: CfSpace.xxs),
+                      Text(
+                        '币种子账户：${account.currencies.map((c) => c.row.isPrimary ? '${currencyLabel(c.currency)}（主）' : currencyLabel(c.currency)).join('、')}',
+                        style: secondary,
+                      ),
+                    ],
+                    if (account.inactiveCards.isNotEmpty)
+                      Text(
+                        '已停用的卡 ${account.inactiveCards.length} 张（详情页查看）',
+                        style: secondary,
+                      ),
+                    if (account.cards.any(
+                      (c) => c.cardStatus == CardStatus.frozen,
+                    ))
+                      Text('有卡片已冻结', style: secondary),
+                    const SizedBox(height: CfSpace.xs),
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: CfSpace.sm,
+                      runSpacing: CfSpace.xxs,
+                      children: <Widget>[
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Icon(
+                              Icons.update_rounded,
+                              size: CfIconSize.sm,
+                              color: colors.textSecondary,
+                            ),
+                            const SizedBox(width: CfSpace.xxs),
+                            Flexible(
+                              child: Text(
+                                primary.latestSnapshot == null
+                                    ? '额度未记录'
+                                    : '额度 ${ageText(primary.snapshotAgeDays!)}',
+                                style: secondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (!account.isInactive)
+                          TextButton(
+                            onPressed: () => unawaited(
+                              showQuickLimitDialog(context, account),
+                            ),
+                            style: TextButton.styleFrom(
+                              backgroundColor: colors.actionTint,
+                              shape: const StadiumBorder(),
+                            ),
+                            child: const Text('快速改额度'),
+                          ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: CfSpace.sm),
-                Text(
-                  '${account.bank.name} · ${account.activeCards.map((c) => '···· ${c.last4}').join(' / ')}',
-                  style: secondary,
-                ),
-                const SizedBox(height: CfSpace.lg),
-                Text('可用额度', style: secondary),
-                const SizedBox(height: CfSpace.xxs),
-                MoneyText(
-                  minor: primary.capacity,
-                  currency: primary.currency,
-                  semanticsPrefix: '可用容量',
-                  textAlign: TextAlign.start,
-                  style: theme.textTheme.headlineSmall,
-                ),
-                if (forecast is ForecastPredicted) ...<Widget>[
-                  const SizedBox(height: CfSpace.xs),
-                  Text(
-                    '今天刷距预计还款 ${forecast.conservative.dueDate.differenceInDays(account.today)} 天（${forecast.conservative.dueDate}）',
-                    style: secondary,
-                  ),
-                ],
-                if (rule != null) ...<Widget>[
-                  const SizedBox(height: CfSpace.xxs),
-                  Text(
-                    '${describeStatementDay(rule.statementDay)}出账 · ${describeDue(dueOf(rule))}还款',
-                    style: secondary,
-                  ),
-                ],
-                const SizedBox(height: CfSpace.sm),
-                // 一行至多一个状态标签（简报 U-1 §5）：超限 > 缺账期规则 > 额度快照陈旧。
-                if (primary.overLimit)
-                  const _AccountStatus(
-                    label: '超限',
-                    icon: Icons.warning_amber_outlined,
-                    tone: NoticeTone.danger,
-                  )
-                else if (source == null)
-                  const _AccountStatus(
-                    label: '账期规则未设置',
-                    icon: Icons.checklist,
-                    tone: NoticeTone.attention,
-                  )
-                else if (primary.stale)
-                  _AccountStatus(
-                    label: '额度 ${ageText(primary.snapshotAgeDays!)}',
-                    icon: Icons.schedule,
-                    tone: NoticeTone.attention,
-                  ),
-                const SizedBox(height: CfSpace.xs),
-                Text(
-                  primary.latestSnapshot == null
-                      ? '额度未记录'
-                      : '额度 ${ageText(primary.snapshotAgeDays!)}',
-                  style: secondary,
-                ),
-                if (account.currencies.length > 1) ...<Widget>[
-                  const SizedBox(height: CfSpace.xxs),
-                  Text(
-                    '币种子账户：${account.currencies.map((c) => c.row.isPrimary ? '${currencyLabel(c.currency)}（主）' : currencyLabel(c.currency)).join('、')}',
-                    style: secondary,
-                  ),
-                ],
-                if (account.inactiveCards.isNotEmpty)
-                  Text(
-                    '已停用的卡 ${account.inactiveCards.length} 张（详情页查看）',
-                    style: secondary,
-                  ),
-                if (account.cards.any((c) => c.cardStatus == CardStatus.frozen))
-                  Text('有卡片已冻结', style: secondary),
-                if (!account.isInactive) ...<Widget>[
-                  const SizedBox(height: CfSpace.xs),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextButton(
-                      onPressed: () =>
-                          unawaited(showQuickLimitDialog(context, account)),
-                      child: const Text('快速改额度'),
-                    ),
-                  ),
-                ],
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
+
+/// 距出账的说明（"4 天后出账""今天出账"）。
+String _statementIn(int days) => days <= 0 ? '今天出账' : '$days 天后出账';
 
 /// 账户的状态标签（一行一个）。
 class _AccountStatus extends StatelessWidget {

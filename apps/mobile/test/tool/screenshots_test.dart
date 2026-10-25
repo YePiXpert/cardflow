@@ -128,6 +128,8 @@ void main() {
       variant: TargetPlatformVariant.only(TargetPlatform.iOS),
       (tester) async {
         await tester.runAsync(_loadFonts);
+        // 测试环境默认把阴影画成不模糊的实心块；截图要接近真机，打开模糊，测试体结束前还原。
+        debugDisableShadows = false;
         mockPackageInfo();
         usePhoneSurface(tester, brightness: brightness);
         // iPhone 15 的安全区：上 59、下 34（状态栏与 Home 指示条的位置留空）。
@@ -209,6 +211,7 @@ void main() {
         await _capture(tester, key, '09-first-use-$mode');
         await goTo(tester, AppRoutes.cards);
         await _capture(tester, key, '10-empty-cards-$mode');
+        debugDisableShadows = true;
       },
     );
   }

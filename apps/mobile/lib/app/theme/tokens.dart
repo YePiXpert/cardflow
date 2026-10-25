@@ -2,11 +2,11 @@
 ///
 /// 0.0.2 起颜色与字号按简报 U-1 §5 与设计稿 `docs/50-ui/mockups/0.0.2/`：深色/浅色两套背景、表面、次级表面、
 /// 分隔线与三级文字，强调色；注意、危险、银行确认、演示四类语义色沿用 ui-spec §3.1 的色相，背景用浅色调。
+/// 2026-10-25 精致化：冷瓷灰/曜石黑底、皇家蓝/电光蓝强调色、深蓝渐变看板，卡片圆角 20、看板与卡面 24。
 /// 间距仍按 ui-spec §3.2 的 4pt 网格；语义规则（§3.1 每个状态同时有图标、文字与颜色）不变。
 ///
 /// 页面与组件只引用这里的常量或 [CardFlowColors]，不写字面量颜色、字号与尺寸。文字类颜色对它可能出现的
-/// 每一种底色都不低于 4.5:1（`test/app/theme_test.dart` 用 WCAG 2.x 公式逐项核对；设计稿的第三级文字
-/// #6B7480/#8A929C 不够，按偏离调成 #808996/#676F7A，见 apps/mobile/README.md"U-1 的偏离与约定"）。
+/// 每一种底色都不低于 4.5:1（`test/app/theme_test.dart` 用 WCAG 2.x 公式逐项核对）。
 library;
 
 import 'package:flutter/material.dart';
@@ -32,7 +32,7 @@ abstract final class CfSpace {
   static const double xl = 32;
 }
 
-/// 圆角（ui-spec §3.2 的 4/8/12，加上简报 U-1 §5 的卡片圆角 18–22 取 20）。
+/// 圆角（ui-spec §3.2 的 4/8/12，加上简报 U-1 §5 的卡片圆角 18–22 取 20，看板与卡面 24）。
 abstract final class CfRadius {
   static const double sm = 4;
   static const double md = 8;
@@ -41,8 +41,14 @@ abstract final class CfRadius {
   /// 卡片内的小块（详情页的金额格、分段控件）。
   static const double tile = 16;
 
-  /// 分组卡片、汇总卡、卡面（简报 U-1 §5：圆角 18–22）。
-  static const double card = 12;
+  /// 分组卡片、列表卡（简报 U-1 §5：圆角 18–22，取 20）。
+  static const double card = 20;
+
+  /// 顶部看板与银行卡面（比分组卡片更圆，突出层级）。
+  static const double hero = 24;
+
+  /// 胶囊（徽章、日期与币种选择）。
+  static const double pill = 100;
 }
 
 /// 图标尺寸（ui-spec §3.2）。
@@ -68,6 +74,27 @@ abstract final class CfSize {
 
   /// 现金页余额曲线的绘图区高度（不含起止日期一行）。
   static const double chart = 160;
+
+  /// 卡面芯片的宽、高（装饰）。
+  static const double cardChipWidth = 40;
+  static const double cardChipHeight = 28;
+
+  /// 排行序号圆点的直径。
+  static const double rankDot = 28;
+}
+
+/// 阴影（只用黑色的低不透明度，不携带语义）。
+abstract final class CfShadow {
+  /// 浅色模式下分组卡片的柔和投影。
+  static const List<BoxShadow> soft = <BoxShadow>[
+    BoxShadow(color: Color(0x0F101828), blurRadius: 24, offset: Offset(0, 8)),
+    BoxShadow(color: Color(0x08101828), blurRadius: 4, offset: Offset(0, 1)),
+  ];
+
+  /// 卡面与看板的投影（深浅色通用）。
+  static const List<BoxShadow> lifted = <BoxShadow>[
+    BoxShadow(color: Color(0x33000000), blurRadius: 28, offset: Offset(0, 12)),
+  ];
 }
 
 /// 描边粗细。
@@ -77,6 +104,9 @@ abstract final class CfStroke {
 
   /// 进度条与额度条的粗细。
   static const double bar = 4;
+
+  /// 卡面额度条、选卡时间轴的轨道粗细。
+  static const double track = 6;
 
   /// 余额曲线的线宽。
   static const double chartLine = 2;
@@ -324,17 +354,17 @@ class CardFlowColors extends ThemeExtension<CardFlowColors> {
   final Color heroTextSecondary;
 
   static const CardFlowColors light = CardFlowColors(
-    canvas: Color(0xFFF5F5F5),
+    canvas: Color(0xFFF2F4F8),
     surface: Color(0xFFFFFFFF),
-    surfaceRaised: Color(0xFFEFEFEF),
-    surfaceLow: Color(0xFFEFEFEF),
-    divider: Color(0xFFE2E2E2),
-    textPrimary: Color(0xFF242424),
-    textSecondary: Color(0xFF606060),
-    textTertiary: Color(0xFF686868),
-    action: Color(0xFF326B53),
+    surfaceRaised: Color(0xFFEBEEF4),
+    surfaceLow: Color(0xFFEEF1F5),
+    divider: Color(0xFFDFE3EA),
+    textPrimary: Color(0xFF0F172A),
+    textSecondary: Color(0xFF475467),
+    textTertiary: Color(0xFF5B6474),
+    action: Color(0xFF1E4DB7),
     onAction: Color(0xFFFFFFFF),
-    actionTint: Color(0xFFE6F0E5),
+    actionTint: Color(0xFFE6EDFB),
     borderInput: Color(0xFF7C828A),
     robust: CfTone(fg: Color(0xFF146C36), bg: Color(0xFFE5F3EA)),
     attention: CfTone(fg: Color(0xFF7A4D00), bg: Color(0xFFFFF2D1)),
@@ -342,24 +372,24 @@ class CardFlowColors extends ThemeExtension<CardFlowColors> {
     unknown: CfTone(fg: Color(0xFF4B5059), bg: Color(0xFFECEEF1)),
     defect: CfTone(fg: Color(0xFF7B2D8F), bg: Color(0xFFF4E8F7)),
     bank: CfTone(fg: Color(0xFF1C4FA0), bg: Color(0xFFE6EEFA)),
-    demo: CfTone(fg: Color(0xFF625075), bg: Color(0xFFF0EBF5)),
-    hero: <Color>[Color(0xFFEAF3DE), Color(0xFFDDEEDC), Color(0xFFD8EBE3)],
-    heroText: Color(0xFF242424),
-    heroTextSecondary: Color(0xFF606060),
+    demo: CfTone(fg: Color(0xFF4A2E8C), bg: Color(0xFFEFEAFB)),
+    hero: <Color>[Color(0xFF2A5BD7), Color(0xFF1E4DB7), Color(0xFF163C93)],
+    heroText: Color(0xFFFFFFFF),
+    heroTextSecondary: Color(0xFFE4ECFF),
   );
 
   static const CardFlowColors dark = CardFlowColors(
-    canvas: Color(0xFF121212),
-    surface: Color(0xFF1E1E1E),
-    surfaceRaised: Color(0xFF2B2B2B),
-    surfaceLow: Color(0xFF181818),
-    divider: Color(0xFF3C3C3C),
-    textPrimary: Color(0xFFF2F2F2),
-    textSecondary: Color(0xFFB8B8B8),
-    textTertiary: Color(0xFFAAAAAA),
-    action: Color(0xFFA5D5B4),
-    onAction: Color(0xFF142B20),
-    actionTint: Color(0xFF293E30),
+    canvas: Color(0xFF0B0D12),
+    surface: Color(0xFF151921),
+    surfaceRaised: Color(0xFF1E2430),
+    surfaceLow: Color(0xFF10131A),
+    divider: Color(0xFF2A3140),
+    textPrimary: Color(0xFFF3F5F9),
+    textSecondary: Color(0xFFA6B0C0),
+    textTertiary: Color(0xFF8C97A9),
+    action: Color(0xFF6EA8FF),
+    onAction: Color(0xFF0A1B38),
+    actionTint: Color(0xFF1A2A47),
     borderInput: Color(0xFF7D848D),
     robust: CfTone(fg: Color(0xFF6FD394), bg: Color(0xFF12301E)),
     attention: CfTone(fg: Color(0xFFF2C14E), bg: Color(0xFF353125)),
@@ -367,10 +397,10 @@ class CardFlowColors extends ThemeExtension<CardFlowColors> {
     unknown: CfTone(fg: Color(0xFFC2C7CF), bg: Color(0xFF2E3137)),
     defect: CfTone(fg: Color(0xFFE2A8F0), bg: Color(0xFF332D3B)),
     bank: CfTone(fg: Color(0xFF9DBEFF), bg: Color(0xFF29303E)),
-    demo: CfTone(fg: Color(0xFFDDD0EF), bg: Color(0xFF302939)),
-    hero: <Color>[Color(0xFF293E30), Color(0xFF263D30), Color(0xFF234038)],
-    heroText: Color(0xFFF2F2F2),
-    heroTextSecondary: Color(0xFFB8B8B8),
+    demo: CfTone(fg: Color(0xFFDDD0EF), bg: Color(0xFF2A2340)),
+    hero: <Color>[Color(0xFF22386B), Color(0xFF1A2B55), Color(0xFF101C3A)],
+    heroText: Color(0xFFF5F8FF),
+    heroTextSecondary: Color(0xFFBFCDEA),
   );
 
   /// 当前主题的语义色；主题里没有登记时按亮度回退到内置的两套。
