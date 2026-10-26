@@ -139,4 +139,67 @@ void main() {
     );
     expect(find.text('推荐使用'), findsOneWidget);
   });
+
+  testWidgets('支持费率到账试算、同账户主附卡合并展示及刷后一键扣减额度（单卡与组合）', (t) async {
+    await pumpCardFlowApp(t, workspace: TestWorkspace.demo);
+    // 首页同账户主附卡合并展示为 "尾号 1001 / 1002"，且标注黄金免息期
+    expect(find.textContaining('尾号 1001 / 1002'), findsOneWidget);
+    expect(find.text('黄金免息期'), findsWidgets);
+
+    // 选择 0.6% 费率并试算 1000 元：手续费 ¥6.00，预计到账 ¥994.00
+    await t.tap(find.byTooltip('费率试算'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('费率 0.6%').last);
+    await t.pumpAndSettle();
+    await compare(t, '1000');
+    expect(find.text('预计手续费 '), findsOneWidget);
+    expect(find.text('¥6.00'), findsOneWidget);
+    expect(find.text('预计到账 '), findsOneWidget);
+    expect(find.text('¥994.00'), findsOneWidget);
+
+    // 单卡推荐：点击「已刷 · 扣减额度」，卡 A 额度从 8000 扣减 1000 变为 7000
+    final deductSingle = find.widgetWithText(FilledButton, '已刷 · 扣减额度');
+    await t.scrollUntilVisible(
+      deductSingle,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await t.ensureVisible(deductSingle);
+    await t.tap(deductSingle);
+    await t.pumpAndSettle();
+    expect(find.text('已从卡 A扣减本次刷卡额度'), findsOneWidget);
+
+    final afterSingle = await readWallet(t);
+    final cardAAfterSingle = afterSingle.accounts.firstWhere(
+      (a) => a.bank.name == '星海银行',
+    );
+    expect(cardAAfterSingle.primaryCurrency.capacity, 700000);
+
+    // 组合用卡方案：输入 15000（卡 A 7000 + 卡 C 6000 + 卡 B 2000），点击「按方案一键扣减额度」
+    final scroll = t
+        .state<ScrollableState>(find.byType(Scrollable).first)
+        .position;
+    scroll.jumpTo(0);
+    await t.pumpAndSettle();
+    await compare(t, '15000');
+    final deductSplit = find.text('按方案一键扣减额度');
+    await t.scrollUntilVisible(
+      deductSplit,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await t.ensureVisible(deductSplit);
+    await t.tap(deductSplit);
+    await t.pumpAndSettle();
+    expect(find.text('已按组合方案扣减 3 张卡可用额度'), findsOneWidget);
+
+    final afterSplit = await readWallet(t);
+    final capByName = <String, int?>{
+      for (final a in afterSplit.accounts)
+        a.displayName: a.primaryCurrency.capacity,
+    };
+    expect(capByName['卡 A'], 0);
+    expect(capByName['卡 C'], 0);
+    expect(capByName['卡 B'], 1280000);
+  });
 }

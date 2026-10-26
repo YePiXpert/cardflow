@@ -46,9 +46,9 @@ class SettingsPage extends ConsumerWidget {
     );
     final demo = workspace?.kind == WorkspaceKind.demo;
     return Scaffold(
-      appBar: largeTitleAppBar(context, title: title),
+      appBar: AppBar(title: const Text(title)),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: CfSpace.xl),
+        padding: const EdgeInsets.only(top: CfSpace.xs, bottom: CfSpace.xl),
         children: <Widget>[
           GroupCard(
             children: <Widget>[
@@ -59,10 +59,18 @@ class SettingsPage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       ExcludeSemantics(
-                        child: Icon(
-                          Icons.cloud_off_outlined,
-                          size: CfIconSize.lg,
-                          color: colors.textSecondary,
+                        child: Container(
+                          width: CfSize.iconCircle,
+                          height: CfSize.iconCircle,
+                          decoration: BoxDecoration(
+                            color: colors.actionTint,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.cloud_off_outlined,
+                            size: CfIconSize.md,
+                            color: colors.action,
+                          ),
                         ),
                       ),
                       const SizedBox(width: CfSpace.sm),
@@ -70,11 +78,18 @@ class SettingsPage extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('纯本地', style: theme.textTheme.titleMedium),
-                            const SizedBox(height: CfSpace.xxs),
-                            Text(
-                              firstRunMessage,
-                              style: theme.textTheme.bodyLarge,
+                            Wrap(
+                              spacing: CfSpace.xs,
+                              runSpacing: CfSpace.xxs,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: <Widget>[
+                                Text('纯本地', style: theme.textTheme.titleSmall),
+                                const StatusBadge(
+                                  label: firstRunMessage,
+                                  icon: Icons.verified_user_outlined,
+                                  tone: NoticeTone.bank,
+                                ),
+                              ],
                             ),
                             const SizedBox(height: CfSpace.xxs),
                             Text(localOnlyNote, style: secondary),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
+import 'calm_panel.dart';
 
 /// 首次空白态里的一个操作。`onPressed` 为 null 表示该功能尚未开放，[stage] 注明何时提供。
 @immutable
@@ -60,71 +61,83 @@ class FirstRunEmptyState extends StatelessWidget {
     );
     final content = Padding(
       padding: const EdgeInsets.all(CfSpace.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          const SizedBox(height: CfSpace.xl),
-          ExcludeSemantics(
-            child: Icon(icon, size: 32, color: colors.textSecondary),
-          ),
-          const SizedBox(height: CfSpace.md),
-          Text(
-            message,
-            style: theme.textTheme.titleMedium,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: CfSpace.xs),
-          Text(
-            purpose,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          if (actions.isNotEmpty) const SizedBox(height: CfSpace.lg),
-          for (var i = 0; i < actions.length; i++) ...<Widget>[
-            if (i > 0) const SizedBox(height: CfTouch.minGap),
-            if (i == 0)
-              FilledButton(
-                style: largePrimary
-                    ? FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(
-                          CfTouch.minTarget + CfSpace.xs,
-                        ),
-                        textStyle: theme.textTheme.titleMedium,
-                      )
-                    : null,
-                onPressed: actions[i].onPressed,
-                child: Text(actions[i].label, textAlign: TextAlign.center),
-              )
-            else
-              OutlinedButton(
-                onPressed: actions[i].onPressed,
-                child: Text(actions[i].label, textAlign: TextAlign.center),
-              ),
-            if (actions[i].onPressed == null && actions[i].stage != null)
-              Padding(
-                padding: const EdgeInsets.only(top: CfSpace.xxs),
-                child: Text(
-                  '${actions[i].label}：${actions[i].stage}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colors.textSecondary,
+      child: CalmPanel(
+        padding: const EdgeInsets.all(CfSpace.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Center(
+              child: ExcludeSemantics(
+                child: Container(
+                  width: CfTouch.minTarget,
+                  height: CfTouch.minTarget,
+                  decoration: BoxDecoration(
+                    color: colors.actionTint,
+                    shape: BoxShape.circle,
                   ),
-                  textAlign: TextAlign.center,
+                  child: Icon(icon, size: CfIconSize.lg, color: colors.action),
                 ),
               ),
-          ],
-          if (hasUnavailable) ...<Widget>[
-            const SizedBox(height: CfSpace.sm),
+            ),
+            const SizedBox(height: CfSpace.md),
             Text(
-              notYetAvailableNote,
+              message,
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: CfSpace.xs),
+            Text(
+              purpose,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
+            if (actions.isNotEmpty) const SizedBox(height: CfSpace.lg),
+            for (var i = 0; i < actions.length; i++) ...<Widget>[
+              if (i > 0) const SizedBox(height: CfTouch.minGap),
+              if (i == 0)
+                FilledButton(
+                  style: largePrimary
+                      ? FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(
+                            CfTouch.minTarget + CfSpace.xs,
+                          ),
+                          textStyle: theme.textTheme.titleMedium,
+                        )
+                      : null,
+                  onPressed: actions[i].onPressed,
+                  child: Text(actions[i].label, textAlign: TextAlign.center),
+                )
+              else
+                OutlinedButton(
+                  onPressed: actions[i].onPressed,
+                  child: Text(actions[i].label, textAlign: TextAlign.center),
+                ),
+              if (actions[i].onPressed == null && actions[i].stage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: CfSpace.xxs),
+                  child: Text(
+                    '${actions[i].label}：${actions[i].stage}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+            ],
+            if (hasUnavailable) ...<Widget>[
+              const SizedBox(height: CfSpace.sm),
+              Text(
+                notYetAvailableNote,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
     return scrollable ? SingleChildScrollView(child: content) : content;

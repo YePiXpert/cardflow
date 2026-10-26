@@ -8,9 +8,11 @@ import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
 import '../../app/widgets/bank_badge.dart';
 import '../../app/widgets/calm_panel.dart';
+import '../../app/widgets/feedback.dart';
 import '../../app/widgets/money_text.dart';
 import '../../app/widgets/premium.dart';
 import '../../app/widgets/state_views.dart';
+import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/repositories/card_recommendation.dart';
 import '../../data/repositories/card_wallet_reader.dart';
 import '../../data/repositories/providers.dart';
@@ -34,16 +36,73 @@ class _SelectionForm extends ConsumerStatefulWidget {
   ConsumerState<_SelectionForm> createState() => _SelectionFormState();
 }
 
-class _SelectionFormState extends ConsumerState<_SelectionForm> {
+class _SelectionFormState extends ConsumerState<_SelectionForm>
+    with WorkspaceBoundForm {
+  static const List<int> _feeOptions = <int>[0, 55, 58, 60, 63, 65];
+
   final _amount = TextEditingController();
   String _currency = 'CNY';
   LocalDate? _date;
   int? _submitted;
+  int _feeBps = 0;
+  bool _deducting = false;
   String? _error;
   @override
   void dispose() {
     _amount.dispose();
     super.dispose();
+  }
+
+  static String _feeOptionLabel(int bps) => switch (bps) {
+    0 => '不计费率',
+    60 => '费率 0.6%',
+    _ => '费率 0.$bps%',
+  };
+
+  Future<void> _deductSwipe(
+    List<(AccountView account, String currency, int amount)> items,
+  ) async {
+    if (_deducting || items.isEmpty) return;
+    setState(() => _deducting = true);
+    try {
+      final repo = await boundRepository(
+        limitSnapshotRepositoryProvider.future,
+      );
+      final scope = await boundRepository(workspaceScopeProvider.future);
+      for (final (account, currency, deductMinor) in items) {
+        final sub = account.currencies.firstWhere(
+          (c) => c.currency == currency,
+          orElse: () => account.primaryCurrency,
+        );
+        final current = sub.availableToday ?? sub.capacity ?? 0;
+        await recordSimpleAvailableLimit(
+          repo: repo,
+          scope: scope,
+          sub: sub,
+          today: account.today,
+          amount: current - deductMinor,
+        );
+      }
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      setState(() {
+        _submitted = null;
+        _error = null;
+        _amount.clear();
+      });
+      showFeedback(
+        messenger,
+        items.length == 1
+            ? '已从${items.first.$1.displayName}扣减本次刷卡额度'
+            : '已按组合方案扣减 ${items.length} 张卡可用额度',
+      );
+    } catch (_) {
+      if (mounted) {
+        showFeedback(ScaffoldMessenger.of(context), '扣减额度失败，请重试');
+      }
+    } finally {
+      if (mounted) setState(() => _deducting = false);
+    }
   }
 
   void _compare() {
@@ -127,6 +186,72 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
     }
   }
 
+  List<CardRecommendation> _uniqueByAccount(List<CardRecommendation> rows) {
+    final seen = <String>{};
+    return <CardRecommendation>[
+      for (final row in rows)
+        if (seen.add(row.account.id)) row,
+    ];
+  }
+
+  String _tailText(CardRecommendation row, List<CardRecommendation> pool) {
+    final tails = <String>[
+      for (final r in pool)
+        if (r.account.id == row.account.id) r.card.last4,
+    ];
+    return '尾号 ${(tails.isEmpty ? <String>[row.card.last4] : tails).join(' / ')}';
+  }
+
+  Widget? _cycleBadge(CardRecommendation row, LocalDate date) {
+    final c = CardFlowColors.of(context);
+    final t = Theme.of(context).textTheme;
+    if (row.nextCycleHint != null) {
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CfSpace.xs,
+          vertical: CfSpace.xxs / 2,
+        ),
+        decoration: BoxDecoration(
+          color: c.attention.bg,
+          borderRadius: BorderRadius.circular(CfRadius.pill),
+        ),
+        child: Text(
+          '临近出账',
+          style: t.labelSmall?.copyWith(
+            color: c.attention.fg,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+    }
+    final forecast = row.forecast;
+    if (forecast == null) return null;
+    final statementDays = forecast.conservative.statementDate.differenceInDays(
+      date,
+    );
+    final dueDays = row.dueDate.differenceInDays(date);
+    if (statementDays >= 24 || dueDays >= 42) {
+      return Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CfSpace.xs,
+          vertical: CfSpace.xxs / 2,
+        ),
+        decoration: BoxDecoration(
+          color: c.bank.bg,
+          borderRadius: BorderRadius.circular(CfRadius.pill),
+        ),
+        child: Text(
+          '黄金免息期',
+          style: t.labelSmall?.copyWith(
+            color: c.bank.fg,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+    }
+    return null;
+  }
+
   Widget _content(WalletView wallet, LocalDate date, LocalDate today) {
     final c = CardFlowColors.of(context);
     final t = Theme.of(context).textTheme;
@@ -155,6 +280,12 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
             currency: _currency,
             on: date,
           );
+    final overviewCards = overview == null
+        ? const <CardRecommendation>[]
+        : _uniqueByAccount(overview.eligible);
+    final resultCards = result == null
+        ? const <CardRecommendation>[]
+        : _uniqueByAccount(result.eligible);
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         CfSpace.md,
@@ -163,19 +294,31 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
         CfSpace.xl,
       ),
       children: [
-        _dashboard(wallet, overview, date, today, currencies),
+        _dashboard(wallet, overview, overviewCards, date, today, currencies),
         if (result == null) ...[
           if (wallet.isEmpty)
             _emptyState()
-          else if (overview != null && overview.eligible.isNotEmpty) ...[
+          else if (overview != null && overviewCards.isNotEmpty) ...[
             SectionHeader(
               title: '当日选卡排行',
               trailing: _manageCardsLink(wallet.accounts.length),
             ),
-            _featured(overview.eligible.first, date, badge: '今日首选'),
-            for (var i = 1; i < overview.eligible.length; i++) ...[
+            _featured(
+              overviewCards.first,
+              date,
+              badge: '今日首选',
+              tail: _tailText(overviewCards.first, overview.eligible),
+            ),
+            for (var i = 1; i < overviewCards.length; i++) ...[
               const SizedBox(height: CfSpace.sm),
-              CalmPanel(child: _rankTile(overview.eligible[i], i + 1, date)),
+              CalmPanel(
+                child: _rankTile(
+                  overviewCards[i],
+                  i + 1,
+                  date,
+                  tail: _tailText(overviewCards[i], overview.eligible),
+                ),
+              ),
             ],
           ] else ...[
             SectionHeader(
@@ -199,7 +342,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
               style: t.titleMedium,
             ),
           ),
-          if (result.eligible.isEmpty) ...[
+          if (resultCards.isEmpty) ...[
             CalmPanel(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,6 +378,24 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                       style: t.bodyMedium?.copyWith(color: c.textSecondary),
                     ),
                     const SizedBox(height: CfSpace.sm),
+                    FilledButton.tonalIcon(
+                      onPressed: _deducting
+                          ? null
+                          : () => _deductSwipe([
+                              for (final item in result.splitPlan)
+                                (
+                                  item.card.account,
+                                  item.card.currency,
+                                  item.amount,
+                                ),
+                            ]),
+                      icon: const Icon(
+                        Icons.done_all_rounded,
+                        size: CfIconSize.md,
+                      ),
+                      label: const Text('按方案一键扣减额度'),
+                    ),
+                    const SizedBox(height: CfSpace.sm),
                     for (var i = 0; i < result.splitPlan.length; i++) ...[
                       if (i > 0) const Divider(height: CfSpace.lg),
                       _splitItemTile(result.splitPlan[i], i + 1, date),
@@ -244,18 +405,27 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
               ),
             ],
           ],
-          if (result.eligible.isNotEmpty)
+          if (resultCards.isNotEmpty)
             _featured(
-              result.eligible.first,
+              resultCards.first,
               date,
               badge: '推荐使用',
               reason: '额度充足 · 还款最晚',
+              tail: _tailText(resultCards.first, result.eligible),
+              deductMinor: _submitted,
             ),
-          if (result.eligible.length > 1) ...[
+          if (resultCards.length > 1) ...[
             const SectionHeader(title: '其他可用卡'),
-            for (var i = 1; i < result.eligible.length; i++) ...[
+            for (var i = 1; i < resultCards.length; i++) ...[
               if (i > 1) const SizedBox(height: CfSpace.sm),
-              CalmPanel(child: _rankTile(result.eligible[i], i + 1, date)),
+              CalmPanel(
+                child: _rankTile(
+                  resultCards[i],
+                  i + 1,
+                  date,
+                  tail: _tailText(resultCards[i], result.eligible),
+                ),
+              ),
             ],
           ],
           if (result.excluded.isNotEmpty) ...[
@@ -280,6 +450,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
   Widget _dashboard(
     WalletView wallet,
     RecommendationResult? overview,
+    List<CardRecommendation> eligible,
     LocalDate date,
     LocalDate today,
     List<String> currencies,
@@ -287,9 +458,12 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
     final c = CardFlowColors.of(context);
     final t = Theme.of(context).textTheme;
     final amountsHidden = ref.watch(amountsHiddenProvider);
-    final eligible = overview?.eligible ?? const <CardRecommendation>[];
     final top = eligible.isEmpty ? null : eligible.first;
     final stacked = useStackedLayout(context);
+    final feeMinor = _submitted != null && _feeBps > 0
+        ? (_submitted! * _feeBps + 5000) ~/ 10000
+        : null;
+    final netMinor = feeMinor != null ? _submitted! - feeMinor : null;
 
     final amountField = TextField(
       controller: _amount,
@@ -400,7 +574,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                 style: TextButton.styleFrom(
                   backgroundColor: c.surfaceRaised,
                   foregroundColor: c.textPrimary,
-                  padding: const EdgeInsets.symmetric(horizontal: CfSpace.sm),
+                  padding: const EdgeInsets.symmetric(horizontal: CfSpace.xs),
                 ),
                 icon: Icon(
                   Icons.event_rounded,
@@ -409,7 +583,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                 ),
                 label: Text(
                   date == today
-                      ? '今天 · ${date.month}月${date.day}日'
+                      ? '今天 ${monthDay(date)}'
                       : '${date.year}/${date.month}/${date.day}',
                   style: t.bodySmall?.copyWith(
                     color: c.textPrimary,
@@ -433,7 +607,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                   constraints: const BoxConstraints(
                     minHeight: CfTouch.minTarget,
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: CfSpace.sm),
+                  padding: const EdgeInsets.symmetric(horizontal: CfSpace.xs),
                   decoration: BoxDecoration(
                     color: c.surfaceRaised,
                     borderRadius: BorderRadius.circular(CfRadius.lg),
@@ -454,7 +628,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(width: CfSpace.xxs),
+                      const SizedBox(width: CfSpace.xxs / 2),
                       Icon(
                         Icons.expand_more_rounded,
                         size: CfIconSize.sm,
@@ -464,8 +638,113 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                   ),
                 ),
               ),
+              PopupMenuButton<int>(
+                tooltip: '费率试算',
+                initialValue: _feeBps,
+                onSelected: (v) => setState(() => _feeBps = v),
+                itemBuilder: (_) => [
+                  for (final bps in _feeOptions)
+                    PopupMenuItem(
+                      value: bps,
+                      child: Text(_feeOptionLabel(bps)),
+                    ),
+                ],
+                child: Container(
+                  constraints: const BoxConstraints(
+                    minHeight: CfTouch.minTarget,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: CfSpace.xs),
+                  decoration: BoxDecoration(
+                    color: _feeBps > 0 ? c.actionTint : c.surfaceRaised,
+                    borderRadius: BorderRadius.circular(CfRadius.lg),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.percent_rounded,
+                        size: CfIconSize.sm,
+                        color: _feeBps > 0 ? c.action : c.textSecondary,
+                      ),
+                      const SizedBox(width: CfSpace.xxs),
+                      Text(
+                        _feeBps == 0 ? '费率试算' : _feeOptionLabel(_feeBps),
+                        style: t.bodySmall?.copyWith(
+                          color: _feeBps > 0 ? c.action : c.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: CfSpace.xxs / 2),
+                      Icon(
+                        Icons.expand_more_rounded,
+                        size: CfIconSize.sm,
+                        color: _feeBps > 0 ? c.action : c.textSecondary,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
+          if (feeMinor != null && netMinor != null) ...[
+            const SizedBox(height: CfSpace.xs),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: CfSpace.sm,
+                vertical: CfSpace.xs,
+              ),
+              decoration: BoxDecoration(
+                color: c.surfaceRaised,
+                borderRadius: BorderRadius.circular(CfRadius.lg),
+              ),
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: CfSpace.md,
+                runSpacing: CfSpace.xxs,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '预计手续费 ',
+                        style: t.bodySmall?.copyWith(color: c.textSecondary),
+                      ),
+                      MoneyText(
+                        minor: feeMinor,
+                        currency: _currency,
+                        semanticsPrefix: '预计手续费',
+                        textAlign: TextAlign.start,
+                        style: t.bodySmall?.copyWith(
+                          color: c.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '预计到账 ',
+                        style: t.bodySmall?.copyWith(color: c.textSecondary),
+                      ),
+                      MoneyText(
+                        minor: netMinor,
+                        currency: _currency,
+                        semanticsPrefix: '预计到账',
+                        textAlign: TextAlign.start,
+                        style: t.bodySmall?.copyWith(
+                          color: c.action,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -634,10 +913,13 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
     LocalDate date, {
     required String badge,
     String? reason,
+    String? tail,
+    int? deductMinor,
   }) {
     final c = CardFlowColors.of(context);
     final t = Theme.of(context).textTheme;
     final frac = capacityFraction(_subOf(row));
+    final cycleBadge = _cycleBadge(row, date);
     return CalmPanel(
       featured: true,
       padding: const EdgeInsets.all(CfSpace.md),
@@ -681,10 +963,11 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                             ),
                           ),
                         ),
+                        ?cycleBadge,
                       ],
                     ),
                     Text(
-                      ['尾号 ${row.card.last4}', ?reason].join(' · '),
+                      [tail ?? '尾号 ${row.card.last4}', ?reason].join(' · '),
                       style: t.bodySmall?.copyWith(color: c.textSecondary),
                     ),
                   ],
@@ -728,24 +1011,49 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
           Wrap(
             alignment: WrapAlignment.spaceBetween,
             crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: CfSpace.sm,
+            spacing: CfSpace.xs,
             runSpacing: CfSpace.xxs,
             children: [
-              TextButton(
-                onPressed: () => showQuickLimitDialog(
-                  context,
-                  row.account,
-                  initialCurrency: row.currency,
-                ),
-                style: TextButton.styleFrom(
-                  backgroundColor: c.actionTint,
-                  foregroundColor: c.action,
-                  padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
-                ),
-                child: const Text('快速改额度'),
+              Wrap(
+                spacing: CfSpace.xs,
+                runSpacing: CfSpace.xxs,
+                children: [
+                  if (deductMinor != null && deductMinor > 0)
+                    FilledButton(
+                      onPressed: _deducting
+                          ? null
+                          : () => _deductSwipe([
+                              (row.account, row.currency, deductMinor),
+                            ]),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: CfSpace.sm,
+                        ),
+                      ),
+                      child: const Text('已刷 · 扣减额度'),
+                    ),
+                  TextButton(
+                    onPressed: () => showQuickLimitDialog(
+                      context,
+                      row.account,
+                      initialCurrency: row.currency,
+                    ),
+                    style: TextButton.styleFrom(
+                      backgroundColor: c.actionTint,
+                      foregroundColor: c.action,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CfSpace.sm,
+                      ),
+                    ),
+                    child: const Text('快速改额度'),
+                  ),
+                ],
               ),
               TextButton(
                 onPressed: () => context.go(AppRoutes.account(row.account.id)),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: CfSpace.xs),
+                ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -770,9 +1078,15 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
   );
 
   /// 排行中的一张可用卡：序号、徽标、名称，三栏指标与跨账单日提示。
-  Widget _rankTile(CardRecommendation row, int rank, LocalDate date) {
+  Widget _rankTile(
+    CardRecommendation row,
+    int rank,
+    LocalDate date, {
+    String? tail,
+  }) {
     final c = CardFlowColors.of(context);
     final t = Theme.of(context).textTheme;
+    final cycleBadge = _cycleBadge(row, date);
     return InkWell(
       borderRadius: BorderRadius.circular(CfRadius.lg),
       onTap: () => context.go(AppRoutes.account(row.account.id)),
@@ -789,12 +1103,20 @@ class _SelectionFormState extends ConsumerState<_SelectionForm> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '${row.account.bank.name} · ${row.account.displayName}',
-                      style: t.titleSmall,
+                    Wrap(
+                      spacing: CfSpace.xs,
+                      runSpacing: CfSpace.xxs,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          '${row.account.bank.name} · ${row.account.displayName}',
+                          style: t.titleSmall,
+                        ),
+                        ?cycleBadge,
+                      ],
                     ),
                     Text(
-                      '尾号 ${row.card.last4}',
+                      tail ?? '尾号 ${row.card.last4}',
                       style: t.bodySmall?.copyWith(color: c.textSecondary),
                     ),
                   ],

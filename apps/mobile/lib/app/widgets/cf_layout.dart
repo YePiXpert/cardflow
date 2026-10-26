@@ -35,6 +35,7 @@ class GroupCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(CfRadius.card),
+          side: BorderSide(color: colors.divider, width: CfStroke.hairline),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

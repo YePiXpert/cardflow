@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
+import '../../app/widgets/calm_panel.dart';
 import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
 import '../diagnostics/app_diagnostics.dart';
@@ -40,84 +41,92 @@ class AboutPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text(title)),
       body: ListView(
-        padding: const EdgeInsets.only(bottom: CfSpace.xl),
+        padding: const EdgeInsets.only(top: CfSpace.xs, bottom: CfSpace.xl),
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CfSpace.md,
-              CfSpace.md,
-              CfSpace.md,
-              CfSpace.xs,
-            ),
-            child: Wrap(
-              spacing: CfSpace.sm,
-              runSpacing: CfSpace.xs,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: <Widget>[
-                Semantics(
-                  header: true,
-                  child: Text(
-                    PublicBeta.appName,
-                    style: theme.textTheme.headlineSmall,
+            padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
+            child: CalmPanel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Wrap(
+                    spacing: CfSpace.sm,
+                    runSpacing: CfSpace.xs,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: <Widget>[
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          PublicBeta.appName,
+                          style: theme.textTheme.headlineSmall,
+                        ),
+                      ),
+                      const StatusBadge(
+                        label: PublicBeta.badge,
+                        icon: Icons.new_releases_outlined,
+                        tone: NoticeTone.attention,
+                      ),
+                    ],
                   ),
-                ),
-                const StatusBadge(
-                  label: PublicBeta.badge,
-                  icon: Icons.new_releases_outlined,
-                  tone: NoticeTone.attention,
-                ),
-              ],
+                  const SizedBox(height: CfSpace.sm),
+                  const Divider(height: CfStroke.hairline),
+                  const SizedBox(height: CfSpace.xs),
+                  LabeledValue(label: '版本', value: Text(versionText(app))),
+                ],
+              ),
             ),
           ),
-          LabeledValue(label: '版本', value: Text(versionText(app))),
           const SectionTitle(PublicBeta.noteTitle),
           const PublicBetaNotice(),
           const SectionTitle('源码'),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
-            // 可长按选中（读屏可操作），所以按触控目标给足最小高度。
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: CfTouch.minTarget),
-              child: SelectableText(
-                PublicBeta.sourceAddress,
-                style: theme.textTheme.bodyLarge,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
-            child: Text('可复制地址后在浏览器中查看项目源码。', style: secondary),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CfSpace.md,
-              vertical: CfSpace.xs,
-            ),
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: OutlinedButton.icon(
-                onPressed: () => unawaited(_copySource(context)),
-                icon: const Icon(Icons.copy_outlined),
-                label: const Text('复制源码地址'),
+            child: CalmPanel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  // 可长按选中（读屏可操作），所以按触控目标给足最小高度。
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: CfTouch.minTarget,
+                    ),
+                    child: SelectableText(
+                      PublicBeta.sourceAddress,
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                  ),
+                  Text('可复制地址后在浏览器中查看项目源码。', style: secondary),
+                  const SizedBox(height: CfSpace.sm),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: OutlinedButton.icon(
+                      onPressed: () => unawaited(_copySource(context)),
+                      icon: const Icon(Icons.copy_outlined),
+                      label: const Text('复制源码地址'),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           const SectionTitle('反馈'),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CfSpace.md),
-            child: Text(PublicBeta.feedback, style: theme.textTheme.bodyLarge),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CfSpace.md,
-              vertical: CfSpace.xs,
-            ),
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: OutlinedButton.icon(
-                onPressed: () => context.go(AppRoutes.diagnostics),
-                icon: const Icon(Icons.monitor_heart_outlined),
-                label: const Text('打开诊断信息'),
+            child: CalmPanel(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Text(PublicBeta.feedback, style: theme.textTheme.bodyLarge),
+                  const SizedBox(height: CfSpace.sm),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: OutlinedButton.icon(
+                      onPressed: () => context.go(AppRoutes.diagnostics),
+                      icon: const Icon(Icons.monitor_heart_outlined),
+                      label: const Text('打开诊断信息'),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

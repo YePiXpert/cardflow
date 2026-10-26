@@ -213,6 +213,22 @@ class AccountTile extends StatelessWidget {
     final predicted = forecast is ForecastPredicted
         ? forecast.conservative
         : null;
+    final statementDays = predicted?.statementDate.differenceInDays(
+      account.today,
+    );
+    final dueDays = predicted?.dueDate.differenceInDays(account.today);
+    final isNearStatement =
+        !account.isInactive &&
+        !primary.overLimit &&
+        statementDays != null &&
+        statementDays >= 0 &&
+        statementDays <= 3;
+    final isGoldenWindow =
+        !account.isInactive &&
+        !primary.overLimit &&
+        !isNearStatement &&
+        ((statementDays != null && statementDays >= 24) ||
+            (dueDays != null && dueDays >= 42));
     final last4s = <String>[for (final c in account.activeCards) c.last4];
     final tailText = last4s.isEmpty ? '未记录尾号' : '尾号 ${last4s.join(' / ')}';
     final frac = capacityFraction(primary);
@@ -270,6 +286,46 @@ class AccountTile extends StatelessWidget {
                                   '共享额度',
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: colors.action,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            if (isNearStatement)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: CfSpace.xs,
+                                  vertical: CfSpace.xxs / 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.attention.bg,
+                                  borderRadius: BorderRadius.circular(
+                                    CfRadius.pill,
+                                  ),
+                                ),
+                                child: Text(
+                                  '临近出账',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: colors.attention.fg,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              )
+                            else if (isGoldenWindow)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: CfSpace.xs,
+                                  vertical: CfSpace.xxs / 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.bank.bg,
+                                  borderRadius: BorderRadius.circular(
+                                    CfRadius.pill,
+                                  ),
+                                ),
+                                child: Text(
+                                  '黄金免息期',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: colors.bank.fg,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
