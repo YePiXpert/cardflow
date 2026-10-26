@@ -86,7 +86,7 @@ void main() {
     }
   });
 
-  testWidgets('徽标：34pt 方块、白字、读屏跳过（银行名由旁边的文字给出）', (tester) async {
+  testWidgets('徽标：50×34pt 微缩卡面、白字、读屏跳过（银行名由旁边的文字给出）', (tester) async {
     final handle = tester.ensureSemantics();
     await tester.pumpWidget(
       MaterialApp(
@@ -96,7 +96,7 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(BankBadge)), const Size(34, 34));
+    expect(tester.getSize(find.byType(BankBadge)), const Size(50, 34));
     final text = tester.widget<Text>(find.text('招'));
     expect(text.style?.color, CfBankColors.mark);
     expect(find.bySemanticsLabel('招'), findsNothing);

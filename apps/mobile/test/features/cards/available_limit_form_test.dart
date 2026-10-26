@@ -57,4 +57,35 @@ void main() {
     expect(find.text('还款日'), findsWidgets);
     expect(find.text('当前可用额度'), findsNothing);
   });
+
+  testWidgets('支持还款后按还款额增加可用额度及一键恢复满额', (tester) async {
+    await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
+    final before = await readWallet(tester);
+    final cardA = before.accounts.firstWhere((a) => a.displayName == '卡 A');
+    expect(cardA.primaryCurrency.availableToday, 800000);
+
+    await goTo(tester, AppRoutes.accountSettings(cardA.id, section: 'limits'));
+    await tester.enterText(find.widgetWithText(TextField, '当前可用额度'), '2000');
+    await tester.tap(find.text('按还款额增加'));
+    await tester.pumpAndSettle();
+    expect(find.text('已按还款额增加可用额度'), findsOneWidget);
+
+    final afterRepay = await readWallet(tester);
+    final cardAAfterRepay = afterRepay.accounts.firstWhere(
+      (a) => a.id == cardA.id,
+    );
+    expect(cardAAfterRepay.primaryCurrency.availableToday, 1000000);
+
+    // 刷新页面，点击「恢复满额」恢复到 12000（fixedMinor 1000000 + 有效 tempMinor 200000）
+    await goTo(tester, AppRoutes.accountSettings(cardA.id, section: 'limits'));
+    await tester.tap(find.text('恢复满额'));
+    await tester.pumpAndSettle();
+    expect(find.text('已恢复满额可用额度'), findsOneWidget);
+
+    final afterFull = await readWallet(tester);
+    final cardAAfterFull = afterFull.accounts.firstWhere(
+      (a) => a.id == cardA.id,
+    );
+    expect(cardAAfterFull.primaryCurrency.availableToday, 2000000);
+  });
 }

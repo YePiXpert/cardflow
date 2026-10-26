@@ -201,8 +201,22 @@ class BankCardFace extends StatelessWidget {
                   ],
                 ],
               ),
+              const SizedBox(height: CfSpace.sm),
+              ExcludeSemantics(
+                child: Row(
+                  children: <Widget>[
+                    CardChipArt(bankName: bankName),
+                    const SizedBox(width: CfSpace.xs),
+                    const Icon(
+                      Icons.contactless_outlined,
+                      size: CfIconSize.md,
+                      color: white,
+                    ),
+                  ],
+                ),
+              ),
               if (footer != null) ...<Widget>[
-                const SizedBox(height: CfSpace.md),
+                const SizedBox(height: CfSpace.sm),
                 footer!,
               ],
               if (fraction != null) ...<Widget>[

@@ -202,4 +202,25 @@ void main() {
     expect(capByName['卡 C'], 0);
     expect(capByName['卡 B'], 1280000);
   });
+
+  testWidgets('支持按需到账反推应刷金额：输入目标到账 1000 元，自动反推应刷 ¥1,006.04', (t) async {
+    await pumpCardFlowApp(t, workspace: TestWorkspace.demo);
+    await t.tap(find.byTooltip('费率试算'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('费率 0.6%').last);
+    await t.pumpAndSettle();
+
+    expect(find.text('按刷卡额正算'), findsOneWidget);
+    await t.tap(find.text('按刷卡额正算'));
+    await t.pumpAndSettle();
+    expect(find.text('按需到账反推'), findsOneWidget);
+
+    await compare(t, '1000');
+    expect(find.text('应刷金额 '), findsOneWidget);
+    expect(find.text('¥1,006.04'), findsWidgets);
+    expect(find.text('预计手续费 '), findsOneWidget);
+    expect(find.text('¥6.04'), findsOneWidget);
+    expect(find.text('预计到账 '), findsOneWidget);
+    expect(find.text('¥1,000.00'), findsOneWidget);
+  });
 }

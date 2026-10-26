@@ -213,4 +213,43 @@ void main() {
     await tester.pumpAndSettle();
     expect(appBarTitle(SettingsPage.title), findsOneWidget);
   });
+
+  testWidgets('支持导出备份数据到剪贴板并从备份恢复到当前空间', (tester) async {
+    final copied = captureClipboard(tester);
+    await pumpCardFlowApp(
+      tester,
+      seed: (scope) async {
+        await createTestCard(scope, bank: '招商银行', last4: '1234');
+      },
+    );
+    await goTo(tester, AppRoutes.settings);
+
+    await _scrollTo(tester, find.text('导出备份数据'));
+    await tester.tap(find.text('导出备份数据'));
+    await tester.pumpAndSettle();
+    expect(find.text('已复制备份数据到剪贴板'), findsOneWidget);
+    expect(copied, hasLength(1));
+    final backupJson = copied.single;
+    expect(backupJson, contains('cardflow-backup-v1'));
+
+    // 再新增一张卡使账户数变为 2，随后从刚才的备份恢复，账户数恢复为 1
+    await withCurrentScope(
+      tester,
+      (scope) => createTestCard(scope, bank: '建设银行', last4: '5678'),
+    );
+    expect((await readWallet(tester)).accounts, hasLength(2));
+
+    await _scrollTo(tester, find.text('从备份恢复'));
+    await tester.tap(find.text('从备份恢复'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.widgetWithText(TextField, '备份数据'), backupJson);
+    await tester.tap(find.widgetWithText(FilledButton, '恢复数据'));
+    await tester.pumpAndSettle();
+    expect(find.text('已恢复备份数据'), findsOneWidget);
+
+    final restored = await readWallet(tester);
+    expect(restored.accounts, hasLength(1));
+    expect(restored.accounts.single.bank.name, '招商银行');
+    expect(restored.accounts.single.cards.single.last4, '1234');
+  });
 }

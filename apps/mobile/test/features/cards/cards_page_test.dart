@@ -103,6 +103,8 @@ void main() {
   testWidgets('成功（演示数据）：共享额度 › 账户 › 卡片；超限账户标"超限"、容量 0', (tester) async {
     await pumpCardFlowApp(tester, workspace: TestWorkspace.demo);
     await goTo(tester, AppRoutes.cards);
+    expect(find.text('近期出账与还款排期'), findsOneWidget);
+    expect(find.text('出账次日刷卡享最长免息期'), findsOneWidget);
     expect(find.text('共享额度 · 长江共享额度'), findsOneWidget);
     expect(find.text('共享上限'), findsOneWidget);
     for (final name in <String>['卡 A', '卡 B', '卡 D', '卡 C']) {

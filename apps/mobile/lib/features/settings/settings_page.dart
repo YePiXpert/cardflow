@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,9 +10,12 @@ import '../../app/routes.dart';
 import '../../app/theme/tokens.dart';
 import '../../app/widgets/cf_layout.dart';
 import '../../app/widgets/confirm_dialog.dart';
+import '../../app/widgets/feedback.dart';
 import '../../app/widgets/state_views.dart';
+import '../../app/widgets/workspace_bound_form.dart';
 import '../../data/repositories/models.dart';
 import '../../data/repositories/providers.dart';
+import '../../data/repositories/workspace_backup.dart';
 import '../onboarding/workspace_actions.dart';
 import 'about_page.dart';
 import 'public_beta.dart';
@@ -180,6 +184,25 @@ class SettingsPage extends ConsumerWidget {
           const SectionTitle('数据'),
           GroupCard(
             children: <Widget>[
+              if (workspace != null) ...<Widget>[
+                ListTile(
+                  leading: const Icon(Icons.upload_file_outlined),
+                  title: const Text('导出备份数据'),
+                  subtitle: const Text('复制当前空间的卡片、账期与额度备份到剪贴板'),
+                  onTap: () => unawaited(_exportBackup(context, ref)),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.restore_page_outlined),
+                  title: const Text('从备份恢复'),
+                  subtitle: const Text('粘贴导出的备份内容，恢复到当前空间'),
+                  onTap: () => unawaited(
+                    showDialog<void>(
+                      context: context,
+                      builder: (_) => const _RestoreBackupDialog(),
+                    ),
+                  ),
+                ),
+              ],
               ListTile(
                 leading: Icon(
                   Icons.delete_forever_outlined,
@@ -202,6 +225,18 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
+  static Future<void> _exportBackup(BuildContext context, WidgetRef ref) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final scope = await ref.read(workspaceScopeProvider.future);
+      final json = await exportWorkspaceBackup(scope);
+      await Clipboard.setData(ClipboardData(text: json));
+      showFeedback(messenger, '已复制备份数据到剪贴板');
+    } on Object {
+      showFeedback(messenger, '导出备份失败，请重试');
+    }
+  }
+
   static Future<void> _exitDemo(BuildContext context, WidgetRef ref) async {
     final confirmed = await confirmAction(
       context,
@@ -213,4 +248,93 @@ class SettingsPage extends ConsumerWidget {
       await ref.read(currentWorkspaceProvider.notifier).exitDemo();
     }
   }
+}
+
+class _RestoreBackupDialog extends ConsumerStatefulWidget {
+  const _RestoreBackupDialog();
+
+  @override
+  ConsumerState<_RestoreBackupDialog> createState() =>
+      _RestoreBackupDialogState();
+}
+
+class _RestoreBackupDialogState extends ConsumerState<_RestoreBackupDialog>
+    with WorkspaceBoundForm {
+  final _controller = TextEditingController();
+  String? _error;
+  bool _restoring = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _restore() async {
+    if (_restoring) return;
+    final raw = _controller.text.trim();
+    if (raw.isEmpty) {
+      setState(() => _error = '请先粘贴备份数据');
+      return;
+    }
+    setState(() {
+      _restoring = true;
+      _error = null;
+    });
+    try {
+      final scope = await boundRepository(workspaceScopeProvider.future);
+      await restoreWorkspaceBackup(scope, raw);
+      if (!mounted) return;
+      ref.invalidate(walletProvider);
+      ref.invalidate(demoWorkspaceRowsProvider);
+      final messenger = ScaffoldMessenger.of(context);
+      Navigator.of(context).pop();
+      showFeedback(messenger, '已恢复备份数据');
+    } on FormatException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } on Object {
+      if (mounted) setState(() => _error = '恢复失败，请检查备份内容');
+    } finally {
+      if (mounted) setState(() => _restoring = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('从备份恢复'),
+    content: SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const Text('恢复后将覆盖当前空间的卡片、账期与额度数据。'),
+          const SizedBox(height: CfSpace.sm),
+          TextField(
+            controller: _controller,
+            autofillHints: null,
+            maxLines: 4,
+            decoration: InputDecoration(
+              labelText: '备份数据',
+              hintText: '粘贴导出的 JSON 备份内容',
+              errorText: _error,
+              errorMaxLines: 2,
+            ),
+            onChanged: (_) {
+              if (_error != null) setState(() => _error = null);
+            },
+          ),
+        ],
+      ),
+    ),
+    actions: <Widget>[
+      TextButton(
+        onPressed: _restoring ? null : () => Navigator.of(context).pop(),
+        child: const Text('取消'),
+      ),
+      FilledButton(
+        onPressed: _restoring ? null : _restore,
+        child: Text(_restoring ? '正在恢复…' : '恢复数据'),
+      ),
+    ],
+  );
 }

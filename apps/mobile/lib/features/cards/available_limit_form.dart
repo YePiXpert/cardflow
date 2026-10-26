@@ -53,6 +53,16 @@ Future<void> recordSimpleAvailableLimit({
   );
 }
 
+int? fullLimitMinor(CurrencyAccountView sub, LocalDate today) {
+  final prev = sub.latestSnapshot;
+  if (prev == null || prev.fixedMinor <= 0) return null;
+  final expiry = prev.tempExpiresOn == null
+      ? null
+      : LocalDate.parse(prev.tempExpiresOn!);
+  final temp = expiry != null && expiry >= today ? prev.tempMinor : 0;
+  return prev.fixedMinor + temp;
+}
+
 Future<void> showQuickLimitDialog(
   BuildContext context,
   AccountView account, {
@@ -97,6 +107,37 @@ class _QuickLimitDialogState extends ConsumerState<_QuickLimitDialog>
     super.dispose();
   }
 
+  Future<void> _saveAmount(
+    CurrencyAccountView sub,
+    int amount,
+    String feedback,
+  ) async {
+    setState(() => _saving = true);
+    try {
+      final repo = await boundRepository(
+        limitSnapshotRepositoryProvider.future,
+      );
+      final scope = await boundRepository(workspaceScopeProvider.future);
+      await recordSimpleAvailableLimit(
+        repo: repo,
+        scope: scope,
+        sub: sub,
+        today: widget.account.today,
+        amount: amount,
+      );
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.of(context);
+      Navigator.of(context).pop();
+      showFeedback(messenger, feedback);
+    } on RepositoryException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      if (mounted) setState(() => _error = '保存失败，请重试。');
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   Future<void> _save() async {
     if (_saving) return;
     final sub = widget.account.currencies.firstWhere(
@@ -109,30 +150,20 @@ class _QuickLimitDialogState extends ConsumerState<_QuickLimitDialog>
     );
     setState(() => _error = error);
     if (error != null) return;
-    setState(() => _saving = true);
-    try {
-      final repo = await boundRepository(
-        limitSnapshotRepositoryProvider.future,
-      );
-      final scope = await boundRepository(workspaceScopeProvider.future);
-      await recordSimpleAvailableLimit(
-        repo: repo,
-        scope: scope,
-        sub: sub,
-        today: widget.account.today,
-        amount: amount!,
-      );
-      if (!mounted) return;
-      final messenger = ScaffoldMessenger.of(context);
-      Navigator.of(context).pop();
-      showFeedback(messenger, '已更新可用额度');
-    } on RepositoryException catch (e) {
-      if (mounted) setState(() => _error = e.message);
-    } catch (_) {
-      if (mounted) setState(() => _error = '保存失败，请重试。');
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
+    await _saveAmount(sub, amount!, '已更新可用额度');
+  }
+
+  Future<void> _addRepayment() async {
+    if (_saving) return;
+    final sub = widget.account.currencies.firstWhere(
+      (c) => c.row.id == _currencyId,
+    );
+    final (delta, error) = parseAmountMinor(_amount.text, sub.currency);
+    final err = error ?? (delta == 0 ? '金额须大于 0' : null);
+    setState(() => _error = err);
+    if (err != null) return;
+    final base = sub.availableToday ?? sub.capacity ?? 0;
+    await _saveAmount(sub, base + delta!, '已按还款额增加可用额度');
   }
 
   @override
@@ -140,6 +171,9 @@ class _QuickLimitDialogState extends ConsumerState<_QuickLimitDialog>
     final sub = widget.account.currencies.firstWhere(
       (c) => c.row.id == _currencyId,
     );
+    final fullLimit = fullLimitMinor(sub, widget.account.today);
+    final canRestoreFull =
+        fullLimit != null && (sub.availableToday ?? 0) < fullLimit;
     return AlertDialog(
       title: Text('${widget.account.displayName} · 更新额度'),
       content: SingleChildScrollView(
@@ -183,6 +217,35 @@ class _QuickLimitDialogState extends ConsumerState<_QuickLimitDialog>
                 helperMaxLines: 2,
               ),
             ),
+            if (canRestoreFull || sub.availableToday != null) ...[
+              const SizedBox(height: CfSpace.sm),
+              Wrap(
+                spacing: CfSpace.xs,
+                runSpacing: CfSpace.xs,
+                children: [
+                  if (canRestoreFull)
+                    OutlinedButton.icon(
+                      onPressed: _saving
+                          ? null
+                          : () => _saveAmount(sub, fullLimit, '已恢复满额可用额度'),
+                      icon: const Icon(
+                        Icons.restart_alt_rounded,
+                        size: CfIconSize.sm,
+                      ),
+                      label: const Text('恢复满额'),
+                    ),
+                  if (sub.availableToday != null)
+                    OutlinedButton.icon(
+                      onPressed: _saving ? null : _addRepayment,
+                      icon: const Icon(
+                        Icons.add_circle_outline_rounded,
+                        size: CfIconSize.sm,
+                      ),
+                      label: const Text('按还款额增加'),
+                    ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -224,6 +287,34 @@ class _AvailableLimitFormState extends ConsumerState<AvailableLimitForm>
     super.dispose();
   }
 
+  Future<void> _saveAmount(
+    CurrencyAccountView sub,
+    int amount,
+    String feedback,
+  ) async {
+    setState(() => _saving = true);
+    try {
+      final repo = await boundRepository(
+        limitSnapshotRepositoryProvider.future,
+      );
+      final scope = await boundRepository(workspaceScopeProvider.future);
+      await recordSimpleAvailableLimit(
+        repo: repo,
+        scope: scope,
+        sub: sub,
+        today: widget.account.today,
+        amount: amount,
+      );
+      if (mounted) showFeedback(ScaffoldMessenger.of(context), feedback);
+    } on RepositoryException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } catch (_) {
+      if (mounted) setState(() => _error = '保存失败，请重试。');
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
   Future<void> _save() async {
     if (_saving) return;
     final sub = widget.account.currencies.firstWhere(
@@ -236,87 +327,117 @@ class _AvailableLimitFormState extends ConsumerState<AvailableLimitForm>
     );
     setState(() => _error = error);
     if (error != null) return;
-    setState(() => _saving = true);
-    try {
-      final repo = await boundRepository(
-        limitSnapshotRepositoryProvider.future,
-      );
-      final scope = await boundRepository(workspaceScopeProvider.future);
-      await recordSimpleAvailableLimit(
-        repo: repo,
-        scope: scope,
-        sub: sub,
-        today: widget.account.today,
-        amount: amount!,
-      );
-      if (mounted) showFeedback(ScaffoldMessenger.of(context), '已更新可用额度');
-    } on RepositoryException catch (e) {
-      if (mounted) setState(() => _error = e.message);
-    } catch (_) {
-      if (mounted) setState(() => _error = '保存失败，请重试。');
-    } finally {
-      if (mounted) setState(() => _saving = false);
-    }
+    await _saveAmount(sub, amount!, '已更新可用额度');
+  }
+
+  Future<void> _addRepayment() async {
+    if (_saving) return;
+    final sub = widget.account.currencies.firstWhere(
+      (c) => c.row.id == _currencyId,
+    );
+    final (delta, error) = parseAmountMinor(_amount.text, sub.currency);
+    final err = error ?? (delta == 0 ? '金额须大于 0' : null);
+    setState(() => _error = err);
+    if (err != null) return;
+    final base = sub.availableToday ?? sub.capacity ?? 0;
+    await _saveAmount(sub, base + delta!, '已按还款额增加可用额度');
   }
 
   @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.all(CfSpace.md),
-    children: [
-      CalmPanel(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (widget.account.currencies.length > 1) ...[
-              DropdownButtonFormField<String>(
-                isExpanded: true,
-                initialValue: _currencyId,
-                decoration: const InputDecoration(labelText: '币种'),
-                items: [
-                  for (final sub in widget.account.currencies)
-                    DropdownMenuItem(
-                      value: sub.row.id,
-                      child: Text(sub.currency),
-                    ),
-                ],
-                onChanged: (v) => setState(() {
-                  _currencyId = v!;
-                  _amount.clear();
-                  _error = null;
-                }),
+  Widget build(BuildContext context) {
+    final sub = widget.account.currencies.firstWhere(
+      (c) => c.row.id == _currencyId,
+    );
+    final fullLimit = fullLimitMinor(sub, widget.account.today);
+    final canRestoreFull =
+        fullLimit != null && (sub.availableToday ?? 0) < fullLimit;
+    return ListView(
+      padding: const EdgeInsets.all(CfSpace.md),
+      children: [
+        CalmPanel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (widget.account.currencies.length > 1) ...[
+                DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  initialValue: _currencyId,
+                  decoration: const InputDecoration(labelText: '币种'),
+                  items: [
+                    for (final sub in widget.account.currencies)
+                      DropdownMenuItem(
+                        value: sub.row.id,
+                        child: Text(sub.currency),
+                      ),
+                  ],
+                  onChanged: (v) => setState(() {
+                    _currencyId = v!;
+                    _amount.clear();
+                    _error = null;
+                  }),
+                ),
+                const SizedBox(height: CfSpace.md),
+              ],
+              TextField(
+                controller: _amount,
+                autofillHints: null,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                  signed: true,
+                ),
+                decoration: InputDecoration(
+                  labelText: '当前可用额度',
+                  errorText: _error,
+                  helperText: '填写银行 App 当前显示的可用额度',
+                  helperMaxLines: 2,
+                ),
               ),
               const SizedBox(height: CfSpace.md),
+              FilledButton(
+                onPressed: _saving ? null : _save,
+                child: Text(_saving ? '正在保存…' : '更新额度'),
+              ),
+              if (canRestoreFull || sub.availableToday != null) ...[
+                const SizedBox(height: CfSpace.xs),
+                Wrap(
+                  spacing: CfSpace.xs,
+                  runSpacing: CfSpace.xs,
+                  children: [
+                    if (canRestoreFull)
+                      OutlinedButton.icon(
+                        onPressed: _saving
+                            ? null
+                            : () => _saveAmount(sub, fullLimit, '已恢复满额可用额度'),
+                        icon: const Icon(
+                          Icons.restart_alt_rounded,
+                          size: CfIconSize.sm,
+                        ),
+                        label: const Text('恢复满额'),
+                      ),
+                    if (sub.availableToday != null)
+                      OutlinedButton.icon(
+                        onPressed: _saving ? null : _addRepayment,
+                        icon: const Icon(
+                          Icons.add_circle_outline_rounded,
+                          size: CfIconSize.sm,
+                        ),
+                        label: const Text('按还款额增加'),
+                      ),
+                  ],
+                ),
+              ],
             ],
-            TextField(
-              controller: _amount,
-              autofillHints: null,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-                signed: true,
-              ),
-              decoration: InputDecoration(
-                labelText: '当前可用额度',
-                errorText: _error,
-                helperText: '填写银行 App 当前显示的可用额度',
-                helperMaxLines: 2,
-              ),
-            ),
-            const SizedBox(height: CfSpace.md),
-            FilledButton(
-              onPressed: _saving ? null : _save,
-              child: Text(_saving ? '正在保存…' : '更新额度'),
-            ),
-          ],
+          ),
         ),
-      ),
-      const SizedBox(height: CfSpace.sm),
-      Align(
-        alignment: AlignmentDirectional.centerEnd,
-        child: TextButton(
-          onPressed: widget.onDetails,
-          child: const Text('详细记录'),
+        const SizedBox(height: CfSpace.sm),
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: TextButton(
+            onPressed: widget.onDetails,
+            child: const Text('详细记录'),
+          ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }

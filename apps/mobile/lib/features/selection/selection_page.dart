@@ -45,6 +45,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
   LocalDate? _date;
   int? _submitted;
   int _feeBps = 0;
+  bool _reverseFeeMode = false;
   bool _deducting = false;
   String? _error;
   @override
@@ -58,6 +59,20 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
     60 => '费率 0.6%',
     _ => '费率 0.$bps%',
   };
+
+  static int _grossFromTargetNet(int targetNetMinor, int feeBps) {
+    if (feeBps <= 0) return targetNetMinor;
+    var gross = (targetNetMinor * 10000) ~/ (10000 - feeBps);
+    while (gross - ((gross * feeBps + 5000) ~/ 10000) < targetNetMinor) {
+      gross++;
+    }
+    while (gross > 1 &&
+        (gross - 1) - (((gross - 1) * feeBps + 5000) ~/ 10000) >=
+            targetNetMinor) {
+      gross--;
+    }
+    return gross;
+  }
 
   Future<void> _deductSwipe(
     List<(AccountView account, String currency, int amount)> items,
@@ -272,11 +287,16 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
             currency: _currency,
             on: date,
           );
-    final result = _submitted == null
+    final effectiveSwipe = _submitted == null
+        ? null
+        : (_feeBps > 0 && _reverseFeeMode)
+        ? _grossFromTargetNet(_submitted!, _feeBps)
+        : _submitted!;
+    final result = effectiveSwipe == null
         ? null
         : recommendCards(
             wallet: wallet,
-            amount: _submitted!,
+            amount: effectiveSwipe,
             currency: _currency,
             on: date,
           );
@@ -336,7 +356,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
           SectionHeader(
             title: '本次比较',
             trailing: MoneyText(
-              minor: _submitted,
+              minor: effectiveSwipe,
               currency: _currency,
               semanticsPrefix: '消费金额',
               style: t.titleMedium,
@@ -352,7 +372,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
                   Text('暂无可推荐的卡，请查看下方原因。', style: t.bodyLarge),
                   if (result.splitPlan.isEmpty &&
                       result.totalCapacity > 0 &&
-                      result.totalCapacity < _submitted!) ...[
+                      result.totalCapacity < effectiveSwipe!) ...[
                     const SizedBox(height: CfSpace.sm),
                     _fact(
                       '全部可用卡合计最多可刷',
@@ -412,7 +432,7 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
               badge: '推荐使用',
               reason: '额度充足 · 还款最晚',
               tail: _tailText(resultCards.first, result.eligible),
-              deductMinor: _submitted,
+              deductMinor: effectiveSwipe,
             ),
           if (resultCards.length > 1) ...[
             const SectionHeader(title: '其他可用卡'),
@@ -460,10 +480,17 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
     final amountsHidden = ref.watch(amountsHiddenProvider);
     final top = eligible.isEmpty ? null : eligible.first;
     final stacked = useStackedLayout(context);
-    final feeMinor = _submitted != null && _feeBps > 0
-        ? (_submitted! * _feeBps + 5000) ~/ 10000
+    final swipeMinor = _submitted != null && _feeBps > 0
+        ? (_reverseFeeMode
+              ? _grossFromTargetNet(_submitted!, _feeBps)
+              : _submitted!)
         : null;
-    final netMinor = feeMinor != null ? _submitted! - feeMinor : null;
+    final feeMinor = swipeMinor != null
+        ? (swipeMinor * _feeBps + 5000) ~/ 10000
+        : null;
+    final netMinor = swipeMinor != null && feeMinor != null
+        ? swipeMinor - feeMinor
+        : null;
 
     final amountField = TextField(
       controller: _amount,
@@ -684,9 +711,33 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
                   ),
                 ),
               ),
+              if (_feeBps > 0)
+                TextButton.icon(
+                  onPressed: () =>
+                      setState(() => _reverseFeeMode = !_reverseFeeMode),
+                  style: TextButton.styleFrom(
+                    backgroundColor: _reverseFeeMode
+                        ? c.actionTint
+                        : c.surfaceRaised,
+                    foregroundColor: _reverseFeeMode ? c.action : c.textPrimary,
+                    padding: const EdgeInsets.symmetric(horizontal: CfSpace.xs),
+                  ),
+                  icon: Icon(
+                    Icons.swap_horiz_rounded,
+                    size: CfIconSize.sm,
+                    color: _reverseFeeMode ? c.action : c.textSecondary,
+                  ),
+                  label: Text(
+                    _reverseFeeMode ? '按需到账反推' : '按刷卡额正算',
+                    style: t.bodySmall?.copyWith(
+                      color: _reverseFeeMode ? c.action : c.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
             ],
           ),
-          if (feeMinor != null && netMinor != null) ...[
+          if (swipeMinor != null && feeMinor != null && netMinor != null) ...[
             const SizedBox(height: CfSpace.xs),
             Container(
               padding: const EdgeInsets.symmetric(
@@ -703,6 +754,26 @@ class _SelectionFormState extends ConsumerState<_SelectionForm>
                 spacing: CfSpace.md,
                 runSpacing: CfSpace.xxs,
                 children: [
+                  if (_reverseFeeMode)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '应刷金额 ',
+                          style: t.bodySmall?.copyWith(color: c.textSecondary),
+                        ),
+                        MoneyText(
+                          minor: swipeMinor,
+                          currency: _currency,
+                          semanticsPrefix: '应刷金额',
+                          textAlign: TextAlign.start,
+                          style: t.bodySmall?.copyWith(
+                            color: c.action,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cardflow_domain/cardflow_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -92,6 +93,7 @@ class _WalletList extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: CfSpace.lg),
       children: <Widget>[
+        _CycleRelaySchedule(accounts: active),
         for (final pool in pools) ...<Widget>[
           _PoolHeader(pool: pool),
           for (final account in pool.members.where((a) => !a.isInactive))
@@ -109,6 +111,167 @@ class _WalletList extends StatelessWidget {
             ],
           ),
       ],
+    );
+  }
+}
+
+class _CycleEvent {
+  const _CycleEvent({
+    required this.accountName,
+    required this.date,
+    required this.days,
+    required this.isStatement,
+  });
+
+  final String accountName;
+  final LocalDate date;
+  final int days;
+  final bool isStatement;
+}
+
+/// 近期出账与还款接力排期：按时间先后展示各卡即将到来的账单日与还款日。
+class _CycleRelaySchedule extends StatelessWidget {
+  const _CycleRelaySchedule({required this.accounts});
+
+  final List<AccountView> accounts;
+
+  @override
+  Widget build(BuildContext context) {
+    final events = <_CycleEvent>[];
+    for (final a in accounts) {
+      final forecast = a.primaryCurrency.forecast;
+      if (forecast is! ForecastPredicted) continue;
+      final predicted = forecast.conservative;
+      events.add(
+        _CycleEvent(
+          accountName: a.displayName,
+          date: predicted.statementDate,
+          days: predicted.statementDate.differenceInDays(a.today),
+          isStatement: true,
+        ),
+      );
+      events.add(
+        _CycleEvent(
+          accountName: a.displayName,
+          date: predicted.dueDate,
+          days: predicted.dueDate.differenceInDays(a.today),
+          isStatement: false,
+        ),
+      );
+    }
+    if (events.isEmpty) return const SizedBox.shrink();
+    events.sort((a, b) {
+      final cmp = a.days.compareTo(b.days);
+      if (cmp != 0) return cmp;
+      if (a.isStatement != b.isStatement) return a.isStatement ? -1 : 1;
+      return a.accountName.compareTo(b.accountName);
+    });
+    final upcoming = events.take(4).toList();
+    final c = CardFlowColors.of(context);
+    final t = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CfSpace.md,
+        CfSpace.xs,
+        CfSpace.md,
+        CfSpace.xxs,
+      ),
+      child: CalmPanel(
+        padding: const EdgeInsets.symmetric(
+          horizontal: CfSpace.md,
+          vertical: CfSpace.sm,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: CfSpace.xs,
+              runSpacing: CfSpace.xxs,
+              children: <Widget>[
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      Icons.event_note_rounded,
+                      color: c.action,
+                      size: CfIconSize.md,
+                    ),
+                    const SizedBox(width: CfSpace.xs),
+                    Flexible(child: Text('近期出账与还款排期', style: t.titleSmall)),
+                  ],
+                ),
+                Text(
+                  '出账次日刷卡享最长免息期',
+                  style: t.bodySmall?.copyWith(color: c.textSecondary),
+                ),
+              ],
+            ),
+            const SizedBox(height: CfSpace.xs),
+            Wrap(
+              spacing: CfSpace.xs,
+              runSpacing: CfSpace.xs,
+              children: <Widget>[
+                for (final e in upcoming) _buildChip(context, e, c, t),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChip(
+    BuildContext context,
+    _CycleEvent e,
+    CardFlowColors c,
+    TextTheme t,
+  ) {
+    final tone = e.isStatement ? c.bank : c.attention;
+    final tag = e.isStatement ? '出账' : '还款';
+    final dayLabel = e.days <= 0 ? '今天' : '${e.days} 天后';
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CfSpace.xs,
+        vertical: CfSpace.xxs,
+      ),
+      decoration: BoxDecoration(
+        color: c.surfaceRaised,
+        borderRadius: BorderRadius.circular(CfRadius.md),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CfSpace.xxs + 2,
+              vertical: 1,
+            ),
+            decoration: BoxDecoration(
+              color: tone.bg,
+              borderRadius: BorderRadius.circular(CfRadius.pill),
+            ),
+            child: Text(
+              tag,
+              style: t.labelSmall?.copyWith(
+                color: tone.fg,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          const SizedBox(width: CfSpace.xxs),
+          Flexible(
+            child: Text(
+              '${e.accountName} · $dayLabel（${monthDay(e.date)}）',
+              style: t.bodySmall?.copyWith(
+                color: c.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
