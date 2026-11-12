@@ -1,8 +1,10 @@
 title = "Public source secret checks"
+minVersion = "v8.25.0"
 [extend]
 useDefault = true
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -10,6 +12,7 @@ paths = ["^services/api/tests/test_cli\\.py$"]
 regexes = ["^DATABASE_PASSWORD\", \"db-pw-unreachable-77c\"$"]
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -17,6 +20,7 @@ paths = ["^services/api/tests/db/golden_objects\\.json$"]
 regexes = ["^preauth_holds\\.preauth_holds_row_version\": \"250583e10c51e66d0e717c933ea637ca\"$"]
 
 [[allowlists]]
+targetRules = ["jwt"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -24,6 +28,7 @@ paths = ["^tools/pii_samples/dirty\\.log$"]
 regexes = ["^eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJzdWIiOiJ0ZXN0LWRldmljZSIsImV4cCI6MTc2MDYwMDAwMH0\\.dGVzdC1zaWduYXR1cmUtbm90LXJlYWw\"$"]
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -31,6 +36,7 @@ paths = ["^services/api/tests/test_smoke\\.py$"]
 regexes = ["^JWT_KEY\": \"jwt-key-41d2e8\"$"]
 
 [[allowlists]]
+targetRules = ["jwt"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -38,6 +44,7 @@ paths = ["^tools/pii_log_probe\\.py$"]
 regexes = ["^eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\\.eyJzdWIiOiJwcm9iZS1kZXZpY2UifQ\\.\"$"]
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -45,6 +52,7 @@ paths = ["^services/api/tests/api/test_device_auth_api\\.py$"]
 regexes = ["^token at all\", \"eyJhbGciOiJIUzI1NiJ9\\.e30\\.x\"$"]
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -52,6 +60,7 @@ paths = ["^tools/tests/test_pii_scan\\.py$"]
 regexes = ["^secret_string\", \"key=9f8e7d6c5b4a39281706f5e4d3c2b1a0\"$"]
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -59,6 +68,7 @@ paths = ["^tools/tests/test_pii_scan\\.py$"]
 regexes = ["^secret_string\", \"Q2FyZEZsb3dUZXN0S2V5MDEyMzQ1Njc4OWFiY2RlZg\"$"]
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -66,6 +76,7 @@ paths = ["^tools/tests/test_pii_scan\\.py$"]
 regexes = ["^secret_string\", \"a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7\"$"]
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
@@ -73,6 +84,7 @@ paths = ["^tools/tests/test_pii_scan\\.py$"]
 regexes = ["^secret_string\", \"42263f7e401d4aec923537a3dc3a0eca\"$"]
 
 [[allowlists]]
+targetRules = ["generic-api-key"]
 description = "Reviewed synthetic fixture, schema hash or public protocol constant; exact value only"
 condition = "AND"
 regexTarget = "match"
