@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+python scripts/check-public-files.py --staged
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "Install Gitleaks before committing (see PRIVACY.md)." >&2
+  exit 1
+fi
+gitleaks protect --staged --redact --no-banner
